@@ -12,6 +12,8 @@ Note: The code that is submitted may not match the latest binary.
 
 ## Code Status
 
+Compiles with Visual Studio Express Desktop Edition / Visual Studio 2012
+
 Toxicity Level: Medium-High
  * Needs more comments
  * Needs warning cleanup
