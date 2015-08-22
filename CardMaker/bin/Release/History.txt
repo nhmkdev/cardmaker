@@ -1,0 +1,296 @@
+Card Maker Version History
+--------------------------
+0.99.1.10
+- Fix for Text elements using the line spacing value (only supposed to apply to FormattedText)
+- Fix for image export at the project level resulting in (bad) different output than individually exporting a layout
+- Added error handling to PDF export (should avoid crashing on export if the PDF is open)
+- Added a bit more logic around Google token expiration (OAUTH2 has limited options for desktop applications)
+
+0.99.1.9
+- Fix for end of row PDF export issue resulting in overlapping layouts on the page.
+- Added rotation export functionality to the PDF export (uses the export settings for now)
+- Added Print Layouts on New Page option (applies to printing and PDF Export)
+- Added ability to import layout objects from other project files
+
+0.99.1.8
+- Resolved issue with different decimal types (comma/period) stored in the main ini file
+- Added ability for Layouts to load all associated references (NOTE: all references must have the same column order)
+(...and yes this technically would allow mixing csv files and Google references)
+- Fixed issue where the first line of the define files are read as an actual define and value (instead of column headers)
+- Added green highlight for the default reference in a layout (hopefully all cases covered...)
+
+0.99.1.7
+- Added ability to export images with a transparent background
+- Added ability to stitch images on export
+- Made adjustments to logical statements to better support FormattedText
+- Added support for < > character replacement via html standard &gt; and &lt; 
+(critical if the '<' character is surrounded by white space in an if statement)
+
+0.99.1.6
+- Added export option to allow exported images to be rotated 90/-90 degrees
+- Fixed an issue with save/load of project files that would result in messed up UTF8 characters
+- Fixed very annoying bug where the arrow keys would adjust the zoom instead of move an element
+
+0.99.1.5
+- Added error handling to font draw for possible font issues
+- Centered FormattedText inline images (img tag) vertically
+- Scaling of FormattedText inline images (img tag) is now based on the measured font height and not the line height
+
+0.99.1.4
+- Added Defines window to display the current active defines (also can copy and paste references from it)
+- Fixed issue with re-ordering layouts in the treeview (was not saving correctly)
+- The last reference (after others are removed) is defaulted as the reference for a layout
+- Added ability to duplicate multiple elements with the "dupe" button (must specify the same number to create)
+- Fixed a bug with duplicate defines
+
+0.99.1.3
+- Fix for loading the wrong reference file if the file exists in both the project folder and the exe location
+- Added Google Spreadsheet Selector/Browser
+- Another iteration on the Google Auth configuration dialog (fewer clicks)
+
+0.99.1.2
+- Updates to reference loading code (fixed double load when adding a new reference)
+- Google Authorization reduced by 1 step
+- Added Ctrl+A shortcut to select all in the Element Control Definition field
+- Changed the FormattedText BackgroundColor tag to be based on the current font instead of the line spacing
+
+0.99.1.1
+- Fixed bug with adding a reference on an unsaved project
+
+0.99.1.0
+- Google OAUTH2 implemented (old Google login functionality no longer supported) -- nowhere near as simple. Enjoy!
+- Added project wide defines
+- Changed Project > Refresh Layout to attempt to remain at the same given index
+- '.pdf' is automatically appended to all PDF exports (unless you specify it in the output file name)
+- Added functionality to allow scaling and resizing of multiple elements at once
+
+0.99.0.9
+- Added functionality to support parameters when referencing a data source item (@[item,parameter,...])
+- Added "Keep Original Size" option to the Graphic element type
+
+0.99.0.8
+- Fix for spaces in tag names/values for FormattedText
+
+0.99.0.7
+- Altered defaults for new elements (color: black, line space 14)
+- Added support for color strings by name (https://msdn.microsoft.com/en-us/library/ie/aa358802%28v=vs.85%29.aspx)
+- Added some proper error checking to color string translation
+- Added Row numeric control to the Layout control to jump entire rows in the source reference
+
+0.99.0.6
+- PDF Export via PDFSharp added. This does not work with Mono (or didn't for me)
+
+0.99.0.5
+- Added FormattedText Font tag. This allows you to change the active font inline in a FormattedText element. It may affect other parts of the FormattedText element so be a little wary.
+
+0.99.0.4
+- Fixed issue with FormattedText definition parsing (thanks to Eric Raue for calling it out)
+- Updated FormattedText string measuring to be more precise (if I decide to go event further I will measure the pixels myself, thanks .NET)
+- Updated FormattedText spc markup (and standard text spaces) to be sized as follows: spaces * (FontSpaceWidth + WordSpacing)
+
+0.99.0.3
+- Mini-overhaul to FormattedText to support an inline image (and other things)
+- Added new sub counter for counts related to duplicated entries
+- FormattedText - BackgroundImage (bgi) no longer uses a closing tag
+- FormattedText - Added Image (img)
+- FormattedText - Added Push (push) to allow direct control over the x/y of the next markup
+- Fixed an exception thrown during FormattedText definition processing
+
+0.99.0.2
+- Bug fix override of the enabled field of an Element via reference file
+
+0.99.0.1
+- Bug fix for issue where you cannot change the definition of an Element (annoying!)
+- Updated the Layout Control window to change the Type column when an Element type is changed
+- Fix for possible exception with undo/redo
+
+0.99.0.0
+- Refactor of printing/exporting -- Print quality likely improved in some situations
+- Drag n' Drop Layouts in the Project window to re-order
+- Lots of code structure changes and finally some actual unit tests (probably some bugs introduced!)
+- Fixed minor bug related to color overrides
+- Added Color Picker to the tools menu and added a read-only hex field to copy color values from
+- Minor optimization to rendering
+
+0.98.0.15
+- Resolved a printing issue related to nested layouts
+- Fixed checks related to duplicate defines and defines that match the name of a column
+
+0.98.0.14
+- Fixed issue with default values for print page size and margins.
+- Added print option to disable the border
+
+0.98.0.13
+- CSV import is now performed using UTF8 encoding (should resolve issues with extended characters)
+- Fix for references that are outside of the project folder.
+
+0.98.0.12
+- Fixed bug with the '/' character in the Formatted Text functionality (thanks to Eric Raue for calling it out)
+- Added "defines" functionality for references (applies to Google and non-Google references)
+- Added check for duplicate references when adding a reference to a layout
+- Added Tools > Settings... menu where you can now configure your printer settings (page size, margins, and more).
+- Added Layout Auto Center option (see Tools > Settings...) to center layouts on the page (hopefully useful for those
+brave enough to attempt 2-sided printing
+- Last export format is remembered when exporting to images
+
+0.98.0.11
+- Multiselect item changes apply to all items (experimental) -- Canvas actions while elements multi-selected generally unchanged.
+- Font availability (some were missing in a few cases)
+
+0.98.0.10
+- More work on Mono stability
+- Updated sample project to use pathing/file names that should work in Mono (Linux) and .NET (windows)
+
+0.98.0.9
+- Added Mono version of the executable (removes some non critical P/Invoke calls) and some other minor tweaks.
+
+0.98.0.8
+- Minor bug fixes
+- Added new column to indicate what type a given element is in the layout form
+- New functionality to assist in the element "definition" generation
+- Can now right-click in the spreadsheet data view (above the Definition box) to add a reference to a given column.
+- Renamed the "Project" root node in the Project view to "Layouts"
+
+0.98.0.7
+- Added new color specifier via hex values. (better for spreadsheet editing)
+
+0.98.0.6
+- Minor bug fixes.
+
+0.98.0.5
+- Initial Undo/Redo functionality for element and layout changes. (some issues may exist!)
+- Bold / Italic for the font are now checkboxes instead of a combo box. (does not affect the project files)
+- Minor optimizations
+
+0.98.0.4
+- Changes to better support operating systems that use / as the path separator. (hardly tested though!)
+
+0.98.0.3
+- Fixes for a few caching issues related to printing and Formatted Text fields
+- Image export fix (was causing an exception)
+
+0.98.0.2 (beta)
+- Fix for auto-scale of fonts resulting in larger than desired size
+- Added more space to the element view of the given spreadsheet row due to varying windows themes requiring more space
+
+0.98.0.1 (beta)
+- Fixed issue with caching of elements resulting in #nodraw from logic. This would cause the GUI to display #nodraw as text etc.
+- Changed empty lines to be completely ignored in referenced spreadsheets (google or csv files)
+- Added "\c" escape code to specifying commas.
+- Changed the auto-scale functionality to be slow but precise (good luck old CPUs!)
+
+0.98.0.0 (beta)
+- Added preliminary support for Google Spreadsheets
+- Added "Set Size to Image" for graphic elements so they can auto configure to the size of the input image.
+- Added color history for the color selection window.
+- Fixed the maximum/minimum values so large scale layouts are possible.
+- Added hotkey 'm' in the Canvas window to allow users to toggle to a move-only mode (to avoid edge resizing)
+- Removed the count/duplication column from the element control window
+- Added layout refresh (reload the reference) via F9.
+- Added #empty representing an empty string (so logic statements look a litte less odd)
+
+0.97.0.3 (beta)
+- Fix for infinite print issues
+
+0.97.0.2 (beta)
+- Added spc tag to Formatted Text
+- Added xo tag (x-offset) to Formatted Text (renamed y-offset tag: ydo => yo)
+- PSD file support (preliminary! Standard RGBA images are recommended) 
+PSD support is based on an old version of the Paint.NET PhotoshopFileType plugin for PSD files -- modified (by me) to not use unsafe code.
+
+0.97.0.1 (beta)
+- Code refactor related to layouts.
+- Added copy/paste menu to layout elements (now you can duplicate elements across layouts)
+- Added support for specifying the line spacing for text.
+- Added support for text formatting.
+- Various fixes
+
+0.96.0.0
+- Code refactoring related to the project files. This breaks backwards compatibility. There is a built in version detection and upgrade. (it's really minimal!)
+- Major changes to the code supporting shapes (Shapes are NOT backwards compatible) -- will make things easier to create more shape types in the future.
+- Added project manager
+- Added layout templates
+- Added Grid shape
+
+0.95.0.2
+- Fixed override with elements to not be lowercase only.
+- Added shortcut keys for New / Open / Save.
+- Added check on new projects for previously unsaved work.
+
+0.95.0.0
+- Added zoom functionality in the canvas (appears to be not-so-buggy!)
+- Shift movement in the canvas (locks vertical or horizontal to an axis)
+
+0.94.0.2
+- Increased the image cache (from 20 to 50)
+- Added initial "Known Issues" functionality
+- Added character replacement for file export.
+
+0.94.0.1
+- Fixed scroll position reset issue with Canvas on focus.
+- Fixed image locking issue related to image caching from the hard drive.
+- Changed rotation to be performed around the center of the element.
+
+0.94.0.0
+- textalign and textlinealign attributes renamed: verticalalign and horizontalalign (fix your cmp or elements accordingly!)
+- Added graphical alignment options
+- Added name formatting for image export at the project and layout level
+
+0.93.0.7
+- Added element overrides via CSV.
+- Added multi-selection actions for elements. You can move/drag multiple elements.
+- Added aspect ratio lock for images.
+- Rounded rectangle supports higher corner sizes (bug fix)
+
+0.93.0.5
+- Added allowed_layout functionality for CSVs to specify the layout of a given card. (good for multi purpose csv files)
+- Updated color selector with even more color options. (still a work-in-progress... kind of)
+- Added font auto-scale option
+- Added height / width override functionality to shapes
+- Removed pie shape (for now)
+
+0.93.0.1
+- Optimizations involving the caching of font and color information
+- Added numeric logic for if statements: <, >, >=, <=
+
+0.92.0.0
+- Added basic element outline functionality (text will draw slightly differently if an outline is used)
+- Removed border draw flag. Beware, old projects will deafult to a border of 1!
+
+0.91.0.0
+- Fixed issue with debug element borders on export.
+
+0.90.0.0
+- Numerous user interface improvements (hotkeys, context menus)
+- Fixed problems with recent projects
+- Scroll and draw enabled for the card canvas.
+- Reordered draw so element borders are drawn last (avoids losing selections behind other elements)
+- Added custom RGB color selection dialog (inspired by various art programs)
+
+0.9.0.0
+- Fixed opacity functionality. (Appears to be related to Windows 7)
+- Added recent project functionality.
+- Fixed printing functionality to not draw outside card bounds. (for elements that draw outside of the card)
+- Found an odd intermittent issue with the first print not drawing correctly. (when printing to BullzipPDF)
+
+0.6.0.0
+- Updated versioning scheme... it is a lot further along.
+- Updated font configuration to be simpler.
+- Fixed image export issue in relation to the counter
+
+0.0.0.4
+- Fixed image saving to export to the proper format (was always png)
+- Fixed extra space that would appear in if then statements
+- Added counter functionality
+
+0.0.0.3
+- Added element column names / values listview to the Element Control window
+- Added proper element disable/enable in the Layout Control window
+- Other various fixes...
+
+0.0.0.2
+- Added resizing for diagonals on elements in the Canvas
+- Other minor tweaks
+
+0.0.0.1
+Initial Version

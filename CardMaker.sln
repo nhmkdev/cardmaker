@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CardMaker", "CardMaker\CardMaker.csproj", "{49AB3FC5-596A-4B33-963C-C16E1862AF16}"
+	ProjectSection(ProjectDependencies) = postProject
+		{707B63DC-D1E2-456E-ACB4-A09F14139383} = {707B63DC-D1E2-456E-ACB4-A09F14139383}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CardMaker_Mono", "CardMaker\CardMaker_Mono.csproj", "{707B63DC-D1E2-456E-ACB4-A09F14139383}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest", "CardMaker\Test\UnitTest\UnitTest.csproj", "{9A53D5BF-7BAB-41FC-BC6E-6342757B64D5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release_Mono|Any CPU = Release_Mono|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{49AB3FC5-596A-4B33-963C-C16E1862AF16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49AB3FC5-596A-4B33-963C-C16E1862AF16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49AB3FC5-596A-4B33-963C-C16E1862AF16}.Release_Mono|Any CPU.ActiveCfg = Release|Any CPU
+		{49AB3FC5-596A-4B33-963C-C16E1862AF16}.Release_Mono|Any CPU.Build.0 = Release|Any CPU
+		{49AB3FC5-596A-4B33-963C-C16E1862AF16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49AB3FC5-596A-4B33-963C-C16E1862AF16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{707B63DC-D1E2-456E-ACB4-A09F14139383}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{707B63DC-D1E2-456E-ACB4-A09F14139383}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{707B63DC-D1E2-456E-ACB4-A09F14139383}.Release_Mono|Any CPU.ActiveCfg = Release_Mono|Any CPU
+		{707B63DC-D1E2-456E-ACB4-A09F14139383}.Release_Mono|Any CPU.Build.0 = Release_Mono|Any CPU
+		{707B63DC-D1E2-456E-ACB4-A09F14139383}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{707B63DC-D1E2-456E-ACB4-A09F14139383}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A53D5BF-7BAB-41FC-BC6E-6342757B64D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A53D5BF-7BAB-41FC-BC6E-6342757B64D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A53D5BF-7BAB-41FC-BC6E-6342757B64D5}.Release_Mono|Any CPU.ActiveCfg = Release|Any CPU
+		{9A53D5BF-7BAB-41FC-BC6E-6342757B64D5}.Release_Mono|Any CPU.Build.0 = Release|Any CPU
+		{9A53D5BF-7BAB-41FC-BC6E-6342757B64D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A53D5BF-7BAB-41FC-BC6E-6342757B64D5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,5 @@
+Duplication,Title,Image,Description,Faction,Extra
+4,Special,images/biohazard.png,Sample that uses defines from both reference files. Earn @[Coin] when on @[Planet],empire,this will not load unless this is the default reference
+6,More Title!,images/biohazard.png,A card duplicated 6 times.,empire,this will not load unless this is the default reference
+8,The Title,images\pirate_jack_rackham.png,Earn @[Star],pirate,this will not load unless this is the default reference
+,End Game,images\invalid.png,This card has an invalid image. Here's a reference to a nested define: @[NestedSecret],pirate,this will not load unless this is the default reference
