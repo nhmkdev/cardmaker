@@ -8,12 +8,12 @@ Latest binary: [Download 0.99.1.10](https://www.nhmk.com/applications/CardMaker_
 
 ## Code Status
 
-* Toxicity Level: Medium-High
-** Needs more comments
-** Needs warning cleanup
-** Needs some shuffling to allow for more narrow and focused unit testing
-** Needs more unit tests!
-** Every method should be implemented based on an interface and classes should implement hundreds of interfaces (just kidding!!!)
+Toxicity Level: Medium-High
+ * Needs more comments
+ * Needs warning cleanup
+ * Needs some shuffling to allow for more narrow and focused unit testing
+ * Needs more unit tests!
+ * Every method should be implemented based on an interface and classes should implement hundreds of interfaces (just kidding!!!)
 
 ## The Google Issue
 
@@ -25,7 +25,9 @@ You will need to modify this code to correctly use your application.
 ## History
 
 2009 - First created and publicly released CardMaker
+
 20XX - Lots of bug fixes and features
+
 2015 - CardMaker goes open source
 
 ### The Name
@@ -34,9 +36,9 @@ You will need to modify this code to correctly use your application.
 
 ## Special Thanks
 
-Eric Raue
-Kolja Geldmacher
-Everyone that has contributed to the project through emailing bugs and requesting features
+* Eric Raue
+* Kolja Geldmacher
+* Everyone that has contributed to the project through emailing bugs and requesting features
 
 ## Original Author
 
