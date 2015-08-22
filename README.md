@@ -24,7 +24,7 @@ Toxicity Level: Medium-High
 ## The Google Issue
 
 If you plan to outright copy the parts of the code that operate with Google Spreadsheets please be aware that the source
-currently uses the client id that is associated with my CardMaker application. (TODO link to code)
+currently uses the client id that is associated with my CardMaker application. [Code File](https://raw.githubusercontent.com/nhmkdev/cardmaker/master/CardMaker/Card/Import/GoogleReferenceReader.cs)
 
 You will need to modify this code to correctly use your application.
 
