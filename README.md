@@ -1,6 +1,6 @@
 # CardMaker
 
-An application that generates graphics. (Coming soon: Samples / Sample images)
+An application that generates graphics via data sources. (Coming soon: Samples / Sample images)
 
 ## Download
 
