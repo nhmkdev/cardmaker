@@ -6,6 +6,10 @@ An application that generates graphics. (Coming soon: Samples / Sample images)
 
 Latest binary: [Download 0.99.1.10](https://www.nhmk.com/applications/CardMaker_0.99.1.10.zip)
 
+[Tutorials](https://www.nhmk.com/cardmakertutorials/)
+
+Note: The code that is submitted may not match the latest binary.
+
 ## Code Status
 
 Toxicity Level: Medium-High
