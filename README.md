@@ -24,6 +24,7 @@ Latest binary: [Download 0.99.1.10](https://www.nhmk.com/applications/CardMaker_
 
 * [Tutorials](https://www.nhmk.com/cardmakertutorials/)
 * [CardMaker User Guides Section](https://github.com/nhmkdev/cardmaker/wiki/user) (Work in progress, all tutorials will be moved over)
+* [BoardGameGeek CardMaker Guild](https://www.boardgamegeek.com/guild/2250) - Good place for bugs/request/discussions
 
 Note: The code that is submitted may not match the latest binary.
 
