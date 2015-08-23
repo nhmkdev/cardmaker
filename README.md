@@ -6,8 +6,8 @@ An application that generates graphics via data sources. (Coming soon: Samples /
 
 Latest binary: [Download 0.99.1.10](https://www.nhmk.com/applications/CardMaker_0.99.1.10.zip)
 
-[Tutorials](https://www.nhmk.com/cardmakertutorials/)
-[CardMaker User Guides Section](https://github.com/nhmkdev/cardmaker/wiki/user) (Work in progress, all tutorials will be moved over)
+* [Tutorials](https://www.nhmk.com/cardmakertutorials/)
+* [CardMaker User Guides Section](https://github.com/nhmkdev/cardmaker/wiki/user) (Work in progress, all tutorials will be moved over)
 
 Note: The code that is submitted may not match the latest binary.
 
