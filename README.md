@@ -34,6 +34,8 @@ Compiles with Visual Studio Express Desktop Edition / Visual Studio 2012
 
 See more details in the [Developers Section](https://github.com/nhmkdev/cardmaker/wiki/developers)
 
+[TODO / Wishlist](https://github.com/nhmkdev/cardmaker/wiki/developers-todo)
+
 Toxicity Level: Medium-High
  * Needs more comments
  * Needs warning cleanup
