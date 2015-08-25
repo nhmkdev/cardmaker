@@ -64,8 +64,6 @@ namespace CardMaker.Forms
             this.defineAsTemplateLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeCardLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
-            this.printPreviewCardLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.printCardLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportCardLayoutAsImagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportCardLayoutAsPDFToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
@@ -146,8 +144,6 @@ namespace CardMaker.Forms
             this.defineAsTemplateLayoutToolStripMenuItem,
             this.removeCardLayoutToolStripMenuItem,
             this.toolStripMenuItem2,
-            this.printPreviewCardLayoutToolStripMenuItem,
-            this.printCardLayoutToolStripMenuItem,
             this.exportCardLayoutAsImagesToolStripMenuItem,
             this.exportCardLayoutAsPDFToolStripMenuItem,
             this.toolStripMenuItem4,
@@ -157,7 +153,7 @@ namespace CardMaker.Forms
             this.toolStripMenuItemSetLayoutNameFormat});
             this.contextMenuStripLayout.Name = "contextMenuStripLayout";
             this.contextMenuStripLayout.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.contextMenuStripLayout.Size = new System.Drawing.Size(259, 264);
+            this.contextMenuStripLayout.Size = new System.Drawing.Size(259, 220);
             // 
             // duplicateLayoutToolStripMenuItem
             // 
@@ -184,20 +180,6 @@ namespace CardMaker.Forms
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
             this.toolStripMenuItem2.Size = new System.Drawing.Size(255, 6);
-            // 
-            // printPreviewCardLayoutToolStripMenuItem
-            // 
-            this.printPreviewCardLayoutToolStripMenuItem.Name = "printPreviewCardLayoutToolStripMenuItem";
-            this.printPreviewCardLayoutToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
-            this.printPreviewCardLayoutToolStripMenuItem.Text = "Print Preview Card Layout...";
-            this.printPreviewCardLayoutToolStripMenuItem.Click += new System.EventHandler(this.printPreviewCardLayoutToolStripMenuItem_Click);
-            // 
-            // printCardLayoutToolStripMenuItem
-            // 
-            this.printCardLayoutToolStripMenuItem.Name = "printCardLayoutToolStripMenuItem";
-            this.printCardLayoutToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
-            this.printCardLayoutToolStripMenuItem.Text = "Print Card Layout...";
-            this.printCardLayoutToolStripMenuItem.Click += new System.EventHandler(this.printCardLayoutToolStripMenuItem_Click);
             // 
             // exportCardLayoutAsImagesToolStripMenuItem
             // 
@@ -296,8 +278,6 @@ namespace CardMaker.Forms
         private System.Windows.Forms.ToolStripMenuItem removeCardLayoutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem defineAsTemplateLayoutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addReferenceToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem printPreviewCardLayoutToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem printCardLayoutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportCardLayoutAsImagesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setAsDefaultReferenceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem removeReferenceToolStripMenuItem;

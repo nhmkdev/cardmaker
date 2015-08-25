@@ -26,7 +26,6 @@ using System.Diagnostics;
 using System.Linq;
 using CardMaker.Card;
 using CardMaker.Card.Export;
-using CardMaker.Card.Export.Print;
 using CardMaker.Card.Shapes;
 using CardMaker.XML;
 using PdfSharp;
@@ -37,7 +36,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Drawing.Printing;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -63,7 +61,6 @@ namespace CardMaker.Forms
         private CardCanvas m_zDrawCardCanvas;
         private int m_nDestinationCardIndex = -1; 
         private readonly IniManager m_zIniManager = new IniManager("cardmaker", false, true, true);
-        private IPrintCardExporter m_zCardPrinter;
 
         private float m_nApplicationDPI = 72f;
 
@@ -165,7 +162,6 @@ namespace CardMaker.Forms
             SetupMDIForm(MDILayoutControl.Instance, true);
             SetupMDIForm(MDILogger.Instance, true);
             SetupMDIForm(MDIProject.Instance, true);
-            SetupMDIForm(MDIPreview.Instance, false);
             SetupMDIForm(MDIIssues.Instance, false);
             SetupMDIForm(MDIDefines.Instance, false);
 
@@ -190,9 +186,6 @@ namespace CardMaker.Forms
                     case "MDIProject":
                         sText = "&Project";
                         break;
-                    case "MDIPreview":
-                        sText = "P&review";
-                        break;
                     case "MDIIssues":
                         sText = "&Issues";
                         break;
@@ -216,7 +209,7 @@ namespace CardMaker.Forms
             }
 
             // create the main drawing canvas
-            m_zDrawCardCanvas = MDICanvas.Instance.SetupCardCanvas();
+            m_zDrawCardCanvas = MDICanvas.Instance.CardCanvas;
 
             // make a new project by default
 
@@ -277,7 +270,7 @@ namespace CardMaker.Forms
             List<LayoutTemplate> listTemplates = null;
             string sTemplatesFile = StartupPath + LAYOUT_TEMPLATE_FILE;
             if (File.Exists(sTemplatesFile) &&
-                SerializationUtils.DeserializeFromXmlFile(sTemplatesFile, Encoding.Default, ref listTemplates))
+                SerializationUtils.DeserializeFromXmlFile(sTemplatesFile, Project.XML_ENCODING, ref listTemplates))
             {
                 LayoutTemplates = listTemplates;
             }
@@ -371,7 +364,8 @@ namespace CardMaker.Forms
                 SetLoadedProjectFile(null);
                 // reset the currently loaded file in the AbstractDirtyForm
                 SetLoadedFile(string.Empty);
-                ResetDialogs();
+
+                ResetToNoLayout();
             }
         }
 
@@ -397,8 +391,11 @@ namespace CardMaker.Forms
 
         public void SaveTemplates()
         {
-            SerializationUtils.SerializeToXmlFile(StartupPath + LAYOUT_TEMPLATE_FILE,
-                LayoutTemplates, Encoding.Default);
+            if (!SerializationUtils.SerializeToXmlFile(Path.Combine(StartupPath, LAYOUT_TEMPLATE_FILE),
+                LayoutTemplates, Project.XML_ENCODING))
+            {
+                Logger.AddLogLine("Failed to save layouts.");
+            }
         }
 
         public static string FileOpenHandler(string sFilter, TextBox zText, bool bCheckFileExists)
@@ -503,13 +500,6 @@ namespace CardMaker.Forms
             return false;
         }
 
-        private void ResetDialogs()
-        {
-            MDILayoutControl.Instance.UpdateLayoutInfo();
-            MDIElementControl.Instance.UpdateElementValues(null);
-            m_zDrawCardCanvas.Size = new Size(1, 1); // 0x0 = crash (just don't want anything drawing...)
-        }
-
         protected override bool OpenFormData(string sFileName)
         {
             Cursor = Cursors.WaitCursor;
@@ -525,7 +515,7 @@ namespace CardMaker.Forms
             if (null != m_zLoadedProject)
             {
                 SetLoadedProjectFile(sFileName);
-                ResetDialogs();
+                ResetToNoLayout();
                 m_listRecentFiles.Remove(sFileName);
                 m_listRecentFiles.Insert(0, sFileName);
                 while (MAX_RECENT_PROJECTS < m_listRecentFiles.Count)
@@ -550,114 +540,19 @@ namespace CardMaker.Forms
 
         #endregion
 
-        #region Print
-
-        private void printToolStripMenuItem_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Resets the application to a state where no Layout is selected
+        /// </summary>
+        private void ResetToNoLayout()
         {
-            PrintInit(false, 0, -1);
+            // must be called first (wipes out the selected Layout)
+            MDIProject.Instance.ResetCurrentProjectLayout();
+
+            MDICanvas.Instance.Reset();
+
+            MDILayoutControl.Instance.UpdateLayoutInfo();
+            MDIElementControl.Instance.UpdateElementValues(null);
         }
-
-        private void printPreviewProjectToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            PrintInit(true, 0, -1);
-        }
-
-        public void PrintInit(bool bPreview, int nLayoutStartIndex, int nLayoutEndIndex)
-        {
-            InitSave(false);
-            if (Dirty || string.IsNullOrEmpty(m_sLoadedProjectFile))
-            {
-                Logger.AddLogLine("Please save the project before printing...");
-                return;
-            }
-            Logger.AddLogLine("Saved Project...");
-
-            if (-1 == nLayoutStartIndex && -1 == nLayoutEndIndex)
-            {
-                nLayoutStartIndex = MDIProject.Instance.GetCurrentLayoutIndex();
-                nLayoutEndIndex = nLayoutStartIndex + 1;
-                if (-1 == nLayoutStartIndex)
-                {
-                    Logger.AddLogLine("Please select at least one layout to print.");
-                    return;
-                }
-            }
-
-            if (-1 == nLayoutEndIndex)
-            {
-                nLayoutEndIndex = m_zLoadedProject.Layout.Length;
-            }
-
-            printDocument.DefaultPageSettings.PrinterResolution = new PrinterResolution
-            {
-                X = PrintDPI,
-                Y = PrintDPI
-            };
-
-            printDocument.DefaultPageSettings.PaperSize = new PaperSize(
-                "custom", 
-                (int)(PrintPageWidth * (decimal)PrintDPI), 
-                (int)(PrintPageHeight * (decimal)PrintDPI));
-
-            var nHorizontalMargin = (int)(PrintPageHorizontalMargin * (decimal)PrintDPI);
-            var nVerticalMargin = (int)(PrintPageVerticalMargin * (decimal)PrintDPI);
-            printDocument.DefaultPageSettings.Margins.Left = nHorizontalMargin;
-            printDocument.DefaultPageSettings.Margins.Right = nHorizontalMargin;
-            printDocument.DefaultPageSettings.Margins.Top = nVerticalMargin;
-            printDocument.DefaultPageSettings.Margins.Bottom = nVerticalMargin;
-
-            switch (PrintStyle)
-            {
-                case PrintStyle.Direct:
-                    m_zCardPrinter = new PrintDirectCardCardExporter(nLayoutStartIndex, nLayoutEndIndex, printDocument);
-                    break;
-                case PrintStyle.Image:
-                    m_zCardPrinter = new PrintScaledCardExporter(nLayoutStartIndex, nLayoutEndIndex, printDocument);
-                    break;
-            }
-
-            // bleh this old thing
-            //m_zCardPrinter = new PrintFullDPICardExporter(nLayoutStartIndex, nLayoutEndIndex, printDocument);
-
-            if (bPreview)
-            {
-                var zPreview = new PrintPreviewDialog
-                {
-                    Document = printDocument
-                };
-                zPreview.ShowDialog(this);
-            }
-            else
-            {
-                var zDialog = new PrintDialog
-                {
-#if !MONO_BUILD
-                    UseEXDialog = true,
-#endif
-                    Document = printDocument
-                };
-
-                if (DialogResult.OK == zDialog.ShowDialog(this))
-                {
-                    {
-                        zDialog.Document.Print();
-                    }
-                }
-            }
-            m_zCardPrinter.OnComplete(this);
-        }
-
-        private void printDocument_PrintPage(object sender, PrintPageEventArgs e)
-        {
-            m_zCardPrinter.PrintPage(sender, e);
-        }
-
-        private void printDocument_QueryPageSettings(object sender, QueryPageSettingsEventArgs e)
-        {
-            m_zCardPrinter.QueryPageSettings(sender, e);
-        }
-
-        #endregion
 
         private void exportProjectToPDFToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -881,12 +776,6 @@ namespace CardMaker.Forms
             MDIIssues.Instance.Show();
         }
 
-        private void updatePreviewToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            m_zDrawCardCanvas.UpdatePreview();
-            MDIPreview.Instance.Show();
-        }
-
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MessageBox.Show(this, "Card Maker Beta" + 
@@ -1088,36 +977,27 @@ namespace CardMaker.Forms
             var zQuery = new QueryPanelDialog("CardMaker Settings", 450, 250, true);
             zQuery.SetIcon(Instance.Icon);
             zQuery.SetMaxHeight(600);
-            zQuery.AddTab("Printing");
+            zQuery.AddTab("General");
+            zQuery.AddCheckBox("Print/Export Layout Border", PrintLayoutBorder, IniSettings.PrintLayoutBorder);
 
-            zQuery.AddNumericBox("DPI", PrintDPI, 72, int.MaxValue, 1, 0, IniSettings.PrintDPI);
+            zQuery.AddTab("PDF Export");
             zQuery.AddNumericBox("Page Width (inches)", PrintPageWidth, 1, 1024, 1, 2, IniSettings.PrintPageWidth);
             zQuery.AddNumericBox("Page Height (inches)", PrintPageHeight, 1, 1024, 1, 2, IniSettings.PrintPageHeight);
             zQuery.AddNumericBox("Page Horizontal Margin (inches)", PrintPageHorizontalMargin, 0, 1024, 0.01m, 2, IniSettings.PrintPageHorizontalMargin);
             zQuery.AddNumericBox("Page Vertical Margin (inches)", PrintPageVerticalMargin, 0, 1024, 0.01m, 2, IniSettings.PrintPageVerticalMargin);
             zQuery.AddCheckBox("Auto-Center Layouts on Page", PrintAutoHorizontalCenter, IniSettings.PrintAutoCenterLayout);
-            zQuery.AddCheckBox("Print Layout Border", PrintLayoutBorder, IniSettings.PrintLayoutBorder);
-            //zQuery.AddCheckBox("Print Scaled", PrintScaled, IniSettings.PrintScaled);
             zQuery.AddCheckBox("Print Layouts On New Page", PrintLayoutsOnNewPage, IniSettings.PrintLayoutsOnNewPage);
-            zQuery.AddPullDownBox(
-                "Print Style",
-                Enum.GetNames(typeof(PrintStyle)),
-                (int)PrintStyle,
-                IniSettings.PrintStyle);
             zQuery.SetIcon(Icon);
 
             if (DialogResult.OK == zQuery.ShowDialog(this))
             {
-                PrintDPI = (int)zQuery.GetDecimal(IniSettings.PrintDPI);
                 PrintPageWidth = zQuery.GetDecimal(IniSettings.PrintPageWidth);
                 PrintPageHeight = zQuery.GetDecimal(IniSettings.PrintPageHeight);
                 PrintPageHorizontalMargin = zQuery.GetDecimal(IniSettings.PrintPageHorizontalMargin);
                 PrintPageVerticalMargin = zQuery.GetDecimal(IniSettings.PrintPageVerticalMargin);
                 PrintAutoHorizontalCenter = zQuery.GetBool(IniSettings.PrintAutoCenterLayout);
                 PrintLayoutBorder = zQuery.GetBool(IniSettings.PrintLayoutBorder);
-                PrintStyle = (PrintStyle)zQuery.GetIndex(IniSettings.PrintStyle);
                 PrintLayoutsOnNewPage = zQuery.GetBool(IniSettings.PrintLayoutsOnNewPage);
-                //PrintScaled = zQuery.GetBool(IniSettings.PrintScaled);
             }
         }
 

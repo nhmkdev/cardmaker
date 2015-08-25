@@ -370,6 +370,11 @@ namespace CardMaker.Forms
             zCardMakerMDI.MarkDirty();
         }
 
+        public void ResetCurrentProjectLayout()
+        {
+            m_tnCurrentLayout = null;
+        }
+
         public ProjectLayout GetCurrentProjectLayout()
         {
             if (null != m_tnCurrentLayout)
@@ -417,16 +422,6 @@ namespace CardMaker.Forms
                 m_tnCurrentLayout = treeView.SelectedNode;
                 m_tnCurrentLayout.BackColor = Color.LightBlue;
             }
-        }
-
-        private void printCardLayoutToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            CardMakerMDI.Instance.PrintInit(false, -1, -1);
-        }
-
-        private void printPreviewCardLayoutToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            CardMakerMDI.Instance.PrintInit(true, -1, -1);
         }
 
         private void exportCardLayoutAsImagesToolStripMenuItem_Click(object sender, EventArgs e)

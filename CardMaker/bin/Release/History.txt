@@ -1,5 +1,11 @@
 Card Maker Version History
 --------------------------
+0.99.2.0
+- Removed Printing
+- Removed Preview Dialog
+- Added rendered message if no layout is selected in the Project window
+- Fixed Layout Template loading/saving
+
 0.99.1.10
 - Fix for Text elements using the line spacing value (only supposed to apply to FormattedText)
 - Fix for image export at the project level resulting in (bad) different output than individually exporting a layout

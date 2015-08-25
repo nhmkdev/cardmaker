@@ -109,44 +109,6 @@ namespace CardMaker.Forms
             set { m_zIniManager.SetValue(IniSettings.PrintLayoutBorder, value.ToString(CultureInfo.CurrentCulture)); }
         }
 
-        public int PrintDPI
-        {
-            get
-            {
-                int nVal;
-                if (int.TryParse(m_zIniManager.GetValue(IniSettings.PrintDPI, "300"), out nVal))
-                {
-                    return nVal;
-                }
-                return 300;
-            }
-            set { m_zIniManager.SetValue(IniSettings.PrintDPI, value.ToString(CultureInfo.CurrentCulture)); }
-        }
-
-        public bool PrintScaled
-        {
-            get { return m_zIniManager.GetValue(IniSettings.PrintScaled, bool.FalseString).Equals(bool.TrueString); }
-            set { m_zIniManager.SetValue(IniSettings.PrintScaled, value.ToString()); }
-        }
-
-        public PrintStyle PrintStyle
-        {
-            get
-            {
-                try
-                {
-                    return
-                        (PrintStyle) Enum.Parse(typeof (PrintStyle),
-                            m_zIniManager.GetValue(IniSettings.PrintStyle, PrintStyle.Direct.ToString()));
-                }
-                catch (Exception)
-                {
-                    return PrintStyle.Direct;
-                }
-            }
-            set { m_zIniManager.SetValue(IniSettings.PrintStyle, value.ToString()); }
-        }
-
         public bool PrintLayoutsOnNewPage
         {
             get { return m_zIniManager.GetValue(IniSettings.PrintLayoutsOnNewPage, bool.FalseString).Equals(bool.TrueString); }

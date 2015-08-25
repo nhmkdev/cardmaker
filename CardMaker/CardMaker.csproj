@@ -100,10 +100,6 @@
     <Compile Include="Card\Export\CardExportBase.cs" />
     <Compile Include="Card\Export\ICardExporter.cs" />
     <Compile Include="Card\Export\PdfSharpExporter.cs" />
-    <Compile Include="Card\Export\Print\CardPrintBase.cs" />
-    <Compile Include="Card\Export\Print\PrintDirectCardExporter.cs" />
-    <Compile Include="Card\Export\Print\PrintScaledCardExporter.cs" />
-    <Compile Include="Card\Export\Print\IPrintCardExporter.cs" />
     <Compile Include="Card\FormattedText\BackgroundColorMarkup.cs" />
     <Compile Include="Card\FormattedText\BackgroundImageMarkup.cs" />
     <Compile Include="Card\FormattedText\FontMarkup.cs" />
@@ -180,12 +176,6 @@
     </Compile>
     <Compile Include="Forms\MDILogger.Designer.cs">
       <DependentUpon>MDILogger.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\MDIPreview.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\MDIPreview.Designer.cs">
-      <DependentUpon>MDIPreview.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\MDIProject.cs">
       <SubType>Form</SubType>
@@ -282,10 +272,6 @@
     <EmbeddedResource Include="Forms\MDILogger.resx">
       <SubType>Designer</SubType>
       <DependentUpon>MDILogger.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\MDIPreview.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>MDIPreview.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MDIProject.resx">
       <SubType>Designer</SubType>

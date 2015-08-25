@@ -35,6 +35,8 @@ using System.IO;
 
 namespace Support.IO
 {
+#warning The exception catching and ignoring causes all developers unhappy feelings. Make the exception available somehow.
+
     public static class SerializationUtils
     {
         /// <summary>

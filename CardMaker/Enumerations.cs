@@ -58,9 +58,6 @@ namespace CardMaker
         PrintPageHorizontalMargin,
         PrintAutoCenterLayout,
         PrintLayoutBorder,
-        PrintDPI,
-        PrintScaled,
-        PrintStyle,
         LastImageExportFormat,
         PrintLayoutsOnNewPage
     }

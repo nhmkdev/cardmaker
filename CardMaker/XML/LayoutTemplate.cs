@@ -29,6 +29,11 @@ namespace CardMaker.XML
     {
         public ProjectLayout Layout { get; set; }
 
+        public LayoutTemplate()
+        {
+            
+        }
+
         public LayoutTemplate(string sName, ProjectLayout layout)
         {
             Layout = new ProjectLayout(sName);

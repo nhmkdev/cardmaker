@@ -38,7 +38,8 @@ namespace CardMaker.XML
     {
         #region Properties
 
-        private static readonly Encoding XML_ENCODING = Encoding.UTF8;
+        // TODO: move this to a common place
+        public static readonly Encoding XML_ENCODING = Encoding.UTF8;
 
         public static Color DEFAULT_REFERENCE_COLOR = Color.LightGreen;
 

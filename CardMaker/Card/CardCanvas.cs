@@ -50,6 +50,8 @@ namespace CardMaker.Card
             }
         }
 
+        private readonly Size m_zDefaultNoLayoutSize = new Size(320, 80);
+
         public CardCanvas()
         {
             m_zCardRenderer = new CardRenderer
@@ -57,13 +59,20 @@ namespace CardMaker.Card
                 ZoomLevel = 1.0f,
                 DrawElementBorder = true,
                 DrawFormattedTextBorder = false,
-                CurrentDeck = new Deck()
             };
             // double buffer and optimize!
             SetStyle(ControlStyles.AllPaintingInWmPaint, true);
             SetStyle(ControlStyles.UserPaint, true);
             SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
             SetStyle(ControlStyles.Opaque, true);
+            Reset();
+        }
+
+        public void Reset()
+        {
+            m_zCardRenderer.CurrentDeck = new Deck();
+            UpdateSize();
+            Invalidate();
         }
 
         ~CardCanvas()
@@ -90,38 +99,25 @@ namespace CardMaker.Card
             {
                 Size = new Size((int)((float)ActiveDeck.CardLayout.width * m_zCardRenderer.ZoomLevel), (int)((float)ActiveDeck.CardLayout.height * m_zCardRenderer.ZoomLevel));
             }
+            else
+            {
+                Size = m_zDefaultNoLayoutSize;
+            }
         }
 
         #region paint overrides
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            if (!m_bPreviewUpdate)
+            if (null == ActiveDeck.CardLayout)
             {
-                if (-1 != ActiveDeck.CardIndex && ActiveDeck.CardIndex < ActiveDeck.CardCount)
-                {
-                    m_zCardRenderer.DrawCard(0, 0, e.Graphics, ActiveDeck.CurrentLine, false, true);
-                }
+                e.Graphics.FillRectangle(Brushes.White, 0, 0, Size.Width, Size.Height);
+                e.Graphics.DrawString("Select a Layout in the Project Window", new Font(DefaultFont.FontFamily, 20), Brushes.Red, new RectangleF(10, 10, Size.Width - 10, Size.Height - 10));
+                return;
             }
-            else // capture a grab by using a backbuffer to draw onto (preview only)
+            else if (-1 != ActiveDeck.CardIndex && ActiveDeck.CardIndex < ActiveDeck.CardCount)
             {
-                var zBackBuffer = new Bitmap(ClientSize.Width, ClientSize.Height);
-
-                Graphics zGraphics = Graphics.FromImage(zBackBuffer);
-
-                if (-1 != ActiveDeck.CardIndex)
-                {
-                    m_zCardRenderer.DrawCard(0, 0, zGraphics, ActiveDeck.CurrentLine, false, true);
-                }
-
-                zGraphics.Dispose();
-
-                //Copy the back buffer to the screen
-                e.Graphics.DrawImageUnscaled(zBackBuffer, 0, 0);
-
-                MDIPreview.Instance.SetImage(zBackBuffer);
-
-                m_bPreviewUpdate = false;
+                m_zCardRenderer.DrawCard(0, 0, e.Graphics, ActiveDeck.CurrentLine, false, true);
             }
         }
 

@@ -62,9 +62,6 @@ namespace CardMaker.Forms
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             this.exportProjectThroughPDFSharpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
-            this.printPreviewProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.printProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
             this.recentProjectsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -74,11 +71,11 @@ namespace CardMaker.Forms
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.drawElementBordersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.drawFormattedTextWordOutlinesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.updatePreviewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.projectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearCacheToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.updateIssuesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.refreshLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.importLayoutsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.projectManagerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.colorPickerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -91,8 +88,6 @@ namespace CardMaker.Forms
             this.pDFToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.samplePDFToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.printDocument = new System.Drawing.Printing.PrintDocument();
-            this.importLayoutsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStripMain.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -124,9 +119,6 @@ namespace CardMaker.Forms
             this.toolStripMenuItem3,
             this.exportProjectThroughPDFSharpToolStripMenuItem,
             this.toolStripMenuItem1,
-            this.printPreviewProjectToolStripMenuItem,
-            this.printProjectToolStripMenuItem,
-            this.toolStripMenuItem4,
             this.recentProjectsToolStripMenuItem,
             this.toolStripMenuItem2,
             this.closeToolStripMenuItem});
@@ -191,27 +183,6 @@ namespace CardMaker.Forms
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(241, 6);
             // 
-            // printPreviewProjectToolStripMenuItem
-            // 
-            this.printPreviewProjectToolStripMenuItem.Name = "printPreviewProjectToolStripMenuItem";
-            this.printPreviewProjectToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F2;
-            this.printPreviewProjectToolStripMenuItem.Size = new System.Drawing.Size(244, 22);
-            this.printPreviewProjectToolStripMenuItem.Text = "Print P&review Project...";
-            this.printPreviewProjectToolStripMenuItem.Click += new System.EventHandler(this.printPreviewProjectToolStripMenuItem_Click);
-            // 
-            // printProjectToolStripMenuItem
-            // 
-            this.printProjectToolStripMenuItem.Name = "printProjectToolStripMenuItem";
-            this.printProjectToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
-            this.printProjectToolStripMenuItem.Size = new System.Drawing.Size(244, 22);
-            this.printProjectToolStripMenuItem.Text = "&Print Project";
-            this.printProjectToolStripMenuItem.Click += new System.EventHandler(this.printToolStripMenuItem_Click);
-            // 
-            // toolStripMenuItem4
-            // 
-            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
-            this.toolStripMenuItem4.Size = new System.Drawing.Size(241, 6);
-            // 
             // recentProjectsToolStripMenuItem
             // 
             this.recentProjectsToolStripMenuItem.Name = "recentProjectsToolStripMenuItem";
@@ -260,8 +231,7 @@ namespace CardMaker.Forms
             // 
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.drawElementBordersToolStripMenuItem,
-            this.drawFormattedTextWordOutlinesToolStripMenuItem,
-            this.updatePreviewToolStripMenuItem});
+            this.drawFormattedTextWordOutlinesToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
             this.viewToolStripMenuItem.Text = "&View";
@@ -283,14 +253,6 @@ namespace CardMaker.Forms
             this.drawFormattedTextWordOutlinesToolStripMenuItem.Size = new System.Drawing.Size(290, 22);
             this.drawFormattedTextWordOutlinesToolStripMenuItem.Text = "Draw Formatted Text Word Borders";
             this.drawFormattedTextWordOutlinesToolStripMenuItem.Click += new System.EventHandler(this.drawFormattedTextWordBordersToolStripMenuItem_Click);
-            // 
-            // updatePreviewToolStripMenuItem
-            // 
-            this.updatePreviewToolStripMenuItem.Name = "updatePreviewToolStripMenuItem";
-            this.updatePreviewToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.updatePreviewToolStripMenuItem.Size = new System.Drawing.Size(290, 22);
-            this.updatePreviewToolStripMenuItem.Text = "&Update Preview";
-            this.updatePreviewToolStripMenuItem.Click += new System.EventHandler(this.updatePreviewToolStripMenuItem_Click);
             // 
             // projectToolStripMenuItem
             // 
@@ -326,6 +288,13 @@ namespace CardMaker.Forms
             this.refreshLayoutToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.refreshLayoutToolStripMenuItem.Text = "Refresh Layout";
             this.refreshLayoutToolStripMenuItem.Click += new System.EventHandler(this.refreshLayoutToolStripMenuItem_Click);
+            // 
+            // importLayoutsToolStripMenuItem
+            // 
+            this.importLayoutsToolStripMenuItem.Name = "importLayoutsToolStripMenuItem";
+            this.importLayoutsToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+            this.importLayoutsToolStripMenuItem.Text = "Import Layouts...";
+            this.importLayoutsToolStripMenuItem.Click += new System.EventHandler(this.importLayoutsToolStripMenuItem_Click);
             // 
             // toolsToolStripMenuItem
             // 
@@ -422,18 +391,6 @@ namespace CardMaker.Forms
             this.aboutToolStripMenuItem.Text = "&About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
-            // printDocument
-            // 
-            this.printDocument.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.printDocument_PrintPage);
-            this.printDocument.QueryPageSettings += new System.Drawing.Printing.QueryPageSettingsEventHandler(this.printDocument_QueryPageSettings);
-            // 
-            // importLayoutsToolStripMenuItem
-            // 
-            this.importLayoutsToolStripMenuItem.Name = "importLayoutsToolStripMenuItem";
-            this.importLayoutsToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
-            this.importLayoutsToolStripMenuItem.Text = "Import Layouts...";
-            this.importLayoutsToolStripMenuItem.Click += new System.EventHandler(this.importLayoutsToolStripMenuItem_Click);
-            // 
             // CardMakerMDI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -461,17 +418,12 @@ namespace CardMaker.Forms
         private System.Windows.Forms.ToolStripMenuItem saveProjectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveProjectAsToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem printPreviewProjectToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem printProjectToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem4;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem drawElementBordersToolStripMenuItem;
-        private System.Drawing.Printing.PrintDocument printDocument;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem recentProjectsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem updatePreviewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pDFToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem samplePDFToolStripMenuItem;

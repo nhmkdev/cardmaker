@@ -70,6 +70,14 @@ namespace CardMaker.Forms
             Horizontal, // lock to horizontal only
         }
 
+        public CardCanvas CardCanvas
+        { 
+            get
+            {
+                return m_zCardCanvas;
+            }
+        }
+
         [Flags]
         public enum ResizeDirection
         {
@@ -104,6 +112,25 @@ namespace CardMaker.Forms
             panelCardCanvas.BackgroundImage = zBitmap;
             CanvasUserAction = false;
             UpdateText();
+            // m_zCardCanvas is a panel within the panelCardCanvas
+            m_zCardCanvas = new CardCanvas
+            {
+                Location = new Point(0, 0),
+            };
+            m_zCardCanvas.MouseMove += cardCanvas_MouseMove;
+            m_zCardCanvas.MouseDown += cardCanvas_MouseDown;
+            m_zCardCanvas.MouseUp += cardCanvas_MouseUp;
+            m_zCardCanvas.ContextMenuStrip = m_zContextMenu;
+            m_zContextMenu.RenderMode = ToolStripRenderMode.System;
+            m_zContextMenu.Opening += contextmenuOpening_Handler;
+
+            panelCardCanvas.Controls.Add(m_zCardCanvas);
+        }
+
+        public void Reset()
+        {
+            m_zCardCanvas.Reset();
+            Invalidate();
         }
 
         public static MDICanvas Instance
@@ -115,26 +142,6 @@ namespace CardMaker.Forms
                 return s_zInstance;
             }
         }
-
-        public CardCanvas SetupCardCanvas()
-        {
-            // m_zCardCanvas is a panel within the panelCardCanvas
-            m_zCardCanvas = new CardCanvas
-            {
-                Location = new Point(0, 0),
-                Size = new Size(0, 0)
-            };
-            m_zCardCanvas.MouseMove += cardCanvas_MouseMove;
-            m_zCardCanvas.MouseDown += cardCanvas_MouseDown;
-            m_zCardCanvas.MouseUp += cardCanvas_MouseUp;
-            m_zCardCanvas.ContextMenuStrip = m_zContextMenu;
-            m_zContextMenu.RenderMode = ToolStripRenderMode.System;
-            m_zContextMenu.Opening += contextmenuOpening_Handler;
-
-            panelCardCanvas.Controls.Add(m_zCardCanvas);
-            return m_zCardCanvas;
-        }
-
 
         protected override CreateParams CreateParams
         {
