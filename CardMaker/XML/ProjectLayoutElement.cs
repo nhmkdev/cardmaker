@@ -166,8 +166,8 @@ namespace CardMaker.XML
         /// <summary>
         /// Performs a partial deepy copy based on the input element, the name field is left unchanged
         /// </summary>
-        /// <param name="zElement"></param>
-        /// <param name="bInitializeCache"></param>
+        /// <param name="zElement">The source element to copy from</param>
+        /// <param name="bInitializeCache">flag indicating whether to reinitialize the cache</param>
         public void DeepCopy(ProjectLayoutElement zElement, bool bInitializeCache)
         {
             verticalalign = zElement.verticalalign;
@@ -199,6 +199,11 @@ namespace CardMaker.XML
             }
         }
 
+        /// <summary>
+        /// Translates a color string
+        /// </summary>
+        /// <param name="sColor">The color string to translate</param>
+        /// <returns>The color, or Color.Black by default</returns>
         public static Color TranslateColorString(string sColor)
         {
             if (null != sColor)
@@ -268,6 +273,11 @@ namespace CardMaker.XML
                 zColor.A.ToString("X").PadLeft(2, '0');
         }
 
+        /// <summary>
+        /// Translates a font string to a font
+        /// </summary>
+        /// <param name="fontString">The font string to translate</param>
+        /// <returns>The font, otherwise null on error</returns>
         public static Font TranslateFontString(string fontString)
         {
             var arraySplit = fontString.Split(new char[] { ';' });
@@ -282,8 +292,6 @@ namespace CardMaker.XML
                 (arraySplit[4].Equals("1") ? FontStyle.Italic : FontStyle.Regular) |
                 (arraySplit[5].Equals("1") ? FontStyle.Strikeout : FontStyle.Regular));
         }
-
-        // NOTE: Any properties will anger the XSD generated XML/CS file.
 
         public Color GetElementBorderColor()
         {
@@ -305,24 +313,40 @@ namespace CardMaker.XML
             return m_fontText;
         }
 
+        /// <summary>
+        /// Sets the border color and color string
+        /// </summary>
+        /// <param name="zColor">The color to pull the values from</param>
         public void SetElementBorderColor(Color zColor)
         {
             bordercolor = GetElementColorString(zColor);
             m_colorBorder = zColor;
         }
 
+        /// <summary>
+        /// Sets the element color and color string
+        /// </summary>
+        /// <param name="zColor">The color to pull the values from</param>
         public void SetElementColor(Color zColor)
         {
             elementcolor = GetElementColorString(zColor);
             m_colorElement = zColor;
         }
 
+        /// <summary>
+        /// Sets the outline color and color string
+        /// </summary>
+        /// <param name="zColor">The color to pull the values from</param>
         public void SetElementOutlineColor(Color zColor)
         {
             outlinecolor = GetElementColorString(zColor);
             m_colorOutline = zColor;
         }
 
+        /// <summary>
+        /// Sets the font and font string
+        /// </summary>
+        /// <param name="zFont">The font to pull the settings from</param>
         public void SetElementFont(Font zFont)
         {
             font = zFont.Name + ";" + zFont.Size + ";" +

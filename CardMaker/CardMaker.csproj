@@ -238,6 +238,7 @@
     </Compile>
     <Compile Include="Support\UI\Win32.cs" />
     <Compile Include="Support\Util\TimeMeasure.cs" />
+    <Compile Include="XML\Core.cs" />
     <Compile Include="XML\Project.cs" />
     <Compile Include="XML\ProjectLayout.cs" />
     <Compile Include="XML\ProjectLayoutElement.cs" />

@@ -41,6 +41,7 @@ namespace CardMaker
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            // load the project file if it is specified as the first argument
             if (null != args && 0 < args.Length)
             {
                 string sFullPath = Path.GetFullPath(args[0]);

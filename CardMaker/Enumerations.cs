@@ -34,19 +34,6 @@ namespace CardMaker
         End
     }
 
-    public enum PrintLayoutState
-    {
-        StartNewPage,
-        ContinuePage
-    }
-
-    // could do some reflection magic, don't care
-    public enum PrintStyle
-    {
-        Direct,
-        Image
-    }
-
     public enum IniSettings
     {
         PreviousProjects,

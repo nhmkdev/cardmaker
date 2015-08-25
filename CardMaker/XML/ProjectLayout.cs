@@ -29,6 +29,8 @@ namespace CardMaker.XML
 {
     public class ProjectLayout
     {
+        public static readonly string[] AllowedExportRotations = new string[] { "0", "90", "-90" };
+        
         #region Properties
 
         [XmlElementAttribute("Element")]
@@ -38,8 +40,6 @@ namespace CardMaker.XML
         public ProjectLayoutReference[] Reference { get; set; }
 
         public string exportNameFormat { get; set; }
-
-        public static readonly string[] AllowedExportRotations = new string[] {"0", "90", "-90"};
 
         public int exportRotation { get; set; }
 

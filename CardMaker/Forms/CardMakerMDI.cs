@@ -270,7 +270,7 @@ namespace CardMaker.Forms
             List<LayoutTemplate> listTemplates = null;
             string sTemplatesFile = StartupPath + LAYOUT_TEMPLATE_FILE;
             if (File.Exists(sTemplatesFile) &&
-                SerializationUtils.DeserializeFromXmlFile(sTemplatesFile, Project.XML_ENCODING, ref listTemplates))
+                SerializationUtils.DeserializeFromXmlFile(sTemplatesFile, Core.XML_ENCODING, ref listTemplates))
             {
                 LayoutTemplates = listTemplates;
             }
@@ -360,7 +360,8 @@ namespace CardMaker.Forms
             SaveOnEvent(eCancel, true);
             if (!eCancel.Cancel)
             {
-                m_zLoadedProject = Project.LoadProject(null, MDIProject.Instance.ProjectTreeView);
+                m_zLoadedProject = Core.LoadProject(null);
+                MDIProject.Instance.ResetTreeToProject(m_zLoadedProject);
                 SetLoadedProjectFile(null);
                 // reset the currently loaded file in the AbstractDirtyForm
                 SetLoadedFile(string.Empty);
@@ -392,7 +393,7 @@ namespace CardMaker.Forms
         public void SaveTemplates()
         {
             if (!SerializationUtils.SerializeToXmlFile(Path.Combine(StartupPath, LAYOUT_TEMPLATE_FILE),
-                LayoutTemplates, Project.XML_ENCODING))
+                LayoutTemplates, Core.XML_ENCODING))
             {
                 Logger.AddLogLine("Failed to save layouts.");
             }
@@ -505,7 +506,8 @@ namespace CardMaker.Forms
             Cursor = Cursors.WaitCursor;
             try
             {
-                m_zLoadedProject = Project.LoadProject(sFileName, MDIProject.Instance.ProjectTreeView);
+                m_zLoadedProject = Core.LoadProject(sFileName);
+                MDIProject.Instance.ResetTreeToProject(m_zLoadedProject);
             }
             catch (Exception ex)
             {
@@ -1022,7 +1024,7 @@ namespace CardMaker.Forms
             Project zProject = null;
             try
             {
-                zProject = Project.LoadProject(ofd.FileName, null);
+                zProject = Core.LoadProject(ofd.FileName);
             }
             catch (Exception ex)
             {
@@ -1042,8 +1044,8 @@ namespace CardMaker.Forms
                 var listIndices = zQuery.GetIndices(LAYOUT_QUERY_KEY).ToList();
                 listIndices.ForEach(idx =>
                 {
-                    Project.InitializeElementCache(zProject.Layout[idx]);
-                    Project.AddProjectLayout(MDIProject.Instance.ProjectTreeView.Nodes[0], zProject.Layout[idx], LoadedProject);
+                    Core.InitializeElementCache(zProject.Layout[idx]);
+                    MDIProject.Instance.AddProjectLayout(zProject.Layout[idx], LoadedProject);
                 });
                 MarkDirty();
             }

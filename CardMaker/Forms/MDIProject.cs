@@ -30,13 +30,17 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using CardMaker.Properties;
 
 namespace CardMaker.Forms
 {
     public partial class MDIProject : Form
     {
+        public static Color DEFAULT_REFERENCE_COLOR = Color.LightGreen;
+
         private static MDIProject s_zInstance;
         private TreeNode m_tnCurrentLayout;
 
@@ -151,10 +155,10 @@ namespace CardMaker.Forms
             const string DPI = "dpi";
 
             var zQuery = new QueryPanelDialog("New Layout", 450, false);
-            zQuery.SetIcon(Properties.Resources.CardMakerIcon);
+            zQuery.SetIcon(Resources.CardMakerIcon);
             zQuery.AddTextBox("Name", "New Layout", false, NAME);
-            zQuery.AddNumericBox("Width", 300, 1, int.MaxValue, WIDTH);
-            zQuery.AddNumericBox("Height", 300, 1, int.MaxValue, HEIGHT);
+            zQuery.AddNumericBox("Width", 300, 1, Int32.MaxValue, WIDTH);
+            zQuery.AddNumericBox("Height", 300, 1, Int32.MaxValue, HEIGHT);
             zQuery.AddNumericBox("DPI", 300, 100, 9600, DPI);
             if (DialogResult.OK == zQuery.ShowDialog(this))
             {
@@ -164,7 +168,7 @@ namespace CardMaker.Forms
                     height = (int)zQuery.GetDecimal(HEIGHT),
                     dpi = (int)zQuery.GetDecimal(DPI)
                 };
-                Project.AddProjectLayout(treeView.SelectedNode, zLayout, CardMakerMDI.Instance.LoadedProject);
+                AddProjectLayout(zLayout, CardMakerMDI.Instance.LoadedProject);
                 CardMakerMDI.Instance.MarkDirty();
             }
         }
@@ -178,7 +182,7 @@ namespace CardMaker.Forms
             CardMakerMDI.Instance.LayoutTemplates.ForEach(x => listItems.Add(x.ToString()));
 
             var zQuery = new QueryPanelDialog("Select Layout Template", 450, false);
-            zQuery.SetIcon(Properties.Resources.CardMakerIcon);
+            zQuery.SetIcon(Resources.CardMakerIcon);
             zQuery.AddTextBox("New Layout Name", "New Layout", false, NAME);
             zQuery.AddNumericBox("Number to create", 1, 1, 256, COUNT);
             zQuery.AddListBox("Template", listItems.ToArray(), null, false, 120, TEMPLATE);
@@ -196,7 +200,7 @@ namespace CardMaker.Forms
                 {
                     var zLayout = new ProjectLayout(zQuery.GetString(NAME));
                     zLayout.DeepCopy(CardMakerMDI.Instance.LayoutTemplates[nSelectedIndex].Layout);
-                    Project.AddProjectLayout(treeView.SelectedNode, zLayout, CardMakerMDI.Instance.LoadedProject);
+                    AddProjectLayout(zLayout, CardMakerMDI.Instance.LoadedProject);
                 }
                 break;
             }
@@ -206,7 +210,7 @@ namespace CardMaker.Forms
         {
             const string NAME = "name";
             var zQuery = new QueryPanelDialog("Template Name", 450, 80, false);
-            zQuery.SetIcon(Properties.Resources.CardMakerIcon);
+            zQuery.SetIcon(Resources.CardMakerIcon);
             zQuery.AddTextBox("Name", "New Template", false, NAME);
             if (DialogResult.OK == zQuery.ShowDialog(this))
             {
@@ -239,7 +243,7 @@ namespace CardMaker.Forms
             var zLayout = (ProjectLayout)treeView.SelectedNode.Tag;
             var zLayoutCopy = new ProjectLayout(zLayout.Name + " copy");
             zLayoutCopy.DeepCopy(zLayout);
-            var tnLayout = Project.AddProjectLayout(treeView.SelectedNode.Parent, zLayoutCopy, CardMakerMDI.Instance.LoadedProject);
+            var tnLayout = AddProjectLayout(zLayoutCopy, CardMakerMDI.Instance.LoadedProject);
             tnLayout.ExpandAll();
             CardMakerMDI.Instance.MarkDirty();
         }
@@ -252,7 +256,7 @@ namespace CardMaker.Forms
                 CardMakerMDI zCardMakerMDI = CardMakerMDI.Instance;
                 var zLayout = (ProjectLayout)treeView.SelectedNode.Tag;
                 var bNewDefault = 0 == treeView.SelectedNode.Nodes.Count;
-                var tnReference = Project.AddReferenceNode(treeView.SelectedNode, sFile, bNewDefault, zLayout);
+                var tnReference = AddReferenceNode(treeView.SelectedNode, sFile, bNewDefault, zLayout);
                 if (null == tnReference)
                 {
                     MessageBox.Show(this, "The specified reference is already associated with this layout.", "Reference Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -271,7 +275,7 @@ namespace CardMaker.Forms
 
         private void addGoogleSpreadsheetReferenceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(CardMakerMDI.GoogleAccessToken))
+            if (String.IsNullOrEmpty(CardMakerMDI.GoogleAccessToken))
             {
                 if(DialogResult.Cancel == MessageBox.Show(this,
                     "You do not appear to have any Google credentials configured. Press OK to configure.",
@@ -292,7 +296,7 @@ namespace CardMaker.Forms
                 var zCardMakerMDI = CardMakerMDI.Instance;
                 var bNewDefault = 0 == treeView.SelectedNode.Nodes.Count;
                 var zLayout = (ProjectLayout)treeView.SelectedNode.Tag;
-                var tnReference = Project.AddReferenceNode(
+                var tnReference = AddReferenceNode(
                     treeView.SelectedNode,
                     CardMakerMDI.GOOGLE_REFERENCE + CardMakerMDI.GOOGLE_REFERENCE_SPLIT_CHAR +
                     zDialog.SelectedSpreadsheet.Title.Text + CardMakerMDI.GOOGLE_REFERENCE_SPLIT_CHAR +
@@ -331,7 +335,7 @@ namespace CardMaker.Forms
             // default to the last item
             if (1 == listReferences.Count)
             {
-                treeView.SelectedNode.Parent.Nodes[0].BackColor = Project.DEFAULT_REFERENCE_COLOR;
+                treeView.SelectedNode.Parent.Nodes[0].BackColor = DEFAULT_REFERENCE_COLOR;
                 listReferences[0].Default = true;
             }
 
@@ -357,7 +361,7 @@ namespace CardMaker.Forms
                 var zSubReference = (ProjectLayoutReference)tnReferenceNode.Tag;
                 zSubReference.Default = false;
             }
-            tnNode.BackColor = Project.DEFAULT_REFERENCE_COLOR;
+            tnNode.BackColor = DEFAULT_REFERENCE_COLOR;
             zReference.Default = true;
 
             // reinit canvas
@@ -443,9 +447,9 @@ namespace CardMaker.Forms
             const string EXPORT_TRANSPARENT = "EXPORT_TRANSPARENT";
 
             Type typeObj = treeView.SelectedNode.Tag.GetType();
-            string sExistingFormat = string.Empty;
+            string sExistingFormat = String.Empty;
             var zQuery = new QueryPanelDialog("Configure Layout Export", 450, 200, false);
-            zQuery.SetIcon(Properties.Resources.CardMakerIcon);
+            zQuery.SetIcon(Resources.CardMakerIcon);
 
             if (typeof(Project) == typeObj)
             {
@@ -469,7 +473,7 @@ namespace CardMaker.Forms
                     EXPORT_TRANSPARENT);
             }
 
-            zQuery.AddTextBox("Name Format", sExistingFormat ?? string.Empty, false, NAME);
+            zQuery.AddTextBox("Name Format", sExistingFormat ?? String.Empty, false, NAME);
 
             if(DialogResult.OK == zQuery.ShowDialog(this))
             {
@@ -481,9 +485,9 @@ namespace CardMaker.Forms
                 {
                     var zProjectLayout = ((ProjectLayout)treeView.SelectedNode.Tag);
                     zProjectLayout.exportNameFormat = zQuery.GetString(NAME);
-                    zProjectLayout.exportRotation = int.Parse(zQuery.GetString(ROTATION));
-                    zProjectLayout.exportWidth = int.Parse(zQuery.GetString(EXPORT_WIDTH));
-                    zProjectLayout.exportHeight = int.Parse(zQuery.GetString(EXPORT_HEIGHT));
+                    zProjectLayout.exportRotation = Int32.Parse(zQuery.GetString(ROTATION));
+                    zProjectLayout.exportWidth = Int32.Parse(zQuery.GetString(EXPORT_WIDTH));
+                    zProjectLayout.exportHeight = Int32.Parse(zQuery.GetString(EXPORT_HEIGHT));
                     zProjectLayout.exportTransparentBackground = zQuery.GetBool(EXPORT_TRANSPARENT);
                 }
                 CardMakerMDI.Instance.MarkDirty();
@@ -536,6 +540,138 @@ namespace CardMaker.Forms
                     CardMakerMDI.Instance.MarkDirty();
                 }
             }
+        }
+
+        /// <summary>
+        /// Resets the treeview to the specified project
+        /// </summary>
+        /// <param name="zProject">The project to display</param>
+        public void ResetTreeToProject(Project zProject)
+        {
+            if (null != treeView)
+            {
+                treeView.Nodes.Clear();
+                var tnRoot = new TreeNode("Layouts")
+                {
+                    Tag = zProject
+                };
+                treeView.Nodes.Add(tnRoot);
+                foreach (var zLayout in zProject.Layout)
+                {
+                    // no need to update the project
+                    AddProjectLayout(zLayout, null);
+
+                    Core.InitializeElementCache(zLayout);
+                }
+                tnRoot.ExpandAll();
+            }
+        }
+
+        /// <summary>
+        /// Adds a project layout tree node
+        /// </summary>
+        /// <param name="tnRoot"></param>
+        /// <param name="zLayout"></param>
+        /// <param name="zProject"></param>
+        /// <returns></returns>
+        public TreeNode AddProjectLayout(ProjectLayout zLayout, Project zProject)
+        {
+            TreeNode tnLayout = treeView.Nodes[0].Nodes.Add(zLayout.Name);
+            tnLayout.Tag = zLayout;
+
+            if (null != zProject)
+            {
+                // update the Project (no null check on zProject.Layout necessary... can never have 0 layouts)
+                var listLayouts = new List<ProjectLayout>(zProject.Layout);
+                listLayouts.Add(zLayout);
+                zProject.Layout = listLayouts.ToArray();
+            }
+
+            if (null != zLayout.Reference)
+            {
+                foreach (ProjectLayoutReference zReference in zLayout.Reference)
+                {
+                    // no need to update the layout
+                    AddReferenceNode(tnLayout, zReference, null);
+                }
+                tnLayout.Expand();
+            }
+
+            return tnLayout;
+        }
+
+        /// <summary>
+        /// UI facing method for adding a reference node (for use from the context menu to add a new reference)
+        /// </summary>
+        /// <param name="tnLayout"></param>
+        /// <param name="sFile"></param>
+        /// <param name="bSetAsDefault"></param>
+        /// <param name="zLayout"></param>
+        /// <returns>The new Reference tree node or null if there is an existing reference by the same definition</returns>
+        public static TreeNode AddReferenceNode(TreeNode tnLayout, string sFile, bool bSetAsDefault,
+            ProjectLayout zLayout)
+        {
+            var sProjectPath = CardMakerMDI.ProjectPath;
+            var zReference = new ProjectLayoutReference
+            {
+                Default = bSetAsDefault,
+                RelativePath = IOUtils.GetRelativePath(sProjectPath,
+                    sFile)
+            };
+            return AddReferenceNode(tnLayout, zReference, zLayout);
+        }
+
+        /// <summary>
+        /// Internal/Project load handling for adding a reference node.
+        /// </summary>
+        /// <param name="tnLayout"></param>
+        /// <param name="zReference"></param>
+        /// <param name="zLayout">The layout to update the references for (may be null if no update is needed - ie. project loading)</param>
+        /// <returns></returns>
+        private static TreeNode AddReferenceNode(TreeNode tnLayout, ProjectLayoutReference zReference,
+            ProjectLayout zLayout)
+        {
+            var sProjectPath = CardMakerMDI.ProjectPath;
+            var sFullReferencePath = zReference.RelativePath;
+            if (!String.IsNullOrEmpty(sProjectPath))
+            {
+                sFullReferencePath = sProjectPath + Path.DirectorySeparatorChar + zReference.RelativePath;
+            }
+
+            if (zLayout != null && zLayout.Reference != null)
+            {
+                // duplicate check
+                foreach (var zExistingReference in zLayout.Reference)
+                {
+                    if (zExistingReference.RelativePath.Equals(zReference.RelativePath,
+                        StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        return null;
+                    }
+                }
+            }
+
+            var tnReference = new TreeNode(Path.GetFileName(sFullReferencePath))
+            {
+                BackColor = zReference.Default ? DEFAULT_REFERENCE_COLOR : Color.White,
+                ToolTipText = zReference.RelativePath,
+                Tag = zReference
+            };
+            tnLayout.Nodes.Add(tnReference);
+
+            if (null != zLayout)
+            {
+                // update the ProjectLayout
+                var listReferences = new List<ProjectLayoutReference>();
+                if (null != zLayout.Reference)
+                {
+                    listReferences.AddRange(zLayout.Reference);
+                }
+                listReferences.Add(zReference);
+                zLayout.Reference = listReferences.ToArray();
+            }
+
+            return tnReference;
         }
 
     }

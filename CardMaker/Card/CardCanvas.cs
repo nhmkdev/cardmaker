@@ -31,7 +31,6 @@ namespace CardMaker.Card
 {
     public class CardCanvas : UserControl
     {
-        private bool m_bPreviewUpdate;
         private readonly CardRenderer m_zCardRenderer;
 
         public Deck ActiveDeck
@@ -79,12 +78,6 @@ namespace CardMaker.Card
         {
             DrawItem.DumpImages();
             DrawItem.DumpOpacityImages();
-        }
-
-        public void UpdatePreview()
-        {
-            m_bPreviewUpdate = true;
-            Invalidate();
         }
 
         public void SetCardLayout(ProjectLayout zCardLayout)
