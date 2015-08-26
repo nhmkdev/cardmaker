@@ -22,6 +22,7 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
@@ -92,8 +93,9 @@ namespace CardMaker.XML
         /// <summary>
         /// Performs a partial deepy copy based on the input element, the name field is left unchanged
         /// </summary>
-        /// <param name="zLayout"></param>
-        public void DeepCopy(ProjectLayout zLayout)
+        /// <param name="zLayout">The layout to copy from</param>
+        /// <param name="bCopyRefs">Flag indicating whether to copy the refereces</param>
+        public void DeepCopy(ProjectLayout zLayout, bool bCopyRefs = true)
         {
             width = zLayout.width;
             height = zLayout.height;
@@ -118,7 +120,7 @@ namespace CardMaker.XML
                 }
                 Element = listElements.ToArray();
             }
-            if (null != zLayout.Reference)
+            if (bCopyRefs && null != zLayout.Reference)
             {
                 var listReferences = new List<ProjectLayoutReference>();
                 foreach (var zReference in zLayout.Reference)

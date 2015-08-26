@@ -34,6 +34,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using CardMaker.Properties;
+using CardMaker.XML.Managers;
 
 namespace CardMaker.Forms
 {
@@ -107,7 +108,7 @@ namespace CardMaker.Forms
 
             if (null != zNode)
             {
-                addCardLayoutFromTemplateToolStripMenuItem.Enabled = 0 < CardMakerMDI.Instance.LayoutTemplates.Count;
+                addCardLayoutFromTemplateToolStripMenuItem.Enabled = 0 < LayoutTemplateManager.Instance.LayoutTemplates.Count;
             }
             else
             {
@@ -179,7 +180,7 @@ namespace CardMaker.Forms
             const string NAME = "name";
             const string COUNT = "count";
             var listItems = new List<string>();
-            CardMakerMDI.Instance.LayoutTemplates.ForEach(x => listItems.Add(x.ToString()));
+            LayoutTemplateManager.Instance.LayoutTemplates.ForEach(x => listItems.Add(x.ToString()));
 
             var zQuery = new QueryPanelDialog("Select Layout Template", 450, false);
             zQuery.SetIcon(Resources.CardMakerIcon);
@@ -196,10 +197,12 @@ namespace CardMaker.Forms
                     continue;
                 }
 
+                ProjectLayout zSelectedLayout = LayoutTemplateManager.Instance.LayoutTemplates[nSelectedIndex].Layout;
+
                 for (int nCount = 0; nCount < zQuery.GetDecimal(COUNT); nCount++)
                 {
                     var zLayout = new ProjectLayout(zQuery.GetString(NAME));
-                    zLayout.DeepCopy(CardMakerMDI.Instance.LayoutTemplates[nSelectedIndex].Layout);
+                    zLayout.DeepCopy(zSelectedLayout);
                     AddProjectLayout(zLayout, CardMakerMDI.Instance.LoadedProject);
                 }
                 break;
@@ -209,16 +212,21 @@ namespace CardMaker.Forms
         private void defineAsTemplateLayoutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             const string NAME = "name";
+            //const string COPY_REFS = "copy_refs";
             var zQuery = new QueryPanelDialog("Template Name", 450, 80, false);
             zQuery.SetIcon(Resources.CardMakerIcon);
             zQuery.AddTextBox("Name", "New Template", false, NAME);
+            // TODO: is there really a case where the refs should be copied?
+            //zQuery.AddCheckBox("Copy References", false, COPY_REFS);
             if (DialogResult.OK == zQuery.ShowDialog(this))
             {
                 var zLayout = new ProjectLayout();
-                zLayout.DeepCopy((ProjectLayout)treeView.SelectedNode.Tag);
+                zLayout.DeepCopy((ProjectLayout)treeView.SelectedNode.Tag, /*zQuery.GetBool(COPY_REFS)*/ false);
                 var zTemplate = new LayoutTemplate(zQuery.GetString(NAME), zLayout);
-                CardMakerMDI.Instance.LayoutTemplates.Add(zTemplate);
-                CardMakerMDI.Instance.SaveTemplates();
+                if (LayoutTemplateManager.Instance.SaveLayoutTemplate(CardMakerMDI.StartupPath, zTemplate))
+                {
+                    LayoutTemplateManager.Instance.LayoutTemplates.Add(zTemplate);
+                }
             }
         }
 

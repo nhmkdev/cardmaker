@@ -40,6 +40,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using CardMaker.XML.Managers;
 
 namespace CardMaker.Forms
 {
@@ -118,8 +119,6 @@ namespace CardMaker.Forms
         }
 
         public static CardMakerMDI Instance { get; private set; }
-
-        public List<LayoutTemplate> LayoutTemplates { get; private set; }
 
         #endregion
 
@@ -267,17 +266,7 @@ namespace CardMaker.Forms
                     m_listRecentFiles.Add(sFile);
                 }
             }
-            List<LayoutTemplate> listTemplates = null;
-            string sTemplatesFile = StartupPath + LAYOUT_TEMPLATE_FILE;
-            if (File.Exists(sTemplatesFile) &&
-                SerializationUtils.DeserializeFromXmlFile(sTemplatesFile, Core.XML_ENCODING, ref listTemplates))
-            {
-                LayoutTemplates = listTemplates;
-            }
-            else
-            {
-                LayoutTemplates = new List<LayoutTemplate>();
-            }
+            LayoutTemplateManager.Instance.LoadLayoutTemplates(StartupPath);
 
             RestoreReplacementChars();
 
@@ -389,15 +378,6 @@ namespace CardMaker.Forms
         #endregion
 
         #region Support Methods
-
-        public void SaveTemplates()
-        {
-            if (!SerializationUtils.SerializeToXmlFile(Path.Combine(StartupPath, LAYOUT_TEMPLATE_FILE),
-                LayoutTemplates, Core.XML_ENCODING))
-            {
-                Logger.AddLogLine("Failed to save layouts.");
-            }
-        }
 
         public static string FileOpenHandler(string sFilter, TextBox zText, bool bCheckFileExists)
         {
@@ -867,7 +847,7 @@ namespace CardMaker.Forms
         {
             const string TEMPLATE = "template";
             var listItems = new List<string>();
-            LayoutTemplates.ForEach(x => listItems.Add(x.ToString()));
+            LayoutTemplateManager.Instance.LayoutTemplates.ForEach(x => listItems.Add(x.ToString()));
 
             var zQuery = new QueryPanelDialog("Remove Layout Templates", 450, false);
             zQuery.SetIcon(Properties.Resources.CardMakerIcon);
@@ -876,22 +856,28 @@ namespace CardMaker.Forms
             zQuery.AllowResize();
             if (DialogResult.OK == zQuery.ShowDialog(this))
             {
-                int[] arrayRemove = zQuery.GetIndices(TEMPLATE);
+                var arrayRemove = zQuery.GetIndices(TEMPLATE);
                 if (0 == arrayRemove.Length)
+                {
                     return;
+                }
                 var trimmedList = new List<LayoutTemplate>();
                 int removalIdx = 0;
-                for (int nIdx = 0; nIdx < LayoutTemplates.Count; nIdx++)
+                List<LayoutTemplate> listOldTemplates = LayoutTemplateManager.Instance.LayoutTemplates;
+                for (int nIdx = 0; nIdx < listOldTemplates.Count; nIdx++)
                 {
                     if (removalIdx < arrayRemove.Length && nIdx == arrayRemove[removalIdx])
                     {
                         removalIdx++;
+                        // delete failures are logged
+                        LayoutTemplateManager.Instance.DeleteLayoutTemplate(StartupPath, listOldTemplates[nIdx]);
                     }
                     else
-                        trimmedList.Add(LayoutTemplates[nIdx]);
+                    {
+                        trimmedList.Add(listOldTemplates[nIdx]);
+                    }
                 }
-                LayoutTemplates = trimmedList;
-                SaveTemplates();
+                LayoutTemplateManager.Instance.LayoutTemplates = trimmedList;
             }
         }
 

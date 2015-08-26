@@ -269,7 +269,7 @@ namespace CardMaker.Forms
             // 
             this.clearCacheToolStripMenuItem.Name = "clearCacheToolStripMenuItem";
             this.clearCacheToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F6;
-            this.clearCacheToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+            this.clearCacheToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
             this.clearCacheToolStripMenuItem.Text = "&Clear Image Cache";
             this.clearCacheToolStripMenuItem.Click += new System.EventHandler(this.clearCacheToolStripMenuItem_Click);
             // 
@@ -277,7 +277,7 @@ namespace CardMaker.Forms
             // 
             this.updateIssuesToolStripMenuItem.Name = "updateIssuesToolStripMenuItem";
             this.updateIssuesToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F8;
-            this.updateIssuesToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+            this.updateIssuesToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
             this.updateIssuesToolStripMenuItem.Text = "&Update Known Issues...";
             this.updateIssuesToolStripMenuItem.Click += new System.EventHandler(this.updateIssuesToolStripMenuItem_Click);
             // 
@@ -285,15 +285,15 @@ namespace CardMaker.Forms
             // 
             this.refreshLayoutToolStripMenuItem.Name = "refreshLayoutToolStripMenuItem";
             this.refreshLayoutToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F9;
-            this.refreshLayoutToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+            this.refreshLayoutToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
             this.refreshLayoutToolStripMenuItem.Text = "Refresh Layout";
             this.refreshLayoutToolStripMenuItem.Click += new System.EventHandler(this.refreshLayoutToolStripMenuItem_Click);
             // 
             // importLayoutsToolStripMenuItem
             // 
             this.importLayoutsToolStripMenuItem.Name = "importLayoutsToolStripMenuItem";
-            this.importLayoutsToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
-            this.importLayoutsToolStripMenuItem.Text = "Import Layouts...";
+            this.importLayoutsToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
+            this.importLayoutsToolStripMenuItem.Text = "Import Layouts from Project...";
             this.importLayoutsToolStripMenuItem.Click += new System.EventHandler(this.importLayoutsToolStripMenuItem_Click);
             // 
             // toolsToolStripMenuItem
