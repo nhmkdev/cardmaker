@@ -23,7 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System.Drawing;
-using CardMaker.Forms;
+using CardMaker.Events.Managers;
 using CardMaker.XML;
 
 namespace CardMaker.Card.Export
@@ -54,7 +54,7 @@ namespace CardMaker.Card.Export
         protected void ChangePrintCardCanvas(int nIdx)
         {
             // based on the currently loaded project get the layout based on the index
-            ProjectLayout zLayout = MDIProject.Instance.GetProjectLayoutFromNode(nIdx);
+            ProjectLayout zLayout = ProjectManager.Instance.LoadedProject.Layout[nIdx];
             SetCardLayout(zLayout);
         }
 

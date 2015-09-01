@@ -125,22 +125,28 @@
     <Compile Include="Card\Import\GoogleReferenceReader.cs" />
     <Compile Include="Card\Import\ReferenceReader.cs" />
     <Compile Include="Card\Import\ReferenceReaderFactory.cs" />
+    <Compile Include="Data\CardMakerConstants.cs" />
+    <Compile Include="Data\CardMakerInstance.cs" />
+    <Compile Include="Data\CardMakerSettings.cs" />
     <Compile Include="Enumerations.cs" />
+    <Compile Include="Events\DeckChangeEventArgs.cs" />
+    <Compile Include="Events\IssueCardInfoEventArgs.cs" />
+    <Compile Include="Events\IssueElementEventArgs.cs" />
+    <Compile Include="Events\LayoutElementNumericAdjustEventArgs.cs" />
     <Compile Include="Forms\CardMakerMDI.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\CardMakerMDI.Designer.cs">
       <DependentUpon>CardMakerMDI.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\CardMakerMDI_Settings.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Events\IssueMessageEventArgs.cs" />
     <Compile Include="Forms\GoogleCredentialsDialog.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\GoogleCredentialsDialog.Designer.cs">
       <DependentUpon>GoogleCredentialsDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Events\Managers\IssueManager.cs" />
     <Compile Include="Forms\MDIDefines.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -238,9 +244,13 @@
     </Compile>
     <Compile Include="Support\UI\Win32.cs" />
     <Compile Include="Support\Util\TimeMeasure.cs" />
-    <Compile Include="XML\Core.cs" />
-    <Compile Include="XML\Managers\BaseXmlManager.cs" />
-    <Compile Include="XML\Managers\LayoutTemplateManager.cs" />
+    <Compile Include="Events\ProjectEventArgs.cs" />
+    <Compile Include="Events\ElementEventArgs.cs" />
+    <Compile Include="Events\LayoutEventArgs.cs" />
+    <Compile Include="Events\Managers\ElementManager.cs" />
+    <Compile Include="Events\Managers\LayoutManager.cs" />
+    <Compile Include="Events\Managers\LayoutTemplateManager.cs" />
+    <Compile Include="Events\Managers\ProjectManager.cs" />
     <Compile Include="XML\Project.cs" />
     <Compile Include="XML\ProjectLayout.cs" />
     <Compile Include="XML\ProjectLayoutElement.cs" />

@@ -22,11 +22,11 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
 using System.Linq;
 using Google.GData.Client;
 using Google.GData.Spreadsheets;
 using Support.IO;
-using System.Collections.Generic;
 
 namespace Support.UI
 {

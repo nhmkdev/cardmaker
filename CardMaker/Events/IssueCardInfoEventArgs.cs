@@ -22,26 +22,20 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Xml.Serialization;
-
-namespace CardMaker.XML
+namespace CardMaker.Events
 {
-    public class ProjectLayoutReference
+    public delegate void IssueCardInfoChanged(object sender, IssueCardInfoEventArgs args);
+
+    public class IssueCardInfoEventArgs
     {
-        #region Properties
+        public int LayoutIndex { get; private set; }
 
-        [XmlAttribute]
-        public string RelativePath { get; set; }
+        public int CardIndex { get; private set; }
 
-        [XmlAttribute]
-        public bool Default { get; set; }
-
-        #endregion
-
-        public void DeepCopy(ProjectLayoutReference zReference)
+        public IssueCardInfoEventArgs(int nLayout, int nCard)
         {
-            Default = zReference.Default;
-            RelativePath = zReference.RelativePath;
+            LayoutIndex = nLayout;
+            CardIndex = nCard;
         }
     }
 }

@@ -22,11 +22,11 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using Support.IO;
-using Support.UI;
 using System;
 using System.Text;
 using System.Windows.Forms;
+using Support.IO;
+using Support.UI;
 
 namespace CardMaker.Forms
 {
@@ -55,9 +55,9 @@ namespace CardMaker.Forms
             get
             {
                 const int CP_NOCLOSE_BUTTON = 0x200;
-                CreateParams mdiCp = base.CreateParams;
-                mdiCp.ClassStyle = mdiCp.ClassStyle | CP_NOCLOSE_BUTTON;
-                return mdiCp;
+                CreateParams zParams = base.CreateParams;
+                zParams.ClassStyle = zParams.ClassStyle | CP_NOCLOSE_BUTTON;
+                return zParams;
             }
         }
 

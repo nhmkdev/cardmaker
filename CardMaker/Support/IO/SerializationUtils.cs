@@ -25,13 +25,13 @@
 // define USE_BUILT_IN_JSON at the project level to use the .NET Json functionality (requires System.Web.Services under references)
 
 using System;
-using System.Text;
+using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
+using System.Xml.Serialization;
 #if USE_BUILT_IN_JSON
 using System.Runtime.Serialization.Json;
 #endif
-using System.Xml.Serialization;
-using System.IO;
 
 namespace Support.IO
 {
@@ -102,11 +102,11 @@ namespace Support.IO
         {
             try
             {
-                var zSerializer = new XmlSerializer(typeof(T));
+                var zSerializer = new XmlSerializer(typeof (T));
                 var zStream = new MemoryStream(zEncoding.GetBytes(sInput));
                 TextReader zTextReader = new StreamReader(zStream, zEncoding);
 
-                obj = (T)zSerializer.Deserialize(zTextReader);
+                obj = (T) zSerializer.Deserialize(zTextReader);
                 zStream.Close();
                 return true;
             }
@@ -116,7 +116,10 @@ namespace Support.IO
                 Console.WriteLine(ex.ToString());
             }
 #else
-            catch (Exception) { }
+            catch (Exception e)
+            {
+                return false;
+            }
 #endif
             return false;
         }
@@ -150,7 +153,7 @@ namespace Support.IO
                 return false;
             }
 #else
-            catch (Exception)
+            catch (Exception e)
             {
                 return false;
             }

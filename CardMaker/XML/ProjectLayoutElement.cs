@@ -35,73 +35,73 @@ namespace CardMaker.XML
 
         #region Properties
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public string name { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public string type { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public int x { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public int y { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public int width { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public int height { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public string variable { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public string font { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public string elementcolor { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public string bordercolor { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public int borderthickness { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public float rotation { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public int horizontalalign { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public int verticalalign { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public int lineheight { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public int wordspace { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public int opacity { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public bool enabled { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public string outlinecolor { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public int outlinethickness { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public bool autoscalefont { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public bool lockaspect { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public bool keeporiginalsize { get; set; }
 
         #endregion

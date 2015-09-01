@@ -24,7 +24,7 @@
 
 using System;
 using System.Drawing;
-using CardMaker.Forms;
+using CardMaker.Data;
 using CardMaker.XML;
 using PdfSharp;
 using PdfSharp.Drawing;
@@ -87,12 +87,12 @@ namespace CardMaker.Card.Export
 
                 if (0 < nIdx)
                 {
-                    if (CardMakerMDI.Instance.PrintLayoutsOnNewPage)
+                    if (CardMakerSettings.PrintLayoutsOnNewPage)
                     {
                         AddPage();    
                     }
 
-                    if (CardMakerMDI.Instance.PrintAutoHorizontalCenter || 
+                    if (CardMakerSettings.PrintAutoHorizontalCenter || 
                         (m_dDrawX + m_dLayoutPointWidth > m_dMarginEndX)) // this is the case where a layout won't fit in the remaining space of the row
                     {
                         MoveToNextRow();
@@ -102,7 +102,7 @@ namespace CardMaker.Card.Export
                 // should be adjusted after the above move to next row
                 m_dNextRowYAdjust = Math.Max(m_dNextRowYAdjust, m_dLayoutPointHeight + m_dBufferY);
 
-                if (CardMakerMDI.Instance.PrintAutoHorizontalCenter)
+                if (CardMakerSettings.PrintAutoHorizontalCenter)
                 {
                     CenterLayoutPositionOnNewRow();
                 }
@@ -218,7 +218,7 @@ namespace CardMaker.Card.Export
             if (m_dDrawY + m_dLayoutPointHeight > m_dMarginEndY)
             {
                 AddPage();
-                if (CardMakerMDI.Instance.PrintAutoHorizontalCenter)
+                if (CardMakerSettings.PrintAutoHorizontalCenter)
                 {
                     CenterLayoutPositionOnNewRow();
                 }
@@ -229,7 +229,7 @@ namespace CardMaker.Card.Export
         {
             m_dDrawX = m_dMarginX;
             m_dDrawY += m_dNextRowYAdjust;
-            if (CardMakerMDI.Instance.PrintAutoHorizontalCenter)
+            if (CardMakerSettings.PrintAutoHorizontalCenter)
             {
                 CenterLayoutPositionOnNewRow();
             }
@@ -246,8 +246,8 @@ namespace CardMaker.Card.Export
         {
             m_zCurrentPage = m_zDocument.AddPage();
 
-            m_zCurrentPage.Width = XUnit.FromInch((double)CardMakerMDI.Instance.PrintPageWidth);
-            m_zCurrentPage.Height = XUnit.FromInch((double)CardMakerMDI.Instance.PrintPageHeight);
+            m_zCurrentPage.Width = XUnit.FromInch((double)CardMakerSettings.PrintPageWidth);
+            m_zCurrentPage.Height = XUnit.FromInch((double)CardMakerSettings.PrintPageHeight);
 
             m_zCurrentPage.Orientation = m_ePageOrientation;
 
@@ -255,9 +255,9 @@ namespace CardMaker.Card.Export
             {
                 double dPointsPerInchWidth = (double)m_zCurrentPage.Width / (double)m_zCurrentPage.Width.Inch;
                 double dPointsPerInchHeight = (double)m_zCurrentPage.Height / (double)m_zCurrentPage.Height.Inch;
-                m_dMarginX = (double)CardMakerMDI.Instance.PrintPageHorizontalMargin * dPointsPerInchWidth;
+                m_dMarginX = (double)CardMakerSettings.PrintPageHorizontalMargin * dPointsPerInchWidth;
                 m_dMarginEndX = m_zCurrentPage.Width - m_dMarginX;
-                m_dMarginY = (double)CardMakerMDI.Instance.PrintPageVerticalMargin * dPointsPerInchHeight;
+                m_dMarginY = (double)CardMakerSettings.PrintPageVerticalMargin * dPointsPerInchHeight;
                 m_dMarginEndY = m_zCurrentPage.Height - m_dMarginY;
             }
 

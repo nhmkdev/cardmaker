@@ -22,14 +22,16 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using CardMaker.XML;
-using Support.IO;
-using Support.UI;
 using System;
 using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using CardMaker.Data;
+using CardMaker.Events.Managers;
+using CardMaker.XML;
+using Support.IO;
+using Support.UI;
 
 namespace CardMaker.Forms
 {
@@ -38,7 +40,7 @@ namespace CardMaker.Forms
         public ProjectManagerUI()
         {
             InitializeComponent();
-            txtFolder.Text = CardMakerMDI.Instance.ProjectManagerRoot;
+            txtFolder.Text = CardMakerSettings.ProjectManagerRoot;
             UpdateProjects();
         }
 
@@ -52,7 +54,7 @@ namespace CardMaker.Forms
             if (DialogResult.OK == fbd.ShowDialog(this))
             {
                 txtFolder.Text = fbd.SelectedPath;
-                CardMakerMDI.Instance.ProjectManagerRoot = fbd.SelectedPath;
+                CardMakerSettings.ProjectManagerRoot = fbd.SelectedPath;
                 UpdateProjects();
             }
         }
@@ -101,7 +103,7 @@ namespace CardMaker.Forms
         {
             if (1 == listViewProjects.SelectedItems.Count)
             {
-                CardMakerMDI.Instance.OpenProjectFile((string)listViewProjects.SelectedItems[0].Tag);
+                ProjectManager.Instance.OpenProject((string)listViewProjects.SelectedItems[0].Tag);
                 Close();
             }
         }

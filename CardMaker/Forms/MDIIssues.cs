@@ -22,11 +22,12 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Globalization;
-using Support.UI;
 using System;
 using System.Drawing;
+using System.Globalization;
 using System.Windows.Forms;
+using CardMaker.Events.Managers;
+using Support.UI;
 
 namespace CardMaker.Forms
 {
@@ -43,6 +44,25 @@ namespace CardMaker.Forms
         private MDIIssues()
         {
             InitializeComponent();
+            IssueManager.Instance.IssueAdded += Instance_IssueAdded;
+            IssueManager.Instance.CardInfoChanged += Instance_CardInfoChanged;
+            IssueManager.Instance.ElementChanged += Instance_ElementChanged;
+        }
+
+        void Instance_ElementChanged(object sender, Events.IssueElementEventArgs args)
+        {
+            m_sCurrentElementName = args.Name;
+        }
+
+        void Instance_CardInfoChanged(object sender, Events.IssueCardInfoEventArgs args)
+        {
+            m_sCurrentLayoutIndex = args.LayoutIndex.ToString(CultureInfo.InvariantCulture);
+            m_sCurrentCardIndex = args.CardIndex.ToString(CultureInfo.InvariantCulture);
+        }
+
+        void Instance_IssueAdded(object sender, Events.IssueMessageEventArgs args)
+        {
+            AddIssue(args.Message);
         }
 
         public static MDIIssues Instance
@@ -50,28 +70,14 @@ namespace CardMaker.Forms
             get 
             {
                 if (null == s_zInstance)
+                {
                     s_zInstance = new MDIIssues();
+                }
                 return s_zInstance; 
             }
         }
 
-        public bool TrackIssues
-        {
-            set { m_bTrackIssues = value; }
-        }
-
-        public void SetCardInfo(int nLayout, int nCard)
-        {
-            m_sCurrentLayoutIndex = nLayout.ToString(CultureInfo.InvariantCulture);
-            m_sCurrentCardIndex = nCard.ToString(CultureInfo.InvariantCulture);
-        }
-
-        public void SetElementName(string sElement)
-        {
-            m_sCurrentElementName = sElement;
-        }
-
-        public void AddIssue(string sIssue)
+        private void AddIssue(string sIssue)
         {
             if (!m_bTrackIssues) return;
 
@@ -87,6 +93,12 @@ namespace CardMaker.Forms
             }
         }
 
+
+        public bool TrackIssues
+        {
+            set { m_bTrackIssues = value; }
+        }
+
         public void ClearIssues()
         {
             listViewIssues.Items.Clear();
@@ -99,6 +111,7 @@ namespace CardMaker.Forms
                 ListViewItem zItem = listViewIssues.SelectedItems[0];
                 int nLayout = int.Parse(zItem.SubItems[0].Text);
                 int nCard = int.Parse(zItem.SubItems[1].Text);
+#warning needs a complex event to pull this off
                 CardMakerMDI.Instance.SelectLayoutCardElement(nLayout, nCard, zItem.SubItems[2].Text);
             }
         }

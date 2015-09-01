@@ -47,21 +47,21 @@ namespace CardMaker.Card.Shapes.Definitions
             m_sName = "grid";
         }
 
-        [DescriptionAttribute("Allow Incomplete Grid")]
+        [Description("Allow Incomplete Grid")]
         public int AllowPartialGrid
         {
             get { return m_nAllowPartialGrid; }
             set { m_nAllowPartialGrid = value; }
         }
 
-        [DescriptionAttribute("Grid Rectangle Width")]
+        [Description("Grid Rectangle Width")]
         public int GridRectWidth
         {
             get { return m_nGridRectWidth; }
             set { m_nGridRectWidth = value; }
         }
 
-        [DescriptionAttribute("Grid Rectangle Height")]
+        [Description("Grid Rectangle Height")]
         public int GridRectHeight
         {
             get { return m_nGridRectHeight; }

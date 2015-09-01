@@ -25,7 +25,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using CardMaker.Forms;
+using CardMaker.Data;
+using CardMaker.Events.Managers;
 using CardMaker.XML;
 using Google.GData.Client;
 using Google.GData.Spreadsheets;
@@ -46,9 +47,9 @@ namespace CardMaker.Card.Import
         {
             ReferencePath = (File.Exists(zReference.RelativePath)
                             ? Path.GetFullPath(zReference.RelativePath)
-                            : CardMakerMDI.ProjectPath + zReference.RelativePath);
+                            : ProjectManager.Instance.ProjectPath + zReference.RelativePath);
             m_zSpreadsheetsService = GoogleSpreadsheet.GetSpreadsheetsService(APP_NAME, CLIENT_ID,
-                CardMakerMDI.GoogleAccessToken);
+                CardMakerInstance.GoogleAccessToken);
 
         }
 
@@ -106,10 +107,10 @@ namespace CardMaker.Card.Import
         public void GetProjectDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData)
         {
             var sProjectDefineSheetReference =
-                CardMakerMDI.GOOGLE_REFERENCE
-                + CardMakerMDI.GOOGLE_REFERENCE_SPLIT_CHAR
-                + Path.GetFileNameWithoutExtension(CardMakerMDI.Instance.LoadedFile)
-                + CardMakerMDI.GOOGLE_REFERENCE_SPLIT_CHAR
+                CardMakerConstants.GOOGLE_REFERENCE
+                + CardMakerConstants.GOOGLE_REFERENCE_SPLIT_CHAR
+                + Path.GetFileNameWithoutExtension(CardMakerInstance.LoadedProjectFilePath)
+                + CardMakerConstants.GOOGLE_REFERENCE_SPLIT_CHAR
                 + "defines";
 
             GetData(sProjectDefineSheetReference, listDefineData, true);

@@ -22,10 +22,11 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using CardMaker.Forms;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using CardMaker.Data;
+using CardMaker.Events.Managers;
 using CardMaker.XML;
 
 namespace CardMaker.Card
@@ -33,8 +34,6 @@ namespace CardMaker.Card
     public class CardRenderer
     {
         public Deck CurrentDeck { get; set; }
-        public bool DrawElementBorder { get; set; }
-        public bool DrawFormattedTextBorder { get; set; }
         public float ZoomLevel { get; set; }
 
         public void DrawPrintLineToGraphics(Graphics zGraphics)
@@ -74,7 +73,7 @@ namespace CardMaker.Card
 
             if (!bExport)
             {
-                zSelectedElement = MDILayoutControl.Instance.GetSelectedLayoutElement();
+                zSelectedElement = ElementManager.Instance.GetSelectedElement();
             }
 
             // draw the background
@@ -93,7 +92,7 @@ namespace CardMaker.Card
                     var zElement = CurrentDeck.CardLayout.Element[nIdx];
                     if (zElement.enabled) // only add enabled items to draw
                     {
-                        MDIIssues.Instance.SetElementName(zElement.name);
+                        IssueManager.Instance.ChangeElement(zElement.name);
 
                         // get override Element
                         ProjectLayoutElement zOverrideElement = CurrentDeck.GetOverrideElement(zElement, listLine);
@@ -134,7 +133,7 @@ namespace CardMaker.Card
                         {
                             var bDrawSelection = zSelectedElement == zElement;
 
-                            if (DrawElementBorder)
+                            if (CardMakerInstance.DrawElementBorder)
                             {
                                 var matrixPrevious = zGraphics.Transform;
                                 DrawItem.DrawElementDebugBorder(zGraphics, zElement, nX, nY, bDrawSelection);
@@ -146,7 +145,8 @@ namespace CardMaker.Card
             }
 
             // draw the card border
-            if ((bExport && CardMakerMDI.Instance.PrintLayoutBorder) || (!bExport && CurrentDeck.CardLayout.drawBorder))
+#warning nothing in the renderer should access the forms
+            if ((bExport && CardMakerSettings.PrintLayoutBorder) || (!bExport && CurrentDeck.CardLayout.drawBorder))
             {
                 // note that the border is inclusive in the width/height consuming 2 pixels (0 to total-1)
                 zGraphics.DrawRectangle(Pens.Black, nX, nY, CurrentDeck.CardLayout.width - 1, CurrentDeck.CardLayout.height - 1);

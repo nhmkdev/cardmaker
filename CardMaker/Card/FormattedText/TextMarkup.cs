@@ -26,7 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using CardMaker.Forms;
+using CardMaker.Data;
 using CardMaker.XML;
 using Support.IO;
 
@@ -66,7 +66,7 @@ namespace CardMaker.Card.FormattedText
             // TODO: stop recalculating this, store it in the processData
             if (0 != zElement.outlinethickness)
             {
-                m_fFontOutlineSize = zGraphics.DpiY * (m_zFont.Size / CardMakerMDI.Instance.ApplicationDPI);
+                m_fFontOutlineSize = zGraphics.DpiY * (m_zFont.Size / CardMakerInstance.ApplicationDPI);
             }
 
             m_rectMeasuredRectangle = MeasureDisplayStringWidth(zGraphics, m_sVariable, m_zFont);
@@ -128,7 +128,7 @@ namespace CardMaker.Card.FormattedText
             float targetY = TargetRect.Y + m_fYOffset;
 
             // draw border (debugging)
-            if (CardMakerMDI.Instance.DrawCardCanvas.CardRenderer.DrawFormattedTextBorder)
+            if (CardMakerInstance.DrawFormattedTextBorder)
             {
                 zGraphics.DrawRectangle(Pens.Green, targetX, targetY, TargetRect.Width, TargetRect.Height);
             }

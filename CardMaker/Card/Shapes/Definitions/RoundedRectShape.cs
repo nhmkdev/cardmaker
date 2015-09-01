@@ -40,7 +40,7 @@ namespace CardMaker.Card.Shapes.Definitions
             VariablesLength = CornerSize,
         }
 
-        [DescriptionAttribute("Pixels from corner to round out.")]
+        [Description("Pixels from corner to round out.")]
         public int EdgeSize
         {
             get { return m_nRoundedCornerSize; }

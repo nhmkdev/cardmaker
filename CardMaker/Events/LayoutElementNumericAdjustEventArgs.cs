@@ -22,26 +22,19 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Xml.Serialization;
-
-namespace CardMaker.XML
+namespace CardMaker.Events
 {
-    public class ProjectLayoutReference
+    public delegate void LayoutElementOrderRequest(object sender, LayoutElementNumericAdjustEventArgs args);
+
+    public delegate void LayoutElementSelectRequest(object sender, LayoutElementNumericAdjustEventArgs args);
+
+    public class LayoutElementNumericAdjustEventArgs
     {
-        #region Properties
+        public int Adjustment { get; private set; }
 
-        [XmlAttribute]
-        public string RelativePath { get; set; }
-
-        [XmlAttribute]
-        public bool Default { get; set; }
-
-        #endregion
-
-        public void DeepCopy(ProjectLayoutReference zReference)
+        public LayoutElementNumericAdjustEventArgs(int nAdjust)
         {
-            Default = zReference.Default;
-            RelativePath = zReference.RelativePath;
-        }
+            Adjustment = nAdjust;
+        }        
     }
 }

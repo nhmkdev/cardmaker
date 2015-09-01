@@ -22,16 +22,19 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using CardMaker.Card;
-using CardMaker.Card.Shapes;
-using CardMaker.XML;
-using Support.UI;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Text;
 using System.Reflection;
 using System.Windows.Forms;
+using CardMaker.Card;
+using CardMaker.Card.Shapes;
+using CardMaker.Data;
+using CardMaker.Events;
+using CardMaker.Events.Managers;
+using CardMaker.XML;
+using Support.UI;
 
 namespace CardMaker.Forms
 {
@@ -52,7 +55,9 @@ namespace CardMaker.Forms
 
         private readonly ContextMenuStrip m_zContextMenu;
 
-        bool m_bFireFontChangeEvents = true;
+
+        private bool m_bFireElementChangeEvents = true;
+        private bool m_bFireFontChangeEvents = true;
 
         private MDIElementControl() 
         {
@@ -82,6 +87,34 @@ namespace CardMaker.Forms
             {
                 RenderMode = ToolStripRenderMode.System
             };
+
+            LayoutManager.Instance.DeckIndexChanged += Instance_DeckIndexChanged;
+            ElementManager.Instance.ElementSelected += Instance_ElementSelected;
+            ElementManager.Instance.ElementBoundsUpdated += Instance_ElementBoundsUpdated;
+        }
+
+        void Instance_DeckIndexChanged(object sender, DeckChangeEventArgs args)
+        {
+            // TODO: this is horrible (see method)
+            LayoutManager.Instance.ActiveDeck.PopulateListViewWithElementColumns(listViewElementColumns);
+        }
+
+        void Instance_ElementBoundsUpdated(object sender, ElementEventArgs args)
+        {
+            if (null != args && args.Elements.Count > 0)
+            {
+                UpdateElementBoundsControlValues(args.Elements[0]);
+            }
+        }
+
+        void Instance_ElementSelected(object sender, ElementEventArgs args)
+        {
+            HandleEnableStates();
+            if (args.Elements == null || args.Elements.Count > 0)
+            {
+                UpdateElementValues(args.Elements[0]);
+                HandleTypeEnableStates();
+            }
         }
 
         public static MDIElementControl Instance
@@ -89,7 +122,9 @@ namespace CardMaker.Forms
             get
             {
                 if (null == s_zInstance)
+                {
                     s_zInstance = new MDIElementControl();
+                }
                 return s_zInstance;
             }
         }
@@ -99,9 +134,9 @@ namespace CardMaker.Forms
             get
             {
                 const int CP_NOCLOSE_BUTTON = 0x200;
-                CreateParams mdiCp = base.CreateParams;
-                mdiCp.ClassStyle = mdiCp.ClassStyle | CP_NOCLOSE_BUTTON;
-                return mdiCp;
+                CreateParams zParams = base.CreateParams;
+                zParams.ClassStyle = zParams.ClassStyle | CP_NOCLOSE_BUTTON;
+                return zParams;
             }
         }
 
@@ -113,13 +148,12 @@ namespace CardMaker.Forms
         private void comboElementType_SelectedIndexChanged(object sender, EventArgs e)
         {
             HandleElementValueChange(sender, e);
-            MDILayoutControl.Instance.RefreshElementTypes();
             HandleTypeEnableStates();
         }
 
         private void btnColor_Click(object sender, EventArgs e)
         {
-            var listSelectedElements = MDILayoutControl.Instance.GetSelectedLayoutElements();
+            var listSelectedElements = ElementManager.Instance.GetSelectedElements();
             if (null == listSelectedElements)
             {
                 MessageBox.Show(this, "Please select at least one enabled Element.");
@@ -166,8 +200,7 @@ namespace CardMaker.Forms
             Action<bool> actionChangeColor = bRedo =>
             {
                 listActions.ForEach(action => action(bRedo));
-                CardMakerMDI.Instance.DrawCurrentCardIndex();
-                CardMakerMDI.Instance.MarkDirty();
+                LayoutManager.Instance.FireLayoutUpdatedEvent();
             };
             UserAction.PushAction(actionChangeColor);
 
@@ -196,7 +229,7 @@ namespace CardMaker.Forms
             tabControl.Visible = true;
 
             // update the graphic and text alignment combo boxes
-            ProjectLayoutElement zElement = MDILayoutControl.Instance.GetSelectedLayoutElement();
+            ProjectLayoutElement zElement = ElementManager.Instance.GetSelectedElement();
             comboTextHorizontalAlign.SelectedIndex = zElement.horizontalalign;
             comboTextVerticalAlign.SelectedIndex = zElement.verticalalign;
             comboGraphicHorizontalAlign.SelectedIndex = zElement.horizontalalign;
@@ -236,7 +269,8 @@ namespace CardMaker.Forms
 
         public void HandleEnableStates()
         {
-            groupBoxElement.Enabled = (null != MDILayoutControl.Instance.GetSelectedLayoutElement());
+            // TODO: this is duplicated in UpdateElementValues
+            groupBoxElement.Enabled = (null != ElementManager.Instance.GetSelectedElement());
         }
 
         public void CreateControlFieldDictionary()
@@ -271,27 +305,27 @@ namespace CardMaker.Forms
         {
             m_dictionaryControlActions.Add(txtElementVariable, zElement =>
             {
-                CardMakerMDI.Instance.DrawCardCanvas.ActiveDeck.ResetTranslationCache(zElement);
-                CardMakerMDI.Instance.DrawCardCanvas.ActiveDeck.ResetMarkupCache(zElement.name);
+                LayoutManager.Instance.ActiveDeck.ResetTranslationCache(zElement);
+                LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElement.name);
             });
 
             m_dictionaryControlActions.Add(numericElementW, zElement =>
-                CardMakerMDI.Instance.DrawCardCanvas.ActiveDeck.ResetMarkupCache(zElement.name));
+                LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElement.name));
 
             m_dictionaryControlActions.Add(numericElementH, zElement =>
-                CardMakerMDI.Instance.DrawCardCanvas.ActiveDeck.ResetMarkupCache(zElement.name));
+                LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElement.name));
 
             m_dictionaryControlActions.Add(numericElementOutLineThickness, zElement =>
-                CardMakerMDI.Instance.DrawCardCanvas.ActiveDeck.ResetMarkupCache(zElement.name));
+                LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElement.name));
 
             m_dictionaryControlActions.Add(comboTextHorizontalAlign, zElement =>
-                CardMakerMDI.Instance.DrawCardCanvas.ActiveDeck.ResetMarkupCache(zElement.name));
+                LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElement.name));
 
             m_dictionaryControlActions.Add(comboTextVerticalAlign, zElement =>
-                CardMakerMDI.Instance.DrawCardCanvas.ActiveDeck.ResetMarkupCache(zElement.name));
+                LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElement.name));
 
             m_dictionaryControlActions.Add(numericElementOpacity, zElement =>
-                CardMakerMDI.Instance.DrawCardCanvas.ActiveDeck.ResetMarkupCache(zElement.name));
+                LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElement.name));
         }
 
         private bool PopulateUndoRedoValues(Control zControl, ProjectLayoutElement zElement, ref object zRedoValue, ref object zUndoValue)
@@ -355,7 +389,7 @@ namespace CardMaker.Forms
                 actionElement(zElement);
             }
 
-            if (MDILayoutControl.Instance.GetSelectedLayoutElement() != zElement || bSkipControlUpdate)
+            if (ElementManager.Instance.GetSelectedElement() != zElement || bSkipControlUpdate)
             {
                 // don't update the controls if they are for a non-selected item
                 return;
@@ -397,28 +431,32 @@ namespace CardMaker.Forms
 
         private void HandleElementValueChange(object sender, EventArgs e)
         {
-            if (null == MDILayoutControl.Instance.GetSelectedLayoutElement() || 
-                !MDILayoutControl.Instance.FireElementChangeEvents || 
-                CardMakerMDI.ProcessingUserAction)
+            // this is the big nasty... should be centralized
+
+            if (null == ElementManager.Instance.GetSelectedElement() ||
+                !m_bFireElementChangeEvents ||
+                CardMakerInstance.ProcessingUserAction)
             {
                 return;
             }
 
-            // special case handling for the user dragging in the Canvas (manages its own undo/redo)
-            if (MDICanvas.Instance.CanvasUserAction)
+            // Special case handling for the user dragging in the Canvas (manages its own undo/redo)
+            // This is because the Canvas mouse down is the only point at which an undo action is created
+            // During mouse down no element changes should be "double" applied due to the control adjustments on the MDIElementControl
+            // TODO: this previously only applied because the canvas was directly accessing the controls!
+#if false // should no longer apply
+            if (CardMakerInstance.CanvasUserAction)
             {
                 Action<ProjectLayoutElement> action;
                 if(m_dictionaryControlActions.TryGetValue((Control)sender, out action))
                 {
-                    // see SetupEventHandlerActions
-                    action(MDILayoutControl.Instance.GetSelectedLayoutElement());
-                    CardMakerMDI.Instance.MarkDirty();
-                    CardMakerMDI.Instance.DrawCurrentCardIndex();
+                    action(ElementManager.Instance.GetSelectedElement());
+                    LayoutManager.Instance.FireLayoutUpdatedEvent();
                 }
                 return;
             }
-
-            var listSelectedElements = MDILayoutControl.Instance.GetSelectedLayoutElements();
+#endif
+            var listSelectedElements = ElementManager.Instance.GetSelectedElements();
             if (null != sender && null != listSelectedElements)
             {
                 var zControl = (Control)sender;
@@ -439,11 +477,10 @@ namespace CardMaker.Forms
 
                 Action<bool> actionElementChange = bRedo =>
                 {
-                    CardMakerMDI.ProcessingUserAction = true;
+                    CardMakerInstance.ProcessingUserAction = true;
                     listActions.ForEach(action => action(bRedo));
-                    CardMakerMDI.ProcessingUserAction = false;
-                    CardMakerMDI.Instance.MarkDirty();
-                    CardMakerMDI.Instance.DrawCurrentCardIndex();
+                    CardMakerInstance.ProcessingUserAction = false;
+                    LayoutManager.Instance.FireLayoutUpdatedEvent();
                 };
 
                 UserAction.PushAction(actionElementChange);
@@ -473,71 +510,44 @@ namespace CardMaker.Forms
             tabControl.Visible = false;
         }
 
-        public int ElementX
+        /// <summary>
+        /// Method for updating the selected element bounds control values externally (no undo/redo processing)
+        /// </summary>
+        /// <param name="zElement"></param>
+        private void UpdateElementBoundsControlValues(ProjectLayoutElement zElement)
         {
-            set
-            {
-                numericElementX.Value = value;
-            }
-            get
-            {
-                return (int)numericElementX.Value;
-            }
-        }
-
-        public int ElementY
-        {
-            set
-            {
-                numericElementY.Value = value;
-            }
-            get
-            {
-                return (int)numericElementY.Value;
-            }
-        }
-
-        public int ElementH
-        {
-            set
-            {
-                numericElementH.Value = value;
-            }
-        }
-
-        public int ElementW
-        {
-            set
-            {
-                numericElementW.Value = value;
-            }
-        }
-
-        public void UpdateElementColumnValues()
-        {
-            CardMakerMDI.Instance.DrawCardCanvas.ActiveDeck.PopulateListViewWithElementColumns(listViewElementColumns);
-        }
-
-        public void UpdateCurrentElementExtents()
-        {
-            ProjectLayoutElement zElement = MDILayoutControl.Instance.GetSelectedLayoutElement();
             if (null != zElement)
             {
-                MDILayoutControl.Instance.FireElementChangeEvents = false;
+                m_bFireElementChangeEvents = false;
                 numericElementX.Value = zElement.x;
                 numericElementY.Value = zElement.y;
                 numericElementW.Value = zElement.width;
                 numericElementH.Value = zElement.height;
-                MDILayoutControl.Instance.FireElementChangeEvents = true;
+                m_bFireElementChangeEvents = true;
+
+                // TODO: if the value does not actually change this applies an update for no specific reason...
+                PerformControlChangeActions(numericElementX, numericElementY, numericElementW, numericElementH);
             }
-            CardMakerMDI.Instance.MarkDirty();
-            CardMakerMDI.Instance.DrawCurrentCardIndex();
+            LayoutManager.Instance.FireLayoutUpdatedEvent();
         }
 
-        public void UpdateElementValues(ProjectLayoutElement zElement)
+        private void PerformControlChangeActions(params Control[] arraycontrols)
+        {
+            Action<ProjectLayoutElement> action;
+            foreach(var zControl in arraycontrols)
+            {
+                if (m_dictionaryControlActions.TryGetValue(zControl, out action))
+                {
+                    action(ElementManager.Instance.GetSelectedElement());
+                }                
+            }
+        }
+
+        private void UpdateElementValues(ProjectLayoutElement zElement)
         {
             if (null != zElement)
             {
+                m_bFireElementChangeEvents = false;
                 numericElementX.Value = zElement.x;
                 numericElementY.Value = zElement.y;
                 numericElementW.Value = zElement.width;
@@ -603,6 +613,7 @@ namespace CardMaker.Forms
                 }
 
                 SetupElementFont(zFont);
+                m_bFireElementChangeEvents = true;
             }
             else
             {
@@ -612,15 +623,14 @@ namespace CardMaker.Forms
 
         private void HandleFontSettingChange(object sender, EventArgs e)
         {
-            if (null == MDILayoutControl.Instance || 
-                !MDILayoutControl.Instance.FireElementChangeEvents || 
-                !m_bFireFontChangeEvents || 
-                CardMakerMDI.ProcessingUserAction)
+            if (!m_bFireElementChangeEvents || 
+                !m_bFireFontChangeEvents ||
+                CardMakerInstance.ProcessingUserAction)
             {
                 return;
             }
 
-            var listElements = MDILayoutControl.Instance.GetSelectedLayoutElements();
+            var listElements = ElementManager.Instance.GetSelectedElements();
             if (null != listElements)
             {
                 var listActions = UserAction.CreateActionList();
@@ -630,7 +640,7 @@ namespace CardMaker.Forms
                 foreach (var zElement in listElements)
                 {
                     var zElementToChange = zElement;
-                    if (!CardMakerMDI.ProcessingUserAction && null != sender)
+                    if (!CardMakerInstance.ProcessingUserAction && null != sender)
                     {
                         object zRedoValue = null;
                         object zUndoValue = null;
@@ -640,9 +650,9 @@ namespace CardMaker.Forms
                             listActions.Add(bRedo =>
                             {
                                 AssignValueByControl(zControl, zElementToChange, bRedo ? zRedoValue : zUndoValue, false);
-                                if (null != CardMakerMDI.Instance.DrawCardCanvas)
+                                if (null != LayoutManager.Instance.ActiveDeck)
                                 {
-                                    CardMakerMDI.Instance.DrawCardCanvas.ActiveDeck.ResetMarkupCache(zElementToChange.name);
+                                    LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElementToChange.name);
                                 }
                             });
                         }
@@ -667,14 +677,14 @@ namespace CardMaker.Forms
                                 zElementToChange.SetElementFont(fontValue);
 
                                 // only affect the controls if the current selected element matches that of the element to change
-                                if (zElementToChange == MDILayoutControl.Instance.GetSelectedLayoutElement())
+                                if (zElementToChange == ElementManager.Instance.GetSelectedElement())
                                 {
                                     comboFontName.Text = fontValue.Name;
                                     SetupElementFont(fontValue);
                                 }
-                                if (null != CardMakerMDI.Instance.DrawCardCanvas)
+                                if (null != LayoutManager.Instance.ActiveDeck)
                                 {
-                                    CardMakerMDI.Instance.DrawCardCanvas.ActiveDeck.ResetMarkupCache(zElementToChange.name);
+                                    LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElementToChange.name);
                                 }
                             });
                         }
@@ -683,15 +693,14 @@ namespace CardMaker.Forms
 
                 Action<bool> actionChangeFont = bRedo =>
                 {
-                    CardMakerMDI.ProcessingUserAction = true;
+                    CardMakerInstance.ProcessingUserAction = true;
                     listActions.ForEach(action => action(bRedo));
-                    CardMakerMDI.ProcessingUserAction = false;
+                    CardMakerInstance.ProcessingUserAction = false;
                     if (0 < numericLineSpace.Value)
                     {
                         checkFontAutoScale.Checked = false;
                     }
-                    CardMakerMDI.Instance.DrawCurrentCardIndex();
-                    CardMakerMDI.Instance.MarkDirty();
+                    LayoutManager.Instance.FireLayoutUpdatedEvent();
                 };
 
                 UserAction.PushAction(actionChangeFont);
@@ -780,10 +789,10 @@ namespace CardMaker.Forms
                 var zBmp = DrawItem.LoadImageFromCache(txtElementVariable.Text);
                 if (null == zBmp)
                 {
-                    var zElement = MDILayoutControl.Instance.GetSelectedLayoutElement();
+                    var zElement = ElementManager.Instance.GetSelectedElement();
                     if (null != zElement)
                     {
-                        var zElementString = CardMakerMDI.Instance.DrawCardCanvas.ActiveDeck.GetStringFromTranslationCache(zElement.name);
+                        var zElementString = LayoutManager.Instance.ActiveDeck.GetStringFromTranslationCache(zElement.name);
                         if (null != zElementString.String)
                         {
                             zBmp = DrawItem.LoadImageFromCache(zElementString.String);
@@ -800,7 +809,10 @@ namespace CardMaker.Forms
 
         private void UpdatePanelColors(ProjectLayoutElement zElement)
         {
-            if (zElement != MDILayoutControl.Instance.GetSelectedLayoutElement()) return;
+            if (zElement != ElementManager.Instance.GetSelectedElement())
+            {
+                return;
+            }
             panelBorderColor.BackColor = zElement.GetElementBorderColor();
             panelOutlineColor.BackColor = zElement.GetElementOutlineColor();
             panelShapeColor.BackColor = zElement.GetElementColor();
@@ -839,7 +851,6 @@ namespace CardMaker.Forms
 
         private void btnAssist_Click(object sender, EventArgs e)
         {
-            //ProjectLayoutElement zElement = MDILayoutControl.Instance.GetSelectedLayoutElement();
             contextMenuStripAssist.Items.Clear();
             contextMenuStripAssist.Items.Add("Add Empty", null, (os, ea) => InsertVariableText("#empty"));
             contextMenuStripAssist.Items.Add("Add If Statement", null, (os, ea) => InsertVariableText("#(if x == y then a)#"));

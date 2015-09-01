@@ -24,7 +24,7 @@
 
 using System.Collections.Generic;
 using System.Drawing;
-using CardMaker.Forms;
+using CardMaker.Data;
 using CardMaker.XML;
 
 namespace CardMaker.Card.FormattedText
@@ -91,7 +91,7 @@ namespace CardMaker.Card.FormattedText
         public override bool Render(ProjectLayoutElement zElement, Graphics zGraphics)
         {
             // draw border (debugging)
-            if (CardMakerMDI.Instance.DrawCardCanvas.CardRenderer.DrawFormattedTextBorder)
+            if (CardMakerInstance.DrawFormattedTextBorder)
             {
                 zGraphics.FillRectangle(Optional ? Brushes.DarkBlue : Brushes.DeepSkyBlue, TargetRect.X, TargetRect.Y, TargetRect.Width, TargetRect.Height);
             }

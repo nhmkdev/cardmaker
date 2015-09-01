@@ -25,7 +25,7 @@
 using System;
 using System.Drawing;
 using System.IO;
-using CardMaker.Forms;
+using CardMaker.Events.Managers;
 using CardMaker.XML;
 
 namespace CardMaker.Card
@@ -41,7 +41,7 @@ namespace CardMaker.Card
             }
             if (!File.Exists(sPath))
             {
-                sPath = CardMakerMDI.ProjectPath + sFile;
+                sPath = ProjectManager.Instance.ProjectPath + sFile;
             }
             if (File.Exists(sPath))
             {
@@ -85,7 +85,7 @@ namespace CardMaker.Card
             }
             else
             {
-                MDIIssues.Instance.AddIssue("Image file not found: " + sFile);
+                IssueManager.Instance.AddIssue("Image file not found: " + sFile);
             }
             // draw nothing
         }

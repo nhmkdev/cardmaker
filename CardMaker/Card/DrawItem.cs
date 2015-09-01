@@ -28,8 +28,8 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
-using CardMaker.Forms;
 using CardMaker.Card.Shapes;
+using CardMaker.Events.Managers;
 using CardMaker.XML;
 
 namespace CardMaker.Card
@@ -207,9 +207,11 @@ namespace CardMaker.Card
                 }
                 if (!File.Exists(sFile))
                 {
-                    sFile = CardMakerMDI.ProjectPath + sFile;
+                    sFile = ProjectManager.Instance.ProjectPath + sFile;
                     if (!File.Exists(sFile))
+                    {
                         return null;
+                    }
                 }
 
                 Bitmap zSourceImage;

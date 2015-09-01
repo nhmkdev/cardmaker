@@ -24,8 +24,6 @@
 
 using System.Drawing;
 using System.Windows.Forms;
-using CardMaker.Forms;
-using CardMaker.XML;
 
 namespace CardMaker.Card
 {
@@ -33,7 +31,7 @@ namespace CardMaker.Card
     {
         private readonly CardRenderer m_zCardRenderer;
 
-        public Deck ActiveDeck
+        private Deck ActiveDeck
         {
             get
             {
@@ -56,20 +54,18 @@ namespace CardMaker.Card
             m_zCardRenderer = new CardRenderer
             {
                 ZoomLevel = 1.0f,
-                DrawElementBorder = true,
-                DrawFormattedTextBorder = false,
             };
             // double buffer and optimize!
             SetStyle(ControlStyles.AllPaintingInWmPaint, true);
             SetStyle(ControlStyles.UserPaint, true);
             SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
             SetStyle(ControlStyles.Opaque, true);
-            Reset();
+            Reset(null);
         }
 
-        public void Reset()
+        public void Reset(Deck zDeck)
         {
-            m_zCardRenderer.CurrentDeck = new Deck();
+            m_zCardRenderer.CurrentDeck = zDeck;
             UpdateSize();
             Invalidate();
         }
@@ -80,15 +76,10 @@ namespace CardMaker.Card
             DrawItem.DumpOpacityImages();
         }
 
-        public void SetCardLayout(ProjectLayout zCardLayout)
-        {
-            ActiveDeck.SetAndLoadLayout(zCardLayout ?? ActiveDeck.CardLayout, false);
-            Size = new Size(ActiveDeck.CardLayout.width, ActiveDeck.CardLayout.height);
-        }
-
         public void UpdateSize()
         {
-            if (null != ActiveDeck.CardLayout)
+            // TODO: may want to compare current and previous size if this is costly
+            if (null != ActiveDeck && null != ActiveDeck.CardLayout)
             {
                 Size = new Size((int)((float)ActiveDeck.CardLayout.width * m_zCardRenderer.ZoomLevel), (int)((float)ActiveDeck.CardLayout.height * m_zCardRenderer.ZoomLevel));
             }
@@ -102,13 +93,14 @@ namespace CardMaker.Card
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            if (null == ActiveDeck.CardLayout)
+            if (null == ActiveDeck || null == ActiveDeck.CardLayout)
             {
                 e.Graphics.FillRectangle(Brushes.White, 0, 0, Size.Width, Size.Height);
                 e.Graphics.DrawString("Select a Layout in the Project Window", new Font(DefaultFont.FontFamily, 20), Brushes.Red, new RectangleF(10, 10, Size.Width - 10, Size.Height - 10));
                 return;
             }
-            else if (-1 != ActiveDeck.CardIndex && ActiveDeck.CardIndex < ActiveDeck.CardCount)
+            
+            if (-1 != ActiveDeck.CardIndex && ActiveDeck.CardIndex < ActiveDeck.CardCount)
             {
                 m_zCardRenderer.DrawCard(0, 0, e.Graphics, ActiveDeck.CurrentLine, false, true);
             }

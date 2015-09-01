@@ -25,7 +25,7 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using CardMaker.Forms;
+using CardMaker.Data;
 using CardMaker.XML;
 using Support.IO;
 
@@ -123,7 +123,7 @@ namespace CardMaker.Card
             }
 #endif
 
-            var fEmSize = zGraphics.DpiY * (zFont.Size / CardMakerMDI.Instance.ApplicationDPI);
+            var fEmSize = zGraphics.DpiY * (zFont.Size / CardMakerInstance.ApplicationDPI);
 
             foreach (var sLine in arrayDrawLines)
             {

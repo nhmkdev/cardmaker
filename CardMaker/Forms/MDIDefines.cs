@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using CardMaker.Events.Managers;
 using Support.UI;
 
 namespace CardMaker.Forms
@@ -38,6 +39,24 @@ namespace CardMaker.Forms
         public MDIDefines()
         {
             InitializeComponent();
+            LayoutManager.Instance.LayoutLoaded += Instance_LayoutLoaded;
+        }
+
+        void Instance_LayoutLoaded(object sender, Events.LayoutEventArgs args)
+        {
+            listViewDefines.Items.Clear();
+
+            if (null == args.Deck)
+            {
+                return;
+            }
+
+            var listItems = new List<ListViewItem>();
+            foreach (var zDefine in args.Deck.Defines)
+            {
+                listItems.Add(new ListViewItem(new string[] { zDefine.Key, zDefine.Value }));
+            }
+            listViewDefines.Items.AddRange(listItems.ToArray());
         }
 
         public static MDIDefines Instance
@@ -50,17 +69,6 @@ namespace CardMaker.Forms
                 }
                 return s_zInstance;
             }
-        }
-
-        public void UpdateDefines()
-        {
-            listViewDefines.Items.Clear();
-            var listItems = new List<ListViewItem>();
-            foreach(var zDefine in CardMakerMDI.Instance.DrawCardCanvas.ActiveDeck.Defines)
-            {
-                listItems.Add(new ListViewItem(new string[] {zDefine.Key, zDefine.Value}));
-            }
-            listViewDefines.Items.AddRange(listItems.ToArray());
         }
 
         private void listViewDefines_ColumnClick(object sender, ColumnClickEventArgs e)

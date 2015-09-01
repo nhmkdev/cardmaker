@@ -24,7 +24,7 @@
 
 using System.Collections.Generic;
 using System.Drawing;
-using CardMaker.Forms;
+using CardMaker.Data;
 using CardMaker.XML;
 
 namespace CardMaker.Card.FormattedText
@@ -154,7 +154,7 @@ namespace CardMaker.Card.FormattedText
             }
 
             // draw border (debugging)
-            if (CardMakerMDI.Instance.DrawCardCanvas.CardRenderer.DrawFormattedTextBorder)
+            if (CardMakerInstance.DrawFormattedTextBorder)
             {
                 zGraphics.DrawRectangle(Pens.Green, TargetRect.X + m_fXOffset, TargetRect.Y + m_fYOffset, TargetRect.Width, TargetRect.Height);
             }
@@ -163,7 +163,7 @@ namespace CardMaker.Card.FormattedText
             var zBmp = DrawItem.LoadImageFromCache(m_sImageFile);
             zGraphics.DrawImage(zBmp, TargetRect.X + m_fXOffset, TargetRect.Y + m_fYOffset, TargetRect.Width, TargetRect.Height);
 
-            if (CardMakerMDI.Instance.DrawCardCanvas.CardRenderer.DrawFormattedTextBorder)
+            if (CardMakerInstance.DrawFormattedTextBorder)
             {
                 zGraphics.FillRectangle(new SolidBrush(Color.FromArgb(32, 255, 0, 0)), TargetRect.X, TargetRect.Y, TargetRect.Width, TargetRect.Height);
             }

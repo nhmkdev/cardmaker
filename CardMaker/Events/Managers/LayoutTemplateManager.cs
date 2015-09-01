@@ -1,21 +1,50 @@
-﻿using System;
+﻿////////////////////////////////////////////////////////////////////////////////
+// The MIT License (MIT)
+//
+// Copyright (c) 2015 Tim Stair
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+////////////////////////////////////////////////////////////////////////////////
+
+using System;
 using System.Collections.Generic;
 using System.IO;
+using CardMaker.Data;
+using CardMaker.XML;
 using Support.IO;
 using Support.UI;
 
-namespace CardMaker.XML.Managers
+namespace CardMaker.Events.Managers
 {
-    public class LayoutTemplateManager : BaseXmlManager
+    /// <summary>
+    /// Handles LayoutTemplate management
+    /// </summary>
+    public class LayoutTemplateManager
     {
         private const string LAYOUT_TEMPLATES_FOLDER = "templates";
         private const string LAYOUT_TEMPLATE_EXTENSION = "xml";
         private const char NON_FILE_SAFE_REPLACEMENT_CHAR = '_';
 
-        public List<LayoutTemplate> LayoutTemplates { get; set; } 
-
         private static LayoutTemplateManager m_zInstance;
 
+        public List<LayoutTemplate> LayoutTemplates { get; set; } 
+        
         public static LayoutTemplateManager Instance
         {
             get
@@ -50,7 +79,7 @@ namespace CardMaker.XML.Managers
                 {
                     try
                     {
-                        SerializationUtils.DeserializeFromXmlFile(sLayoutFilePath, XML_ENCODING, ref zTemplate);
+                        SerializationUtils.DeserializeFromXmlFile(sLayoutFilePath, CardMakerConstants.XML_ENCODING, ref zTemplate);
                         listLayoutTemplates.Add(zTemplate);
                     }
                     catch (Exception)
@@ -84,12 +113,11 @@ namespace CardMaker.XML.Managers
                 }
                 var sFileName = ReplaceNonFileSafeCharacters(zLayoutTemplate.Layout.Name);
                 var sOutput = Path.Combine(sLayoutsPath, sFileName) + "." + LAYOUT_TEMPLATE_EXTENSION;
-                return SerializationUtils.SerializeToXmlFile(sOutput, zLayoutTemplate, XML_ENCODING);
+                return SerializationUtils.SerializeToXmlFile(sOutput, zLayoutTemplate, CardMakerConstants.XML_ENCODING);
             }
             catch (Exception e)
             {
                 Logger.AddLogLine("Error saving LayoutTemplate: {0}".FormatString(e.Message));
-                throw;
             }
             return false;
         }

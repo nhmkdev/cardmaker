@@ -48,27 +48,27 @@ namespace CardMaker.Card.Shapes
             BasicShapeInformation = OverrideHeight,
         }
 
-        [BrowsableAttribute(false)]
+        [Browsable(false)]
         public string Name
         {
             get { return m_sName; }
         }
 
-        [DescriptionAttribute("Border Thickness (0 is fill)")]
+        [Description("Border Thickness (0 is fill)")]
         public int Thickness
         {
             get { return m_nThickness; }
             set { m_nThickness = value; }
         }
 
-        [DescriptionAttribute("Override Width (- is none)")]
+        [Description("Override Width (- is none)")]
         public string OverrideWidth
         {
             get { return m_nOverrideWidth; }
             set { m_nOverrideWidth = value; }
         }
 
-        [DescriptionAttribute("Override Height (- is none)")]
+        [Description("Override Height (- is none)")]
         public string OverrideHeight
         {
             get { return m_nOverrideHeight; }

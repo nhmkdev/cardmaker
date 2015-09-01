@@ -1,4 +1,4 @@
-﻿////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
 // Copyright (c) 2015 Tim Stair
@@ -22,26 +22,19 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Xml.Serialization;
+using CardMaker.Card;
 
-namespace CardMaker.XML
+namespace CardMaker.Events
 {
-    public class ProjectLayoutReference
+    public delegate void DeckIndexChanged(object sender, DeckChangeEventArgs args);
+
+    public class DeckChangeEventArgs
     {
-        #region Properties
+        public Deck Deck { get; private set; }
 
-        [XmlAttribute]
-        public string RelativePath { get; set; }
-
-        [XmlAttribute]
-        public bool Default { get; set; }
-
-        #endregion
-
-        public void DeepCopy(ProjectLayoutReference zReference)
+        public DeckChangeEventArgs(Deck zDeck)
         {
-            Default = zReference.Default;
-            RelativePath = zReference.RelativePath;
+            Deck = zDeck;
         }
     }
 }

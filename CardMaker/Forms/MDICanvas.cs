@@ -22,14 +22,17 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using CardMaker.Card;
-using CardMaker.XML;
-using Support.UI;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using CardMaker.Card;
+using CardMaker.Data;
+using CardMaker.Events;
+using CardMaker.Events.Managers;
+using CardMaker.XML;
+using LayoutEventArgs = CardMaker.Events.LayoutEventArgs;
 
 namespace CardMaker.Forms
 {
@@ -43,6 +46,7 @@ namespace CardMaker.Forms
         private MouseMode m_eMouseMode = MouseMode.MoveResize;
         private ResizeDirection m_eResizeDirection = ResizeDirection.Up;
         private ProjectLayoutElement m_zSelectedElement;
+        // TODO: this list should be populated by an event from the Layout window on selection
         private List<ProjectLayoutElement> m_listSelectedElements;
         private List<Point> m_listSelectedOffsets;
         private Dictionary<ProjectLayoutElement, Rectangle> m_dictionarySelectedUndo;
@@ -70,14 +74,6 @@ namespace CardMaker.Forms
             Horizontal, // lock to horizontal only
         }
 
-        public CardCanvas CardCanvas
-        { 
-            get
-            {
-                return m_zCardCanvas;
-            }
-        }
-
         [Flags]
         public enum ResizeDirection
         {
@@ -93,11 +89,6 @@ namespace CardMaker.Forms
             Move = 1 << 8,
         }
 
-        /// <summary>
-        /// The Canvas has to micro-manage the MDIElementControl to allow for control over undo/redo functionality
-        /// </summary>
-        public bool CanvasUserAction { get; set; }
-
         private MDICanvas()
         {
             InitializeComponent();
@@ -110,7 +101,7 @@ namespace CardMaker.Forms
             zGraphics.FillRectangle(zBlack, 16, 16, 16, 16);
             zGraphics.FillRectangle(zWhite, 0, 16, 16, 16);
             panelCardCanvas.BackgroundImage = zBitmap;
-            CanvasUserAction = false;
+            CardMakerInstance.CanvasUserAction = false;
             UpdateText();
             // m_zCardCanvas is a panel within the panelCardCanvas
             m_zCardCanvas = new CardCanvas
@@ -125,12 +116,51 @@ namespace CardMaker.Forms
             m_zContextMenu.Opening += contextmenuOpening_Handler;
 
             panelCardCanvas.Controls.Add(m_zCardCanvas);
+
+            LayoutManager.Instance.LayoutUpdated += Layout_Updated;
+            LayoutManager.Instance.LayoutLoaded += Layout_Loaded;
+            LayoutManager.Instance.DeckIndexChanged += Instance_DeckIndexChanged;
+            ElementManager.Instance.ElementSelected += Instance_ElementSelected;
+            ProjectManager.Instance.ProjectOpened += ProjectProjectOpened;
         }
 
-        public void Reset()
+        void Instance_ElementSelected(object sender, ElementEventArgs args)
         {
-            m_zCardCanvas.Reset();
-            Invalidate();
+            Redraw();
+        }
+
+        void Instance_DeckIndexChanged(object sender, DeckChangeEventArgs args)
+        {
+            Redraw();
+        }
+
+        void Layout_Updated(object sender, LayoutEventArgs args)
+        {
+            m_zCardCanvas.Reset(args.Deck);
+            Redraw();
+        }
+
+        void Layout_Loaded(object sender, LayoutEventArgs args)
+        {
+            // NOTE: This is the one place where the Deck is passed from UI specific code to generic rendering code
+            // The loaded Deck is assigned to the underlying renderer
+            m_zCardCanvas.Reset(args.Deck);
+            Redraw();
+        }
+
+        void ProjectProjectOpened(object sender, ProjectEventArgs e)
+        {
+            m_zCardCanvas.Reset(null);
+            Redraw();
+        }
+
+        /// <summary>
+        /// Invalidates the 
+        /// </summary>
+        private void Redraw()
+        {
+            panelCardCanvas.Invalidate();
+            m_zCardCanvas.Invalidate();            
         }
 
         public static MDICanvas Instance
@@ -138,7 +168,9 @@ namespace CardMaker.Forms
             get
             {
                 if (null == s_zInstance)
+                {
                     s_zInstance = new MDICanvas();
+                }
                 return s_zInstance;
             }
         }
@@ -148,20 +180,20 @@ namespace CardMaker.Forms
             get
             {
                 const int CP_NOCLOSE_BUTTON = 0x200;
-                CreateParams mdiCp = base.CreateParams;
-                mdiCp.ClassStyle = mdiCp.ClassStyle | CP_NOCLOSE_BUTTON;
-                return mdiCp;
+                CreateParams zParams = base.CreateParams;
+                zParams.ClassStyle = zParams.ClassStyle | CP_NOCLOSE_BUTTON;
+                return zParams;
             }
         }
 
         private void contextmenuOpening_Handler(object sender, CancelEventArgs e)
         {
             m_zContextMenu.Items.Clear();
-            if (null != m_zCardCanvas.ActiveDeck.CardLayout.Element)
+            if (null != LayoutManager.Instance.ActiveDeck.CardLayout.Element)
             {
                 Point pointMouse = m_zCardCanvas.PointToClient(MousePosition);
                 // add only the items that the mouse is within the rectangle of
-                foreach (ProjectLayoutElement zElement in m_zCardCanvas.ActiveDeck.CardLayout.Element)
+                foreach (ProjectLayoutElement zElement in LayoutManager.Instance.ActiveDeck.CardLayout.Element)
                 {
                     if (!zElement.enabled)
                     {
@@ -171,7 +203,8 @@ namespace CardMaker.Forms
                         zElement.height*m_fZoom);
                     if (zRect.Contains(pointMouse))
                     {
-                        m_zContextMenu.Items.Add(zElement.name, null, contextmenuClick_Handler);
+                        var zItem = m_zContextMenu.Items.Add(zElement.name, null, contextmenuClick_Handler);
+                        zItem.Tag = zElement;
                     }
                 }
             }
@@ -189,8 +222,7 @@ namespace CardMaker.Forms
 
         private void contextmenuClick_Handler(object sender, EventArgs e)
         {
-            var zItem = (ToolStripItem) sender;
-            MDILayoutControl.Instance.ChangeSelectedElement(zItem.Text);
+            ElementManager.Instance.FireElementCanvasSelectedEvent((ProjectLayoutElement)((ToolStripItem) sender).Tag);
         }
 
         private void cardCanvas_MouseMove(object sender, MouseEventArgs e)
@@ -201,6 +233,7 @@ namespace CardMaker.Forms
                 {
                     int nX = e.X;
                     int nY = e.Y;
+                    var bElementBoundsChanged = false;
                     if (Cursor == Cursors.SizeAll)
                     {
                         if (TranslationLock.WaitingToSet == m_eTranslationLock)
@@ -239,18 +272,18 @@ namespace CardMaker.Forms
                                 idx++;
                             }
                         }
-
-                        MDIElementControl.Instance.UpdateCurrentElementExtents();
+                        
+                        bElementBoundsChanged = true;
                     }
                     else if (Cursor == Cursors.SizeNS)
                     {
                         switch (m_eResizeDirection)
                         {
                             case ResizeDirection.Up:
-                                ResizeUp(nY);
+                                bElementBoundsChanged |= ResizeUp(nY);
                                 break;
                             case ResizeDirection.Down:
-                                ResizeDown(nY);
+                                bElementBoundsChanged |= ResizeDown(nY);
                                 break;
                         }
                     }
@@ -259,10 +292,10 @@ namespace CardMaker.Forms
                         switch (m_eResizeDirection)
                         {
                             case ResizeDirection.Left:
-                                ResizeLeft(nX);
+                                bElementBoundsChanged |= ResizeLeft(nX);
                                 break;
                             case ResizeDirection.Right:
-                                ResizeRight(nX);
+                                bElementBoundsChanged |= ResizeRight(nX);
                                 break;
                         }
                     }
@@ -271,12 +304,12 @@ namespace CardMaker.Forms
                         switch (m_eResizeDirection)
                         {
                             case ResizeDirection.UpRight:
-                                ResizeUp(nY);
-                                ResizeRight(nX);
+                                bElementBoundsChanged |= ResizeUp(nY);
+                                bElementBoundsChanged |= ResizeRight(nX);
                                 break;
                             case ResizeDirection.DownLeft:
-                                ResizeDown(nY);
-                                ResizeLeft(nX);
+                                bElementBoundsChanged |= ResizeDown(nY);
+                                bElementBoundsChanged |= ResizeLeft(nX);
                                 break;
                         }
                     }
@@ -285,21 +318,26 @@ namespace CardMaker.Forms
                         switch (m_eResizeDirection)
                         {
                             case ResizeDirection.UpLeft:
-                                ResizeUp(nY);
-                                ResizeLeft(nX);
+                                bElementBoundsChanged |= ResizeUp(nY);
+                                bElementBoundsChanged |= ResizeLeft(nX);
                                 break;
                             case ResizeDirection.DownRight:
-                                ResizeDown(nY);
-                                ResizeRight(nX);
+                                bElementBoundsChanged |= ResizeDown(nY);
+                                bElementBoundsChanged |= ResizeRight(nX);
                                 break;
                         }
                     }
+
+                    if (bElementBoundsChanged)
+                    {
+                        ElementManager.Instance.FireElementBoundsUpdateEvent();
+                    }
+
                 }
             }
             if (MouseButtons.None == e.Button)
             {
-                // NOTE: this is evaluated every movement... might be a bit much
-                var zElement = MDILayoutControl.Instance.GetSelectedLayoutElement();
+                var zElement = ElementManager.Instance.GetSelectedElement();
                 if (null != zElement)
                 {
                     m_eResizeDirection = ResizeDirection.None;
@@ -374,56 +412,58 @@ namespace CardMaker.Forms
             }
         }
 
-        public void ResizeRight(int nX)
+        public bool ResizeRight(int nX)
         {
-            int nWidth = (int) ((float) nX*m_fZoomRatio) - MDIElementControl.Instance.ElementX;
+            int nWidth = (int)((float)nX * m_fZoomRatio) - m_zSelectedElement.x;
             if (1 <= nWidth)
             {
-                MDIElementControl.Instance.ElementW = nWidth;
                 m_zSelectedElement.width = nWidth;
+                return true;
             }
+            return false;
         }
 
-        public void ResizeLeft(int nX)
+        public bool ResizeLeft(int nX)
         {
             int nWidth = m_zSelectedElement.width + (m_zSelectedElement.x - (int) ((float) nX*m_fZoomRatio));
             if ((0 <= nX) && (1 <= nWidth))
             {
                 m_zSelectedElement.width = nWidth;
                 m_zSelectedElement.x = (int) ((float) nX*m_fZoomRatio);
-                MDIElementControl.Instance.ElementW = nWidth;
-                MDIElementControl.Instance.ElementX = m_zSelectedElement.x;
+                return true;
             }
+            return false;
         }
 
-        public void ResizeUp(int nY)
+        public bool ResizeUp(int nY)
         {
             int nHeight = m_zSelectedElement.height + (m_zSelectedElement.y - (int) ((float) nY*m_fZoomRatio));
             if ((0 <= nY) && (1 <= nHeight))
             {
                 m_zSelectedElement.height = nHeight;
                 m_zSelectedElement.y = (int) ((float) nY*m_fZoomRatio);
-                MDIElementControl.Instance.ElementH = nHeight;
-                MDIElementControl.Instance.ElementY = m_zSelectedElement.y;
+                return true;
             }
+            return false;
         }
 
-        public void ResizeDown(int nY)
+        public bool ResizeDown(int nY)
         {
-            int nHeight = (int) ((float) nY*m_fZoomRatio) - MDIElementControl.Instance.ElementY;
+            int nHeight = (int)((float)nY * m_fZoomRatio) - m_zSelectedElement.y;
             if (1 <= nHeight)
             {
                 m_zSelectedElement.height = nHeight;
-                MDIElementControl.Instance.ElementH = nHeight;
+                return true;
             }
+            return false;
         }
 
         private void cardCanvas_MouseUp(object sender, MouseEventArgs e)
         {
-            CanvasUserAction = false;
+            CardMakerInstance.CanvasUserAction = false;
             if (null != m_listSelectedElements && m_bElementSelected)
             {
-                ConfigureUserAction(m_dictionarySelectedUndo, GetUndoRedoPoints());
+               ElementManager.Instance.ConfigureUserAction(m_dictionarySelectedUndo, ElementManager.Instance.GetUndoRedoPoints());
             }
 
             m_dictionarySelectedUndo = null;
@@ -432,40 +472,14 @@ namespace CardMaker.Forms
             m_bElementSelected = false;
         }
 
-        private void ConfigureUserAction(Dictionary<ProjectLayoutElement, Rectangle> dictionarySelectedUndo,
-            Dictionary<ProjectLayoutElement, Rectangle> dictionarySelectedRedo)
-        {
-#warning check on closure needs for this... 
-            // configure the variables used for undo/redo
-            var dictionaryUndoElements = dictionarySelectedUndo;
-            var dictionaryRedoElements = dictionarySelectedRedo;
-
-            UserAction.PushAction(bRedo =>
-            {
-                Dictionary<ProjectLayoutElement, Rectangle> dictionaryElementsChange = bRedo
-                    ? dictionaryRedoElements
-                    : dictionaryUndoElements;
-                foreach (var kvp in dictionaryElementsChange)
-                {
-                    Rectangle rectChange = kvp.Value;
-                    ProjectLayoutElement zElement = kvp.Key;
-                    zElement.x = rectChange.X;
-                    zElement.y = rectChange.Y;
-                    zElement.width = rectChange.Width;
-                    zElement.height = rectChange.Height;
-                }
-                MDIElementControl.Instance.UpdateCurrentElementExtents();
-            });
-        }
-
         private void cardCanvas_MouseDown(object sender, MouseEventArgs e)
         {
             if (MouseButtons.Left == e.Button)
             {
-                ProjectLayoutElement zElement = MDILayoutControl.Instance.GetSelectedLayoutElement();
+                ProjectLayoutElement zElement = ElementManager.Instance.GetSelectedElement();
                 if (null != zElement)
                 {
-                    CanvasUserAction = true;
+                    CardMakerInstance.CanvasUserAction = true;
 
                     m_pointOriginalMouseDown = e.Location;
                     if (TranslationLock.WaitingToSet != m_eTranslationLock)
@@ -488,7 +502,7 @@ namespace CardMaker.Forms
                         m_bElementSelected = true;
                         m_zSelectedElement = zElement;
 
-                        m_listSelectedElements = MDILayoutControl.Instance.GetSelectedLayoutElements();
+                        m_listSelectedElements = ElementManager.Instance.GetSelectedElements();
                         if (null != m_listSelectedElements)
                         {
                             m_listSelectedOffsets = new List<Point>();
@@ -499,7 +513,7 @@ namespace CardMaker.Forms
                                     nYUnzoomed - zSelectedElement.y));
                             }
                             // setup the undo dictionary (covers all types of changes allowed with canvas mouse movement)
-                            m_dictionarySelectedUndo = GetUndoRedoPoints();
+                            m_dictionarySelectedUndo = ElementManager.Instance.GetUndoRedoPoints();
                         }
                     }
                 }
@@ -525,22 +539,22 @@ namespace CardMaker.Forms
                         break;
                         // focus is taken by the MDICanvas, reset it after each change below & reset the translation lock
                     case Keys.Shift | Keys.Up:
-                        MDILayoutControl.Instance.ChangeElementOrder(-1);
+                        LayoutManager.Instance.RequestElementAdjustOrder(-1);
                         m_eTranslationLock = TranslationLock.Unset;
                         m_zCardCanvas.Focus();
                         break;
                     case Keys.Shift | Keys.Down:
-                        MDILayoutControl.Instance.ChangeElementOrder(1);
+                        LayoutManager.Instance.RequestElementAdjustOrder(1);
                         m_eTranslationLock = TranslationLock.Unset;
                         m_zCardCanvas.Focus();
                         break;
                     case Keys.Control | Keys.Up:
-                        MDILayoutControl.Instance.ChangeSelectedElement(-1);
+                        LayoutManager.Instance.RequestSelectedElementIndexAdjust(-1);
                         m_eTranslationLock = TranslationLock.Unset;
                         m_zCardCanvas.Focus();
                         break;
                     case Keys.Control | Keys.Down:
-                        MDILayoutControl.Instance.ChangeSelectedElement(1);
+                        LayoutManager.Instance.RequestSelectedElementIndexAdjust(1);
                         m_eTranslationLock = TranslationLock.Unset;
                         m_zCardCanvas.Focus();
                         break;
@@ -577,48 +591,9 @@ namespace CardMaker.Forms
                         break;
 
                 }
-                ProcessSelectedElementsChange(nHChange, nVChange, 0, 0);
+                ElementManager.Instance.ProcessSelectedElementsChange(nHChange, nVChange, 0, 0);
             }
             return base.ProcessCmdKey(ref msg, keyData);
-        }
-
-        public void ProcessSelectedElementsChange(int nX, int nY, int nWidth, int nHeight, decimal dScaleWidth = 1, decimal dScaleHeight = 1)
-        {
-            if (nX == 0 && nY == 0 && nWidth == 0 && nHeight == 0 && dScaleWidth == 1 && dScaleHeight == 1)
-            {
-                return;
-            }
-            m_listSelectedElements = MDILayoutControl.Instance.GetSelectedLayoutElements();
-
-            if (null != m_listSelectedElements)
-            {
-
-                Dictionary<ProjectLayoutElement, Rectangle> dictionarySelectedUndo = GetUndoRedoPoints();
-
-                if (dScaleWidth != 1 || dScaleHeight != 1)
-                {
-                    foreach (var zElement in m_listSelectedElements)
-                    {
-                        zElement.width = (int)Math.Max(1, zElement.width * dScaleWidth);
-                        zElement.height = (int)Math.Max(1, zElement.height * dScaleHeight);
-                    }
-                }
-                else
-                {
-                    foreach (var zElement in m_listSelectedElements)
-                    {
-                        zElement.x = Math.Max(1, zElement.x + nX);
-                        zElement.y = Math.Max(1, zElement.y + nY);
-                        zElement.width = Math.Max(1, zElement.width + nWidth);
-                        zElement.height = Math.Max(1, zElement.height + nHeight);
-                    }
-                }
-
-                ConfigureUserAction(dictionarySelectedUndo, GetUndoRedoPoints());
-
-                MDIElementControl.Instance.UpdateCurrentElementExtents();
-                m_listSelectedElements = null;
-            }           
         }
 
         private void numericUpDownZoom_ValueChanged(object sender, EventArgs e)
@@ -627,7 +602,7 @@ namespace CardMaker.Forms
             m_fZoomRatio = 1.0f / m_fZoom;
             m_eTranslationLock = TranslationLock.Unset;
             m_zCardCanvas.CardRenderer.ZoomLevel = m_fZoom;
-            m_zCardCanvas.ActiveDeck.ResetDeckCache();
+            LayoutManager.Instance.ActiveDeck.ResetDeckCache();
             m_zCardCanvas.UpdateSize();
             m_zCardCanvas.Invalidate();
         }
@@ -635,20 +610,6 @@ namespace CardMaker.Forms
         private void UpdateText()
         {
             Text = MouseMode.MoveResize == m_eMouseMode ? "Canvas [Mode: Normal]" : "Canvas [Mode: Move-only]";
-        }
-
-        private Dictionary<ProjectLayoutElement, Rectangle> GetUndoRedoPoints()
-        {
-            if (null != m_listSelectedElements)
-            {
-                var dictionarySelectedUndo = new Dictionary<ProjectLayoutElement, Rectangle>();
-                foreach (var zElement in m_listSelectedElements)
-                {
-                    dictionarySelectedUndo.Add(zElement, new Rectangle(zElement.x, zElement.y, zElement.width, zElement.height));
-                }
-                return dictionarySelectedUndo;
-            }
-            return null;
         }
     }
 }

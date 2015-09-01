@@ -22,13 +22,13 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+using System;
+using System.Drawing;
 using System.Globalization;
+using System.IO;
 using CardMaker.XML;
 using Support.IO;
 using Support.UI;
-using System;
-using System.Drawing;
-using System.IO;
 
 namespace CardMaker.Card.Export
 {

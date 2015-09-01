@@ -22,22 +22,24 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using CardMaker.Card.FormattedText;
-using CardMaker.Card.Import;
-using CardMaker.Forms;
-using CardMaker.XML;
-using Support.IO;
-using Support.UI;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
+using CardMaker.Card.FormattedText;
+using CardMaker.Card.Import;
+using CardMaker.Data;
+using CardMaker.Events.Managers;
+using CardMaker.Forms;
+using CardMaker.XML;
+using Support.IO;
+using Support.UI;
 #if MONO_BUILD
 using System.Threading;
 #endif
-using System.Windows.Forms;
 
 namespace CardMaker.Card
 {
@@ -217,14 +219,14 @@ namespace CardMaker.Card
                     // 0 index is always the default reference in the case of multi load
                     if (nIdx == 0)
                     {
-                        if (!string.IsNullOrEmpty(CardMakerMDI.Instance.LoadedFile))
+                        if (!string.IsNullOrEmpty(CardMakerInstance.LoadedProjectFilePath))
                         {
                             zRefReader.GetProjectDefineData(zReference, listDefineLines);
                             if (listDefineLines.Count == 0)
                             {
                                 Logger.AddLogLine(
                                     "No defines found for project file: {0}".FormatString(
-                                        CardMakerMDI.Instance.LoadedFile));
+                                        CardMakerInstance.LoadedProjectFilePath));
                             }
                         }
                         else
@@ -288,7 +290,7 @@ namespace CardMaker.Card
                     }
                     else
                     {
-                        MDIIssues.Instance.AddIssue("Duplicate column found in: " + sReferencePath + "::" + "Column [" + nIdx + "]: " + sKey);
+                        IssueManager.Instance.AddIssue("Duplicate column found in: " + sReferencePath + "::" + "Column [" + nIdx + "]: " + sKey);
                         Logger.AddLogLine("Duplicate column found in: " + sReferencePath + "::" + "Column [" + nIdx + "]: " + sKey);
                     }
                 }
@@ -369,7 +371,7 @@ namespace CardMaker.Card
                 // indicate if no lines remain!
                 if (0 == listLines.Count)
                 {
-                    MDIIssues.Instance.AddIssue("No lines found?! allowed_layout may be cutting them!");
+                    IssueManager.Instance.AddIssue("No lines found?! allowed_layout may be cutting them!");
                 }
 
             }
@@ -384,7 +386,7 @@ namespace CardMaker.Card
                     int nNumber;
                     if (!int.TryParse(listItems[0].Trim(), out nNumber))
                     {
-                        MDIIssues.Instance.AddIssue("Invalid card count found: [" + listItems[0] + "] The first column should always have a number value.");
+                        IssueManager.Instance.AddIssue("Invalid card count found: [" + listItems[0] + "] The first column should always have a number value.");
                         nNumber = 1;
                     }
                     for (var nCount = 0; nCount < nNumber; nCount++)
@@ -415,7 +417,7 @@ namespace CardMaker.Card
                 }
                 if (!string.IsNullOrEmpty(sReferencePath))
                 {
-                    MDIIssues.Instance.AddIssue("No lines found for this layout! Generated " + nDefaultCount);
+                    IssueManager.Instance.AddIssue("No lines found for this layout! Generated " + nDefaultCount);
                 }
             }
 
@@ -435,13 +437,13 @@ namespace CardMaker.Card
                         if (m_dictionaryDefines.TryGetValue(sKey.ToLower(), out sVal))
                         {
                             string sMsg = "Duplicate define found: " + sKey;
-                            MDIIssues.Instance.AddIssue(sMsg);
+                            IssueManager.Instance.AddIssue(sMsg);
                             Logger.AddLogLine(sMsg);
                         }
                         else if (m_dictionaryColumnNames.TryGetValue(sKey.ToLower(), out nIdx))
                         {
                             string sMsg = "Overlapping column name and define found in: " + sReferencePath + "::" + "Column [" + nIdx + "]: " + sKey;
-                            MDIIssues.Instance.AddIssue(sMsg);
+                            IssueManager.Instance.AddIssue(sMsg);
                             Logger.AddLogLine(sMsg);
                         }
                         else
@@ -574,7 +576,7 @@ namespace CardMaker.Card
                 }
                 else
                 {
-                    MDIIssues.Instance.AddIssue("Bad reference key: " + sKey);
+                    IssueManager.Instance.AddIssue("Bad reference key: " + sKey);
                     sDefineValue = "[BAD NAME: " + sKey + "]";
                 }
                 if (arrayParams.Length > 1)
@@ -949,15 +951,19 @@ namespace CardMaker.Card
 
             listView.Columns.Clear();
             listView.Items.Clear();
+
             for (var nIdx = 1; nIdx < m_listColumnNames.Count; nIdx++)
             {
                 ListViewAssist.AddColumn(m_listColumnNames[nIdx], arrayColumnSizes[nIdx], listView);
             }
-            var listLines = CurrentLine.LineColumns;
 
-            if (-1 != m_nCardIndex && listLines.Count > 0)
+            if (-1 != m_nCardIndex)
             {
-                listView.Items.Add(new ListViewItem(listLines.GetRange(1, listLines.Count - 1).ToArray()));
+                var listLines = CurrentLine.LineColumns;
+                if (listLines.Count > 0)
+                {
+                    listView.Items.Add(new ListViewItem(listLines.GetRange(1, listLines.Count - 1).ToArray()));
+                }
             }
         }
 
@@ -1038,6 +1044,7 @@ namespace CardMaker.Card
         #endregion
 
         #region Layout Set
+#warning todo: make a deck loader interface so this can be handled from the command line
 
         public bool SetAndLoadLayout(ProjectLayout zLayout, bool bExporting)
         {

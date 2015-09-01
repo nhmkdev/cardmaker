@@ -22,6 +22,11 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+using System;
+using System.ComponentModel;
+using System.Drawing;
+using System.Windows.Forms;
+
 namespace CardMaker.Forms
 {
     partial class GoogleCredentialsDialog
@@ -29,7 +34,7 @@ namespace CardMaker.Forms
         /// <summary>
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private IContainer components = null;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -52,103 +57,103 @@ namespace CardMaker.Forms
         /// </summary>
         private void InitializeComponent()
         {
-            this.label1 = new System.Windows.Forms.Label();
-            this.txtAccessToken = new System.Windows.Forms.TextBox();
-            this.btnOK = new System.Windows.Forms.Button();
-            this.btnPaste = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
-            this.txtAuthURL = new System.Windows.Forms.TextBox();
-            this.btnBrowse = new System.Windows.Forms.Button();
-            this.label3 = new System.Windows.Forms.Label();
+            this.label1 = new Label();
+            this.txtAccessToken = new TextBox();
+            this.btnOK = new Button();
+            this.btnPaste = new Button();
+            this.label2 = new Label();
+            this.txtAuthURL = new TextBox();
+            this.btnBrowse = new Button();
+            this.label3 = new Label();
             this.SuspendLayout();
             // 
             // label1
             // 
-            this.label1.Location = new System.Drawing.Point(12, 48);
+            this.label1.Location = new Point(12, 48);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(90, 20);
+            this.label1.Size = new Size(90, 20);
             this.label1.TabIndex = 0;
             this.label1.Text = "Access Token:";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.label1.TextAlign = ContentAlignment.MiddleRight;
             // 
             // txtAccessToken
             // 
-            this.txtAccessToken.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtAccessToken.Location = new System.Drawing.Point(111, 48);
+            this.txtAccessToken.Anchor = ((AnchorStyles)(((AnchorStyles.Top | AnchorStyles.Left) 
+            | AnchorStyles.Right)));
+            this.txtAccessToken.Location = new Point(111, 48);
             this.txtAccessToken.Name = "txtAccessToken";
-            this.txtAccessToken.Size = new System.Drawing.Size(393, 20);
+            this.txtAccessToken.Size = new Size(393, 20);
             this.txtAccessToken.TabIndex = 1;
             // 
             // btnOK
             // 
-            this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOK.Location = new System.Drawing.Point(553, 86);
+            this.btnOK.Anchor = ((AnchorStyles)((AnchorStyles.Bottom | AnchorStyles.Right)));
+            this.btnOK.Location = new Point(553, 86);
             this.btnOK.Name = "btnOK";
-            this.btnOK.Size = new System.Drawing.Size(75, 23);
+            this.btnOK.Size = new Size(75, 23);
             this.btnOK.TabIndex = 3;
             this.btnOK.Text = "OK";
             this.btnOK.UseVisualStyleBackColor = true;
-            this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
+            this.btnOK.Click += new EventHandler(this.btnOK_Click);
             // 
             // btnPaste
             // 
-            this.btnPaste.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnPaste.Location = new System.Drawing.Point(510, 47);
+            this.btnPaste.Anchor = ((AnchorStyles)((AnchorStyles.Top | AnchorStyles.Right)));
+            this.btnPaste.Location = new Point(510, 47);
             this.btnPaste.Name = "btnPaste";
-            this.btnPaste.Size = new System.Drawing.Size(118, 23);
+            this.btnPaste.Size = new Size(118, 23);
             this.btnPaste.TabIndex = 4;
             this.btnPaste.Text = "Paste Token";
             this.btnPaste.UseVisualStyleBackColor = true;
-            this.btnPaste.Click += new System.EventHandler(this.btnPaste_Click);
+            this.btnPaste.Click += new EventHandler(this.btnPaste_Click);
             // 
             // label2
             // 
-            this.label2.Location = new System.Drawing.Point(12, 12);
+            this.label2.Location = new Point(12, 12);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(90, 20);
+            this.label2.Size = new Size(90, 20);
             this.label2.TabIndex = 5;
             this.label2.Text = "Auth URL:";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.label2.TextAlign = ContentAlignment.MiddleRight;
             // 
             // txtAuthURL
             // 
-            this.txtAuthURL.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtAuthURL.Location = new System.Drawing.Point(111, 12);
+            this.txtAuthURL.Anchor = ((AnchorStyles)(((AnchorStyles.Top | AnchorStyles.Left) 
+            | AnchorStyles.Right)));
+            this.txtAuthURL.Location = new Point(111, 12);
             this.txtAuthURL.Name = "txtAuthURL";
             this.txtAuthURL.ReadOnly = true;
-            this.txtAuthURL.Size = new System.Drawing.Size(393, 20);
+            this.txtAuthURL.Size = new Size(393, 20);
             this.txtAuthURL.TabIndex = 6;
             // 
             // btnBrowse
             // 
-            this.btnBrowse.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnBrowse.Location = new System.Drawing.Point(510, 10);
+            this.btnBrowse.Anchor = ((AnchorStyles)((AnchorStyles.Top | AnchorStyles.Right)));
+            this.btnBrowse.Location = new Point(510, 10);
             this.btnBrowse.Name = "btnBrowse";
-            this.btnBrowse.Size = new System.Drawing.Size(118, 23);
+            this.btnBrowse.Size = new Size(118, 23);
             this.btnBrowse.TabIndex = 8;
             this.btnBrowse.Text = "Browse To URL";
             this.btnBrowse.UseVisualStyleBackColor = true;
-            this.btnBrowse.Click += new System.EventHandler(this.btnBrowse_Click);
+            this.btnBrowse.Click += new EventHandler(this.btnBrowse_Click);
             // 
             // label3
             // 
-            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.label3.Location = new System.Drawing.Point(12, 86);
+            this.label3.Anchor = ((AnchorStyles)(((AnchorStyles.Bottom | AnchorStyles.Left) 
+            | AnchorStyles.Right)));
+            this.label3.Location = new Point(12, 86);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(535, 20);
+            this.label3.Size = new Size(535, 20);
             this.label3.TabIndex = 9;
             this.label3.Text = "Note: CardMaker only stores the access token in the current running instance.";
-            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.label3.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // GoogleCredentialsDialog
             // 
             this.AcceptButton = this.btnOK;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(640, 115);
+            this.AutoScaleDimensions = new SizeF(6F, 13F);
+            this.AutoScaleMode = AutoScaleMode.Font;
+            this.ClientSize = new Size(640, 115);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.btnBrowse);
             this.Controls.Add(this.txtAuthURL);
@@ -158,13 +163,13 @@ namespace CardMaker.Forms
             this.Controls.Add(this.txtAccessToken);
             this.Controls.Add(this.label1);
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(648, 142);
+            this.MaximumSize = new Size(648, 142);
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(648, 142);
+            this.MinimumSize = new Size(648, 142);
             this.Name = "GoogleCredentialsDialog";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
-            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
+            this.SizeGripStyle = SizeGripStyle.Hide;
             this.Text = "Google Credentials";
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -173,13 +178,13 @@ namespace CardMaker.Forms
 
         #endregion
 
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox txtAccessToken;
-        private System.Windows.Forms.Button btnOK;
-        private System.Windows.Forms.Button btnPaste;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox txtAuthURL;
-        private System.Windows.Forms.Button btnBrowse;
-        private System.Windows.Forms.Label label3;
+        private Label label1;
+        private TextBox txtAccessToken;
+        private Button btnOK;
+        private Button btnPaste;
+        private Label label2;
+        private TextBox txtAuthURL;
+        private Button btnBrowse;
+        private Label label3;
     }
 }

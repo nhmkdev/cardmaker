@@ -259,7 +259,6 @@ namespace CardMaker.Forms
             // MDIProject
             // 
             this.AutoScaleDimensions = new SizeF(6F, 13F);
-            this.AutoScaleMode = AutoScaleMode.Font;
             this.ClientSize = new Size(192, 335);
             this.Controls.Add(this.treeView);
             this.Name = "MDIProject";

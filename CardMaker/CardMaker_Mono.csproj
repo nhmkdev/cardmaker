@@ -56,37 +56,20 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_Mono|AnyCPU'">
-    <OutputPath>bin\Release_Mono\</OutputPath>
-    <DefineConstants>TRACE;MONO_BUILD</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <CodeAnalysisLogFile>bin\Release\CardMaker.exe.CodeAnalysisLog.xml</CodeAnalysisLogFile>
-    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
-    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
-    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
-    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Google.GData.Client, Version=2.2.0.0, Culture=neutral, PublicKeyToken=04a59ca9b0273830, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\3rdParty\GoogleDataAPI\Google.GData.Client.dll</HintPath>
+      <HintPath>..\3rdParty\Google Data API\Google.GData.Client.dll</HintPath>
     </Reference>
     <Reference Include="Google.GData.Extensions, Version=2.2.0.0, Culture=neutral, PublicKeyToken=0b4c5df2ebf20876, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\3rdParty\GoogleDataAPI\Google.GData.Extensions.dll</HintPath>
+      <HintPath>..\3rdParty\Google Data API\Google.GData.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="Google.GData.Spreadsheets, Version=2.2.0.0, Culture=neutral, PublicKeyToken=3f77feb76ff0d9a1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\3rdParty\GoogleDataAPI\Google.GData.Spreadsheets.dll</HintPath>
+      <HintPath>..\3rdParty\Google Data API\Google.GData.Spreadsheets.dll</HintPath>
     </Reference>
-    <Reference Include="PdfSharp, Version=1.32.2608.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="PdfSharp">
       <HintPath>..\3rdParty\PDFsharp\GDI+\PdfSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -97,6 +80,8 @@
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -117,10 +102,10 @@
     <Compile Include="Card\Export\PdfSharpExporter.cs" />
     <Compile Include="Card\FormattedText\BackgroundColorMarkup.cs" />
     <Compile Include="Card\FormattedText\BackgroundImageMarkup.cs" />
-    <Compile Include="Card\FormattedText\CloseTagMarkup.cs" />
     <Compile Include="Card\FormattedText\FontMarkup.cs" />
-    <Compile Include="Card\FormattedText\ImageMarkup.cs" />
     <Compile Include="Card\FormattedText\PushMarkup.cs" />
+    <Compile Include="Card\FormattedText\CloseTagMarkup.cs" />
+    <Compile Include="Card\FormattedText\ImageMarkup.cs" />
     <Compile Include="Card\FormattedText\XDrawOffsetMarkup.cs" />
     <Compile Include="Card\FormattedText\SpaceMarkup.cs" />
     <Compile Include="Card\FormattedText\FontColorMarkup.cs" />
@@ -140,28 +125,28 @@
     <Compile Include="Card\Import\GoogleReferenceReader.cs" />
     <Compile Include="Card\Import\ReferenceReader.cs" />
     <Compile Include="Card\Import\ReferenceReaderFactory.cs" />
-    <Compile Include="Card\Shapes\AbstractShape.cs" />
-    <Compile Include="Card\Shapes\Definitions\EllipseShape.cs" />
-    <Compile Include="Card\Shapes\Definitions\GridShape.cs" />
-    <Compile Include="Card\Shapes\Definitions\RectShape.cs" />
-    <Compile Include="Card\Shapes\Definitions\RoundedRectShape.cs" />
-    <Compile Include="Card\Shapes\ShapeManager.cs" />
+    <Compile Include="Data\CardMakerConstants.cs" />
+    <Compile Include="Data\CardMakerInstance.cs" />
+    <Compile Include="Data\CardMakerSettings.cs" />
     <Compile Include="Enumerations.cs" />
+    <Compile Include="Events\DeckChangeEventArgs.cs" />
+    <Compile Include="Events\IssueCardInfoEventArgs.cs" />
+    <Compile Include="Events\IssueElementEventArgs.cs" />
+    <Compile Include="Events\LayoutElementNumericAdjustEventArgs.cs" />
     <Compile Include="Forms\CardMakerMDI.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\CardMakerMDI.Designer.cs">
       <DependentUpon>CardMakerMDI.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\CardMakerMDI_Settings.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Events\IssueMessageEventArgs.cs" />
     <Compile Include="Forms\GoogleCredentialsDialog.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\GoogleCredentialsDialog.Designer.cs">
       <DependentUpon>GoogleCredentialsDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Events\Managers\IssueManager.cs" />
     <Compile Include="Forms\MDIDefines.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -259,9 +244,13 @@
     </Compile>
     <Compile Include="Support\UI\Win32.cs" />
     <Compile Include="Support\Util\TimeMeasure.cs" />
-    <Compile Include="XML\Core.cs" />
-    <Compile Include="XML\Managers\BaseXmlManager.cs" />
-    <Compile Include="XML\Managers\LayoutTemplateManager.cs" />
+    <Compile Include="Events\ProjectEventArgs.cs" />
+    <Compile Include="Events\ElementEventArgs.cs" />
+    <Compile Include="Events\LayoutEventArgs.cs" />
+    <Compile Include="Events\Managers\ElementManager.cs" />
+    <Compile Include="Events\Managers\LayoutManager.cs" />
+    <Compile Include="Events\Managers\LayoutTemplateManager.cs" />
+    <Compile Include="Events\Managers\ProjectManager.cs" />
     <Compile Include="XML\Project.cs" />
     <Compile Include="XML\ProjectLayout.cs" />
     <Compile Include="XML\ProjectLayoutElement.cs" />
@@ -330,6 +319,12 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Card\Shapes\AbstractShape.cs" />
+    <Compile Include="Card\Shapes\Definitions\EllipseShape.cs" />
+    <Compile Include="Card\Shapes\Definitions\GridShape.cs" />
+    <Compile Include="Card\Shapes\Definitions\RectShape.cs" />
+    <Compile Include="Card\Shapes\Definitions\RoundedRectShape.cs" />
+    <Compile Include="Card\Shapes\ShapeManager.cs" />
     <Compile Include="XML\LayoutTemplate.cs" />
     <None Include="Support\3rdParty\PhotoshopFile\LICENSE" />
     <None Include="Support\3rdParty\SimpleJson\LICENSE" />

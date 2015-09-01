@@ -22,11 +22,11 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using Google.GData.Client;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
+using Google.GData.Client;
 using Google.GData.Spreadsheets;
 using Support.IO;
 

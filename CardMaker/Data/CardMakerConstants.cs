@@ -22,26 +22,14 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Xml.Serialization;
+using System.Text;
 
-namespace CardMaker.XML
+namespace CardMaker.Data
 {
-    public class ProjectLayoutReference
+    public static class CardMakerConstants
     {
-        #region Properties
-
-        [XmlAttribute]
-        public string RelativePath { get; set; }
-
-        [XmlAttribute]
-        public bool Default { get; set; }
-
-        #endregion
-
-        public void DeepCopy(ProjectLayoutReference zReference)
-        {
-            Default = zReference.Default;
-            RelativePath = zReference.RelativePath;
-        }
+        public const string GOOGLE_REFERENCE = "google";
+        public const char GOOGLE_REFERENCE_SPLIT_CHAR = ';';
+        public static readonly Encoding XML_ENCODING = Encoding.UTF8;
     }
 }

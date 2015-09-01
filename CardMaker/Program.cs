@@ -25,14 +25,13 @@
 using System;
 using System.IO;
 using System.Windows.Forms;
+using CardMaker.Data;
 using CardMaker.Forms;
 
 namespace CardMaker
 {
     static class Program
     {
-        public static string CommandLineProjectFile { get; private set;}
-
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -46,7 +45,9 @@ namespace CardMaker
             {
                 string sFullPath = Path.GetFullPath(args[0]);
                 if (File.Exists(sFullPath))
-                    CommandLineProjectFile = sFullPath;
+                {
+                    CardMakerInstance.CommandLineProjectFile = sFullPath;
+                }
             }
             Application.Run(new CardMakerMDI());
         }

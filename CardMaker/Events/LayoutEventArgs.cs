@@ -22,26 +22,33 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Xml.Serialization;
 
-namespace CardMaker.XML
+using CardMaker.Card;
+using CardMaker.XML;
+
+namespace CardMaker.Events
 {
-    public class ProjectLayoutReference
+    public delegate void LayoutSelected(object sender, LayoutEventArgs args);
+    
+    public delegate void LayoutLoaded(object sender, LayoutEventArgs args);
+    
+    public delegate void LayoutUpdated(object sender, LayoutEventArgs args);
+
+    public class LayoutEventArgs
     {
-        #region Properties
+        public ProjectLayout Layout { get; private set; }
+        public Deck Deck { get; set; }
 
-        [XmlAttribute]
-        public string RelativePath { get; set; }
-
-        [XmlAttribute]
-        public bool Default { get; set; }
-
-        #endregion
-
-        public void DeepCopy(ProjectLayoutReference zReference)
+        public LayoutEventArgs(ProjectLayout zLayout, Deck zDeck)
         {
-            Default = zReference.Default;
-            RelativePath = zReference.RelativePath;
+            Layout = zLayout;
+            Deck = zDeck;
+        }
+
+        public LayoutEventArgs(ProjectLayout zLayout)
+            : this(zLayout, null)
+        {
+
         }
     }
 }
