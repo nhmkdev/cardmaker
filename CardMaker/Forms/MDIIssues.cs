@@ -26,6 +26,7 @@ using System;
 using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
+using CardMaker.Card.Export;
 using CardMaker.Events.Managers;
 using Support.UI;
 
@@ -47,6 +48,24 @@ namespace CardMaker.Forms
             IssueManager.Instance.IssueAdded += Instance_IssueAdded;
             IssueManager.Instance.CardInfoChanged += Instance_CardInfoChanged;
             IssueManager.Instance.ElementChanged += Instance_ElementChanged;
+            IssueManager.Instance.RefreshRequested += Instance_RefreshRequested;
+        }
+
+        void Instance_RefreshRequested(object sender, Events.IssueRefreshEventArgs args)
+        {
+            ClearIssues();
+            TrackIssues = true;
+
+            var zWait = new WaitDialog(
+                2,
+                new CompilerCardExporter(0, ProjectManager.Instance.LoadedProject.Layout.Length).ExportThread,
+                "Compile",
+                new string[] { "Layout", "Card" },
+                450);
+            zWait.ShowDialog(ParentForm);
+
+            TrackIssues = false;
+            Show();
         }
 
         void Instance_ElementChanged(object sender, Events.IssueElementEventArgs args)
@@ -111,8 +130,12 @@ namespace CardMaker.Forms
                 ListViewItem zItem = listViewIssues.SelectedItems[0];
                 int nLayout = int.Parse(zItem.SubItems[0].Text);
                 int nCard = int.Parse(zItem.SubItems[1].Text);
-#warning needs a complex event to pull this off
-                CardMakerMDI.Instance.SelectLayoutCardElement(nLayout, nCard, zItem.SubItems[2].Text);
+                // Select the Layout
+                LayoutManager.Instance.FireLayoutSelectRequested(ProjectManager.Instance.LoadedProject.Layout[nLayout]);
+                // Select the Element
+                ElementManager.Instance.FireElementSelectRequestedEvent(LayoutManager.Instance.GetElement(zItem.SubItems[2].Text));
+                // Select the Card Index
+                LayoutManager.Instance.FireDeckIndexChangeRequested(nCard - 1);            
             }
         }
 

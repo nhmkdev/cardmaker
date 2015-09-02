@@ -48,12 +48,34 @@ namespace CardMaker.Forms
         private static MDIProject s_zInstance;
         private TreeNode m_tnCurrentLayout;
 
-        public event LayoutSelected LayoutSelected;
-
         private MDIProject()
         {
             InitializeComponent();
             ProjectManager.Instance.ProjectOpened += ProjectProjectOpened;
+            ProjectManager.Instance.LayoutAdded += Instance_LayoutAdded;
+
+            // layout selection may occur outside of the project window (MDIIssues)
+            LayoutManager.Instance.LayoutSelectRequested += Instance_LayoutSelectRequested;
+        }
+
+        void Instance_LayoutSelectRequested(object sender, LayoutEventArgs args)
+        {
+            if (null == m_tnCurrentLayout || (ProjectLayout)m_tnCurrentLayout.Tag != args.Layout)
+            {
+                foreach (TreeNode tnNode in treeView.TopNode.Nodes)
+                {
+                    if ((ProjectLayout)tnNode.Tag == args.Layout)
+                    {
+                        treeView.SelectedNode = tnNode;
+                        break;
+                    }
+                }
+            }
+        }
+
+        void Instance_LayoutAdded(object sender, LayoutEventArgs args)
+        {
+            AddProjectLayout(args.Layout);
         }
 
         public static MDIProject Instance
@@ -102,10 +124,7 @@ namespace CardMaker.Forms
                     if (m_tnCurrentLayout != treeView.SelectedNode)
                     {
                         UpdateSelectedNodeLayoutColor();
-                        if (null != LayoutSelected)
-                        {
-                            LayoutSelected(this, new LayoutEventArgs((ProjectLayout)m_tnCurrentLayout.Tag));
-                        }
+                        LayoutManager.Instance.SetActiveLayout((ProjectLayout)m_tnCurrentLayout.Tag);
                     }
                 }
                 else if(typeof(ProjectLayoutReference) == type)
@@ -182,7 +201,7 @@ namespace CardMaker.Forms
                     height = (int)zQuery.GetDecimal(HEIGHT),
                     dpi = (int)zQuery.GetDecimal(DPI)
                 };
-                AddProjectLayout(zLayout, ProjectManager.Instance.LoadedProject);
+                ProjectManager.Instance.AddLayout(zLayout);
                 ProjectManager.Instance.FireProjectUpdated();
             }
         }
@@ -216,7 +235,7 @@ namespace CardMaker.Forms
                 {
                     var zLayout = new ProjectLayout(zQuery.GetString(NAME));
                     zLayout.DeepCopy(zSelectedLayout);
-                    AddProjectLayout(zLayout, ProjectManager.Instance.LoadedProject);
+                    ProjectManager.Instance.AddLayout(zLayout);
                 }
                 break;
             }
@@ -264,9 +283,7 @@ namespace CardMaker.Forms
             var zLayout = (ProjectLayout)treeView.SelectedNode.Tag;
             var zLayoutCopy = new ProjectLayout(zLayout.Name + " copy");
             zLayoutCopy.DeepCopy(zLayout);
-            var tnLayout = AddProjectLayout(zLayoutCopy, ProjectManager.Instance.LoadedProject);
-            tnLayout.ExpandAll();
-            ProjectManager.Instance.FireProjectUpdated();
+            ProjectManager.Instance.AddLayout(zLayout);
         }
 
         private void addReferenceToolStripMenuItem_Click(object sender, EventArgs e)
@@ -390,28 +407,6 @@ namespace CardMaker.Forms
                 return (ProjectLayout)m_tnCurrentLayout.Tag;
             }
             return null;
-        }
-
-        public int GetCurrentLayoutIndex()
-        {
-            int nIdx = 0;
-            foreach(TreeNode tNode in treeView.Nodes[0].Nodes)
-            {
-                if (m_tnCurrentLayout == tNode)
-                {
-                    return nIdx;
-                }
-                nIdx++;
-            }
-            return -1;
-        }
-
-        public int LayoutCount
-        {
-            get
-            {
-                return treeView.Nodes[0].Nodes.Count;
-            }
         }
 
         private void UpdateSelectedNodeLayoutColor()
@@ -558,7 +553,7 @@ namespace CardMaker.Forms
                 foreach (var zLayout in zProject.Layout)
                 {
                     // no need to update the project
-                    AddProjectLayout(zLayout, null);
+                    AddProjectLayout(zLayout);
 
                     LayoutManager.InitializeElementCache(zLayout);
                 }
@@ -570,22 +565,12 @@ namespace CardMaker.Forms
         /// <summary>
         /// Adds a project layout tree node
         /// </summary>
-        /// <param name="tnRoot"></param>
         /// <param name="zLayout"></param>
-        /// <param name="zProject"></param>
         /// <returns></returns>
-        public TreeNode AddProjectLayout(ProjectLayout zLayout, Project zProject)
+        private void AddProjectLayout(ProjectLayout zLayout)
         {
             TreeNode tnLayout = treeView.Nodes[0].Nodes.Add(zLayout.Name);
             tnLayout.Tag = zLayout;
-
-            if (null != zProject)
-            {
-                // update the Project (no null check on zProject.Layout necessary... can never have 0 layouts)
-                var listLayouts = new List<ProjectLayout>(zProject.Layout);
-                listLayouts.Add(zLayout);
-                zProject.Layout = listLayouts.ToArray();
-            }
 
             if (null != zLayout.Reference)
             {
@@ -596,8 +581,6 @@ namespace CardMaker.Forms
                 }
                 tnLayout.Expand();
             }
-
-            return tnLayout;
         }
 
         /// <summary>
@@ -677,10 +660,7 @@ namespace CardMaker.Forms
         void ProjectProjectOpened(object sender, ProjectEventArgs e)
         {
             ResetTreeToProject(e.Project);
-            if (null != LayoutSelected)
-            {
-                LayoutSelected(this, new LayoutEventArgs(null));
-            }
+            LayoutManager.Instance.SetActiveLayout(null);
         }
     }
 }

@@ -67,7 +67,7 @@ namespace CardMaker.Card.Import
                 {
                     var sMsg = "CSV File not found: " + sCombinedPath;
                     Logger.AddLogLine(sMsg);
-                    IssueManager.Instance.AddIssue(sMsg);
+                    IssueManager.Instance.FireAddIssueEvent(sMsg);
                 }
                 return;
             }

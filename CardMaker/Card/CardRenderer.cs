@@ -92,7 +92,7 @@ namespace CardMaker.Card
                     var zElement = CurrentDeck.CardLayout.Element[nIdx];
                     if (zElement.enabled) // only add enabled items to draw
                     {
-                        IssueManager.Instance.ChangeElement(zElement.name);
+                        IssueManager.Instance.FireChangeElementEvent(zElement.name);
 
                         // get override Element
                         ProjectLayoutElement zOverrideElement = CurrentDeck.GetOverrideElement(zElement, listLine);

@@ -85,7 +85,7 @@ namespace CardMaker.Card
             }
             else
             {
-                IssueManager.Instance.AddIssue("Image file not found: " + sFile);
+                IssueManager.Instance.FireAddIssueEvent("Image file not found: " + sFile);
             }
             // draw nothing
         }

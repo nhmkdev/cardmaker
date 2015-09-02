@@ -40,8 +40,8 @@ namespace CardMaker.Card.Export
             WaitDialog zWait = WaitDialog.Instance;
             for (int nIdx = m_nExportLayoutStartIndex; nIdx < m_nExportLayoutEndIndex; nIdx++)
             {
-                IssueManager.Instance.ChangeCardInfo(nIdx, 1);
-                IssueManager.Instance.ChangeElement(string.Empty);
+                IssueManager.Instance.FireChangeCardInfoEvent(nIdx, 1);
+                IssueManager.Instance.FireChangeElementEvent(string.Empty);
                 ChangePrintCardCanvas(nIdx);
                 zWait.ProgressReset(1, 0, CurrentDeck.CardCount, 0);
 
@@ -50,7 +50,7 @@ namespace CardMaker.Card.Export
 
                 for (var nCardIdx = 0; nCardIdx < CurrentDeck.CardCount; nCardIdx++)
                 {
-                    IssueManager.Instance.ChangeCardInfo(nIdx, nCardIdx + 1);
+                    IssueManager.Instance.FireChangeCardInfoEvent(nIdx, nCardIdx + 1);
                     CurrentDeck.CardPrintIndex = nCardIdx;
                     CardRenderer.DrawPrintLineToGraphics(zGraphics);
                     zWait.ProgressStep(1);

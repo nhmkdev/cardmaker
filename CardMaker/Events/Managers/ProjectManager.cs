@@ -24,6 +24,7 @@
 
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using CardMaker.Data;
 using CardMaker.XML;
@@ -53,6 +54,11 @@ namespace CardMaker.Events.Managers
         /// Fired when the project is changed (generally a high level Layout change)
         /// </summary>
         public event ProjectUpdated ProjectUpdated;
+
+        /// <summary>
+        /// Fired when a layout is added
+        /// </summary>
+        public event LayoutAdded LayoutAdded;
 
         public static ProjectManager Instance
         {
@@ -92,7 +98,7 @@ namespace CardMaker.Events.Managers
             string sProjectPath = Path.GetDirectoryName(sFile);
             string sOldProjectPath = Path.GetDirectoryName(sOldFile);
 
-            bool bOldPathValid = !String.IsNullOrEmpty(sOldProjectPath);
+            bool bOldPathValid = !string.IsNullOrEmpty(sOldProjectPath);
 
             if (sProjectPath != null &&
                 !sProjectPath.Equals(sOldProjectPath, StringComparison.CurrentCultureIgnoreCase))
@@ -122,6 +128,24 @@ namespace CardMaker.Events.Managers
         }
 
         /// <summary>
+        /// Adds the specified layout to the project
+        /// </summary>
+        /// <param name="zLayout"></param>
+        public void AddLayout(ProjectLayout zLayout)
+        {
+            // update the Project (no null check on zProject.Layout necessary... can never have 0 layouts)
+            var listLayouts = new List<ProjectLayout>(LoadedProject.Layout);
+            listLayouts.Add(zLayout);
+            LoadedProject.Layout = listLayouts.ToArray();
+            LayoutManager.InitializeElementCache(zLayout);
+            if (null != LayoutAdded)
+            {
+                LayoutAdded(this, new LayoutEventArgs(zLayout, null));
+            }
+            FireProjectUpdated();
+        }
+
+        /// <summary>
         /// Configures the instance variables related to the loaded project
         /// </summary>
         /// <param name="sProjectFile">The file path to the project</param>
@@ -140,6 +164,26 @@ namespace CardMaker.Events.Managers
             {
                 ProjectUpdated(this, new ProjectEventArgs(LoadedProject, ProjectFilePath));
             }
+        }
+
+        /// <summary>
+        /// Returns the layout index based on the active project
+        /// </summary>
+        /// <param name="zLayout"></param>
+        /// <returns>The index, or -1 if not found</returns>
+        public int GetLayoutIndex(ProjectLayout zLayout)
+        {
+            if (null != LoadedProject)
+            {
+                for (int nIdx = 0; nIdx < LoadedProject.Layout.Length; nIdx++)
+                {
+                    if (LoadedProject.Layout[nIdx] == zLayout)
+                    {
+                        return nIdx;
+                    }
+                }
+            }
+            return -1;
         }
 
         /// <summary>

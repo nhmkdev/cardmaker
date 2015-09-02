@@ -290,7 +290,7 @@ namespace CardMaker.Card
                     }
                     else
                     {
-                        IssueManager.Instance.AddIssue("Duplicate column found in: " + sReferencePath + "::" + "Column [" + nIdx + "]: " + sKey);
+                        IssueManager.Instance.FireAddIssueEvent("Duplicate column found in: " + sReferencePath + "::" + "Column [" + nIdx + "]: " + sKey);
                         Logger.AddLogLine("Duplicate column found in: " + sReferencePath + "::" + "Column [" + nIdx + "]: " + sKey);
                     }
                 }
@@ -371,7 +371,7 @@ namespace CardMaker.Card
                 // indicate if no lines remain!
                 if (0 == listLines.Count)
                 {
-                    IssueManager.Instance.AddIssue("No lines found?! allowed_layout may be cutting them!");
+                    IssueManager.Instance.FireAddIssueEvent("No lines found?! allowed_layout may be cutting them!");
                 }
 
             }
@@ -386,7 +386,7 @@ namespace CardMaker.Card
                     int nNumber;
                     if (!int.TryParse(listItems[0].Trim(), out nNumber))
                     {
-                        IssueManager.Instance.AddIssue("Invalid card count found: [" + listItems[0] + "] The first column should always have a number value.");
+                        IssueManager.Instance.FireAddIssueEvent("Invalid card count found: [" + listItems[0] + "] The first column should always have a number value.");
                         nNumber = 1;
                     }
                     for (var nCount = 0; nCount < nNumber; nCount++)
@@ -417,7 +417,7 @@ namespace CardMaker.Card
                 }
                 if (!string.IsNullOrEmpty(sReferencePath))
                 {
-                    IssueManager.Instance.AddIssue("No lines found for this layout! Generated " + nDefaultCount);
+                    IssueManager.Instance.FireAddIssueEvent("No lines found for this layout! Generated " + nDefaultCount);
                 }
             }
 
@@ -437,13 +437,13 @@ namespace CardMaker.Card
                         if (m_dictionaryDefines.TryGetValue(sKey.ToLower(), out sVal))
                         {
                             string sMsg = "Duplicate define found: " + sKey;
-                            IssueManager.Instance.AddIssue(sMsg);
+                            IssueManager.Instance.FireAddIssueEvent(sMsg);
                             Logger.AddLogLine(sMsg);
                         }
                         else if (m_dictionaryColumnNames.TryGetValue(sKey.ToLower(), out nIdx))
                         {
                             string sMsg = "Overlapping column name and define found in: " + sReferencePath + "::" + "Column [" + nIdx + "]: " + sKey;
-                            IssueManager.Instance.AddIssue(sMsg);
+                            IssueManager.Instance.FireAddIssueEvent(sMsg);
                             Logger.AddLogLine(sMsg);
                         }
                         else
@@ -576,7 +576,7 @@ namespace CardMaker.Card
                 }
                 else
                 {
-                    IssueManager.Instance.AddIssue("Bad reference key: " + sKey);
+                    IssueManager.Instance.FireAddIssueEvent("Bad reference key: " + sKey);
                     sDefineValue = "[BAD NAME: " + sKey + "]";
                 }
                 if (arrayParams.Length > 1)

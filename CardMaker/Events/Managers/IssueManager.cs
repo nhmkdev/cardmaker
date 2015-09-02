@@ -42,6 +42,11 @@ namespace CardMaker.Events.Managers
         public event IssueElementChanged ElementChanged;
 
         /// <summary>
+        /// Fired when an issue refresh is requested
+        /// </summary>
+        public event IssueRefreshRequest RefreshRequested;
+
+        /// <summary>
         /// Fired when a new issue has been added
         /// </summary>
         public event IssueAdded IssueAdded;
@@ -63,7 +68,7 @@ namespace CardMaker.Events.Managers
         /// </summary>
         /// <param name="nLayout"></param>
         /// <param name="nCard"></param>
-        public void ChangeCardInfo(int nLayout, int nCard)
+        public void FireChangeCardInfoEvent(int nLayout, int nCard)
         {
             if (null != CardInfoChanged)
             {
@@ -75,7 +80,7 @@ namespace CardMaker.Events.Managers
         /// Adjusts the issue track to the given element name
         /// </summary>
         /// <param name="sName"></param>
-        public void ChangeElement(string sName)
+        public void FireChangeElementEvent(string sName)
         {
             if (null != ElementChanged)
             {
@@ -87,11 +92,23 @@ namespace CardMaker.Events.Managers
         /// Adds an issue
         /// </summary>
         /// <param name="sIssue">The issue message</param>
-        public void AddIssue(string sIssue)
+        public void FireAddIssueEvent(string sIssue)
         {
             if (null != IssueAdded)
             {
                 IssueAdded(this, new IssueMessageEventArgs(sIssue));
+            }
+        }
+
+        /// <summary>
+        /// Fires the request event to refresh the issues
+        /// </summary>
+        /// <param name="sIssue"></param>
+        public void FireRefreshRequestedEvent(string sIssue)
+        {
+            if (null != RefreshRequested)
+            {
+                RefreshRequested(this, new IssueRefreshEventArgs());
             }
         }
     }

@@ -24,7 +24,6 @@
 
 
 using CardMaker.Card;
-using CardMaker.Forms;
 using CardMaker.XML;
 
 namespace CardMaker.Events.Managers
@@ -38,6 +37,11 @@ namespace CardMaker.Events.Managers
         
         public Deck ActiveDeck { get; private set; }
         public ProjectLayout ActiveLayout { get; private set; }
+
+        /// <summary>
+        /// Fired when a layout select is requested
+        /// </summary>
+        public event LayoutSelectRequested LayoutSelectRequested;
 
         /// <summary>
         /// Fired when a layout is loaded (deck is loaded)
@@ -64,6 +68,11 @@ namespace CardMaker.Events.Managers
         /// </summary>
         public event DeckIndexChanged DeckIndexChanged;
 
+        /// <summary>
+        /// Fired when there is a request to change the deck index
+        /// </summary>
+        public event DeckIndexChanged DeckIndexChangeRequested;
+
         public static LayoutManager Instance
         {
             get
@@ -76,17 +85,53 @@ namespace CardMaker.Events.Managers
             }
         }
 
-        private LayoutManager()
+        public void SetActiveLayout(ProjectLayout zLayout)
         {
-            // where best to listen for project selection and then deck loading
-            MDIProject.Instance.LayoutSelected += LayoutSelected;
+            ActiveLayout = zLayout;
+            if (null == zLayout)
+            {
+                ActiveDeck = null;
+            }
+            InitializeActiveLayout();  
         }
 
-        void LayoutSelected(object sender, LayoutEventArgs args)
+        public void FireLayoutSelectRequested(ProjectLayout zLayout)
         {
-            // TODO: load some stuff
-            ActiveLayout = args.Layout;
-            InitializeActiveLayout();
+            if (null != LayoutSelectRequested)
+            {
+                LayoutSelectRequested(this, new LayoutEventArgs(zLayout));
+            }
+        }
+
+        public void FireDeckIndexChangeRequested(int nIdx)
+        {
+            if (null != DeckIndexChangeRequested)
+            {
+                DeckIndexChangeRequested(this, new DeckChangeEventArgs(ActiveDeck, nIdx));
+            }
+        }
+
+        //TODO: (might even want to include the origin sender)
+        /// <summary>
+        /// This is the event for a modification to the layout/elements requiring save and re-draw
+        /// </summary>
+        public void FireLayoutUpdatedEvent()
+        {
+            if (null != LayoutUpdated)
+            {
+                LayoutUpdated(this, new LayoutEventArgs(ActiveLayout, ActiveDeck));
+            }
+        }
+
+        /// <summary>
+        /// This even is fired when the deck index has been changed
+        /// </summary>
+        public void FireDeckIndexChangedEvent()
+        {
+            if (null != DeckIndexChanged)
+            {
+                DeckIndexChanged(this, new DeckChangeEventArgs(ActiveDeck));
+            }
         }
 
         /// <summary>
@@ -123,32 +168,27 @@ namespace CardMaker.Events.Managers
             }
         }
 
-        //TODO: (might even want to include the origin sender)
         /// <summary>
-        /// This is the event for a modification to the layout/elements requiring save and re-draw
+        /// Gets the element that has the matching name
         /// </summary>
-        public void FireLayoutUpdatedEvent()
+        /// <param name="sName"></param>
+        /// <returns>The ProjectLayoutElement or null if not found</returns>
+        public ProjectLayoutElement GetElement(string sName)
         {
-            if (null != LayoutUpdated)
+            if (null != ActiveLayout && null != ActiveLayout.Element)
             {
-                LayoutUpdated(this, new LayoutEventArgs(ActiveLayout, ActiveDeck));
+                foreach (var zElement in ActiveLayout.Element)
+                {
+                    if (zElement.name.Equals(sName))
+                    {
+                        return zElement;
+                    }
+                }
             }
+            return null;
         }
 
-        //TODO: proper name (might even want to include the origin sender)
-        /// <summary>
-        /// Adjusts the active card inex in the Deck
-        /// </summary>
-        /// <param name="nDesiredIndex">The target index</param>
-        public void SetDeckIndex(int nDesiredIndex)
-        {
-            // TODO: error check
-            ActiveDeck.CardIndex = nDesiredIndex;
-            if (null != DeckIndexChanged)
-            {
-                DeckIndexChanged(this, new DeckChangeEventArgs(ActiveDeck) );
-            }
-        }
+#warning these should be renamed to "fire" event methods
 
         // TODO: this "request" event should make the actual change and then fire the event
         public void RequestElementAdjustOrder(int nIndexAdjust)

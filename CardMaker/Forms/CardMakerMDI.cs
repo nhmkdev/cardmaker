@@ -360,74 +360,10 @@ namespace CardMaker.Forms
             return null;
         }
 
-        // TODO: this is called from the issues selector (it's a doozy)
-        public void SelectLayoutCardElement(int nLayout, int nCard, string sElement)
-        {
-            // block any bad layout index requests
-            if (MDIProject.Instance.ProjectTreeView.Nodes[0].Nodes.Count > nLayout)
-            {
-                if (MDIProject.Instance.ProjectTreeView.SelectedNode != MDIProject.Instance.ProjectTreeView.Nodes[0].Nodes[nLayout])
-                {
-                    MDIProject.Instance.ProjectTreeView.SelectedNode = MDIProject.Instance.ProjectTreeView.Nodes[0].Nodes[nLayout];
-                }
-                else
-                {
-                    // if the node is the same the assignment does not trigger anything, do the update manually
-                    UpdateProjectLayoutTreeNode();
-                }
-                MDILayoutControl.Instance.ChangeSelectedElement(sElement);
-            }
-        }
-
-        public void UpdateProjectLayoutTreeNode()
-        {
-#warning this thing needs to br broken into events (most are covered)
-#if false // this is baaaaad
-            MDIProject.Instance.UpdateSelectedNodeLayoutColor(); // sets up the selected project-layout node
-
-            if (null == MDIProject.Instance.GetCurrentProjectLayout())
-                return;
-
-            m_zDrawCardCanvas.SetCardLayout(MDIProject.Instance.GetCurrentProjectLayout());
-
-            // disable event firing while configuring the UI
-            MDILayoutControl.Instance.FireElementChangeEvents = false;
-
-            MDILayoutControl.Instance.UpdateLayoutInfo();
-
-            // restore event firing
-            MDILayoutControl.Instance.FireElementChangeEvents = true;
-
-            if (-1 != m_nDestinationCardIndex)
-            {
-/////////////////////// Restore this to select a card index
-                MDILayoutControl.Instance.SetSelectedCardIndex(m_nDestinationCardIndex);
-                m_nDestinationCardIndex = -1;
-            }
-            else
-            {
-                MDILayoutControl.Instance.ChangeCardIndex(0);
-            }
-            UserAction.ClearUndoRedoStacks();
-
-            MDIDefines.Instance.UpdateDefines();
-#endif
-        }
-
         public void ShowErrorMessage(string sMessage)
         {
             MessageBox.Show(this, sMessage, "CardMaker Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
-
-#if false
-        public void DrawCurrentCardIndex()
-        {
-            // update the control size
-            m_zDrawCardCanvas.UpdateSize();
-            // todo optimize with rectangle invalidation
-            m_zDrawCardCanvas.Invalidate();
-        }
-#endif
 
         #endregion
 
@@ -435,7 +371,9 @@ namespace CardMaker.Forms
 
         protected override bool SaveFormData(string sFileName)
         {
-            return ProjectManager.Instance.Save(sFileName, m_sLoadedProjectFile);
+#warning when saving this should update the recent list to include it if it is a new file
+            var bSaved = ProjectManager.Instance.Save(sFileName, m_sLoadedProjectFile);
+            return bSaved;;
         }
 
         protected override bool OpenFormData(string sFileName)
@@ -444,8 +382,6 @@ namespace CardMaker.Forms
             try
             {
                 ProjectManager.Instance.OpenProject(sFileName);
-                // TODO: eventhandling
-                //MDIProject.Instance.ResetTreeToProject(m_zLoadedProject);
             }
             catch (Exception ex)
             {
@@ -454,8 +390,6 @@ namespace CardMaker.Forms
             Cursor = Cursors.Default;
             if (null != ProjectManager.Instance.LoadedProject)
             {
-                // TODO: eventhandling
-                //ResetToNoLayout();
                 m_listRecentFiles.Remove(sFileName);
                 m_listRecentFiles.Insert(0, sFileName);
                 while (MAX_RECENT_PROJECTS < m_listRecentFiles.Count)
@@ -511,10 +445,10 @@ namespace CardMaker.Forms
             }
 
             var nStartLayoutIdx = 0;
-            var nEndLayoutIdx = MDIProject.Instance.LayoutCount;
+            var nEndLayoutIdx = ProjectManager.Instance.LoadedProject.Layout.Length;
             if (!bExportAllLayouts)
             {
-                int nIdx = MDIProject.Instance.GetCurrentLayoutIndex();
+                int nIdx = ProjectManager.Instance.GetLayoutIndex(LayoutManager.Instance.ActiveLayout);
                 if (-1 == nIdx)
                 {
                     ShowErrorMessage("Unable to determine the current layout. Please select a layout in the tree view and try again.");
@@ -602,7 +536,7 @@ namespace CardMaker.Forms
             var sDefinition = ProjectManager.Instance.LoadedProject.exportNameFormat; // default to the project level definition
             if (!bExportAllLayouts)
             {
-                sDefinition = MDIProject.Instance.GetCurrentProjectLayout().exportNameFormat;
+                sDefinition = LayoutManager.Instance.ActiveLayout.exportNameFormat;
             }
             else
             {
@@ -638,11 +572,11 @@ namespace CardMaker.Forms
                 {
                     ProjectManager.Instance.LoadedProject.lastExportPath = sFolder;
                     var nStartLayoutIdx = 0;
-                    var nEndLayoutIdx = MDIProject.Instance.LayoutCount;
+                    var nEndLayoutIdx = ProjectManager.Instance.LoadedProject.Layout.Length;
                     var bOverrideLayout = false;
                     if (!bExportAllLayouts)
                     {
-                        int nIdx = MDIProject.Instance.GetCurrentLayoutIndex();
+                        int nIdx = ProjectManager.Instance.GetLayoutIndex(LayoutManager.Instance.ActiveLayout);
                         if (-1 == nIdx)
                         {
                             ShowErrorMessage("Unable to determine the current layout. Please select a layout in the tree view and try again.");
@@ -692,7 +626,7 @@ namespace CardMaker.Forms
 
             var zWait = new WaitDialog(
                 2,
-                new CompilerCardExporter(0, MDIProject.Instance.LayoutCount).ExportThread,
+                new CompilerCardExporter(0, ProjectManager.Instance.LoadedProject.Layout.Length).ExportThread,
                 "Compile",
                 new string[] { "Layout", "Card" },
                 450);
@@ -981,10 +915,9 @@ namespace CardMaker.Forms
             if (DialogResult.OK == zQuery.ShowDialog(this))
             {
                 var listIndices = zQuery.GetIndices(LAYOUT_QUERY_KEY).ToList();
-                listIndices.ForEach(idx =>
+                listIndices.ForEach(nIdx =>
                 {
-                    LayoutManager.InitializeElementCache(zProject.Layout[idx]);
-                    MDIProject.Instance.AddProjectLayout(zProject.Layout[idx], ProjectManager.Instance.LoadedProject);
+                    ProjectManager.Instance.AddLayout(zProject.Layout[nIdx]);
                 });
                 MarkDirty();
             }

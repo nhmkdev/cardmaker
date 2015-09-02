@@ -44,9 +44,9 @@ namespace CardMaker.Events.Managers
         public event ElementSelected ElementSelected;
 
         /// <summary>
-        /// Fired when an element is selected from the canvas (cascades into ElementSelected)
+        /// Fired when an element select is requested (example: Canvas selection)
         /// </summary>
-        public event ElementSelected ElementCanvasSelected;
+        public event ElementSelected ElementSelectRequested;
 
         /// <summary>
         /// Fired when the rectangle defintion of an Element is changed (generally outside of the element control)
@@ -79,36 +79,22 @@ namespace CardMaker.Events.Managers
             }
         }
 
-        public ElementManager()
-        {
-            ElementSelected += ElementManager_ElementSelected;
-        }
-
-        #region Events
-
-        void ElementManager_ElementSelected(object sender, ElementEventArgs args)
-        {
-            m_listSelectedElements = new List<ProjectLayoutElement>(args.Elements);
-            //Logger.AddLogLine(string.Join(",", m_listSelectedElements.Select(x => x.name).ToArray()));
-        }
-
-        #endregion
-
         #region Event Triggers
 
-        public void FireElementSelectionEvent(List<ProjectLayoutElement> listElements)
+        public void FireElementSelectedEvent(List<ProjectLayoutElement> listElements)
         {
+            m_listSelectedElements = listElements;
             if (null != ElementSelected)
             {
                 ElementSelected(this, new ElementEventArgs(listElements));
             }
         }
 
-        public void FireElementCanvasSelectedEvent(ProjectLayoutElement zElement)
+        public void FireElementSelectRequestedEvent(ProjectLayoutElement zElement)
         {
-            if (null != ElementCanvasSelected)
+            if (null != ElementSelectRequested)
             {
-                ElementCanvasSelected(this, new ElementEventArgs(zElement));
+                ElementSelectRequested(this, new ElementEventArgs(zElement));
             }
         }
 

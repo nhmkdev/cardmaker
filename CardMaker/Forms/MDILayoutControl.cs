@@ -53,10 +53,21 @@ namespace CardMaker.Forms
         {
             InitializeComponent();
             LayoutManager.Instance.LayoutLoaded += ProjectLayoutLoaded;
-            ElementManager.Instance.ElementCanvasSelected += Instance_ElementSelected;
             LayoutManager.Instance.ElementOrderAdjustRequest += Instance_ElementOrderAdjustRequest;
             LayoutManager.Instance.ElementSelectAdjustRequest += Instance_ElementSelectAdjustRequest;
             LayoutManager.Instance.LayoutUpdated += Instance_LayoutUpdated;
+            LayoutManager.Instance.DeckIndexChangeRequested += Instance_DeckIndexChangeRequested;
+            ElementManager.Instance.ElementSelectRequested += Instance_ElementSelected;
+        }
+
+        void Instance_DeckIndexChangeRequested(object sender, DeckChangeEventArgs args)
+        {
+            int adjustedValue = args.Index + 1;
+            if (adjustedValue >= numericCardIndex.Minimum &&
+                adjustedValue <= numericCardIndex.Maximum)
+            {
+                numericCardIndex.Value = adjustedValue;
+            }
         }
 
         void Instance_ElementSelectAdjustRequest(object sender, LayoutElementNumericAdjustEventArgs args)
@@ -456,7 +467,7 @@ namespace CardMaker.Forms
 
         private void ChangeCardIndex(int nDesiredIndex)
         {
-            LayoutManager.Instance.SetDeckIndex(nDesiredIndex);
+            LayoutManager.Instance.ActiveDeck.CardIndex = nDesiredIndex;
         }
 
         private void btnGenCards_Click(object sender, EventArgs e)
@@ -642,7 +653,7 @@ namespace CardMaker.Forms
 
             // todo: multi layout selection is broken! order is messed up causing elements to overwrite one another
 
-            ElementManager.Instance.FireElementSelectionEvent(listSelectedElements);
+            ElementManager.Instance.FireElementSelectedEvent(listSelectedElements);
         }
 
         private void UpdateListViewItemState(ListViewItem zLvi, ProjectLayoutElement zElement)

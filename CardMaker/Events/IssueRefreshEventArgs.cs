@@ -22,37 +22,11 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-
-using CardMaker.Card;
-using CardMaker.XML;
-
 namespace CardMaker.Events
 {
-    public delegate void LayoutSelectRequested(object sender, LayoutEventArgs args);
+    public delegate void IssueRefreshRequest(object sender, IssueRefreshEventArgs args);
 
-    public delegate void LayoutSelected(object sender, LayoutEventArgs args);
-    
-    public delegate void LayoutLoaded(object sender, LayoutEventArgs args);
-    
-    public delegate void LayoutUpdated(object sender, LayoutEventArgs args);
-
-    public delegate void LayoutAdded(object sender, LayoutEventArgs args);
-
-    public class LayoutEventArgs
+    public class IssueRefreshEventArgs
     {
-        public ProjectLayout Layout { get; private set; }
-        public Deck Deck { get; set; }
-
-        public LayoutEventArgs(ProjectLayout zLayout, Deck zDeck)
-        {
-            Layout = zLayout;
-            Deck = zDeck;
-        }
-
-        public LayoutEventArgs(ProjectLayout zLayout)
-            : this(zLayout, null)
-        {
-
-        }
     }
 }

@@ -129,6 +129,7 @@
     <Compile Include="Data\CardMakerInstance.cs" />
     <Compile Include="Data\CardMakerSettings.cs" />
     <Compile Include="Enumerations.cs" />
+    <Compile Include="Events\IssueRefreshEventArgs.cs" />
     <Compile Include="Events\DeckChangeEventArgs.cs" />
     <Compile Include="Events\IssueCardInfoEventArgs.cs" />
     <Compile Include="Events\IssueElementEventArgs.cs" />

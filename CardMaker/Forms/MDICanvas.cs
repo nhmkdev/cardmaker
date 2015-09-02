@@ -222,7 +222,7 @@ namespace CardMaker.Forms
 
         private void contextmenuClick_Handler(object sender, EventArgs e)
         {
-            ElementManager.Instance.FireElementCanvasSelectedEvent((ProjectLayoutElement)((ToolStripItem) sender).Tag);
+            ElementManager.Instance.FireElementSelectRequestedEvent((ProjectLayoutElement)((ToolStripItem) sender).Tag);
         }
 
         private void cardCanvas_MouseMove(object sender, MouseEventArgs e)
