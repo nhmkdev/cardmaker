@@ -25,7 +25,7 @@
 using System.Collections.Generic;
 using CardMaker.XML;
 
-namespace CardMaker.Events
+namespace CardMaker.Events.Args
 {
     public delegate void ElementSelected(object sender, ElementEventArgs args);
     

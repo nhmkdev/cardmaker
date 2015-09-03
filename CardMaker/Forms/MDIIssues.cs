@@ -27,6 +27,7 @@ using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
 using CardMaker.Card.Export;
+using CardMaker.Events.Args;
 using CardMaker.Events.Managers;
 using Support.UI;
 
@@ -34,15 +35,13 @@ namespace CardMaker.Forms
 {
     public partial class MDIIssues : Form
     {
-        private static MDIIssues s_zInstance;
-
         private Point m_zLocation;
         private string m_sCurrentLayoutIndex = string.Empty;
         private string m_sCurrentCardIndex = string.Empty;
         private string m_sCurrentElementName = string.Empty;
         private bool m_bTrackIssues;
 
-        private MDIIssues()
+        public MDIIssues()
         {
             InitializeComponent();
             IssueManager.Instance.IssueAdded += Instance_IssueAdded;
@@ -51,7 +50,7 @@ namespace CardMaker.Forms
             IssueManager.Instance.RefreshRequested += Instance_RefreshRequested;
         }
 
-        void Instance_RefreshRequested(object sender, Events.IssueRefreshEventArgs args)
+        void Instance_RefreshRequested(object sender, IssueRefreshEventArgs args)
         {
             ClearIssues();
             TrackIssues = true;
@@ -68,32 +67,20 @@ namespace CardMaker.Forms
             Show();
         }
 
-        void Instance_ElementChanged(object sender, Events.IssueElementEventArgs args)
+        void Instance_ElementChanged(object sender, IssueElementEventArgs args)
         {
             m_sCurrentElementName = args.Name;
         }
 
-        void Instance_CardInfoChanged(object sender, Events.IssueCardInfoEventArgs args)
+        void Instance_CardInfoChanged(object sender, IssueCardInfoEventArgs args)
         {
             m_sCurrentLayoutIndex = args.LayoutIndex.ToString(CultureInfo.InvariantCulture);
             m_sCurrentCardIndex = args.CardIndex.ToString(CultureInfo.InvariantCulture);
         }
 
-        void Instance_IssueAdded(object sender, Events.IssueMessageEventArgs args)
+        void Instance_IssueAdded(object sender, IssueMessageEventArgs args)
         {
             AddIssue(args.Message);
-        }
-
-        public static MDIIssues Instance
-        {
-            get 
-            {
-                if (null == s_zInstance)
-                {
-                    s_zInstance = new MDIIssues();
-                }
-                return s_zInstance; 
-            }
         }
 
         private void AddIssue(string sIssue)

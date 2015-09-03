@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using CardMaker.Events.Args;
 using CardMaker.XML;
 using Support.UI;
 
@@ -35,7 +36,7 @@ namespace CardMaker.Events.Managers
     /// </summary>
     public class ElementManager
     {
-        private static ElementManager m_zElementManager;
+        private static ElementManager m_zInstance;
         private List<ProjectLayoutElement> m_listSelectedElements;
 
         /// <summary>
@@ -71,11 +72,11 @@ namespace CardMaker.Events.Managers
         {
             get
             {
-                if (null == m_zElementManager)
+                if (null == m_zInstance)
                 {
-                    m_zElementManager = new ElementManager();
+                    m_zInstance = new ElementManager();
                 }
-                return m_zElementManager;
+                return m_zInstance;
             }
         }
 

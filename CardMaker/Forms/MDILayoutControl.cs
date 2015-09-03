@@ -29,17 +29,16 @@ using System.Drawing;
 using System.Windows.Forms;
 using CardMaker.Data;
 using CardMaker.Events;
+using CardMaker.Events.Args;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
 using Support.UI;
-using LayoutEventArgs = CardMaker.Events.LayoutEventArgs;
+using LayoutEventArgs = CardMaker.Events.Args.LayoutEventArgs;
 
 namespace CardMaker.Forms
 {
     public partial class MDILayoutControl : Form
     {
-        private static MDILayoutControl s_zInstance;
-
         private bool m_bFireElementChangeEvents = true;
         private readonly List<ProjectLayoutElement> m_listClipboardElements = new List<ProjectLayoutElement>();
         private readonly Dictionary<string, ListViewItem> m_dictionaryItems = new Dictionary<string, ListViewItem>();
@@ -49,7 +48,7 @@ namespace CardMaker.Forms
         private ProjectLayout m_zLastProjectLayout = null;
         private int m_nDestinationCardIndex = -1;
 
-        private MDILayoutControl() 
+        public MDILayoutControl() 
         {
             InitializeComponent();
             LayoutManager.Instance.LayoutLoaded += ProjectLayoutLoaded;
@@ -96,18 +95,6 @@ namespace CardMaker.Forms
         void ProjectLayoutLoaded(object sender, LayoutEventArgs args)
         {
             UpdateLayoutInfo(args.Layout);
-        }
-
-        public static MDILayoutControl Instance
-        {
-            get
-            {
-                if (null == s_zInstance)
-                {
-                    s_zInstance = new MDILayoutControl();
-                }
-                return s_zInstance;
-            }
         }
 
         protected override CreateParams CreateParams
@@ -468,6 +455,7 @@ namespace CardMaker.Forms
         private void ChangeCardIndex(int nDesiredIndex)
         {
             LayoutManager.Instance.ActiveDeck.CardIndex = nDesiredIndex;
+            LayoutManager.Instance.FireDeckIndexChangedEvent();
         }
 
         private void btnGenCards_Click(object sender, EventArgs e)
@@ -475,12 +463,12 @@ namespace CardMaker.Forms
             if (LayoutManager.Instance.ActiveDeck.CardLayout.Reference != null &&
                 LayoutManager.Instance.ActiveDeck.CardLayout.Reference.Length > 0)
             {
-                CardMakerMDI.Instance.ShowErrorMessage("You cannot assign a default card count to a layout with an associated reference.");
+                FormUtils.ShowErrorMessage("You cannot assign a default card count to a layout with an associated reference.");
                 return;
             }
             const string CARD_COUNT = "CARD_COUNT";
             var zQuery = new QueryPanelDialog("Default Card Count", 240, false);
-            zQuery.SetIcon(CardMakerMDI.Instance.Icon);
+            zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
             zQuery.AddNumericBox("Card Count", 10, 1, int.MaxValue, CARD_COUNT);
             if (DialogResult.OK == zQuery.ShowDialog(this))
             {
@@ -779,7 +767,7 @@ namespace CardMaker.Forms
             var zQuery = new QueryPanelDialog("Resize Elements", 500, false);
             const string WIDTH_ADJUST = "widthadjust";
             const string HEIGHT_ADJUST = "heightadjust";
-            zQuery.SetIcon(CardMakerMDI.Instance.Icon);
+            zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
             zQuery.AddNumericBox("Width Adjust", 0, -65536, 65536, WIDTH_ADJUST);
             zQuery.AddNumericBox("Height Adjust", 0, -65536, 65536, HEIGHT_ADJUST);
             if (DialogResult.OK == zQuery.ShowDialog(this))
@@ -795,7 +783,7 @@ namespace CardMaker.Forms
             var zQuery = new QueryPanelDialog("Resize Elements", 500, false);
             const string WIDTH_ADJUST = "widthadjust";
             const string HEIGHT_ADJUST = "heightadjust";
-            zQuery.SetIcon(CardMakerMDI.Instance.Icon);
+            zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
             zQuery.AddNumericBox("Width Scale", 1, 0.001m, 1000, 0.001m, 3, WIDTH_ADJUST);
             zQuery.AddNumericBox("Height Scale", 1, 0.001m, 1000, 0.001m, 3, HEIGHT_ADJUST);
             if (DialogResult.OK == zQuery.ShowDialog(this))

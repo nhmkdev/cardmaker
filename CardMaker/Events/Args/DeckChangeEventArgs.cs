@@ -1,4 +1,4 @@
-﻿////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
 // Copyright (c) 2015 Tim Stair
@@ -22,11 +22,27 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace CardMaker.Events
-{
-    public delegate void IssueRefreshRequest(object sender, IssueRefreshEventArgs args);
+using CardMaker.Card;
 
-    public class IssueRefreshEventArgs
+namespace CardMaker.Events.Args
+{
+    public delegate void DeckIndexChanged(object sender, DeckChangeEventArgs args);
+
+    public delegate void DeckIndexChangeRequested(object sender, DeckChangeEventArgs args);
+
+    public class DeckChangeEventArgs
     {
+        public Deck Deck { get; private set; }
+        public int Index { get; private set; }
+
+        public DeckChangeEventArgs(Deck zDeck, int nIndex)
+        {
+            Deck = zDeck;
+            Index = nIndex;
+        }
+
+        public DeckChangeEventArgs(Deck zDeck) : this(zDeck, -1)
+        {
+        }
     }
 }

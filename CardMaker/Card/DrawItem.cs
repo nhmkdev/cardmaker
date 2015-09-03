@@ -29,6 +29,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using CardMaker.Card.Shapes;
+using CardMaker.Data;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
 

@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using CardMaker.Data;
+using CardMaker.Events.Args;
 using CardMaker.XML;
 using Support.IO;
 
@@ -37,7 +38,7 @@ namespace CardMaker.Events.Managers
     /// </summary>
     public class ProjectManager
     {
-        private static ProjectManager m_zProjectManager;
+        private static ProjectManager m_zInstance;
 
         public Project LoadedProject { get; private set; }
 
@@ -64,11 +65,11 @@ namespace CardMaker.Events.Managers
         {
             get
             {
-                if (m_zProjectManager == null)
+                if (m_zInstance == null)
                 {
-                    m_zProjectManager = new ProjectManager(); ;
+                    m_zInstance = new ProjectManager(); ;
                 }
-                return m_zProjectManager;
+                return m_zInstance;
             }
         }
 

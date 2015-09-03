@@ -75,10 +75,10 @@ namespace CardMaker.Card.Export
             }
         }
 
-        public bool SetCardLayout(ProjectLayout zCardLayout)
+        public void SetCardLayout(ProjectLayout zCardLayout)
         {
             // the setter does more than set
-            return CurrentDeck.SetAndLoadLayout(zCardLayout ?? CurrentDeck.CardLayout, true);
+            CurrentDeck.SetAndLoadLayout(zCardLayout ?? CurrentDeck.CardLayout, true);
         }
 
         public virtual void UpdateBufferBitmap(int nWidth, int nHeight, Graphics zGraphics = null)

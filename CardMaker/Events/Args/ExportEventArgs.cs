@@ -22,30 +22,19 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+using CardMaker.Data;
 
-namespace CardMaker
+namespace CardMaker.Events.Args
 {
-    public enum ElementType
-    {
-        Text,
-        FormattedText,
-        Graphic,
-        Shape,
-        End
-    }
+    public delegate void ExportRequested(object sender, ExportEventArgs args);
 
-    public enum IniSettings
+    public class ExportEventArgs
     {
-        PreviousProjects,
-        ReplacementChars,
-        ProjectManagerRoot,
-        PrintPageWidth,
-        PrintPageHeight,
-        PrintPageVerticalMargin,
-        PrintPageHorizontalMargin,
-        PrintAutoCenterLayout,
-        PrintLayoutBorder,
-        LastImageExportFormat,
-        PrintLayoutsOnNewPage
+        public ExportType ExportType { get; private set; }
+
+        public ExportEventArgs(ExportType eExportType)
+        {
+            ExportType = eExportType;
+        }
     }
 }

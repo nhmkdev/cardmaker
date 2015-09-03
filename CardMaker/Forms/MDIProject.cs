@@ -32,12 +32,13 @@ using System.Windows.Forms;
 using CardMaker.Card.Import;
 using CardMaker.Data;
 using CardMaker.Events;
+using CardMaker.Events.Args;
 using CardMaker.Events.Managers;
 using CardMaker.Properties;
 using CardMaker.XML;
 using Support.IO;
 using Support.UI;
-using LayoutEventArgs = CardMaker.Events.LayoutEventArgs;
+using LayoutEventArgs = CardMaker.Events.Args.LayoutEventArgs;
 
 namespace CardMaker.Forms
 {
@@ -45,10 +46,9 @@ namespace CardMaker.Forms
     {
         public static Color DEFAULT_REFERENCE_COLOR = Color.LightGreen;
 
-        private static MDIProject s_zInstance;
         private TreeNode m_tnCurrentLayout;
 
-        private MDIProject()
+        public MDIProject()
         {
             InitializeComponent();
             ProjectManager.Instance.ProjectOpened += ProjectProjectOpened;
@@ -76,18 +76,6 @@ namespace CardMaker.Forms
         void Instance_LayoutAdded(object sender, LayoutEventArgs args)
         {
             AddProjectLayout(args.Layout);
-        }
-
-        public static MDIProject Instance
-        {
-            get
-            {
-                if (null == s_zInstance)
-                {
-                    s_zInstance = new MDIProject();
-                }
-                return s_zInstance;
-            }
         }
 
         public TreeView ProjectTreeView
@@ -288,7 +276,7 @@ namespace CardMaker.Forms
 
         private void addReferenceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var sFile = CardMakerMDI.FileOpenHandler("CSV files (*.csv)|*.csv|All files (*.*)|*.*", null, true);
+            var sFile = FormUtils.FileOpenHandler("CSV files (*.csv)|*.csv|All files (*.*)|*.*", null, true);
             if (null != sFile)
             {
                 var zLayout = (ProjectLayout)treeView.SelectedNode.Tag;
@@ -320,7 +308,7 @@ namespace CardMaker.Forms
                 {
                     return;
                 }
-                CardMakerMDI.Instance.UpdateGoogleAuth();
+                GoogleAuthManager.Instance.FireGoogleAuthUpdateRequestedEvent();
                 return;
             }
 
@@ -424,12 +412,12 @@ namespace CardMaker.Forms
 
         private void exportCardLayoutAsImagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CardMakerMDI.Instance.ExportImages(false);
+            ExportManager.Instance.FireExportRequestedEvent(ExportType.Image);
         }
 
         private void exportCardLayoutAsPDFToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CardMakerMDI.Instance.ExportViaPDFSharp(false);
+            ExportManager.Instance.FireExportRequestedEvent(ExportType.PDFSharp);
         }
 
         private void setNameFormatToolStripMenuItem_Click(object sender, EventArgs e)

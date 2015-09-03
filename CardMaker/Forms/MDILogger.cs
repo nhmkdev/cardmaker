@@ -32,22 +32,10 @@ namespace CardMaker.Forms
 {
     public partial class MDILogger : Form, LoggerI
     {
-        private static MDILogger s_zInstance;
-
-        private MDILogger()
+        public MDILogger()
         {
             InitializeComponent();
             Logger.InitLogger(this, false);
-        }
-
-        public static MDILogger Instance
-        {
-            get
-            {
-                if (null == s_zInstance)
-                    s_zInstance = new MDILogger();
-                return s_zInstance;
-            }
         }
 
         protected override CreateParams CreateParams

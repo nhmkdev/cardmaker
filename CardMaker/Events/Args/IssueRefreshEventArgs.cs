@@ -22,19 +22,11 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace CardMaker.Events
+namespace CardMaker.Events.Args
 {
-    public delegate void LayoutElementOrderRequest(object sender, LayoutElementNumericAdjustEventArgs args);
+    public delegate void IssueRefreshRequest(object sender, IssueRefreshEventArgs args);
 
-    public delegate void LayoutElementSelectRequest(object sender, LayoutElementNumericAdjustEventArgs args);
-
-    public class LayoutElementNumericAdjustEventArgs
+    public class IssueRefreshEventArgs
     {
-        public int Adjustment { get; private set; }
-
-        public LayoutElementNumericAdjustEventArgs(int nAdjust)
-        {
-            Adjustment = nAdjust;
-        }        
     }
 }

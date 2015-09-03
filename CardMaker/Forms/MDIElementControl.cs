@@ -32,6 +32,7 @@ using CardMaker.Card;
 using CardMaker.Card.Shapes;
 using CardMaker.Data;
 using CardMaker.Events;
+using CardMaker.Events.Args;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
 using Support.UI;
@@ -40,8 +41,6 @@ namespace CardMaker.Forms
 {
     public partial class MDIElementControl : Form
     {
-        private static MDIElementControl s_zInstance;
-
         private readonly Dictionary<string, ElementType> m_dictionaryElementTypes = new Dictionary<string, ElementType>();
 
         // mapping controls directly to special functions when a given control is adjusted
@@ -59,7 +58,7 @@ namespace CardMaker.Forms
         private bool m_bFireElementChangeEvents = true;
         private bool m_bFireFontChangeEvents = true;
 
-        private MDIElementControl() 
+        public MDIElementControl() 
         {
             InitializeComponent();
 
@@ -117,18 +116,6 @@ namespace CardMaker.Forms
             }
         }
 
-        public static MDIElementControl Instance
-        {
-            get
-            {
-                if (null == s_zInstance)
-                {
-                    s_zInstance = new MDIElementControl();
-                }
-                return s_zInstance;
-            }
-        }
-
         protected override CreateParams CreateParams
         {
             get
@@ -142,7 +129,7 @@ namespace CardMaker.Forms
 
         private void btnElementBrowseImage_Click(object sender, EventArgs e)
         {
-            CardMakerMDI.FileOpenHandler("All files (*.*)|*.*", txtElementVariable, true);
+            FormUtils.FileOpenHandler("All files (*.*)|*.*", txtElementVariable, true);
         }
 
         private void comboElementType_SelectedIndexChanged(object sender, EventArgs e)
@@ -867,7 +854,7 @@ namespace CardMaker.Forms
                     contextMenuStripAssist.Items.Add("Add Counter...", null, (os, ea) =>
                         {
                             var zQuery = new QueryPanelDialog("Add Counter", 450, false);
-                            zQuery.SetIcon(CardMakerMDI.Instance.Icon);
+                            zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
                             const string INIT_VALUE = "initialValue";
                             const string MULT_VALUE = "multValue";
                             const string PAD_VALUE = "padValue";

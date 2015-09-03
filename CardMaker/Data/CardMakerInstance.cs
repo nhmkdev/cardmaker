@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
@@ -40,6 +41,8 @@ namespace CardMaker.Data
         public static string GoogleAccessToken { get; set; }
         public static string LoadedProjectFilePath { get; set; }
         public static string CommandLineProjectFile { get; set; }
+        public static Icon ApplicationIcon { get; set; }
+        public static Form ApplicationForm { get; set; }
 
         public static string StartupPath
         {

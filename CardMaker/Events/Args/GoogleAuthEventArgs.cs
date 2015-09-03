@@ -1,4 +1,4 @@
-﻿////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
 // Copyright (c) 2015 Tim Stair
@@ -22,18 +22,22 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace CardMaker.Events
+using System;
+
+namespace CardMaker.Events.Args
 {
-    public delegate void IssueAdded(object sender, IssueMessageEventArgs args);
+    public delegate void GoogleAuthUpdateRequested(object sender, GoogleAuthEventArgs args);
+    public delegate void GoogleAuthCredentialsError(object sender, GoogleAuthEventArgs args);
 
-    public class IssueMessageEventArgs
+    public class GoogleAuthEventArgs
     {
-        public string Message { get; private set; }
+        public Action SuccessAction { get; private set; }
+        public Action CancelAction { get; private set; }
 
-        public IssueMessageEventArgs(string sMessage)
+        public GoogleAuthEventArgs(Action zActionSuccess, Action zActionCancel)
         {
-            Message = sMessage;
+            SuccessAction = zActionSuccess;
+            CancelAction = zActionCancel;
         }
-
     }
 }

@@ -30,16 +30,15 @@ using System.Windows.Forms;
 using CardMaker.Card;
 using CardMaker.Data;
 using CardMaker.Events;
+using CardMaker.Events.Args;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
-using LayoutEventArgs = CardMaker.Events.LayoutEventArgs;
+using LayoutEventArgs = CardMaker.Events.Args.LayoutEventArgs;
 
 namespace CardMaker.Forms
 {
     public partial class MDICanvas : Form
     {
-        private static MDICanvas s_zInstance;
-
         private const int SELECTION_BUFFER = 3;
         private const int SELECTION_BUFFER_SPACE = SELECTION_BUFFER*2;
         private bool m_bElementSelected;
@@ -89,7 +88,7 @@ namespace CardMaker.Forms
             Move = 1 << 8,
         }
 
-        private MDICanvas()
+        public MDICanvas()
         {
             InitializeComponent();
             var zBitmap = new Bitmap(32, 32);
@@ -155,24 +154,12 @@ namespace CardMaker.Forms
         }
 
         /// <summary>
-        /// Invalidates the 
+        /// Invalidates the panel and card canvas
         /// </summary>
         private void Redraw()
         {
             panelCardCanvas.Invalidate();
             m_zCardCanvas.Invalidate();            
-        }
-
-        public static MDICanvas Instance
-        {
-            get
-            {
-                if (null == s_zInstance)
-                {
-                    s_zInstance = new MDICanvas();
-                }
-                return s_zInstance;
-            }
         }
 
         protected override CreateParams CreateParams

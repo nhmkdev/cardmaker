@@ -22,23 +22,20 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using CardMaker.XML;
-
-namespace CardMaker.Events
+namespace CardMaker.Events.Args
 {
-    public delegate void ProjectOpened(object sender, ProjectEventArgs e);
+    public delegate void IssueCardInfoChanged(object sender, IssueCardInfoEventArgs args);
 
-    public delegate void ProjectUpdated(object sender, ProjectEventArgs e);
-
-    public class ProjectEventArgs
+    public class IssueCardInfoEventArgs
     {
-        public Project Project { get; private set; }
-        public string ProjectFilePath { get; private set; }
-        
-        public ProjectEventArgs(Project zProject, string sProjectFilePath)
+        public int LayoutIndex { get; private set; }
+
+        public int CardIndex { get; private set; }
+
+        public IssueCardInfoEventArgs(int nLayout, int nCard)
         {
-            Project = zProject;
-            ProjectFilePath = sProjectFilePath;
+            LayoutIndex = nLayout;
+            CardIndex = nCard;
         }
     }
 }

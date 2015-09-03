@@ -22,6 +22,8 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+using CardMaker.Events.Args;
+
 namespace CardMaker.Events.Managers
 {
     /// <summary>
@@ -29,7 +31,7 @@ namespace CardMaker.Events.Managers
     /// </summary>
     public class IssueManager
     {
-        private static IssueManager m_zIssueManager;
+        private static IssueManager m_zInstance;
 
         /// <summary>
         /// Fired when the card information has changed
@@ -55,11 +57,11 @@ namespace CardMaker.Events.Managers
         {
             get
             {
-                if (null == m_zIssueManager)
+                if (null == m_zInstance)
                 {
-                    m_zIssueManager = new IssueManager();
+                    m_zInstance = new IssueManager();
                 }
-                return m_zIssueManager;
+                return m_zInstance;
             }
         }
 
@@ -104,7 +106,7 @@ namespace CardMaker.Events.Managers
         /// Fires the request event to refresh the issues
         /// </summary>
         /// <param name="sIssue"></param>
-        public void FireRefreshRequestedEvent(string sIssue)
+        public void FireRefreshRequestedEvent()
         {
             if (null != RefreshRequested)
             {

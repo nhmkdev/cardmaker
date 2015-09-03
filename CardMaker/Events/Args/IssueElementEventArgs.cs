@@ -22,7 +22,7 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace CardMaker.Events
+namespace CardMaker.Events.Args
 {
     public delegate void IssueElementChanged(object sender, IssueElementEventArgs args);
 

@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////////////////////
+﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
 // Copyright (c) 2015 Tim Stair
@@ -22,27 +22,23 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using CardMaker.Card;
+using CardMaker.XML;
 
-namespace CardMaker.Events
+namespace CardMaker.Events.Args
 {
-    public delegate void DeckIndexChanged(object sender, DeckChangeEventArgs args);
+    public delegate void ProjectOpened(object sender, ProjectEventArgs e);
 
-    public delegate void DeckIndexChangeRequested(object sender, DeckChangeEventArgs args);
+    public delegate void ProjectUpdated(object sender, ProjectEventArgs e);
 
-    public class DeckChangeEventArgs
+    public class ProjectEventArgs
     {
-        public Deck Deck { get; private set; }
-        public int Index { get; private set; }
-
-        public DeckChangeEventArgs(Deck zDeck, int nIndex)
+        public Project Project { get; private set; }
+        public string ProjectFilePath { get; private set; }
+        
+        public ProjectEventArgs(Project zProject, string sProjectFilePath)
         {
-            Deck = zDeck;
-            Index = nIndex;
-        }
-
-        public DeckChangeEventArgs(Deck zDeck) : this(zDeck, -1)
-        {
+            Project = zProject;
+            ProjectFilePath = sProjectFilePath;
         }
     }
 }

@@ -24,6 +24,7 @@
 
 
 using CardMaker.Card;
+using CardMaker.Events.Args;
 using CardMaker.XML;
 
 namespace CardMaker.Events.Managers
@@ -33,7 +34,7 @@ namespace CardMaker.Events.Managers
     /// </summary>
     public class LayoutManager
     {
-        private static LayoutManager m_zLayoutManager;
+        private static LayoutManager m_zInstance;
         
         public Deck ActiveDeck { get; private set; }
         public ProjectLayout ActiveLayout { get; private set; }
@@ -77,11 +78,11 @@ namespace CardMaker.Events.Managers
         {
             get
             {
-                if (m_zLayoutManager == null)
+                if (m_zInstance == null)
                 {
-                    m_zLayoutManager = new LayoutManager();
+                    m_zInstance = new LayoutManager();
                 }
-                return m_zLayoutManager;
+                return m_zInstance;
             }
         }
 

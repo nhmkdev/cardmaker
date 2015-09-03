@@ -28,13 +28,13 @@ using System.Drawing;
 using System.Windows.Forms;
 using CardMaker.Events.Managers;
 using Support.UI;
+using LayoutEventArgs = CardMaker.Events.Args.LayoutEventArgs;
 
 namespace CardMaker.Forms
 {
     public partial class MDIDefines : Form
     {
         private Point m_zLocation;
-        private static MDIDefines s_zInstance;
 
         public MDIDefines()
         {
@@ -42,7 +42,7 @@ namespace CardMaker.Forms
             LayoutManager.Instance.LayoutLoaded += Instance_LayoutLoaded;
         }
 
-        void Instance_LayoutLoaded(object sender, Events.LayoutEventArgs args)
+        void Instance_LayoutLoaded(object sender, LayoutEventArgs args)
         {
             listViewDefines.Items.Clear();
 
@@ -57,18 +57,6 @@ namespace CardMaker.Forms
                 listItems.Add(new ListViewItem(new string[] { zDefine.Key, zDefine.Value }));
             }
             listViewDefines.Items.AddRange(listItems.ToArray());
-        }
-
-        public static MDIDefines Instance
-        {
-            get
-            {
-                if (null == s_zInstance)
-                {
-                    s_zInstance = new MDIDefines();
-                }
-                return s_zInstance;
-            }
         }
 
         private void listViewDefines_ColumnClick(object sender, ColumnClickEventArgs e)

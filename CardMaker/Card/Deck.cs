@@ -1046,7 +1046,7 @@ namespace CardMaker.Card
         #region Layout Set
 #warning todo: make a deck loader interface so this can be handled from the command line
 
-        public bool SetAndLoadLayout(ProjectLayout zLayout, bool bExporting)
+        public void SetAndLoadLayout(ProjectLayout zLayout, bool bExporting)
         {
             CardLayout = zLayout;
 
@@ -1099,12 +1099,14 @@ namespace CardMaker.Card
                     "Loading Data",
                     null,
                     400);
-                CardMakerMDI.Instance.InvokeAction(() => zWait.ShowDialog(CardMakerMDI.Instance));
+#warning this needs to be pulled into a deck loader
+                CardMakerInstance.ApplicationForm.InvokeAction(() => zWait.ShowDialog(CardMakerInstance.ApplicationForm));
                 if (!bExporting)
                 {
-                    if (CardMakerMDI.Instance.InvokeFunc(() => CardMakerMDI.Instance.HandleInvalidGoogleCredentials()))
+                    if (CardMakerInstance.GoogleCredentialsInvalid)
                     {
-                        return true;
+                        GoogleAuthManager.Instance.FireGoogleAuthCredentialsErrorEvent(
+                            () => LayoutManager.Instance.InitializeActiveLayout());
                     }
                 }
                 bReferenceFound = zWait.ThreadSuccess;
@@ -1123,9 +1125,8 @@ namespace CardMaker.Card
                 {
                     CancelButtonVisibile = false
                 };
-                CardMakerMDI.Instance.InvokeAction(() => zWait.ShowDialog(CardMakerMDI.Instance));
+                CardMakerInstance.ApplicationForm.InvokeAction(() => zWait.ShowDialog(CardMakerInstance.ApplicationForm));
             }
-            return false;
         }
 
         #endregion
