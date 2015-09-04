@@ -28,6 +28,9 @@ using Support.UI;
 
 namespace CardMaker.Card.Export
 {
+    /// <summary>
+    /// This is an exporter used to scan the project for errors
+    /// </summary>
     public class CompilerCardExporter : CardExportBase, ICardExporter
     {
         public CompilerCardExporter(int nLayoutStartIndex, int nLayoutEndIndex)
@@ -38,11 +41,11 @@ namespace CardMaker.Card.Export
         public void ExportThread()
         {
             WaitDialog zWait = WaitDialog.Instance;
-            for (int nIdx = m_nExportLayoutStartIndex; nIdx < m_nExportLayoutEndIndex; nIdx++)
+            for (int nIdx = ExportLayoutStartIndex; nIdx < ExportLayoutEndIndex; nIdx++)
             {
                 IssueManager.Instance.FireChangeCardInfoEvent(nIdx, 1);
                 IssueManager.Instance.FireChangeElementEvent(string.Empty);
-                ChangePrintCardCanvas(nIdx);
+                ChangeExportLayoutIndex(nIdx);
                 zWait.ProgressReset(1, 0, CurrentDeck.CardCount, 0);
 
                 UpdateBufferBitmap(CurrentDeck.CardLayout.width, CurrentDeck.CardLayout.height);

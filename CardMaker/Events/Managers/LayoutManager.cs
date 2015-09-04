@@ -86,15 +86,7 @@ namespace CardMaker.Events.Managers
             }
         }
 
-        public void SetActiveLayout(ProjectLayout zLayout)
-        {
-            ActiveLayout = zLayout;
-            if (null == zLayout)
-            {
-                ActiveDeck = null;
-            }
-            InitializeActiveLayout();  
-        }
+        #region Event Triggers
 
         public void FireLayoutSelectRequested(ProjectLayout zLayout)
         {
@@ -135,8 +127,51 @@ namespace CardMaker.Events.Managers
             }
         }
 
+        // TODO: this "request" event should make the actual change and then fire the event (??)
         /// <summary>
-        /// Refreshes the Deck assocaited with the current Layout
+        /// Fires the ElementSelectAdjustRequest event
+        /// </summary>
+        /// <param name="nIndexAdjust"></param>
+        public void FireElementOrderAdjustRequest(int nIndexAdjust)
+        {
+            if (null != ElementOrderAdjustRequest)
+            {
+                ElementOrderAdjustRequest(this, new LayoutElementNumericAdjustEventArgs(nIndexAdjust));
+            }
+        }
+
+#warning might need to go through the element manager instead when selection is managed(??)
+
+        /// <summary>
+        /// Fires the ElementSelectAdjustRequest event
+        /// </summary>
+        /// <param name="nAdjust"></param>
+        public void FireElementSelectAdjustRequest(int nAdjust)
+        {
+            if (null != ElementSelectAdjustRequest)
+            {
+                ElementSelectAdjustRequest(this, new LayoutElementNumericAdjustEventArgs(nAdjust));
+            }
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Sets the active layout and initializes it
+        /// </summary>
+        /// <param name="zLayout"></param>
+        public void SetActiveLayout(ProjectLayout zLayout)
+        {
+            ActiveLayout = zLayout;
+            if (null == zLayout)
+            {
+                ActiveDeck = null;
+            }
+            InitializeActiveLayout();
+        }
+
+        /// <summary>
+        /// Refreshes the Deck assocaited with the current Layout (and fires the LayoutLoaded event)
         /// </summary>
         public void InitializeActiveLayout()
         {
@@ -187,27 +222,6 @@ namespace CardMaker.Events.Managers
                 }
             }
             return null;
-        }
-
-#warning these should be renamed to "fire" event methods
-
-        // TODO: this "request" event should make the actual change and then fire the event
-        public void RequestElementAdjustOrder(int nIndexAdjust)
-        {
-            if (null != ElementOrderAdjustRequest)
-            {
-                ElementOrderAdjustRequest(this, new LayoutElementNumericAdjustEventArgs(nIndexAdjust));
-            }
-        }
-
-        // TODO: this "request" event should ... dunno... how to tell the layout control window to perform a task?
-        // might need to go through the element manager instead when selection is managed(??)
-        public void RequestSelectedElementIndexAdjust(int nAdjust)
-        {
-            if (null != ElementSelectAdjustRequest)
-            {
-                ElementSelectAdjustRequest(this, new LayoutElementNumericAdjustEventArgs(nAdjust));
-            }
         }
     }
 }

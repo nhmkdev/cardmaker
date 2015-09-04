@@ -25,12 +25,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using CardMaker.Data;
 using CardMaker.XML;
 using Support.IO;
 using Support.UI;
 
-namespace CardMaker.Events.Managers
+namespace CardMaker.Data
 {
     /// <summary>
     /// Handles LayoutTemplate management

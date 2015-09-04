@@ -73,6 +73,21 @@ namespace CardMaker.Events.Managers
             }
         }
 
+        #region Event Triggers
+
+        /// <summary>
+        /// Fires the ProjectUpdated event
+        /// </summary>
+        public void FireProjectUpdated()
+        {
+            if (null != ProjectUpdated)
+            {
+                ProjectUpdated(this, new ProjectEventArgs(LoadedProject, ProjectFilePath));
+            }
+        }
+
+        #endregion
+
         /// <summary>
         /// Loads the project file for use by ProjectManager event listeners
         /// </summary>
@@ -94,10 +109,10 @@ namespace CardMaker.Events.Managers
         /// <param name="sFile">The path to save</param>
         /// <param name="sOldFile">The old file path (necessary for reference updating)</param>
         /// <returns></returns>
-        public bool Save(string sFile, string sOldFile)
+        public bool Save(string sFile)
         {
             string sProjectPath = Path.GetDirectoryName(sFile);
-            string sOldProjectPath = Path.GetDirectoryName(sOldFile);
+            string sOldProjectPath = null == ProjectFilePath ? string.Empty : Path.GetDirectoryName(ProjectFilePath);
 
             bool bOldPathValid = !string.IsNullOrEmpty(sOldProjectPath);
 
@@ -154,17 +169,6 @@ namespace CardMaker.Events.Managers
         {
             ProjectFilePath = sProjectFile;
             ProjectPath = String.IsNullOrEmpty(ProjectFilePath) ? null : (Path.GetDirectoryName(sProjectFile) + Path.DirectorySeparatorChar);
-        }
-
-        /// <summary>
-        /// Fires the ProjectUpdated event
-        /// </summary>
-        public void FireProjectUpdated()
-        {
-            if (null != ProjectUpdated)
-            {
-                ProjectUpdated(this, new ProjectEventArgs(LoadedProject, ProjectFilePath));
-            }
         }
 
         /// <summary>

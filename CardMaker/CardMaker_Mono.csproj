@@ -128,19 +128,28 @@
     <Compile Include="Data\CardMakerConstants.cs" />
     <Compile Include="Data\CardMakerInstance.cs" />
     <Compile Include="Data\CardMakerSettings.cs" />
-    <Compile Include="Enumerations.cs" />
-    <Compile Include="Events\DeckChangeEventArgs.cs" />
-    <Compile Include="Events\IssueCardInfoEventArgs.cs" />
-    <Compile Include="Events\IssueElementEventArgs.cs" />
-    <Compile Include="Events\IssueRefreshEventArgs.cs" />
-    <Compile Include="Events\LayoutElementNumericAdjustEventArgs.cs" />
+    <Compile Include="Data\Enumerations.cs" />
+    <Compile Include="Data\LayoutTemplateManager.cs" />
+    <Compile Include="Events\Args\DeckChangeEventArgs.cs" />
+    <Compile Include="Events\Args\ElementEventArgs.cs" />
+    <Compile Include="Events\Args\ExportEventArgs.cs" />
+    <Compile Include="Events\Args\GoogleAuthEventArgs.cs" />
+    <Compile Include="Events\Args\IssueCardInfoEventArgs.cs" />
+    <Compile Include="Events\Args\IssueElementEventArgs.cs" />
+    <Compile Include="Events\Args\IssueMessageEventArgs.cs" />
+    <Compile Include="Events\Args\IssueRefreshEventArgs.cs" />
+    <Compile Include="Events\Args\LayoutElementNumericAdjustEventArgs.cs" />
+    <Compile Include="Events\Args\LayoutEventArgs.cs" />
+    <Compile Include="Events\Args\ProjectEventArgs.cs" />
+    <Compile Include="Events\Managers\ExportManager.cs" />
+    <Compile Include="Events\Managers\GoogleAuthManager.cs" />
     <Compile Include="Forms\CardMakerMDI.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\CardMakerMDI.Designer.cs">
       <DependentUpon>CardMakerMDI.cs</DependentUpon>
     </Compile>
-    <Compile Include="Events\IssueMessageEventArgs.cs" />
+    <Compile Include="Forms\FormUtils.cs" />
     <Compile Include="Forms\GoogleCredentialsDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -245,12 +254,8 @@
     </Compile>
     <Compile Include="Support\UI\Win32.cs" />
     <Compile Include="Support\Util\TimeMeasure.cs" />
-    <Compile Include="Events\ProjectEventArgs.cs" />
-    <Compile Include="Events\ElementEventArgs.cs" />
-    <Compile Include="Events\LayoutEventArgs.cs" />
     <Compile Include="Events\Managers\ElementManager.cs" />
     <Compile Include="Events\Managers\LayoutManager.cs" />
-    <Compile Include="Events\Managers\LayoutTemplateManager.cs" />
     <Compile Include="Events\Managers\ProjectManager.cs" />
     <Compile Include="XML\Project.cs" />
     <Compile Include="XML\ProjectLayout.cs" />

@@ -33,10 +33,10 @@ using CardMaker.Card.FormattedText;
 using CardMaker.Card.Import;
 using CardMaker.Data;
 using CardMaker.Events.Managers;
-using CardMaker.Forms;
 using CardMaker.XML;
 using Support.IO;
 using Support.UI;
+
 #if MONO_BUILD
 using System.Threading;
 #endif
@@ -1105,6 +1105,7 @@ namespace CardMaker.Card
                 {
                     if (CardMakerInstance.GoogleCredentialsInvalid)
                     {
+                        CardMakerInstance.GoogleCredentialsInvalid = false;
                         GoogleAuthManager.Instance.FireGoogleAuthCredentialsErrorEvent(
                             () => LayoutManager.Instance.InitializeActiveLayout());
                     }

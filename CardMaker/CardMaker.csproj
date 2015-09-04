@@ -129,6 +129,7 @@
     <Compile Include="Data\CardMakerInstance.cs" />
     <Compile Include="Data\CardMakerSettings.cs" />
     <Compile Include="Data\Enumerations.cs" />
+    <Compile Include="Data\LayoutTemplateManager.cs" />
     <Compile Include="Events\Args\DeckChangeEventArgs.cs" />
     <Compile Include="Events\Args\ElementEventArgs.cs" />
     <Compile Include="Events\Args\ExportEventArgs.cs" />
@@ -255,7 +256,6 @@
     <Compile Include="Support\Util\TimeMeasure.cs" />
     <Compile Include="Events\Managers\ElementManager.cs" />
     <Compile Include="Events\Managers\LayoutManager.cs" />
-    <Compile Include="Events\Managers\LayoutTemplateManager.cs" />
     <Compile Include="Events\Managers\ProjectManager.cs" />
     <Compile Include="XML\Project.cs" />
     <Compile Include="XML\ProjectLayout.cs" />
@@ -380,6 +380,6 @@
     <PostBuildEvent>DEL "$(SolutionDir)$(OutDir)*.zip"
 COPY /Y $(SolutionDir)\3rdParty\GoogleDataAPI\GData-LICENSE-2.0.txt $(TargetDir)\Licenses
 COPY /Y $(SolutionDir)\3rdParty\PDFSharp\PDFSharp-License.txt $(TargetDir)\Licenses
-"C:\Program Files\7-Zip\7z" a "$(TargetDir)CardMaker_X.X.X.X.zip" "$(TargetDir)CardMaker.exe" "$(TargetDir)CardMaker_Mono.exe" "$(TargetDir)*.dll" "$(TargetDir)*.pdf" "$(TargetDir)Sample" "$(TargetDir)Readme.txt" "$(TargetDir)History.txt" "$(TargetDir)Licenses" "$(TargetDir)images" -tzip -mx5</PostBuildEvent>
+"C:\Program Files\7-Zip\7z" a "$(TargetDir)CardMaker_X.X.X.X.zip" "$(TargetDir)CardMaker.exe" "$(TargetDir)CardMaker_Mono.exe" "$(TargetDir)*.dll" "$(TargetDir)Card_Maker.pdf" "$(TargetDir)Card_Maker_Basic_Project.pdf" "$(TargetDir)Sample" "$(TargetDir)Readme.txt" "$(TargetDir)History.txt" "$(TargetDir)Licenses" "$(TargetDir)images" -tzip -mx5</PostBuildEvent>
   </PropertyGroup>
 </Project>

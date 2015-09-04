@@ -29,7 +29,6 @@ using System.Drawing;
 using System.Windows.Forms;
 using CardMaker.Card;
 using CardMaker.Data;
-using CardMaker.Events;
 using CardMaker.Events.Args;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
@@ -116,62 +115,14 @@ namespace CardMaker.Forms
 
             panelCardCanvas.Controls.Add(m_zCardCanvas);
 
-            LayoutManager.Instance.LayoutUpdated += Layout_Updated;
-            LayoutManager.Instance.LayoutLoaded += Layout_Loaded;
-            LayoutManager.Instance.DeckIndexChanged += Instance_DeckIndexChanged;
-            ElementManager.Instance.ElementSelected += Instance_ElementSelected;
-            ProjectManager.Instance.ProjectOpened += ProjectProjectOpened;
+            LayoutManager.Instance.LayoutUpdated += LayoutUpdated;
+            LayoutManager.Instance.LayoutLoaded += LayoutLoaded;
+            LayoutManager.Instance.DeckIndexChanged += DeckIndexChanged;
+            ElementManager.Instance.ElementSelected += ElementSelected;
+            ProjectManager.Instance.ProjectOpened += ProjectOpened;
         }
 
-        void Instance_ElementSelected(object sender, ElementEventArgs args)
-        {
-            Redraw();
-        }
-
-        void Instance_DeckIndexChanged(object sender, DeckChangeEventArgs args)
-        {
-            Redraw();
-        }
-
-        void Layout_Updated(object sender, LayoutEventArgs args)
-        {
-            m_zCardCanvas.Reset(args.Deck);
-            Redraw();
-        }
-
-        void Layout_Loaded(object sender, LayoutEventArgs args)
-        {
-            // NOTE: This is the one place where the Deck is passed from UI specific code to generic rendering code
-            // The loaded Deck is assigned to the underlying renderer
-            m_zCardCanvas.Reset(args.Deck);
-            Redraw();
-        }
-
-        void ProjectProjectOpened(object sender, ProjectEventArgs e)
-        {
-            m_zCardCanvas.Reset(null);
-            Redraw();
-        }
-
-        /// <summary>
-        /// Invalidates the panel and card canvas
-        /// </summary>
-        private void Redraw()
-        {
-            panelCardCanvas.Invalidate();
-            m_zCardCanvas.Invalidate();            
-        }
-
-        protected override CreateParams CreateParams
-        {
-            get
-            {
-                const int CP_NOCLOSE_BUTTON = 0x200;
-                CreateParams zParams = base.CreateParams;
-                zParams.ClassStyle = zParams.ClassStyle | CP_NOCLOSE_BUTTON;
-                return zParams;
-            }
-        }
+        #region Form Events
 
         private void contextmenuOpening_Handler(object sender, CancelEventArgs e)
         {
@@ -399,52 +350,6 @@ namespace CardMaker.Forms
             }
         }
 
-        public bool ResizeRight(int nX)
-        {
-            int nWidth = (int)((float)nX * m_fZoomRatio) - m_zSelectedElement.x;
-            if (1 <= nWidth)
-            {
-                m_zSelectedElement.width = nWidth;
-                return true;
-            }
-            return false;
-        }
-
-        public bool ResizeLeft(int nX)
-        {
-            int nWidth = m_zSelectedElement.width + (m_zSelectedElement.x - (int) ((float) nX*m_fZoomRatio));
-            if ((0 <= nX) && (1 <= nWidth))
-            {
-                m_zSelectedElement.width = nWidth;
-                m_zSelectedElement.x = (int) ((float) nX*m_fZoomRatio);
-                return true;
-            }
-            return false;
-        }
-
-        public bool ResizeUp(int nY)
-        {
-            int nHeight = m_zSelectedElement.height + (m_zSelectedElement.y - (int) ((float) nY*m_fZoomRatio));
-            if ((0 <= nY) && (1 <= nHeight))
-            {
-                m_zSelectedElement.height = nHeight;
-                m_zSelectedElement.y = (int) ((float) nY*m_fZoomRatio);
-                return true;
-            }
-            return false;
-        }
-
-        public bool ResizeDown(int nY)
-        {
-            int nHeight = (int)((float)nY * m_fZoomRatio) - m_zSelectedElement.y;
-            if (1 <= nHeight)
-            {
-                m_zSelectedElement.height = nHeight;
-                return true;
-            }
-            return false;
-        }
-
         private void cardCanvas_MouseUp(object sender, MouseEventArgs e)
         {
             CardMakerInstance.CanvasUserAction = false;
@@ -489,7 +394,7 @@ namespace CardMaker.Forms
                         m_bElementSelected = true;
                         m_zSelectedElement = zElement;
 
-                        m_listSelectedElements = ElementManager.Instance.GetSelectedElements();
+                        m_listSelectedElements = ElementManager.Instance.SelectedElements;
                         if (null != m_listSelectedElements)
                         {
                             m_listSelectedOffsets = new List<Point>();
@@ -506,6 +411,55 @@ namespace CardMaker.Forms
                 }
             }
         }
+
+        private void numericUpDownZoom_ValueChanged(object sender, EventArgs e)
+        {
+            m_fZoom = (float)numericUpDownZoom.Value;
+            m_fZoomRatio = 1.0f / m_fZoom;
+            m_eTranslationLock = TranslationLock.Unset;
+            m_zCardCanvas.CardRenderer.ZoomLevel = m_fZoom;
+            LayoutManager.Instance.ActiveDeck.ResetDeckCache();
+            m_zCardCanvas.UpdateSize();
+            m_zCardCanvas.Invalidate();
+        }
+
+        #endregion
+
+        #region Manager Events
+        
+        void ElementSelected(object sender, ElementEventArgs args)
+        {
+            Redraw();
+        }
+
+        void DeckIndexChanged(object sender, DeckChangeEventArgs args)
+        {
+            Redraw();
+        }
+
+        void LayoutUpdated(object sender, LayoutEventArgs args)
+        {
+            m_zCardCanvas.Reset(args.Deck);
+            Redraw();
+        }
+
+        void LayoutLoaded(object sender, LayoutEventArgs args)
+        {
+            // NOTE: This is the one place where the Deck is passed from UI specific code to generic rendering code
+            // The loaded Deck is assigned to the underlying renderer
+            m_zCardCanvas.Reset(args.Deck);
+            Redraw();
+        }
+
+        void ProjectOpened(object sender, ProjectEventArgs e)
+        {
+            m_zCardCanvas.Reset(null);
+            Redraw();
+        }
+
+        #endregion
+
+        #region Form Overrides
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
@@ -526,22 +480,22 @@ namespace CardMaker.Forms
                         break;
                         // focus is taken by the MDICanvas, reset it after each change below & reset the translation lock
                     case Keys.Shift | Keys.Up:
-                        LayoutManager.Instance.RequestElementAdjustOrder(-1);
+                        LayoutManager.Instance.FireElementOrderAdjustRequest(-1);
                         m_eTranslationLock = TranslationLock.Unset;
                         m_zCardCanvas.Focus();
                         break;
                     case Keys.Shift | Keys.Down:
-                        LayoutManager.Instance.RequestElementAdjustOrder(1);
+                        LayoutManager.Instance.FireElementOrderAdjustRequest(1);
                         m_eTranslationLock = TranslationLock.Unset;
                         m_zCardCanvas.Focus();
                         break;
                     case Keys.Control | Keys.Up:
-                        LayoutManager.Instance.RequestSelectedElementIndexAdjust(-1);
+                        LayoutManager.Instance.FireElementSelectAdjustRequest(-1);
                         m_eTranslationLock = TranslationLock.Unset;
                         m_zCardCanvas.Focus();
                         break;
                     case Keys.Control | Keys.Down:
-                        LayoutManager.Instance.RequestSelectedElementIndexAdjust(1);
+                        LayoutManager.Instance.FireElementSelectAdjustRequest(1);
                         m_eTranslationLock = TranslationLock.Unset;
                         m_zCardCanvas.Focus();
                         break;
@@ -583,15 +537,72 @@ namespace CardMaker.Forms
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
-        private void numericUpDownZoom_ValueChanged(object sender, EventArgs e)
+        protected override CreateParams CreateParams
         {
-            m_fZoom = (float)numericUpDownZoom.Value;
-            m_fZoomRatio = 1.0f / m_fZoom;
-            m_eTranslationLock = TranslationLock.Unset;
-            m_zCardCanvas.CardRenderer.ZoomLevel = m_fZoom;
-            LayoutManager.Instance.ActiveDeck.ResetDeckCache();
-            m_zCardCanvas.UpdateSize();
+            get
+            {
+                const int CP_NOCLOSE_BUTTON = 0x200;
+                CreateParams zParams = base.CreateParams;
+                zParams.ClassStyle = zParams.ClassStyle | CP_NOCLOSE_BUTTON;
+                return zParams;
+            }
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Invalidates the panel and card canvas
+        /// </summary>
+        private void Redraw()
+        {
+            panelCardCanvas.Invalidate();
             m_zCardCanvas.Invalidate();
+        }
+
+        public bool ResizeRight(int nX)
+        {
+            int nWidth = (int)((float)nX * m_fZoomRatio) - m_zSelectedElement.x;
+            if (1 <= nWidth)
+            {
+                m_zSelectedElement.width = nWidth;
+                return true;
+            }
+            return false;
+        }
+
+        public bool ResizeLeft(int nX)
+        {
+            int nWidth = m_zSelectedElement.width + (m_zSelectedElement.x - (int)((float)nX * m_fZoomRatio));
+            if ((0 <= nX) && (1 <= nWidth))
+            {
+                m_zSelectedElement.width = nWidth;
+                m_zSelectedElement.x = (int)((float)nX * m_fZoomRatio);
+                return true;
+            }
+            return false;
+        }
+
+        public bool ResizeUp(int nY)
+        {
+            int nHeight = m_zSelectedElement.height + (m_zSelectedElement.y - (int)((float)nY * m_fZoomRatio));
+            if ((0 <= nY) && (1 <= nHeight))
+            {
+                m_zSelectedElement.height = nHeight;
+                m_zSelectedElement.y = (int)((float)nY * m_fZoomRatio);
+                return true;
+            }
+            return false;
+        }
+
+        public bool ResizeDown(int nY)
+        {
+            int nHeight = (int)((float)nY * m_fZoomRatio) - m_zSelectedElement.y;
+            if (1 <= nHeight)
+            {
+                m_zSelectedElement.height = nHeight;
+                return true;
+            }
+            return false;
         }
 
         private void UpdateText()

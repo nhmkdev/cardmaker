@@ -59,10 +59,10 @@ namespace CardMaker.Card.Export
         {
             var zWait = WaitDialog.Instance;
 
-            zWait.ProgressReset(0, 0, m_nExportLayoutEndIndex - m_nExportLayoutStartIndex, 0);
-            for (var nIdx = m_nExportLayoutStartIndex; nIdx < m_nExportLayoutEndIndex; nIdx++)
+            zWait.ProgressReset(0, 0, ExportLayoutEndIndex - ExportLayoutStartIndex, 0);
+            for (var nIdx = ExportLayoutStartIndex; nIdx < ExportLayoutEndIndex; nIdx++)
             {
-                ChangePrintCardCanvas(nIdx);
+                ChangeExportLayoutIndex(nIdx);
                 var nPadSize = CurrentDeck.CardCount.ToString(CultureInfo.InvariantCulture).Length;
                 zWait.ProgressReset(1, 0, CurrentDeck.CardCount, 0);
 
@@ -148,6 +148,11 @@ namespace CardMaker.Card.Export
             zWait.CloseWaitDialog();
         }
 
+        /// <summary>
+        /// Rotates the export buffer based on the Layout exportRotation setting
+        /// </summary>
+        /// <param name="zLayout"></param>
+        /// <param name="preExport"></param>
         protected void ProcessRotateExport(ProjectLayout zLayout, bool preExport)
         {
             switch (zLayout.exportRotation)
@@ -161,7 +166,13 @@ namespace CardMaker.Card.Export
             }
         }
 
-        public override void UpdateBufferBitmap(int nWidth, int nHeight, Graphics zGraphics = null)
+        /// <summary>
+        /// Updates the export buffer
+        /// </summary>
+        /// <param name="nWidth"></param>
+        /// <param name="nHeight"></param>
+        /// <param name="zGraphics"></param>
+        protected override void UpdateBufferBitmap(int nWidth, int nHeight, Graphics zGraphics = null)
         {
             if (null != m_zExportCardBuffer)
             {

@@ -22,7 +22,7 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-//#define UNSTABLE
+#define UNSTABLE
 
 using System;
 using System.Collections.Generic;
@@ -39,7 +39,6 @@ using CardMaker.Card;
 using CardMaker.Card.Export;
 using CardMaker.Card.Shapes;
 using CardMaker.Data;
-using CardMaker.Events;
 using CardMaker.Events.Args;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
@@ -52,34 +51,23 @@ namespace CardMaker.Forms
 {
     public partial class CardMakerMDI : AbstractDirtyForm
     {
-        private const string VISIBLE_SETTING = ".visible";
-
-        const char CHAR_FILE_SPLIT = '|';
-        const int MAX_RECENT_PROJECTS = 10;
-
-        private string m_sLoadedProjectFile;
-
         private readonly List<string> m_listRecentFiles = new List<string>();
 
         // last export settings for pdf
         private string m_sPdfExportLastFile = "";
-        private bool m_bPdfExportLastOpen = false;
-        private int m_nPdfExportLastOrientationIndex = 0;
-
-        #region Properties
-
-        //public static CardMakerMDI Instance { get; private set; }
-
-        #endregion
+        private bool m_bPdfExportLastOpen;
+        private int m_nPdfExportLastOrientationIndex;
 
         public CardMakerMDI()
         {
             InitializeComponent();
 
-            CardMakerInstance.ProcessingUserAction = false;
             UserAction.OnClearUserActions = () => Logger.AddLogLine("Cleared Undo/Redo.");
 
             m_sBaseTitle = "Card Maker Beta " + Application.ProductVersion;
+#if UNSTABLE
+            m_sBaseTitle += "[UNSTABLE] V.A1";
+#endif
             m_sFileOpenFilter = "CMP files (*.cmp)|*.cmp|All files (*.*)|*.*";
 
             Icon = Properties.Resources.CardMakerIcon;
@@ -88,34 +76,23 @@ namespace CardMaker.Forms
             CardMakerInstance.ApplicationForm = this;
         }
 
-        #region Events
-
-        private Form SetupMDIForm(Form zForm, bool bDefaultShow)
-        {
-            zForm.MdiParent = this;
-            var bShow = bDefaultShow;
-            bool.TryParse(CardMakerSettings.IniManager.GetValue(zForm.Name + VISIBLE_SETTING, bDefaultShow.ToString()), out bShow);
-            if (bShow)
-            {
-                zForm.Show();
-            }
-            return zForm;
-        }
+        #region Form Events
 
         private void CardMakerMDI_Load(object sender, EventArgs e)
         {
             // always before any dialogs
             ShapeManager.Init();
 
-            ProjectManager.Instance.ProjectOpened += ProjectProjectOpened;
-            ProjectManager.Instance.ProjectUpdated += Instance_ProjectUpdated;
+            ProjectManager.Instance.ProjectOpened += ProjectOpened;
+            ProjectManager.Instance.ProjectUpdated += ProjectUpdated;
 
             LayoutManager.Instance.LayoutUpdated += LayoutUpdated;
 
             ExportManager.Instance.ExportRequested += ExportRequested;
 
+            // Same handler for both events
             GoogleAuthManager.Instance.GoogleAuthUpdateRequested += GoogleAuthUpdateRequested;
-            GoogleAuthManager.Instance.GoogleAuthCredentialsError += GoogleAuthCredentialsError;
+            GoogleAuthManager.Instance.GoogleAuthCredentialsError += GoogleAuthUpdateRequested;
 
             // Setup all the child dialogs
             var zCanvasForm = SetupMDIForm(new MDICanvas(), true);
@@ -195,8 +172,8 @@ namespace CardMaker.Forms
 #if MONO_BUILD
                 zCanvasForm.Size = new Size(457, 300);
                 zCanvasForm.Location = new Point(209, 5);
-                MDIElementControl.Instance.Size = new Size(768, 379);
-                MDIElementControl.Instance.Location = new Point(3, 310);
+                zElementForm.Size = new Size(768, 379);
+                zElementForm.Location = new Point(3, 310);
                 zLayoutForm.Size = new Size(300, 352);
                 zLayoutForm.Location = new Point(805, 4);
                 zProjectForm.Size = new Size(200, 266);
@@ -217,7 +194,7 @@ namespace CardMaker.Forms
 #endif
             }
 
-            var arrayFiles = CardMakerSettings.IniManager.GetValue(IniSettings.PreviousProjects).Split(new char[] { CHAR_FILE_SPLIT }, StringSplitOptions.RemoveEmptyEntries);
+            var arrayFiles = CardMakerSettings.IniManager.GetValue(IniSettings.PreviousProjects).Split(new char[] {CardMakerConstants.CHAR_FILE_SPLIT }, StringSplitOptions.RemoveEmptyEntries);
             if (0 < arrayFiles.Length)
             {
                 foreach (var sFile in arrayFiles)
@@ -248,48 +225,6 @@ namespace CardMaker.Forms
             MessageBox.Show(
                 "This is an UNSTABLE build of CardMaker. Please make backups of any projects before opening them with this version.");
 #endif
-        }
-
-        private void ExportRequested(object sender, ExportEventArgs args)
-        {
-            switch (args.ExportType)
-            {
-                case ExportType.Image:
-                    ExportImages(false);
-                    break;
-                case ExportType.PDFSharp:
-                    ExportViaPDFSharp(false);
-                    break;
-            }
-        }
-
-        private void GoogleAuthCredentialsError(object sender, GoogleAuthEventArgs args)
-        {
-            // TODO
-            //UpdateGoogleAuth(args.SuccessAction, args.CancelAction);
-        }
-
-        private void GoogleAuthUpdateRequested(object sender, GoogleAuthEventArgs args)
-        {
-            UpdateGoogleAuth(args.SuccessAction, args.CancelAction);
-        }
-
-
-        void Instance_ProjectUpdated(object sender, ProjectEventArgs e)
-        {
-            MarkDirty();
-        }
-
-        void LayoutUpdated(object sender, LayoutEventArgs args)
-        {
-            MarkDirty();
-        }
-
-        private void ProjectProjectOpened(object sender, ProjectEventArgs e)
-        {
-            var sProjectFilePath = string.IsNullOrEmpty(e.ProjectFilePath) ? string.Empty : e.ProjectFilePath;
-            SetLoadedFile(sProjectFilePath);
-            CardMakerInstance.LoadedProjectFilePath = sProjectFilePath;
         }
 
         private void saveProjectAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -325,7 +260,7 @@ namespace CardMaker.Forms
             foreach (Form zForm in MdiChildren)
             {
                 CardMakerSettings.IniManager.SetValue(zForm.Name, IniManager.GetFormSettings(zForm));
-                CardMakerSettings.IniManager.SetValue(zForm.Name + VISIBLE_SETTING, zForm.Visible.ToString());
+                CardMakerSettings.IniManager.SetValue(zForm.Name + CardMakerConstants.VISIBLE_SETTING, zForm.Visible.ToString());
             }
             var zBuilder = new StringBuilder();
             var dictionaryFilenames = new Dictionary<string, object>();
@@ -335,7 +270,7 @@ namespace CardMaker.Forms
                 if (dictionaryFilenames.ContainsKey(sLowerFile))
                     continue;
                 dictionaryFilenames.Add(sLowerFile, null);
-                zBuilder.Append(sFile + CHAR_FILE_SPLIT);
+                zBuilder.Append(sFile + CardMakerConstants.CHAR_FILE_SPLIT);
             }
             CardMakerSettings.IniManager.SetValue(IniSettings.PreviousProjects, zBuilder.ToString());
             CardMakerSettings.IniManager.FlushIniSettings();
@@ -373,15 +308,321 @@ namespace CardMaker.Forms
             InitOpen(sFile);
         }
 
+        private void redoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (CardMakerInstance.ProcessingUserAction)
+            {
+                return;
+            }
+
+            Action<bool> redoAction = UserAction.GetRedoAction();
+            if (null != redoAction)
+            {
+                redoAction(true);
+            }
+        }
+
+        private void undoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (CardMakerInstance.ProcessingUserAction)
+            {
+                return;
+            }
+
+            Action<bool> undoAction = UserAction.GetUndoAction();
+            if (null != undoAction)
+            {
+                undoAction(false);
+            }
+        }
+
+        private void editToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
+        {
+            undoToolStripMenuItem.Enabled = 0 < UserAction.UndoCount;
+            redoToolStripMenuItem.Enabled = 0 < UserAction.RedoCount;
+        }
+
+        private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var zQuery = new QueryPanelDialog("CardMaker Settings", 450, 250, true);
+            zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
+            zQuery.SetMaxHeight(600);
+            zQuery.AddTab("General");
+            zQuery.AddCheckBox("Print/Export Layout Border", CardMakerSettings.PrintLayoutBorder, IniSettings.PrintLayoutBorder);
+
+            zQuery.AddTab("PDF Export");
+            zQuery.AddNumericBox("Page Width (inches)", CardMakerSettings.PrintPageWidth, 1, 1024, 1, 2, IniSettings.PrintPageWidth);
+            zQuery.AddNumericBox("Page Height (inches)", CardMakerSettings.PrintPageHeight, 1, 1024, 1, 2, IniSettings.PrintPageHeight);
+            zQuery.AddNumericBox("Page Horizontal Margin (inches)", CardMakerSettings.PrintPageHorizontalMargin, 0, 1024, 0.01m, 2, IniSettings.PrintPageHorizontalMargin);
+            zQuery.AddNumericBox("Page Vertical Margin (inches)", CardMakerSettings.PrintPageVerticalMargin, 0, 1024, 0.01m, 2, IniSettings.PrintPageVerticalMargin);
+            zQuery.AddCheckBox("Auto-Center Layouts on Page", CardMakerSettings.PrintAutoHorizontalCenter, IniSettings.PrintAutoCenterLayout);
+            zQuery.AddCheckBox("Print Layouts On New Page", CardMakerSettings.PrintLayoutsOnNewPage, IniSettings.PrintLayoutsOnNewPage);
+            zQuery.SetIcon(Icon);
+
+            if (DialogResult.OK == zQuery.ShowDialog(this))
+            {
+                CardMakerSettings.PrintPageWidth = zQuery.GetDecimal(IniSettings.PrintPageWidth);
+                CardMakerSettings.PrintPageHeight = zQuery.GetDecimal(IniSettings.PrintPageHeight);
+                CardMakerSettings.PrintPageHorizontalMargin = zQuery.GetDecimal(IniSettings.PrintPageHorizontalMargin);
+                CardMakerSettings.PrintPageVerticalMargin = zQuery.GetDecimal(IniSettings.PrintPageVerticalMargin);
+                CardMakerSettings.PrintAutoHorizontalCenter = zQuery.GetBool(IniSettings.PrintAutoCenterLayout);
+                CardMakerSettings.PrintLayoutBorder = zQuery.GetBool(IniSettings.PrintLayoutBorder);
+                CardMakerSettings.PrintLayoutsOnNewPage = zQuery.GetBool(IniSettings.PrintLayoutsOnNewPage);
+            }
+        }
+
+        private void colorPickerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new RGBColorSelectDialog().ShowDialog(this);
+        }
+
+        private void importLayoutsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var ofd = new OpenFileDialog
+            {
+                Filter = m_sFileOpenFilter,
+                CheckFileExists = true
+            };
+
+            if (DialogResult.OK != ofd.ShowDialog(this))
+            {
+                return;
+            }
+
+            Project zProject = null;
+            try
+            {
+                zProject = ProjectManager.LoadProject(ofd.FileName);
+            }
+            catch (Exception ex)
+            {
+                Logger.AddLogLine("Error Loading Project File: " + ex.ToString());
+            }
+
+            if (null == zProject)
+            {
+                return;
+            }
+
+            var zQuery = new QueryPanelDialog("Select Layouts To Import", 500, false);
+            const string LAYOUT_QUERY_KEY = "layoutquerykey";
+            zQuery.AddListBox("Layouts", zProject.Layout.ToList().Select(projectLayout => projectLayout.Name).ToArray(), null, true, 400, LAYOUT_QUERY_KEY);
+            if (DialogResult.OK == zQuery.ShowDialog(this))
+            {
+                var listIndices = zQuery.GetIndices(LAYOUT_QUERY_KEY).ToList();
+                listIndices.ForEach(nIdx =>
+                {
+                    ProjectManager.Instance.AddLayout(zProject.Layout[nIdx]);
+                });
+            }
+        }
+
+        private void exportProjectToPDFToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ExportViaPDFSharp(true);
+        }
+
+        private void exportImagesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ExportImages(true);
+        }
+
+
+        private void updateIssuesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            InitSave(false);
+            if (Dirty)
+            {
+                return;
+            }
+
+            IssueManager.Instance.FireRefreshRequestedEvent();
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(this, "Card Maker Beta" +
+                Environment.NewLine + Environment.NewLine +
+                Application.ProductVersion +
+#if MONO_BUILD
+                " [Mono Build]" +
+#endif
+ Environment.NewLine + Environment.NewLine +
+                "Written by Tim Stair" +
+                Environment.NewLine + Environment.NewLine +
+                "Enjoy!"
+                , "About", MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+        }
+
+        private void pDFToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string sHelpFile = CardMakerInstance.StartupPath + "Card_Maker.pdf";
+            if (File.Exists(sHelpFile))
+                System.Diagnostics.Process.Start(sHelpFile);
+        }
+
+        private void samplePDFToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string sSampleFile = CardMakerInstance.StartupPath + "Card_Maker_Basic_Project.pdf";
+            if (File.Exists(sSampleFile))
+                System.Diagnostics.Process.Start(sSampleFile);
+        }
+
+        private void clearCacheToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // maybe an event? Or a DrawManager
+            DrawItem.DumpImages();
+            DrawItem.DumpOpacityImages();
+#if false // TODO: event
+            m_zDrawCardCanvas.Invalidate();
+#endif
+        }
+
+        private void illegalFilenameCharacterReplacementToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var zQuery = new QueryPanelDialog("Illegal File Name Character Replacement", 350, false);
+            zQuery.SetIcon(Properties.Resources.CardMakerIcon);
+            var arrayBadChars = Deck.DISALLOWED_FILE_CHARS_ARRAY;
+            var arrayReplacementChars = CardMakerSettings.IniManager.GetValue(IniSettings.ReplacementChars, string.Empty).Split(new char[] { CardMakerConstants.CHAR_FILE_SPLIT });
+            if (arrayReplacementChars.Length == Deck.DISALLOWED_FILE_CHARS_ARRAY.Length)
+            {
+                // from ini
+                for (int nIdx = 0; nIdx < arrayBadChars.Length; nIdx++)
+                {
+                    zQuery.AddTextBox(arrayBadChars[nIdx].ToString(CultureInfo.InvariantCulture), arrayReplacementChars[nIdx], false, nIdx.ToString(CultureInfo.InvariantCulture));
+                }
+            }
+            else
+            {
+                // default
+                for (int nIdx = 0; nIdx < arrayBadChars.Length; nIdx++)
+                {
+                    zQuery.AddTextBox(arrayBadChars[nIdx].ToString(CultureInfo.InvariantCulture), string.Empty, false, nIdx.ToString(CultureInfo.InvariantCulture));
+                }
+            }
+            if (DialogResult.OK == zQuery.ShowDialog(this))
+            {
+                var zBuilder = new StringBuilder();
+                for (int nIdx = 0; nIdx < arrayBadChars.Length; nIdx++)
+                {
+                    zBuilder.Append(zQuery.GetString(nIdx.ToString(CultureInfo.InvariantCulture)) + CardMakerConstants.CHAR_FILE_SPLIT);
+                }
+                zBuilder.Remove(zBuilder.Length - 1, 1); // remove last char
+                CardMakerSettings.IniManager.SetValue(IniSettings.ReplacementChars, zBuilder.ToString());
+                RestoreReplacementChars();
+            }
+        }
+
+
+
+        private void removeLayoutTemplatesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            const string TEMPLATE = "template";
+            var listItems = new List<string>();
+            LayoutTemplateManager.Instance.LayoutTemplates.ForEach(x => listItems.Add(x.ToString()));
+
+            var zQuery = new QueryPanelDialog("Remove Layout Templates", 450, false);
+            zQuery.SetIcon(Properties.Resources.CardMakerIcon);
+            zQuery.AddLabel("Select the templates to remove.", 20);
+            zQuery.AddListBox("Templates", listItems.ToArray(), null, true, 120, TEMPLATE);
+            zQuery.AllowResize();
+            if (DialogResult.OK == zQuery.ShowDialog(this))
+            {
+                var arrayRemove = zQuery.GetIndices(TEMPLATE);
+                if (0 == arrayRemove.Length)
+                {
+                    return;
+                }
+                var trimmedList = new List<LayoutTemplate>();
+                int removalIdx = 0;
+                List<LayoutTemplate> listOldTemplates = LayoutTemplateManager.Instance.LayoutTemplates;
+                for (int nIdx = 0; nIdx < listOldTemplates.Count; nIdx++)
+                {
+                    if (removalIdx < arrayRemove.Length && nIdx == arrayRemove[removalIdx])
+                    {
+                        removalIdx++;
+                        // delete failures are logged
+                        LayoutTemplateManager.Instance.DeleteLayoutTemplate(CardMakerInstance.StartupPath, listOldTemplates[nIdx]);
+                    }
+                    else
+                    {
+                        trimmedList.Add(listOldTemplates[nIdx]);
+                    }
+                }
+                LayoutTemplateManager.Instance.LayoutTemplates = trimmedList;
+            }
+        }
+
+        private void projectManagerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new ProjectManagerUI().ShowDialog(this);
+        }
+
+        private void refreshLayoutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (LayoutManager.Instance.ActiveDeck != null)
+            {
+                LayoutManager.Instance.InitializeActiveLayout();
+            }
+        }
+
+        private void updateGoogleCredentialsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            UpdateGoogleAuth();
+        }
+
+        #endregion
+
+        #region Manager Events
+
+        private void ExportRequested(object sender, ExportEventArgs args)
+        {
+            switch (args.ExportType)
+            {
+                case ExportType.Image:
+                    ExportImages(false);
+                    break;
+                case ExportType.PDFSharp:
+                    ExportViaPDFSharp(false);
+                    break;
+            }
+        }
+
+        private void GoogleAuthUpdateRequested(object sender, GoogleAuthEventArgs args)
+        {
+            UpdateGoogleAuth(args.SuccessAction, args.CancelAction);
+        }
+
+
+        void ProjectUpdated(object sender, ProjectEventArgs e)
+        {
+            MarkDirty();
+        }
+
+        void LayoutUpdated(object sender, LayoutEventArgs args)
+        {
+            MarkDirty();
+        }
+
+        private void ProjectOpened(object sender, ProjectEventArgs e)
+        {
+            var sProjectFilePath = string.IsNullOrEmpty(e.ProjectFilePath) ? string.Empty : e.ProjectFilePath;
+            SetLoadedFile(sProjectFilePath);
+            CardMakerInstance.LoadedProjectFilePath = sProjectFilePath;
+        }
+
         #endregion
 
         #region AbstractDirtyForm overrides
 
         protected override bool SaveFormData(string sFileName)
         {
-#warning when saving this should update the recent list to include it if it is a new file
-            var bSaved = ProjectManager.Instance.Save(sFileName, m_sLoadedProjectFile);
-            return bSaved;;
+            var bSaved = ProjectManager.Instance.Save(sFileName);
+#warning may want to centralize the update of the loaded files history
+            m_listRecentFiles.Remove(sFileName);
+            m_listRecentFiles.Insert(0, sFileName);
+            return bSaved;
         }
 
         protected override bool OpenFormData(string sFileName)
@@ -400,9 +641,9 @@ namespace CardMaker.Forms
             {
                 m_listRecentFiles.Remove(sFileName);
                 m_listRecentFiles.Insert(0, sFileName);
-                while (MAX_RECENT_PROJECTS < m_listRecentFiles.Count)
+                while (CardMakerConstants.MAX_RECENT_PROJECTS < m_listRecentFiles.Count)
                 {
-                    m_listRecentFiles.RemoveAt(MAX_RECENT_PROJECTS);
+                    m_listRecentFiles.RemoveAt(CardMakerConstants.MAX_RECENT_PROJECTS);
                 }
 
                 bool bHasExternalReference = ProjectManager.Instance.LoadedProject.HasExternalReference();
@@ -421,11 +662,6 @@ namespace CardMaker.Forms
         }
 
         #endregion
-
-        private void exportProjectToPDFToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ExportViaPDFSharp(true);
-        }
 
         public void ExportViaPDFSharp(bool bExportAllLayouts)
         {
@@ -491,11 +727,6 @@ namespace CardMaker.Forms
             {
                 Process.Start(m_sPdfExportLastFile);
             }
-        }
-
-        private void exportImagesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ExportImages(true);
         }
 
         public void ExportImages(bool bExportAllLayouts)
@@ -620,166 +851,6 @@ namespace CardMaker.Forms
                 }
             }
         }
-        
-        private void updateIssuesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            InitSave(false);
-            if (Dirty)
-            {
-                return;
-            }
-
-            IssueManager.Instance.FireRefreshRequestedEvent();
-        }
-
-        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show(this, "Card Maker Beta" + 
-                Environment.NewLine + Environment.NewLine + 
-                Application.ProductVersion + 
-#if MONO_BUILD
-                " [Mono Build]" +
-#endif
-                Environment.NewLine + Environment.NewLine + 
-                "Written by Tim Stair" + 
-                Environment.NewLine + Environment.NewLine +
-                "Enjoy!"
-                , "About", MessageBoxButtons.OK,
-                MessageBoxIcon.Information);
-        }
-
-        private void pDFToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            string sHelpFile = CardMakerInstance.StartupPath + "Card_Maker.pdf";
-            if(File.Exists(sHelpFile))
-                System.Diagnostics.Process.Start(sHelpFile);
-        }
-
-        private void samplePDFToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            string sSampleFile = CardMakerInstance.StartupPath + "Card_Maker_Basic_Project.pdf";
-            if (File.Exists(sSampleFile))
-                System.Diagnostics.Process.Start(sSampleFile);
-        }
-
-        private void clearCacheToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            // maybe an event? Or a DrawManager
-            DrawItem.DumpImages();
-            DrawItem.DumpOpacityImages();
-#if false // TODO: event
-            m_zDrawCardCanvas.Invalidate();
-#endif
-        }
-
-        private void illegalFilenameCharacterReplacementToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var zQuery = new QueryPanelDialog("Illegal File Name Character Replacement", 350, false);
-            zQuery.SetIcon(Properties.Resources.CardMakerIcon);
-            var arrayBadChars = Deck.DISALLOWED_FILE_CHARS_ARRAY;
-            var arrayReplacementChars = CardMakerSettings.IniManager.GetValue(IniSettings.ReplacementChars, string.Empty).Split(new char[] { CHAR_FILE_SPLIT });
-            if (arrayReplacementChars.Length == Deck.DISALLOWED_FILE_CHARS_ARRAY.Length)
-            {
-                // from ini
-                for (int nIdx = 0; nIdx < arrayBadChars.Length; nIdx++)
-                {
-                    zQuery.AddTextBox(arrayBadChars[nIdx].ToString(CultureInfo.InvariantCulture), arrayReplacementChars[nIdx], false, nIdx.ToString(CultureInfo.InvariantCulture));
-                }
-            }
-            else
-            {
-                // default
-                for (int nIdx = 0; nIdx < arrayBadChars.Length; nIdx++)
-                {
-                    zQuery.AddTextBox(arrayBadChars[nIdx].ToString(CultureInfo.InvariantCulture), string.Empty, false, nIdx.ToString(CultureInfo.InvariantCulture));
-                }
-            }
-            if (DialogResult.OK == zQuery.ShowDialog(this))
-            {
-                var zBuilder = new StringBuilder();
-                for (int nIdx = 0; nIdx < arrayBadChars.Length; nIdx++)
-                {
-                    zBuilder.Append(zQuery.GetString(nIdx.ToString(CultureInfo.InvariantCulture)) + CHAR_FILE_SPLIT);
-                }
-                zBuilder.Remove(zBuilder.Length - 1, 1); // remove last char
-                CardMakerSettings.IniManager.SetValue(IniSettings.ReplacementChars, zBuilder.ToString());
-                RestoreReplacementChars();
-            }
-        }
-
-        private void RestoreReplacementChars()
-        {
-            string[] arrayReplacementChars = CardMakerSettings.IniManager.GetValue(IniSettings.ReplacementChars, string.Empty).Split(new char[] { CHAR_FILE_SPLIT });
-            if (arrayReplacementChars.Length == Deck.DISALLOWED_FILE_CHARS_ARRAY.Length)
-            {
-                Deck.IllegalCharReplacementArray = arrayReplacementChars;
-            }
-            else
-            {
-                Logger.AddLogLine("Note: No replacement chars have been configured.");
-            }
-        }
-
-        private void removeLayoutTemplatesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            const string TEMPLATE = "template";
-            var listItems = new List<string>();
-            LayoutTemplateManager.Instance.LayoutTemplates.ForEach(x => listItems.Add(x.ToString()));
-
-            var zQuery = new QueryPanelDialog("Remove Layout Templates", 450, false);
-            zQuery.SetIcon(Properties.Resources.CardMakerIcon);
-            zQuery.AddLabel("Select the templates to remove.", 20);
-            zQuery.AddListBox("Templates", listItems.ToArray(), null, true, 120, TEMPLATE);
-            zQuery.AllowResize();
-            if (DialogResult.OK == zQuery.ShowDialog(this))
-            {
-                var arrayRemove = zQuery.GetIndices(TEMPLATE);
-                if (0 == arrayRemove.Length)
-                {
-                    return;
-                }
-                var trimmedList = new List<LayoutTemplate>();
-                int removalIdx = 0;
-                List<LayoutTemplate> listOldTemplates = LayoutTemplateManager.Instance.LayoutTemplates;
-                for (int nIdx = 0; nIdx < listOldTemplates.Count; nIdx++)
-                {
-                    if (removalIdx < arrayRemove.Length && nIdx == arrayRemove[removalIdx])
-                    {
-                        removalIdx++;
-                        // delete failures are logged
-                        LayoutTemplateManager.Instance.DeleteLayoutTemplate(CardMakerInstance.StartupPath, listOldTemplates[nIdx]);
-                    }
-                    else
-                    {
-                        trimmedList.Add(listOldTemplates[nIdx]);
-                    }
-                }
-                LayoutTemplateManager.Instance.LayoutTemplates = trimmedList;
-            }
-        }
-
-        private void projectManagerToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            new ProjectManagerUI().ShowDialog(this);
-        }
-
-        private void refreshLayoutToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (LayoutManager.Instance.ActiveDeck != null)
-            {
-                RefreshLayout();
-            }
-        }
-
-        public void RefreshLayout()
-        {
-            LayoutManager.Instance.InitializeActiveLayout();
-        }
-
-        private void updateGoogleCredentialsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            UpdateGoogleAuth();
-        }
 
         #region Google Auth
 
@@ -805,120 +876,29 @@ namespace CardMaker.Forms
 
         #endregion
 
-
-        public void OpenProjectFile(string sPath)
+        private void RestoreReplacementChars()
         {
-            InitOpen(sPath);
-        }
-
-        private void redoToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (CardMakerInstance.ProcessingUserAction)
+            string[] arrayReplacementChars = CardMakerSettings.IniManager.GetValue(IniSettings.ReplacementChars, string.Empty).Split(new char[] { CardMakerConstants.CHAR_FILE_SPLIT });
+            if (arrayReplacementChars.Length == Deck.DISALLOWED_FILE_CHARS_ARRAY.Length)
             {
-                return;
+                Deck.IllegalCharReplacementArray = arrayReplacementChars;
             }
-
-            Action<bool> redoAction = UserAction.GetRedoAction();
-            if (null != redoAction)
+            else
             {
-                redoAction(true);
+                Logger.AddLogLine("Note: No replacement chars have been configured.");
             }
         }
 
-        private void undoToolStripMenuItem_Click(object sender, EventArgs e)
+        private Form SetupMDIForm(Form zForm, bool bDefaultShow)
         {
-            if (CardMakerInstance.ProcessingUserAction)
+            zForm.MdiParent = this;
+            var bShow = bDefaultShow;
+            bool.TryParse(CardMakerSettings.IniManager.GetValue(zForm.Name + CardMakerConstants.VISIBLE_SETTING, bDefaultShow.ToString()), out bShow);
+            if (bShow)
             {
-                return;
+                zForm.Show();
             }
-
-            Action<bool> undoAction = UserAction.GetUndoAction();
-            if (null != undoAction)
-            {
-                undoAction(false);
-            }
-        }
-
-        private void editToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
-        {
-            undoToolStripMenuItem.Enabled = 0 < UserAction.UndoCount;
-            redoToolStripMenuItem.Enabled = 0 < UserAction.RedoCount;
-        }
-
-        private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var zQuery = new QueryPanelDialog("CardMaker Settings", 450, 250, true);
-            zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
-            zQuery.SetMaxHeight(600);
-            zQuery.AddTab("General");
-            zQuery.AddCheckBox("Print/Export Layout Border", CardMakerSettings.PrintLayoutBorder, IniSettings.PrintLayoutBorder);
-
-            zQuery.AddTab("PDF Export");
-            zQuery.AddNumericBox("Page Width (inches)", CardMakerSettings.PrintPageWidth, 1, 1024, 1, 2, IniSettings.PrintPageWidth);
-            zQuery.AddNumericBox("Page Height (inches)", CardMakerSettings.PrintPageHeight, 1, 1024, 1, 2, IniSettings.PrintPageHeight);
-            zQuery.AddNumericBox("Page Horizontal Margin (inches)", CardMakerSettings.PrintPageHorizontalMargin, 0, 1024, 0.01m, 2, IniSettings.PrintPageHorizontalMargin);
-            zQuery.AddNumericBox("Page Vertical Margin (inches)", CardMakerSettings.PrintPageVerticalMargin, 0, 1024, 0.01m, 2, IniSettings.PrintPageVerticalMargin);
-            zQuery.AddCheckBox("Auto-Center Layouts on Page", CardMakerSettings.PrintAutoHorizontalCenter, IniSettings.PrintAutoCenterLayout);
-            zQuery.AddCheckBox("Print Layouts On New Page", CardMakerSettings.PrintLayoutsOnNewPage, IniSettings.PrintLayoutsOnNewPage);
-            zQuery.SetIcon(Icon);
-
-            if (DialogResult.OK == zQuery.ShowDialog(this))
-            {
-                CardMakerSettings.PrintPageWidth = zQuery.GetDecimal(IniSettings.PrintPageWidth);
-                CardMakerSettings.PrintPageHeight = zQuery.GetDecimal(IniSettings.PrintPageHeight);
-                CardMakerSettings.PrintPageHorizontalMargin = zQuery.GetDecimal(IniSettings.PrintPageHorizontalMargin);
-                CardMakerSettings.PrintPageVerticalMargin = zQuery.GetDecimal(IniSettings.PrintPageVerticalMargin);
-                CardMakerSettings.PrintAutoHorizontalCenter = zQuery.GetBool(IniSettings.PrintAutoCenterLayout);
-                CardMakerSettings.PrintLayoutBorder = zQuery.GetBool(IniSettings.PrintLayoutBorder);
-                CardMakerSettings.PrintLayoutsOnNewPage = zQuery.GetBool(IniSettings.PrintLayoutsOnNewPage);
-            }
-        }
-
-        private void colorPickerToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            new RGBColorSelectDialog().ShowDialog(this);
-        }
-
-        private void importLayoutsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var ofd = new OpenFileDialog
-            {
-                Filter = m_sFileOpenFilter,
-                CheckFileExists = true
-            };
-
-            if (DialogResult.OK != ofd.ShowDialog(this))
-            {
-                return;
-            }
-
-            Project zProject = null;
-            try
-            {
-                zProject = ProjectManager.LoadProject(ofd.FileName);
-            }
-            catch (Exception ex)
-            {
-                Logger.AddLogLine("Error Loading Project File: " + ex.ToString());
-            }
-
-            if (null == zProject)
-            {
-                return;
-            }
-
-            var zQuery = new QueryPanelDialog("Select Layouts To Import", 500, false);
-            const string LAYOUT_QUERY_KEY = "layoutquerykey";
-            zQuery.AddListBox("Layouts", zProject.Layout.ToList().Select(projectLayout => projectLayout.Name).ToArray(), null, true, 400, LAYOUT_QUERY_KEY);
-            if (DialogResult.OK == zQuery.ShowDialog(this))
-            {
-                var listIndices = zQuery.GetIndices(LAYOUT_QUERY_KEY).ToList();
-                listIndices.ForEach(nIdx =>
-                {
-                    ProjectManager.Instance.AddLayout(zProject.Layout[nIdx]);
-                });
-                MarkDirty();
-            }
+            return zForm;
         }
     }
 }

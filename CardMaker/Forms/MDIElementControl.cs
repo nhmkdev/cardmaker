@@ -31,7 +31,6 @@ using System.Windows.Forms;
 using CardMaker.Card;
 using CardMaker.Card.Shapes;
 using CardMaker.Data;
-using CardMaker.Events;
 using CardMaker.Events.Args;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
@@ -140,7 +139,7 @@ namespace CardMaker.Forms
 
         private void btnColor_Click(object sender, EventArgs e)
         {
-            var listSelectedElements = ElementManager.Instance.GetSelectedElements();
+            var listSelectedElements = ElementManager.Instance.SelectedElements;
             if (null == listSelectedElements)
             {
                 MessageBox.Show(this, "Please select at least one enabled Element.");
@@ -443,7 +442,7 @@ namespace CardMaker.Forms
                 return;
             }
 #endif
-            var listSelectedElements = ElementManager.Instance.GetSelectedElements();
+            var listSelectedElements = ElementManager.Instance.SelectedElements;
             if (null != sender && null != listSelectedElements)
             {
                 var zControl = (Control)sender;
@@ -617,7 +616,7 @@ namespace CardMaker.Forms
                 return;
             }
 
-            var listElements = ElementManager.Instance.GetSelectedElements();
+            var listElements = ElementManager.Instance.SelectedElements;
             if (null != listElements)
             {
                 var listActions = UserAction.CreateActionList();

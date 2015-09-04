@@ -36,15 +36,15 @@ namespace CardMaker.Card.Export
 {
     public class PdfSharpExporter : CardExportBase
     {
-        private PdfDocument m_zDocument = new PdfDocument();
-        private PdfPage m_zCurrentPage = null;
+        private readonly PdfDocument m_zDocument;
+        private PdfPage m_zCurrentPage;
         private double m_dDrawX;
         private double m_dDrawY;
         private double m_dLayoutPointWidth;
         private double m_dLayoutPointHeight;
         private double m_dBufferX;
         private double m_dBufferY;
-        private XGraphics m_zPageGfx = null;
+        private XGraphics m_zPageGfx;
         private readonly string m_sExportFile;
 
         private double m_dMarginX = -1;
@@ -53,7 +53,7 @@ namespace CardMaker.Card.Export
         private double m_dMarginEndY = -1;
         private double m_dNextRowYAdjust = -1;
 
-        private PageOrientation m_ePageOrientation = PageOrientation.Portrait;
+        private readonly PageOrientation m_ePageOrientation = PageOrientation.Portrait;
 
         public PdfSharpExporter(int nLayoutStartIndex, int nLayoutEndIndex, string sExportFile, string sPageOrientation) : base(nLayoutStartIndex, nLayoutEndIndex)
         {
@@ -77,10 +77,10 @@ namespace CardMaker.Card.Export
 
             Bitmap zBuffer = null;
 
-            zWait.ProgressReset(0, 0, m_nExportLayoutEndIndex - m_nExportLayoutStartIndex, 0);
-            for (var nIdx = m_nExportLayoutStartIndex; nIdx < m_nExportLayoutEndIndex; nIdx++)
+            zWait.ProgressReset(0, 0, ExportLayoutEndIndex - ExportLayoutStartIndex, 0);
+            for (var nIdx = ExportLayoutStartIndex; nIdx < ExportLayoutEndIndex; nIdx++)
             {
-                ChangePrintCardCanvas(nIdx);
+                ChangeExportLayoutIndex(nIdx);
                 zWait.ProgressReset(1, 0, CurrentDeck.CardCount, 0);
 
                 ConfigurePointSizes(CurrentDeck.CardLayout);
@@ -168,6 +168,10 @@ namespace CardMaker.Card.Export
             zWait.CloseWaitDialog();
         }
 
+        /// <summary>
+        /// Centers the draw point based on the number of items that will be drawn to the row from the
+        /// current layout
+        /// </summary>
         private void CenterLayoutPositionOnNewRow()
         {
             var dWidth = m_dMarginEndX - m_dMarginX;
@@ -182,6 +186,10 @@ namespace CardMaker.Card.Export
 
         }
 
+        /// <summary>
+        /// Updates the point sizes to match that of the PDF exporter
+        /// </summary>
+        /// <param name="zLayout"></param>
         private void ConfigurePointSizes(ProjectLayout zLayout)
         {
             int nWidth = zLayout.width;
@@ -207,6 +215,10 @@ namespace CardMaker.Card.Export
             m_dBufferY = ((double)zLayout.buffer / (double)zLayout.dpi) * dPointsPerInchHeight;
         }
 
+        /// <summary>
+        /// Evaluates the position based on the next layout draw to determine if the draw point should be moved
+        /// to the next row/page. This respects the horizontal centering option when adding a new page.
+        /// </summary>
         private void EvaluatePagePosition()
         {
             // TODO this should probably error or at least warn on truncation (if the object simply won't fit horizontally)
@@ -225,6 +237,10 @@ namespace CardMaker.Card.Export
             }
         }
 
+        /// <summary>
+        /// Adjusts the y position to the next row based on the current layout
+        /// respecting the horizontal centering option
+        /// </summary>
         private void MoveToNextRow()
         {
             m_dDrawX = m_dMarginX;
@@ -237,11 +253,17 @@ namespace CardMaker.Card.Export
             m_dNextRowYAdjust = m_dLayoutPointHeight + m_dBufferY;
         }
 
+        /// <summary>
+        /// Adjusts the x position to the next column based on the current layout
+        /// </summary>
         private void MoveToNextColumnPosition()
         {
             m_dDrawX += m_dLayoutPointWidth + m_dBufferX;
         }
 
+        /// <summary>
+        /// Adds a new page to the PDF based on the current configuration
+        /// </summary>
         private void AddPage()
         {
             m_zCurrentPage = m_zDocument.AddPage();
@@ -268,6 +290,13 @@ namespace CardMaker.Card.Export
             m_dNextRowYAdjust = m_dLayoutPointHeight + m_dBufferY;
         }
 
+#warning this and the FileCardExporter are so close -- this should be a shared method in the CardExportBase class
+        /// <summary>
+        /// Rotates the export buffer based on the Layout exportRotation setting
+        /// </summary>
+        /// <param name="zBuffer"></param>
+        /// <param name="zLayout"></param>
+        /// <param name="postTransition"></param>
         private void RotateImageBuffer(Bitmap zBuffer, ProjectLayout zLayout, bool postTransition)
         {
             switch (zLayout.exportRotation)

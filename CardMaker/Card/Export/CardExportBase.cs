@@ -30,12 +30,13 @@ namespace CardMaker.Card.Export
 {
     public abstract class CardExportBase
     {
-        protected int m_nExportLayoutStartIndex;
-        protected int m_nExportLayoutEndIndex;
-        protected Bitmap m_zExportCardBuffer = null;
+        protected Bitmap m_zExportCardBuffer;
         protected ProjectLayout m_zLastLayout = null;
+
+        protected int ExportLayoutStartIndex { get; private set; }
+        protected int ExportLayoutEndIndex { get; private set; }
         
-        public CardRenderer CardRenderer
+        protected CardRenderer CardRenderer
         {
             get;
             private set;
@@ -43,23 +44,27 @@ namespace CardMaker.Card.Export
 
         protected CardExportBase(int nLayoutStartIndex, int nLayoutEndIndex)
         {
-            m_nExportLayoutStartIndex = nLayoutStartIndex;
-            m_nExportLayoutEndIndex = nLayoutEndIndex;
+            ExportLayoutStartIndex = nLayoutStartIndex;
+            ExportLayoutEndIndex = nLayoutEndIndex;
             CardRenderer = new CardRenderer
             {
                 CurrentDeck = new Deck()
             };
         }
 
-        protected void ChangePrintCardCanvas(int nIdx)
+        /// <summary>
+        /// Changes the layout to the specified index in the project
+        /// </summary>
+        /// <param name="nIdx"></param>
+        protected void ChangeExportLayoutIndex(int nIdx)
         {
             // based on the currently loaded project get the layout based on the index
-            ProjectLayout zLayout = ProjectManager.Instance.LoadedProject.Layout[nIdx];
-            SetCardLayout(zLayout);
+            var zLayout = ProjectManager.Instance.LoadedProject.Layout[nIdx];
+            CurrentDeck.SetAndLoadLayout(zLayout ?? CurrentDeck.CardLayout, true);
         }
 
 #warning consider removing this extra step...
-        public Deck CurrentDeck 
+        protected Deck CurrentDeck 
         {
             get
             {
@@ -75,13 +80,13 @@ namespace CardMaker.Card.Export
             }
         }
 
-        public void SetCardLayout(ProjectLayout zCardLayout)
-        {
-            // the setter does more than set
-            CurrentDeck.SetAndLoadLayout(zCardLayout ?? CurrentDeck.CardLayout, true);
-        }
-
-        public virtual void UpdateBufferBitmap(int nWidth, int nHeight, Graphics zGraphics = null)
+        /// <summary>
+        /// Updates the existing buffer image if necessary
+        /// </summary>
+        /// <param name="nWidth"></param>
+        /// <param name="nHeight"></param>
+        /// <param name="zGraphics"></param>
+        protected virtual void UpdateBufferBitmap(int nWidth, int nHeight, Graphics zGraphics = null)
         {
             if (null == m_zExportCardBuffer ||
                 nWidth != m_zExportCardBuffer.Width ||

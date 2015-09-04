@@ -50,6 +50,12 @@ namespace CardMaker.Events.Managers
             
         }
 
+        #region Event Triggers
+
+        /// <summary>
+        /// Fires the ExportRequested event
+        /// </summary>
+        /// <param name="eExportType">The type of export requested</param>
         public void FireExportRequestedEvent(ExportType eExportType)
         {
             if (null != ExportRequested)
@@ -57,5 +63,7 @@ namespace CardMaker.Events.Managers
                 ExportRequested(this, new ExportEventArgs(eExportType));
             }
         }
+
+        #endregion
     }
 }

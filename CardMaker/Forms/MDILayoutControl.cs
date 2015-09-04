@@ -28,7 +28,6 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using CardMaker.Data;
-using CardMaker.Events;
 using CardMaker.Events.Args;
 using CardMaker.Events.Managers;
 using CardMaker.XML;

@@ -37,6 +37,7 @@ namespace CardMaker.Events.Managers
     public class ElementManager
     {
         private static ElementManager m_zInstance;
+        
         private List<ProjectLayoutElement> m_listSelectedElements;
 
         /// <summary>
@@ -82,6 +83,10 @@ namespace CardMaker.Events.Managers
 
         #region Event Triggers
 
+        /// <summary>
+        /// Fires the ElementSelected event after setting the element selection
+        /// </summary>
+        /// <param name="listElements">The elements to indicate as selected</param>
         public void FireElementSelectedEvent(List<ProjectLayoutElement> listElements)
         {
             m_listSelectedElements = listElements;
@@ -91,6 +96,10 @@ namespace CardMaker.Events.Managers
             }
         }
 
+        /// <summary>
+        /// Fires the ElementSelectRequested event
+        /// </summary>
+        /// <param name="zElement">The element to select</param>
         public void FireElementSelectRequestedEvent(ProjectLayoutElement zElement)
         {
             if (null != ElementSelectRequested)
@@ -99,6 +108,9 @@ namespace CardMaker.Events.Managers
             }
         }
 
+        /// <summary>
+        /// Fired when the Element bounds have been updated (of those currently selected)
+        /// </summary>
         public void FireElementBoundsUpdateEvent()
         {
             if (null != ElementBoundsUpdated)
@@ -116,15 +128,6 @@ namespace CardMaker.Events.Managers
         public ProjectLayoutElement GetSelectedElement()
         {
             return m_listSelectedElements != null && m_listSelectedElements.Count > 0 ? m_listSelectedElements[0] : null;
-        }
-
-        /// <summary>
-        /// Returns the first of the selected elements
-        /// </summary>
-        /// <returns>The selected element or null</returns>
-        public List<ProjectLayoutElement> GetSelectedElements()
-        {
-            return m_listSelectedElements;
         }
 
         /// <summary>

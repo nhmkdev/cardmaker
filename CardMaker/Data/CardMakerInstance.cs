@@ -75,6 +75,7 @@ namespace CardMaker.Data
             GoogleCredentialsInvalid = false;
             GoogleAccessToken = null;
             LoadedProjectFilePath = String.Empty;
+            ProcessingUserAction = false;
         }
     }
 }

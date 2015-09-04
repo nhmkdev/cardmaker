@@ -65,6 +65,8 @@ namespace CardMaker.Events.Managers
             }
         }
 
+        #region Event Triggers
+
         /// <summary>
         /// Adjusts the issue tracking to the specified details
         /// </summary>
@@ -113,5 +115,7 @@ namespace CardMaker.Events.Managers
                 RefreshRequested(this, new IssueRefreshEventArgs());
             }
         }
+
+        #endregion
     }
 }

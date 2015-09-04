@@ -52,6 +52,13 @@ namespace CardMaker.Events.Managers
             
         }
 
+        #region Event Triggers
+
+        /// <summary>
+        /// Fires the GoogleAuthUpdateRequested event
+        /// </summary>
+        /// <param name="zSuccessAction">The action to perform on success</param>
+        /// <param name="zCancelAction">The action to perform on cancel</param>
         public void FireGoogleAuthUpdateRequestedEvent(Action zSuccessAction = null, Action zCancelAction = null)
         {
             if (null != GoogleAuthUpdateRequested)
@@ -60,6 +67,11 @@ namespace CardMaker.Events.Managers
             }
         }
 
+        /// <summary>
+        /// Fires the GoogleAuthCredentialsError event
+        /// </summary>
+        /// <param name="zSuccessAction">The action to perform on success</param>
+        /// <param name="zCancelAction">The action to perform on cancel</param>
         public void FireGoogleAuthCredentialsErrorEvent(Action zSuccessAction = null, Action zCancelAction = null)
         {
             if (null != GoogleAuthCredentialsError)
@@ -67,5 +79,7 @@ namespace CardMaker.Events.Managers
                 GoogleAuthCredentialsError(this, new GoogleAuthEventArgs(zSuccessAction, zCancelAction));
             }
         }
+
+        #endregion
     }
 }
