@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
+using System;
 using CardMaker.Card;
 using CardMaker.Events.Args;
 using CardMaker.XML;
@@ -53,6 +54,11 @@ namespace CardMaker.Events.Managers
         /// Fired when a layout is altered (including when a child element is altered)
         /// </summary>
         public event LayoutUpdated LayoutUpdated;
+
+        /// <summary>
+        /// Fired when a layout is altered in a way that only affects rendering (no persistence needed)
+        /// </summary>
+        public event LayoutUpdated LayoutRenderUpdated;
 
         /// <summary>
         /// Fired when the order of the elements is requested
@@ -108,11 +114,22 @@ namespace CardMaker.Events.Managers
         /// <summary>
         /// This is the event for a modification to the layout/elements requiring save and re-draw
         /// </summary>
-        public void FireLayoutUpdatedEvent()
+        public void FireLayoutUpdatedEvent(bool bDataChanged)
         {
             if (null != LayoutUpdated)
             {
-                LayoutUpdated(this, new LayoutEventArgs(ActiveLayout, ActiveDeck));
+                LayoutUpdated(this, new LayoutEventArgs(ActiveLayout, ActiveDeck, bDataChanged));
+            }
+        }
+
+        /// <summary>
+        /// Fires the LayoutRenderUpdated event
+        /// </summary>
+        public void FireLayoutRenderUpdatedEvent()
+        {
+            if (null != LayoutRenderUpdated)
+            {
+                LayoutRenderUpdated(this, new LayoutEventArgs(ActiveLayout));
             }
         }
 
@@ -139,8 +156,6 @@ namespace CardMaker.Events.Managers
                 ElementOrderAdjustRequest(this, new LayoutElementNumericAdjustEventArgs(nIndexAdjust));
             }
         }
-
-#warning might need to go through the element manager instead when selection is managed(??)
 
         /// <summary>
         /// Fires the ElementSelectAdjustRequest event

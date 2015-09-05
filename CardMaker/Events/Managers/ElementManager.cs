@@ -149,10 +149,8 @@ namespace CardMaker.Events.Managers
                 return;
             }
 
-#warning undo/redo may be broken
+            // construct a before and after dictionary
             Dictionary<ProjectLayoutElement, Rectangle> dictionarySelectedUndo = GetUndoRedoPoints();
-
-            // TODO: it is always preferred if the redo of an action is used, not the style below
 
             if (dScaleWidth != 1 || dScaleHeight != 1)
             {
@@ -204,12 +202,9 @@ namespace CardMaker.Events.Managers
         public void ConfigureUserAction(Dictionary<ProjectLayoutElement, Rectangle> dictionarySelectedUndo,
             Dictionary<ProjectLayoutElement, Rectangle> dictionarySelectedRedo)
         {
-#warning check on closure needs for this...
             // configure the variables used for undo/redo
             var dictionaryUndoElements = dictionarySelectedUndo;
             var dictionaryRedoElements = dictionarySelectedRedo;
-
-#warning undo/redo may be broken
 
             UserAction.PushAction(bRedo =>
             {

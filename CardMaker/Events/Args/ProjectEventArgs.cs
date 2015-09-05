@@ -34,11 +34,18 @@ namespace CardMaker.Events.Args
     {
         public Project Project { get; private set; }
         public string ProjectFilePath { get; private set; }
+        public bool DataChange { get; private set; }
         
-        public ProjectEventArgs(Project zProject, string sProjectFilePath)
+        public ProjectEventArgs(Project zProject, string sProjectFilePath, bool bDataChange)
         {
             Project = zProject;
             ProjectFilePath = sProjectFilePath;
+            DataChange = bDataChange;
+        }
+
+        public ProjectEventArgs(Project zProject, string sProjectFilePath)
+            : this(zProject, sProjectFilePath, false)
+        {
         }
     }
 }

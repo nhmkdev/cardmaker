@@ -41,16 +41,24 @@ namespace CardMaker.Events.Args
     public class LayoutEventArgs
     {
         public ProjectLayout Layout { get; private set; }
-        public Deck Deck { get; set; }
+        public Deck Deck { get; private set; }
+        public bool DataChange { get; private set; }
 
-        public LayoutEventArgs(ProjectLayout zLayout, Deck zDeck)
+        public LayoutEventArgs(ProjectLayout zLayout, Deck zDeck, bool bDataChange)
         {
             Layout = zLayout;
             Deck = zDeck;
+            DataChange = bDataChange;
+        }
+
+        public LayoutEventArgs(ProjectLayout zLayout, Deck zDeck)
+            : this(zLayout, zDeck, false)
+        {
+
         }
 
         public LayoutEventArgs(ProjectLayout zLayout)
-            : this(zLayout, null)
+            : this(zLayout, null, false)
         {
 
         }

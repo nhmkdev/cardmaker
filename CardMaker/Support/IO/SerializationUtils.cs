@@ -111,18 +111,10 @@ namespace Support.IO
                 zStream.Close();
                 return true;
             }
-#if DEBUG
-            catch (Exception ex) 
-            {
-                Console.WriteLine(ex.ToString());
-            }
-#else
             catch (Exception e)
             {
                 return false;
             }
-#endif
-            return false;
         }
 
         public static bool SerializeToXmlFile<T>(string sFile, T tObject, Encoding zEncoding)
@@ -147,18 +139,10 @@ namespace Support.IO
                 zStream.Close();
                 return true;
             }
-#if DEBUG
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-                return false;
-            }
-#else
             catch (Exception e)
             {
                 return false;
             }
-#endif
         }
 
         public static bool DeserializeFromXmlFile<T>(string sFile, Encoding zEncoding, ref T obj)
@@ -174,16 +158,11 @@ namespace Support.IO
                 zStream.Close();
                 return true;
             }
-#if DEBUG
-            catch (Exception ex) 
-            {
-                Console.WriteLine(ex.ToString());
-            }
-#else
             catch(Exception){}
-#endif
-            if(null != zStream)
+            if (null != zStream)
+            {
                 zStream.Close();
+            }
             return false;
         }
     }

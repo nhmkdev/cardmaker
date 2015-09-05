@@ -38,7 +38,7 @@ namespace CardMaker.Forms
 {
     public partial class MDILayoutControl : Form
     {
-        private bool m_bFireElementChangeEvents = true;
+        private bool m_bFireLayoutChangeEvents = true;
         private readonly List<ProjectLayoutElement> m_listClipboardElements = new List<ProjectLayoutElement>();
         private readonly Dictionary<string, ListViewItem> m_dictionaryItems = new Dictionary<string, ListViewItem>();
         private int[] m_arrayRowToIndex;
@@ -198,7 +198,7 @@ namespace CardMaker.Forms
 
                 // assign the new list to the actual project layout
                 LayoutManager.Instance.ActiveLayout.Element = listElements.ToArray();
-                LayoutManager.Instance.FireLayoutUpdatedEvent();
+                LayoutManager.Instance.FireLayoutUpdatedEvent(true);
             }
         }
 
@@ -308,14 +308,14 @@ namespace CardMaker.Forms
                 SetupLayoutUndo(listToKeep);
 
                 LayoutManager.Instance.ActiveLayout.Element = listToKeep.ToArray();
-                LayoutManager.Instance.FireLayoutUpdatedEvent();
+                LayoutManager.Instance.FireLayoutUpdatedEvent(true);
             }
 
         }
 
         private void HandleCardSetValueChange(object sender, EventArgs e)
         {
-            if (!m_bFireElementChangeEvents)
+            if (!m_bFireLayoutChangeEvents)
             {
                 return;
             }
@@ -343,7 +343,7 @@ namespace CardMaker.Forms
             {
                 LayoutManager.Instance.ActiveLayout.combineReferences = checkLoadAllReferences.Checked;
             }
-            LayoutManager.Instance.FireLayoutUpdatedEvent();
+            LayoutManager.Instance.FireLayoutUpdatedEvent(true);
         }
 
         private void ChangeElementOrder(int nChange)
@@ -373,7 +373,7 @@ namespace CardMaker.Forms
             SetupLayoutUndo(listElements);
 
             LayoutManager.Instance.ActiveLayout.Element = listElements.ToArray();
-            LayoutManager.Instance.FireLayoutUpdatedEvent();
+            LayoutManager.Instance.FireLayoutUpdatedEvent(true);
         }
 
         private void btnElementChangeOrder_Click(object sender, EventArgs e)
@@ -412,7 +412,7 @@ namespace CardMaker.Forms
 
                     RenameElement(zElement, lvItem, zElement.name, sName);
 
-                    LayoutManager.Instance.FireLayoutUpdatedEvent();
+                    LayoutManager.Instance.FireLayoutUpdatedEvent(true);
                 }
                 else
                 {
@@ -436,16 +436,16 @@ namespace CardMaker.Forms
             m_nDestinationCardIndex = nTargetIndex;
             m_zLastProjectLayout = LayoutManager.Instance.ActiveLayout;
             ChangeCardIndex(nTargetIndex);
-            m_bFireElementChangeEvents = false;
+            m_bFireLayoutChangeEvents = false;
             numericRowIndex.Value = m_arrayIndexToRow[nTargetIndex] + 1;
-            m_bFireElementChangeEvents = true;
+            m_bFireLayoutChangeEvents = true;
         }
 
 
         private void numericRowIndex_ValueChanged(object sender, EventArgs e)
         {
             // use the numeric card index to control this
-            if (m_bFireElementChangeEvents)
+            if (m_bFireLayoutChangeEvents)
             {
                 numericCardIndex.Value = m_arrayRowToIndex[(int) numericRowIndex.Value - 1] + 1;
             }
@@ -473,29 +473,10 @@ namespace CardMaker.Forms
             {
                 LayoutManager.Instance.ActiveLayout.defaultCount = (int)zQuery.GetDecimal(CARD_COUNT);
                 LayoutManager.Instance.InitializeActiveLayout();
-                LayoutManager.Instance.FireLayoutUpdatedEvent();
+                LayoutManager.Instance.FireLayoutUpdatedEvent(true);
             }
         }
 
-#if false
-        public void SetSelectedCardIndex(int nCard)
-        {
-            if (numericCardIndex.Value == nCard)
-            {
-                // no events trigger
-                ChangeCardIndex(nCard - 1); // this is the array index
-            }
-            else
-            {
-                // events trigger
-                if (nCard > LayoutManager.Instance.ActiveDeck.CardCount)
-                {
-                    nCard = 1;
-                }
-                numericCardIndex.Value = nCard;
-            }
-        }
-#endif
         private void SetupCardIndices(int nMaxIndex)
         {
             // TODO: this is only used in one place
@@ -516,7 +497,6 @@ namespace CardMaker.Forms
             m_arrayRowToIndex = listRowToIndex.ToArray();
 
             // be sure to set the index back to 1 before changing the max!
-            // TODO: this assignment fires off the event that wipes the "last index" for layout refreshes
             numericCardIndex.Value = 1;
             numericRowIndex.Value = 1;
             
@@ -528,10 +508,21 @@ namespace CardMaker.Forms
             numericRowIndex.Maximum = m_arrayRowToIndex.Length;
         }
 
-        public void UpdateLayoutInfo(ProjectLayout zLayout)
+        /// <summary>
+        /// Configures the controls to match the Layout settings
+        /// </summary>
+        /// <param name="zLayout"></param>
+        private void UpdateLayoutInfo(ProjectLayout zLayout)
         {
             if (null != zLayout)
             {
+                // don't trigger any events (this is just setup)
+                m_bFireLayoutChangeEvents = false;
+
+                // get the destination index before changing the controls
+                // (the value is lost when the controls are adjusted)
+                int nDestinationCardIndex = m_nDestinationCardIndex;
+
                 // configure the UI based on the newly loaded item
                 numericCardSetBuffer.Value = zLayout.buffer;
                 numericCardSetWidth.Value = zLayout.width;
@@ -546,7 +537,6 @@ namespace CardMaker.Forms
                 // update the list of elements
                 listViewElements.Items.Clear();
                 m_dictionaryItems.Clear();
-                m_bFireElementChangeEvents = false; // don't trigger any check events
                 if (null != zLayout.Element)
                 {
                     foreach (ProjectLayoutElement zElement in zLayout.Element)
@@ -560,16 +550,20 @@ namespace CardMaker.Forms
                         listViewElements.Items[0].Selected = true;
                     }
                 }
-                m_bFireElementChangeEvents = true;
+                m_bFireLayoutChangeEvents = true;
 
-                if (LayoutManager.Instance.ActiveLayout == m_zLastProjectLayout && -1 != m_nDestinationCardIndex)
+                // these adjustments will trigger the events necessary to adjust to the given index
+                if (LayoutManager.Instance.ActiveLayout == m_zLastProjectLayout && -1 != nDestinationCardIndex &&
+                    LayoutManager.Instance.ActiveDeck.CardCount > nDestinationCardIndex)
                 {
-                    ChangeCardIndex(m_nDestinationCardIndex);
+                    numericCardIndex.Value = nDestinationCardIndex + 1;
                 }
                 else
                 {
-                    ChangeCardIndex(0);
+                    numericCardIndex.Value = 1;
                 }
+                // just in case the value is considered unchanged, fire off the event
+                ChangeCardIndex((int)numericCardIndex.Value - 1);
             }
             else
             {
@@ -667,7 +661,7 @@ namespace CardMaker.Forms
                     zElement.enabled = !zElement.enabled;
                     UpdateListViewItemState(zLvi, zElement);
                 }
-                LayoutManager.Instance.FireLayoutUpdatedEvent();
+                LayoutManager.Instance.FireLayoutUpdatedEvent(true);
             }
         }
 

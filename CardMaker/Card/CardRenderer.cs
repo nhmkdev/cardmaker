@@ -145,7 +145,6 @@ namespace CardMaker.Card
             }
 
             // draw the card border
-#warning nothing in the renderer should access the forms
             if ((bExport && CardMakerSettings.PrintLayoutBorder) || (!bExport && CurrentDeck.CardLayout.drawBorder))
             {
                 // note that the border is inclusive in the width/height consuming 2 pixels (0 to total-1)

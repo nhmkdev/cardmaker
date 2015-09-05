@@ -117,6 +117,7 @@ namespace CardMaker.Forms
 
             LayoutManager.Instance.LayoutUpdated += LayoutUpdated;
             LayoutManager.Instance.LayoutLoaded += LayoutLoaded;
+            LayoutManager.Instance.LayoutRenderUpdated += Instance_LayoutRenderUpdated;
             LayoutManager.Instance.DeckIndexChanged += DeckIndexChanged;
             ElementManager.Instance.ElementSelected += ElementSelected;
             ProjectManager.Instance.ProjectOpened += ProjectOpened;
@@ -439,15 +440,20 @@ namespace CardMaker.Forms
 
         void LayoutUpdated(object sender, LayoutEventArgs args)
         {
+            // pass the loaded deck into the renderer
             m_zCardCanvas.Reset(args.Deck);
             Redraw();
         }
 
         void LayoutLoaded(object sender, LayoutEventArgs args)
         {
-            // NOTE: This is the one place where the Deck is passed from UI specific code to generic rendering code
-            // The loaded Deck is assigned to the underlying renderer
+            // pass the loaded deck into the renderer
             m_zCardCanvas.Reset(args.Deck);
+            Redraw();
+        }
+
+        void Instance_LayoutRenderUpdated(object sender, LayoutEventArgs args)
+        {
             Redraw();
         }
 

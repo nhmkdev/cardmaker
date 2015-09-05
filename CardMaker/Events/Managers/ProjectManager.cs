@@ -78,11 +78,11 @@ namespace CardMaker.Events.Managers
         /// <summary>
         /// Fires the ProjectUpdated event
         /// </summary>
-        public void FireProjectUpdated()
+        public void FireProjectUpdated(bool bDataChange)
         {
             if (null != ProjectUpdated)
             {
-                ProjectUpdated(this, new ProjectEventArgs(LoadedProject, ProjectFilePath));
+                ProjectUpdated(this, new ProjectEventArgs(LoadedProject, ProjectFilePath, bDataChange));
             }
         }
 
@@ -144,7 +144,7 @@ namespace CardMaker.Events.Managers
         }
 
         /// <summary>
-        /// Adds the specified layout to the project
+        /// Adds the specified layout to the project (new data)
         /// </summary>
         /// <param name="zLayout"></param>
         public void AddLayout(ProjectLayout zLayout)
@@ -158,7 +158,7 @@ namespace CardMaker.Events.Managers
             {
                 LayoutAdded(this, new LayoutEventArgs(zLayout, null));
             }
-            FireProjectUpdated();
+            FireProjectUpdated(true);
         }
 
         /// <summary>

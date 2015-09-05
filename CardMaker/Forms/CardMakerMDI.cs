@@ -66,7 +66,7 @@ namespace CardMaker.Forms
 
             m_sBaseTitle = "Card Maker Beta " + Application.ProductVersion;
 #if UNSTABLE
-            m_sBaseTitle += "[UNSTABLE] V.A1";
+            m_sBaseTitle += "[UNSTABLE] V.A2";
 #endif
             m_sFileOpenFilter = "CMP files (*.cmp)|*.cmp|All files (*.*)|*.*";
 
@@ -245,12 +245,14 @@ namespace CardMaker.Forms
         {
             drawElementBordersToolStripMenuItem.Checked = !drawElementBordersToolStripMenuItem.Checked;
             CardMakerInstance.DrawElementBorder = drawElementBordersToolStripMenuItem.Checked;
+            LayoutManager.Instance.FireLayoutRenderUpdatedEvent();
         }
 
         private void drawFormattedTextWordBordersToolStripMenuItem_Click(object sender, EventArgs e)
         {
             drawFormattedTextWordOutlinesToolStripMenuItem.Checked = !drawFormattedTextWordOutlinesToolStripMenuItem.Checked;
             CardMakerInstance.DrawFormattedTextBorder = drawFormattedTextWordOutlinesToolStripMenuItem.Checked;
+            LayoutManager.Instance.FireLayoutRenderUpdatedEvent();
         }
 
         private void CardMakerMDI_FormClosing(object sender, FormClosingEventArgs e)
@@ -597,12 +599,18 @@ namespace CardMaker.Forms
 
         void ProjectUpdated(object sender, ProjectEventArgs e)
         {
-            MarkDirty();
+            if (e.DataChange)
+            {
+                MarkDirty();
+            }
         }
 
         void LayoutUpdated(object sender, LayoutEventArgs args)
         {
-            MarkDirty();
+            if (args.DataChange)
+            {
+                MarkDirty();
+            }
         }
 
         private void ProjectOpened(object sender, ProjectEventArgs e)
@@ -619,9 +627,10 @@ namespace CardMaker.Forms
         protected override bool SaveFormData(string sFileName)
         {
             var bSaved = ProjectManager.Instance.Save(sFileName);
-#warning may want to centralize the update of the loaded files history
-            m_listRecentFiles.Remove(sFileName);
-            m_listRecentFiles.Insert(0, sFileName);
+            if (bSaved)
+            {
+                UpdateProjectsList(sFileName);
+            }
             return bSaved;
         }
 
@@ -639,8 +648,7 @@ namespace CardMaker.Forms
             Cursor = Cursors.Default;
             if (null != ProjectManager.Instance.LoadedProject)
             {
-                m_listRecentFiles.Remove(sFileName);
-                m_listRecentFiles.Insert(0, sFileName);
+                UpdateProjectsList(sFileName);
                 while (CardMakerConstants.MAX_RECENT_PROJECTS < m_listRecentFiles.Count)
                 {
                     m_listRecentFiles.RemoveAt(CardMakerConstants.MAX_RECENT_PROJECTS);
@@ -899,6 +907,12 @@ namespace CardMaker.Forms
                 zForm.Show();
             }
             return zForm;
+        }
+
+        private void UpdateProjectsList(string sFileName)
+        {
+            m_listRecentFiles.Remove(sFileName);
+            m_listRecentFiles.Insert(0, sFileName);            
         }
     }
 }

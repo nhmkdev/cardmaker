@@ -317,7 +317,10 @@ namespace CardMaker.Card
                                 m_dictionaryElementOverrides.Add(sElementName, new Dictionary<string, int>());
                             }
                             Dictionary<string, int> dictionaryOverrides = m_dictionaryElementOverrides[sElementName];
-#warning -- check for duplicates in the dictionary!
+                            if (dictionaryOverrides.ContainsKey(sElementItemOverride))
+                            {
+                                Logger.AddLogLine("Duplicate override found: {0}".FormatString(sElementItemOverride));
+                            }
                             dictionaryOverrides[sElementItemOverride] = m_dictionaryColumnNames[sKey];
                         }
                     }

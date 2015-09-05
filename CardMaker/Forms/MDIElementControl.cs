@@ -186,7 +186,7 @@ namespace CardMaker.Forms
             Action<bool> actionChangeColor = bRedo =>
             {
                 listActions.ForEach(action => action(bRedo));
-                LayoutManager.Instance.FireLayoutUpdatedEvent();
+                LayoutManager.Instance.FireLayoutUpdatedEvent(true);
             };
             UserAction.PushAction(actionChangeColor);
 
@@ -426,22 +426,6 @@ namespace CardMaker.Forms
                 return;
             }
 
-            // Special case handling for the user dragging in the Canvas (manages its own undo/redo)
-            // This is because the Canvas mouse down is the only point at which an undo action is created
-            // During mouse down no element changes should be "double" applied due to the control adjustments on the MDIElementControl
-            // TODO: this previously only applied because the canvas was directly accessing the controls!
-#if false // should no longer apply
-            if (CardMakerInstance.CanvasUserAction)
-            {
-                Action<ProjectLayoutElement> action;
-                if(m_dictionaryControlActions.TryGetValue((Control)sender, out action))
-                {
-                    action(ElementManager.Instance.GetSelectedElement());
-                    LayoutManager.Instance.FireLayoutUpdatedEvent();
-                }
-                return;
-            }
-#endif
             var listSelectedElements = ElementManager.Instance.SelectedElements;
             if (null != sender && null != listSelectedElements)
             {
@@ -466,7 +450,7 @@ namespace CardMaker.Forms
                     CardMakerInstance.ProcessingUserAction = true;
                     listActions.ForEach(action => action(bRedo));
                     CardMakerInstance.ProcessingUserAction = false;
-                    LayoutManager.Instance.FireLayoutUpdatedEvent();
+                    LayoutManager.Instance.FireLayoutUpdatedEvent(true);
                 };
 
                 UserAction.PushAction(actionElementChange);
@@ -514,7 +498,7 @@ namespace CardMaker.Forms
                 // TODO: if the value does not actually change this applies an update for no specific reason...
                 PerformControlChangeActions(numericElementX, numericElementY, numericElementW, numericElementH);
             }
-            LayoutManager.Instance.FireLayoutUpdatedEvent();
+            LayoutManager.Instance.FireLayoutUpdatedEvent(true);
         }
 
         private void PerformControlChangeActions(params Control[] arraycontrols)
@@ -686,7 +670,7 @@ namespace CardMaker.Forms
                     {
                         checkFontAutoScale.Checked = false;
                     }
-                    LayoutManager.Instance.FireLayoutUpdatedEvent();
+                    LayoutManager.Instance.FireLayoutUpdatedEvent(true);
                 };
 
                 UserAction.PushAction(actionChangeFont);

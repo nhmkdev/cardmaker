@@ -163,7 +163,7 @@ namespace CardMaker.Forms
             {
                 var zLayout = (ProjectLayout)treeView.SelectedNode.Tag;
                 zLayout.Name = e.Label;
-                ProjectManager.Instance.FireProjectUpdated();
+                ProjectManager.Instance.FireProjectUpdated(true);
             }
         }
 
@@ -189,7 +189,7 @@ namespace CardMaker.Forms
                     dpi = (int)zQuery.GetDecimal(DPI)
                 };
                 ProjectManager.Instance.AddLayout(zLayout);
-                ProjectManager.Instance.FireProjectUpdated();
+                ProjectManager.Instance.FireProjectUpdated(true);
             }
         }
 
@@ -256,7 +256,7 @@ namespace CardMaker.Forms
                 if (DialogResult.Yes == MessageBox.Show(this, "Are you sure you want to remove this Layout?", "Remove Layout", MessageBoxButtons.YesNo))
                 {
                     ProjectManager.Instance.LoadedProject.RemoveProjectLayout(treeView.SelectedNode);
-                    ProjectManager.Instance.FireProjectUpdated();
+                    ProjectManager.Instance.FireProjectUpdated(true);
                 }
             }
             else
@@ -270,7 +270,7 @@ namespace CardMaker.Forms
             var zLayout = (ProjectLayout)treeView.SelectedNode.Tag;
             var zLayoutCopy = new ProjectLayout(zLayout.Name + " copy");
             zLayoutCopy.DeepCopy(zLayout);
-            ProjectManager.Instance.AddLayout(zLayout);
+            ProjectManager.Instance.AddLayout(zLayoutCopy);
         }
 
         private void addReferenceToolStripMenuItem_Click(object sender, EventArgs e)
@@ -289,9 +289,9 @@ namespace CardMaker.Forms
                 if (bNewDefault)
                 {
                     tnReference.Parent.Expand();
-                    LayoutManager.Instance.FireLayoutUpdatedEvent();
+                    LayoutManager.Instance.FireLayoutUpdatedEvent(true);
                 }
-                ProjectManager.Instance.FireProjectUpdated();
+                ProjectManager.Instance.FireProjectUpdated(true);
             }
         }
 
@@ -332,9 +332,9 @@ namespace CardMaker.Forms
                 if (bNewDefault)
                 {
                     tnReference.Parent.Expand();
-                    LayoutManager.Instance.FireLayoutUpdatedEvent();
+                    LayoutManager.Instance.FireLayoutUpdatedEvent(true);
                 }
-                ProjectManager.Instance.FireProjectUpdated();            
+                ProjectManager.Instance.FireProjectUpdated(true);            
             }
         }
 
@@ -360,9 +360,9 @@ namespace CardMaker.Forms
             // reinit canvas
             if (LayoutManager.Instance.ActiveDeck.CardLayout != null)
             {
-                LayoutManager.Instance.FireLayoutUpdatedEvent();
+                LayoutManager.Instance.FireLayoutUpdatedEvent(true);
             }
-            ProjectManager.Instance.FireProjectUpdated();
+            ProjectManager.Instance.FireProjectUpdated(true);
         }
 
         private void setAsDefaultReferenceToolStripMenuItem_Click(object sender, EventArgs e)
@@ -382,9 +382,9 @@ namespace CardMaker.Forms
             // reinit canvas
             if (LayoutManager.Instance.ActiveDeck.CardLayout != null)
             {
-                LayoutManager.Instance.FireLayoutUpdatedEvent();
+                LayoutManager.Instance.FireLayoutUpdatedEvent(true);
             }
-            ProjectManager.Instance.FireProjectUpdated();
+            ProjectManager.Instance.FireProjectUpdated(true);
         }
 
         public ProjectLayout GetCurrentProjectLayout()
@@ -471,7 +471,7 @@ namespace CardMaker.Forms
                     zProjectLayout.exportHeight = Int32.Parse(zQuery.GetString(EXPORT_HEIGHT));
                     zProjectLayout.exportTransparentBackground = zQuery.GetBool(EXPORT_TRANSPARENT);
                 }
-                ProjectManager.Instance.FireProjectUpdated();
+                ProjectManager.Instance.FireProjectUpdated(true);
             }
         }
 
@@ -518,7 +518,7 @@ namespace CardMaker.Forms
                         listLayouts.Insert(nTargetIdx, (ProjectLayout) tnDrag.Tag);
                         zProject.Layout = listLayouts.ToArray();
                     }
-                    ProjectManager.Instance.FireProjectUpdated();
+                    ProjectManager.Instance.FireProjectUpdated(true);
                 }
             }
         }
