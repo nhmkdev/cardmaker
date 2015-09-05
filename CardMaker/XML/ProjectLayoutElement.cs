@@ -151,6 +151,26 @@ namespace CardMaker.XML
             InitializeCache();
         }
 
+        public Color GetElementBorderColor()
+        {
+            return m_colorBorder;
+        }
+
+        public Color GetElementColor()
+        {
+            return m_colorElement;
+        }
+
+        public Color GetElementOutlineColor()
+        {
+            return m_colorOutline;
+        }
+
+        public Font GetElementFont()
+        {
+            return m_fontText;
+        }
+
         /// <summary>
         /// Initializes the cache variables for color and font translation
         /// </summary>
@@ -265,6 +285,11 @@ namespace CardMaker.XML
             return Color.Black;
         }
 
+        /// <summary>
+        /// Converts a color to the a color formatted string for serialization across the app (0x hex form)
+        /// </summary>
+        /// <param name="zColor"></param>
+        /// <returns></returns>
         public static string GetElementColorString(Color zColor)
         {
             return COLOR_HEX_STR +
@@ -292,26 +317,6 @@ namespace CardMaker.XML
                 (arraySplit[3].Equals("1") ? FontStyle.Underline : FontStyle.Regular) |
                 (arraySplit[4].Equals("1") ? FontStyle.Italic : FontStyle.Regular) |
                 (arraySplit[5].Equals("1") ? FontStyle.Strikeout : FontStyle.Regular));
-        }
-
-        public Color GetElementBorderColor()
-        {
-            return m_colorBorder;
-        }
-
-        public Color GetElementColor()
-        {
-            return m_colorElement;
-        }
-
-        public Color GetElementOutlineColor()
-        {
-            return m_colorOutline;
-        }
-
-        public Font GetElementFont()
-        {
-            return m_fontText;
         }
 
         /// <summary>

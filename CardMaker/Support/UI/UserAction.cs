@@ -79,7 +79,9 @@ namespace Support.UI
             m_stackRedo.Clear();
             m_stackUndo.Clear();
             if (null != OnClearUserActions)
+            {
                 OnClearUserActions();
+            }
         }
 
         public static int UndoCount { get { return m_stackUndo.Count; } }

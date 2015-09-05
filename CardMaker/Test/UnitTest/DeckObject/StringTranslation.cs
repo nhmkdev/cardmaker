@@ -1,5 +1,4 @@
-﻿using CardMaker;
-using CardMaker.Card;
+﻿using CardMaker.Card;
 using CardMaker.XML;
 using NUnit.Framework;
 using System;

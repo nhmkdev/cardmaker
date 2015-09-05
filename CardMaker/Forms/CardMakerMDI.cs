@@ -66,7 +66,7 @@ namespace CardMaker.Forms
 
             m_sBaseTitle = "Card Maker Beta " + Application.ProductVersion;
 #if UNSTABLE
-            m_sBaseTitle += "[UNSTABLE] V.A2";
+            m_sBaseTitle += "[UNSTABLE] V.A3";
 #endif
             m_sFileOpenFilter = "CMP files (*.cmp)|*.cmp|All files (*.*)|*.*";
 
@@ -87,6 +87,7 @@ namespace CardMaker.Forms
             ProjectManager.Instance.ProjectUpdated += ProjectUpdated;
 
             LayoutManager.Instance.LayoutUpdated += LayoutUpdated;
+            LayoutManager.Instance.LayoutLoaded += LayoutLoaded;
 
             ExportManager.Instance.ExportRequested += ExportRequested;
 
@@ -605,12 +606,17 @@ namespace CardMaker.Forms
             }
         }
 
-        void LayoutUpdated(object sender, LayoutEventArgs args)
+        void LayoutUpdated(object sender, LayoutEventArgs e)
         {
-            if (args.DataChange)
+            if (e.DataChange)
             {
                 MarkDirty();
             }
+        }
+
+        void LayoutLoaded(object sender, LayoutEventArgs e)
+        {
+            UserAction.ClearUndoRedoStacks();
         }
 
         private void ProjectOpened(object sender, ProjectEventArgs e)

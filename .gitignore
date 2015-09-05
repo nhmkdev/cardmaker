@@ -1,4 +1,6 @@
 *.suo
+*.psess
+*.vsp
 /CardMaker/bin/Debug/
 /CardMaker/bin/Release/de/
 /CardMaker/bin/Release/Licenses/GData-LICENSE-2.0.txt
