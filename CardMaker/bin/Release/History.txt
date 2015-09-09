@@ -4,7 +4,8 @@ Card Maker Version History
 - Removed Printing
 - Removed Preview Dialog
 - Added rendered message if no layout is selected in the Project window
-- Fixed Layout Template loading/saving
+- Changed Layout Template storage to create individual files (easy sharing/backup)
+- Added translate functionality to overrides (should match definition translation)
 
 0.99.1.10
 - Fix for Text elements using the line spacing value (only supposed to apply to FormattedText)

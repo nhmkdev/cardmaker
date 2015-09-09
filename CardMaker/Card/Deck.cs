@@ -535,12 +535,13 @@ namespace CardMaker.Card
         /// <param name="zElement"></param>
         /// <param name="bPrint"></param>
         /// <returns></returns>
-        public ElementString TranslateString(string sRawString, DeckLine zDeckLine, ProjectLayoutElement zElement, bool bPrint)
+        public ElementString TranslateString(string sRawString, DeckLine zDeckLine, ProjectLayoutElement zElement, bool bPrint, string sCacheSuffix = "")
         {
             List<string> listLine = zDeckLine.LineColumns;
 
+            string sCacheKey = zElement.name + sCacheSuffix;
             ElementString zCached;
-            if (m_dictionaryElementStringCache.TryGetValue(zElement.name, out zCached))
+            if (m_dictionaryElementStringCache.TryGetValue(sCacheKey, out zCached))
             {
                 return zCached;
             } 
@@ -680,12 +681,12 @@ namespace CardMaker.Card
 
             zElementString.String = sOutput;
 
-            AddStringToTranslationCache(zElement.name, zElementString);
+            AddStringToTranslationCache(sCacheKey, zElementString);
 
             return zElementString;
         }
 
-        public ProjectLayoutElement GetOverrideElement(ProjectLayoutElement zElement, List<string> arrayLine)
+        public ProjectLayoutElement GetOverrideElement(ProjectLayoutElement zElement, List<string> arrayLine, DeckLine zDeckLine, bool bExport)
         {
             Dictionary<string, int> dictionaryOverrideColumns;
             string sNameLower = zElement.name.ToLower();
@@ -699,7 +700,6 @@ namespace CardMaker.Card
             zOverrideElement.DeepCopy(zElement, false);
             zOverrideElement.name = zElement.name;
 
-
             foreach (string sKey in dictionaryOverrideColumns.Keys)
             {
                 Type zType = typeof(ProjectLayoutElement);
@@ -709,8 +709,14 @@ namespace CardMaker.Card
                     MethodInfo zMethod = zProperty.GetSetMethod();
                     int nOverrideValueColumnIdx = dictionaryOverrideColumns[sKey];
                     if (arrayLine.Count <= nOverrideValueColumnIdx)
+                    {
                         continue;
+                    }
                     string sValue = arrayLine[nOverrideValueColumnIdx].Trim();
+
+                    // Note: TranslateString maintains an element name based cache, the key is critical to make this translation unique
+                    sValue = TranslateString(sValue, zDeckLine, zOverrideElement, bExport, sKey).String;
+
                     if (!string.IsNullOrEmpty(sValue))
                     {
                         if (zProperty.PropertyType == typeof(string))

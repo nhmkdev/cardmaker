@@ -95,7 +95,7 @@ namespace CardMaker.Card
                         IssueManager.Instance.FireChangeElementEvent(zElement.name);
 
                         // get override Element
-                        ProjectLayoutElement zOverrideElement = CurrentDeck.GetOverrideElement(zElement, listLine);
+                        ProjectLayoutElement zOverrideElement = CurrentDeck.GetOverrideElement(zElement, listLine, zDeckLine, bExport);
                         var zDrawElement = zOverrideElement;
 
                         // translate any index values in the csv
@@ -143,7 +143,7 @@ namespace CardMaker.Card
                     }
                 }
             }
-
+#warning this results in a border draw when not desired on export...
             // draw the card border
             if ((bExport && CardMakerSettings.PrintLayoutBorder) || (!bExport && CurrentDeck.CardLayout.drawBorder))
             {
