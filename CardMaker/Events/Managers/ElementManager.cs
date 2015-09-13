@@ -164,8 +164,8 @@ namespace CardMaker.Events.Managers
             {
                 foreach (var zElement in m_listSelectedElements)
                 {
-                    zElement.x = Math.Max(1, zElement.x + nX);
-                    zElement.y = Math.Max(1, zElement.y + nY);
+                    zElement.x = zElement.x + nX;
+                    zElement.y = zElement.y + nY;
                     zElement.width = Math.Max(1, zElement.width + nWidth);
                     zElement.height = Math.Max(1, zElement.height + nHeight);
                 }
