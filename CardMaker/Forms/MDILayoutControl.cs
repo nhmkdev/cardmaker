@@ -550,6 +550,10 @@ namespace CardMaker.Forms
                         listViewElements.Items[0].Selected = true;
                     }
                 }
+                else
+                {
+                    ElementManager.Instance.FireElementSelectedEvent(null);
+                }
                 m_bFireLayoutChangeEvents = true;
 
                 // these adjustments will trigger the events necessary to adjust to the given index

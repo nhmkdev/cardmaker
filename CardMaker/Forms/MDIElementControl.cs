@@ -94,6 +94,11 @@ namespace CardMaker.Forms
         void DeckIndex_Changed(object sender, DeckChangeEventArgs args)
         {
             LayoutManager.Instance.ActiveDeck.PopulateListViewWithElementColumns(listViewElementColumns);
+            if (LayoutManager.Instance.ActiveLayout.Element == null ||
+                LayoutManager.Instance.ActiveLayout.Element.Length == 0)
+            {
+                HandleEnableStates();
+            }
         }
 
         void ElementBounds_Updated(object sender, ElementEventArgs args)
@@ -107,7 +112,7 @@ namespace CardMaker.Forms
         void Element_Selected(object sender, ElementEventArgs args)
         {
             HandleEnableStates();
-            if (args.Elements == null || args.Elements.Count > 0)
+            if (args.Elements != null && args.Elements.Count > 0)
             {
                 UpdateElementValues(args.Elements[0]);
                 HandleTypeEnableStates();
