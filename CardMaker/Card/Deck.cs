@@ -945,7 +945,11 @@ namespace CardMaker.Card
             }
             return sInput;
         }
-#warning MOVE THIS OUT OF HERE (look for other stray things...) -- much of the content of this method is internal to this class ... ugh
+
+        /// <summary>
+        /// Populates the specified ListView with the columns and data associated with this Deck
+        /// </summary>
+        /// <param name="listView">The ListView to operate on</param>
         public void PopulateListViewWithElementColumns(ListView listView)
         {
             var arrayColumnSizes = new int[m_listColumnNames.Count];

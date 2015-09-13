@@ -86,18 +86,17 @@ namespace CardMaker.Forms
                 RenderMode = ToolStripRenderMode.System
             };
 
-            LayoutManager.Instance.DeckIndexChanged += Instance_DeckIndexChanged;
-            ElementManager.Instance.ElementSelected += Instance_ElementSelected;
-            ElementManager.Instance.ElementBoundsUpdated += Instance_ElementBoundsUpdated;
+            LayoutManager.Instance.DeckIndexChanged += DeckIndex_Changed;
+            ElementManager.Instance.ElementSelected += Element_Selected;
+            ElementManager.Instance.ElementBoundsUpdated += ElementBounds_Updated;
         }
 
-        void Instance_DeckIndexChanged(object sender, DeckChangeEventArgs args)
+        void DeckIndex_Changed(object sender, DeckChangeEventArgs args)
         {
-            // TODO: this is horrible (see method)
             LayoutManager.Instance.ActiveDeck.PopulateListViewWithElementColumns(listViewElementColumns);
         }
 
-        void Instance_ElementBoundsUpdated(object sender, ElementEventArgs args)
+        void ElementBounds_Updated(object sender, ElementEventArgs args)
         {
             if (null != args && args.Elements.Count > 0)
             {
@@ -105,7 +104,7 @@ namespace CardMaker.Forms
             }
         }
 
-        void Instance_ElementSelected(object sender, ElementEventArgs args)
+        void Element_Selected(object sender, ElementEventArgs args)
         {
             HandleEnableStates();
             if (args.Elements == null || args.Elements.Count > 0)

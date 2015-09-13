@@ -751,6 +751,7 @@ namespace CardMaker.Forms
                     CardMakerInstance.ProcessingUserAction = false;
 
                     listViewElements_SelectedIndexChanged(null, null);
+                    LayoutManager.Instance.FireLayoutUpdatedEvent(true);
                 });
             }
         }

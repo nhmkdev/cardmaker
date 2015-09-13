@@ -462,24 +462,25 @@ namespace CardMaker.Forms
         {
             string sHelpFile = CardMakerInstance.StartupPath + "Card_Maker.pdf";
             if (File.Exists(sHelpFile))
-                System.Diagnostics.Process.Start(sHelpFile);
+            {
+                Process.Start(sHelpFile);
+            }
         }
 
         private void samplePDFToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string sSampleFile = CardMakerInstance.StartupPath + "Card_Maker_Basic_Project.pdf";
             if (File.Exists(sSampleFile))
-                System.Diagnostics.Process.Start(sSampleFile);
+            {
+                Process.Start(sSampleFile);
+            }
         }
 
         private void clearCacheToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // maybe an event? Or a DrawManager
             DrawItem.DumpImages();
             DrawItem.DumpOpacityImages();
-#if false // TODO: event
-            m_zDrawCardCanvas.Invalidate();
-#endif
+            LayoutManager.Instance.FireLayoutRenderUpdatedEvent();
         }
 
         private void illegalFilenameCharacterReplacementToolStripMenuItem_Click(object sender, EventArgs e)
