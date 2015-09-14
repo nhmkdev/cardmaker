@@ -357,10 +357,9 @@ namespace CardMaker.Forms
                 listReferences[0].Default = true;
             }
 
-            // reinit canvas
-            if (LayoutManager.Instance.ActiveDeck.CardLayout != null)
+            if (zLayout == LayoutManager.Instance.ActiveLayout)
             {
-                LayoutManager.Instance.FireLayoutUpdatedEvent(true);
+                LayoutManager.Instance.SetActiveLayout(zLayout);
             }
             ProjectManager.Instance.FireProjectUpdated(true);
         }
