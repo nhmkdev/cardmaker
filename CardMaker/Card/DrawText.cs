@@ -28,6 +28,7 @@ using System.Drawing.Drawing2D;
 using CardMaker.Data;
 using CardMaker.XML;
 using Support.IO;
+using Support.UI;
 
 namespace CardMaker.Card
 {
@@ -123,7 +124,17 @@ namespace CardMaker.Card
             }
 #endif
 
-            var fEmSize = zGraphics.DpiY * (zFont.Size / CardMakerInstance.ApplicationDPI);
+            var fEmSize = zFont.Size;
+
+            switch (zFont.Unit)
+            {
+                case GraphicsUnit.Point:
+                    fEmSize = zGraphics.DpiY*(zFont.Size/72f);
+                    break;
+                default:
+                    Logger.AddLogLine("This font is using the Unit: {0} (not currently supported)".FormatString(zFont.Unit.ToString()));
+                    break;
+            }
 
             foreach (var sLine in arrayDrawLines)
             {

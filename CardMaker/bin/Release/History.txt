@@ -6,6 +6,7 @@ Card Maker Version History
 - Added rendered message if no layout is selected in the Project window
 - Changed Layout Template storage to create individual files (easy sharing/backup)
 - Added translate functionality to overrides (should match definition translation)
+- Fixed the issue with the font size not matching when an outline is specifed (previously it was much smaller)
 
 0.99.1.10
 - Fix for Text elements using the line spacing value (only supposed to apply to FormattedText)
