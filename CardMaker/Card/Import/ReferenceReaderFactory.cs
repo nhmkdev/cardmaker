@@ -36,16 +36,14 @@ namespace CardMaker.Card.Import
             {
                 return null;
             }
+            ReferenceReader zReader;
             if (zReference.RelativePath.StartsWith(CardMakerConstants.GOOGLE_REFERENCE +
                                                            CardMakerConstants.GOOGLE_REFERENCE_SPLIT_CHAR))
             {
-                if (GoogleApi.VerifyAccessToken(CardMakerInstance.GoogleAccessToken))
+                zReader = new GoogleReferenceReader(zReference);
+                if (!CardMakerInstance.GoogleCredentialsInvalid)
                 {
-                    return new GoogleReferenceReader(zReference);
-                }
-                else
-                {
-                    CardMakerInstance.GoogleCredentialsInvalid = true;
+                    return zReader;
                 }
             }
             return new CSVReferenceReader(zReference);

@@ -115,5 +115,10 @@ namespace CardMaker.Card.Import
         {
             GetData(ReferencePath, listDefineData, false, 1, Deck.DEFINES_DATA_POSTFIX);
         }
+
+        public void FinalizeReferenceLoad()
+        {
+
+        }
     }
 }

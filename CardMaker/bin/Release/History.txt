@@ -9,6 +9,7 @@ Card Maker Version History
 - Critical -- Fixed the issue with the font size not matching when an outline is specifed (previously it was much smaller)
 -- This means your previous projects that used outline+text may need to be revisited for font size if you used outline
 - Fixed Bottom aligned FormattedText elements (they were being cut off in most cases)
+- Added option/ability to cache Google Spreadsheet data locally
 
 0.99.1.10
 - Fix for Text elements using the line spacing value (only supposed to apply to FormattedText)

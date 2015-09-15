@@ -46,7 +46,8 @@ namespace CardMaker.Data
         PrintAutoCenterLayout,
         PrintLayoutBorder,
         LastImageExportFormat,
-        PrintLayoutsOnNewPage
+        PrintLayoutsOnNewPage,
+        EnableGoogleCache
     }
 
     public enum ExportType

@@ -88,6 +88,7 @@ namespace CardMaker.Forms
             this.pDFToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.samplePDFToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearGoogleCacheToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStripMain.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -260,7 +261,8 @@ namespace CardMaker.Forms
             this.clearCacheToolStripMenuItem,
             this.updateIssuesToolStripMenuItem,
             this.refreshLayoutToolStripMenuItem,
-            this.importLayoutsToolStripMenuItem});
+            this.importLayoutsToolStripMenuItem,
+            this.clearGoogleCacheToolStripMenuItem});
             this.projectToolStripMenuItem.Name = "projectToolStripMenuItem";
             this.projectToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
             this.projectToolStripMenuItem.Text = "&Project";
@@ -391,6 +393,13 @@ namespace CardMaker.Forms
             this.aboutToolStripMenuItem.Text = "&About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
+            // clearGoogleCacheToolStripMenuItem
+            // 
+            this.clearGoogleCacheToolStripMenuItem.Name = "clearGoogleCacheToolStripMenuItem";
+            this.clearGoogleCacheToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
+            this.clearGoogleCacheToolStripMenuItem.Text = "Clear Google Cache";
+            this.clearGoogleCacheToolStripMenuItem.Click += new System.EventHandler(this.clearGoogleCacheToolStripMenuItem_Click);
+            // 
             // CardMakerMDI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -447,6 +456,7 @@ namespace CardMaker.Forms
         private System.Windows.Forms.ToolStripMenuItem colorPickerToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportProjectThroughPDFSharpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem importLayoutsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem clearGoogleCacheToolStripMenuItem;
     }
 }
 

@@ -34,5 +34,6 @@ namespace CardMaker.Data
         public const string VISIBLE_SETTING = ".visible";
         public const char CHAR_FILE_SPLIT = '|';
         public const int MAX_RECENT_PROJECTS = 10;
+        public const string GOOGLE_CACHE_FILE = ".CardMakerGoogleCache.dat";
     }
 }

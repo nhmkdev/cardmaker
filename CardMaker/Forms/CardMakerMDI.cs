@@ -66,7 +66,7 @@ namespace CardMaker.Forms
 
             m_sBaseTitle = "Card Maker Beta " + Application.ProductVersion;
 #if UNSTABLE
-            m_sBaseTitle += "[UNSTABLE] V.A6";
+            m_sBaseTitle += "[UNSTABLE] V.A7";
 #endif
             m_sFileOpenFilter = "CMP files (*.cmp)|*.cmp|All files (*.*)|*.*";
 
@@ -351,6 +351,7 @@ namespace CardMaker.Forms
             zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
             zQuery.SetMaxHeight(600);
             zQuery.AddTab("General");
+            zQuery.AddCheckBox("Enable Google Cache", CardMakerSettings.EnableGoogleCache, IniSettings.EnableGoogleCache);
             zQuery.AddCheckBox("Print/Export Layout Border", CardMakerSettings.PrintLayoutBorder, IniSettings.PrintLayoutBorder);
 
             zQuery.AddTab("PDF Export");
@@ -371,6 +372,7 @@ namespace CardMaker.Forms
                 CardMakerSettings.PrintAutoHorizontalCenter = zQuery.GetBool(IniSettings.PrintAutoCenterLayout);
                 CardMakerSettings.PrintLayoutBorder = zQuery.GetBool(IniSettings.PrintLayoutBorder);
                 CardMakerSettings.PrintLayoutsOnNewPage = zQuery.GetBool(IniSettings.PrintLayoutsOnNewPage);
+                CardMakerSettings.EnableGoogleCache = zQuery.GetBool(IniSettings.EnableGoogleCache);
             }
         }
 
@@ -920,6 +922,19 @@ namespace CardMaker.Forms
         {
             m_listRecentFiles.Remove(sFileName);
             m_listRecentFiles.Insert(0, sFileName);            
+        }
+
+        private void clearGoogleCacheToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                File.Delete(Path.Combine(CardMakerInstance.StartupPath, CardMakerConstants.GOOGLE_CACHE_FILE));
+                Logger.AddLogLine("Cleared Google Cache");
+            }
+            catch (Exception ex)
+            {
+                Logger.AddLogLine("Failed to delete Google Cache File: {0}".FormatString(ex.Message));
+            }
         }
     }
 }

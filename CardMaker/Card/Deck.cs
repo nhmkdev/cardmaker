@@ -252,6 +252,8 @@ namespace CardMaker.Card
                         Logger.AddLogLine(
                             "No defines found for reference: {0}".FormatString(zReference.RelativePath));
                     }
+
+                    zRefReader.FinalizeReferenceLoad();
                     WaitDialog.Instance.ProgressStep(0);                       
                 }
             }
