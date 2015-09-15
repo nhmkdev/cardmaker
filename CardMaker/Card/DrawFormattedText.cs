@@ -158,14 +158,14 @@ namespace CardMaker.Card
             // if the vertical alignment is so far negative that it is outside the bounds adjust it to chop off at the bottom
             if (0 > listMarkups[0].TargetRect.Y + nVertAlignOffset)
             {
-                nVertAlignOffset = (int) -listMarkups[0].TargetRect.Y;
+                nVertAlignOffset = -listMarkups[0].TargetRect.Y;
             }
 
             // If this left aligned, just update the vertical alignment and exit
             if (StringAlignment.Near == (StringAlignment)zElement.horizontalalign)
             {
                 // check if there is nothing to do
-                if (0 == nVertAlignOffset)
+                if (0f == nVertAlignOffset)
                 {
                     return;
                 }
@@ -204,7 +204,7 @@ namespace CardMaker.Card
         /// <param name="zElement"></param>
         /// <param name="listMarkups">List of Markups (all must have Aligns set to true)</param>
         /// <param name="nVerticalAlignOffset"></param>
-        private static void UpdateLineAlignment(int nFirst, int nLast, ProjectLayoutElement zElement, List<MarkupBase> listMarkups, int nVerticalAlignOffset)
+        private static void UpdateLineAlignment(int nFirst, int nLast, ProjectLayoutElement zElement, List<MarkupBase> listMarkups, float nVerticalAlignOffset)
         {
             var rectLast = listMarkups[nLast].TargetRect;
             var fXOffset = -1f; // HACK: slight fudge
@@ -232,7 +232,7 @@ namespace CardMaker.Card
         /// <param name="zElement">The element to operate with</param>
         /// <param name="listMarkups">List of Markups (all must have Aligns set to true)</param>
         /// <returns></returns>
-        private static int GetVerticalAlignOffset(ProjectLayoutElement zElement, List<MarkupBase> listMarkups)
+        private static float GetVerticalAlignOffset(ProjectLayoutElement zElement, List<MarkupBase> listMarkups)
         {
             if (0 == listMarkups.Count)
             {
@@ -240,13 +240,13 @@ namespace CardMaker.Card
             }
 
             var rectLast = listMarkups[listMarkups.Count - 1].TargetRect;
-            var nEndOfLastLine = (int)(rectLast.Y + rectLast.Height);
+            var nEndOfLastLine = rectLast.Y + rectLast.Height;
             switch ((StringAlignment)zElement.verticalalign)
             {
                 case StringAlignment.Center:
-                    return (int)(((float)(zElement.height - nEndOfLastLine)) / 2f);
+                    return ((float)(zElement.height - nEndOfLastLine)) / 2f;
                 case StringAlignment.Far:
-                    return zElement.height - nEndOfLastLine;
+                    return (float)zElement.height - nEndOfLastLine;
             }
             return 0;
         }

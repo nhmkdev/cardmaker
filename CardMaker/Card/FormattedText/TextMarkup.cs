@@ -29,6 +29,7 @@ using System.Drawing.Drawing2D;
 using CardMaker.Data;
 using CardMaker.XML;
 using Support.IO;
+using Support.UI;
 
 namespace CardMaker.Card.FormattedText
 {
@@ -63,22 +64,34 @@ namespace CardMaker.Card.FormattedText
 
             LineNumber = zProcessData.CurrentLine;
 
+            m_fFontOutlineSize = m_zFont.Size;
+
             // TODO: stop recalculating this, store it in the processData
             if (0 != zElement.outlinethickness)
             {
-                m_fFontOutlineSize = zGraphics.DpiY * (m_zFont.Size / CardMakerInstance.ApplicationDPI);
+                switch (m_zFont.Unit)
+                {
+                    case GraphicsUnit.Point:
+                        m_fFontOutlineSize = zGraphics.DpiY * (m_zFont.Size / 72f);
+                        break;
+                    default:
+                        Logger.AddLogLine("This font is using the Unit: {0} (not currently supported)".FormatString(m_zFont.Unit.ToString()));
+                        break;
+                }
             }
 
             m_rectMeasuredRectangle = MeasureDisplayStringWidth(zGraphics, m_sVariable, m_zFont);
 
             var fMeasuredWidth = m_rectMeasuredRectangle.Width;
 
+            var fMeasuredHeight = Math.Max(m_rectMeasuredRectangle.Height, m_fFontHeight);
+
             if (zProcessData.CurrentX + fMeasuredWidth > zElement.width)
             {
                 zProcessData.MoveToNextLine(zElement);
             }
 
-            TargetRect = new RectangleF(zProcessData.CurrentX, zProcessData.CurrentY, fMeasuredWidth, m_rectMeasuredRectangle.Height);
+            TargetRect = new RectangleF(zProcessData.CurrentX, zProcessData.CurrentY, fMeasuredWidth, fMeasuredHeight);
 
             zProcessData.CurrentX += fMeasuredWidth;            
 
@@ -117,7 +130,7 @@ namespace CardMaker.Card.FormattedText
                 LineAlignment = StringAlignment.Near,
             };
             // indicate any text being cut off
-            if (zElement.height < (TargetRect.Y + m_fFontHeight))
+            if (zElement.height < TargetRect.Y + TargetRect.Height)
             {
                 // completely end the draw
                 return false;
