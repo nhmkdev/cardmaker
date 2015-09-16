@@ -60,7 +60,7 @@ namespace CardMaker.Card.Import
 
             LoadCache();
 
-            if (!IsAllDataCached())
+            if (!IsAllDataCached() || CardMakerInstance.ForceDataCacheRefresh)
             {
                 // local cache is not enough to load this reference, check token access
                 if (!GoogleApi.VerifyAccessToken(CardMakerInstance.GoogleAccessToken))
@@ -106,7 +106,7 @@ namespace CardMaker.Card.Import
 
             string sCacheKey = GetCacheKey(sGoogleReference, sNameAppend);
             List<List<string>> listCacheData = null;
-            if (m_dictionaryDataCache.TryGetValue(sCacheKey, out listCacheData))
+            if (!CardMakerInstance.ForceDataCacheRefresh && m_dictionaryDataCache.TryGetValue(sCacheKey, out listCacheData))
             {
                 Logger.AddLogLine("Loading {0} from local cache".FormatString(sCacheKey));
                 listData.AddRange(listCacheData);

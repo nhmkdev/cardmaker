@@ -66,7 +66,7 @@ namespace CardMaker.Forms
 
             m_sBaseTitle = "Card Maker Beta " + Application.ProductVersion;
 #if UNSTABLE
-            m_sBaseTitle += "[UNSTABLE] V.A7";
+            m_sBaseTitle += "[UNSTABLE] V.A8";
 #endif
             m_sFileOpenFilter = "CMP files (*.cmp)|*.cmp|All files (*.*)|*.*";
 
@@ -565,11 +565,13 @@ namespace CardMaker.Forms
             new ProjectManagerUI().ShowDialog(this);
         }
 
-        private void refreshLayoutToolStripMenuItem_Click(object sender, EventArgs e)
+        private void reloadReferencesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (LayoutManager.Instance.ActiveDeck != null)
             {
+                CardMakerInstance.ForceDataCacheRefresh = true;
                 LayoutManager.Instance.InitializeActiveLayout();
+                CardMakerInstance.ForceDataCacheRefresh = false;
             }
         }
 

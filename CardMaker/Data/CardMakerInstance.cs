@@ -34,14 +34,55 @@ namespace CardMaker.Data
     /// </summary>
     public static class CardMakerInstance
     {
+        /// <summary>
+        /// The DPI of the CardMaker form application
+        /// </summary>
         public static float ApplicationDPI { get; set; }
+
+        /// <summary>
+        /// Flag indicating whether to draw the formatted text borders
+        /// </summary>
         public static bool DrawFormattedTextBorder { get; set; }
+
+        /// <summary>
+        /// Flag indicating whether to draw the element borders
+        /// </summary>
         public static bool DrawElementBorder { get; set; }
+
+        /// <summary>
+        /// Flag indicating if the Google credentials are invalid
+        /// </summary>
         public static bool GoogleCredentialsInvalid { get; set; }
+
+        /// <summary>
+        /// The current Google access token
+        /// </summary>
         public static string GoogleAccessToken { get; set; }
+
+#warning This variable is duplicated in the ProjectManager ... is there any reason to not eliminate it?
+        /// <summary>
+        /// The loaded project file path
+        /// </summary>
         public static string LoadedProjectFilePath { get; set; }
+
+        /// <summary>
+        /// The project file indicated on the command line (first argument)
+        /// </summary>
         public static string CommandLineProjectFile { get; set; }
+
+        /// <summary>
+        /// Flag to all reference readers to refresh their cache as necessary
+        /// </summary>
+        public static bool ForceDataCacheRefresh { get; set; }
+
+        /// <summary>
+        /// The application icon
+        /// </summary>
         public static Icon ApplicationIcon { get; set; }
+
+        /// <summary>
+        /// The main application form
+        /// </summary>
         public static Form ApplicationForm { get; set; }
 
         public static string StartupPath
