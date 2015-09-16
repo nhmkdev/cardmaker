@@ -932,6 +932,10 @@ namespace CardMaker.Forms
             {
                 File.Delete(Path.Combine(CardMakerInstance.StartupPath, CardMakerConstants.GOOGLE_CACHE_FILE));
                 Logger.AddLogLine("Cleared Google Cache");
+                if (LayoutManager.Instance.ActiveDeck != null)
+                {
+                    LayoutManager.Instance.InitializeActiveLayout();
+                }
             }
             catch (Exception ex)
             {
