@@ -38,6 +38,11 @@ namespace CardMaker.XML
 
         #endregion
 
+        public ProjectLayoutReference()
+        {
+            
+        }
+
         public void DeepCopy(ProjectLayoutReference zReference)
         {
             Default = zReference.Default;

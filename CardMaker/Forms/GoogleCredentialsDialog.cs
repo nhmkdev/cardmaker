@@ -40,6 +40,8 @@ namespace CardMaker.Forms
             txtAccessToken.Text = CardMakerInstance.GoogleAccessToken;
         }
 
+        #region form events
+
         private void btnOK_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.OK;
@@ -47,7 +49,7 @@ namespace CardMaker.Forms
 
         private void btnBrowse_Click(object sender, EventArgs e)
         {
-            Process.Start((string)GOOGLE_AUTH_URL);
+            Process.Start(GOOGLE_AUTH_URL);
         }
 
         private void btnPaste_Click(object sender, EventArgs e)
@@ -58,6 +60,8 @@ namespace CardMaker.Forms
             }
             DialogResult = DialogResult.OK;
         }
+
+        #endregion 
 
         public string GoogleAccessToken
         {

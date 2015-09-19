@@ -22,8 +22,6 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Collections.Generic;
-using System.Windows.Forms;
 using System.Xml.Serialization;
 using CardMaker.Data;
 
@@ -42,18 +40,10 @@ namespace CardMaker.XML
 
         #endregion
 
-        public void RemoveProjectLayout(TreeNode tnLayout)
-        {
-            var zLayout = (ProjectLayout) tnLayout.Tag;
-
-            // no need to null check, 1 layout must always exist
-            var listLayouts = new List<ProjectLayout>(Layout);
-            listLayouts.Remove(zLayout);
-            Layout = listLayouts.ToArray();
-
-            tnLayout.Parent.Nodes.Remove(tnLayout);
-        }
-
+        /// <summary>
+        /// Determines if there are any "external" references (really just google references)
+        /// </summary>
+        /// <returns>true if there is an external reference, false otherwise</returns>
         public bool HasExternalReference()
         {
             foreach (var zLayout in Layout)

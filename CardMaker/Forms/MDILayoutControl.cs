@@ -50,51 +50,15 @@ namespace CardMaker.Forms
         public MDILayoutControl() 
         {
             InitializeComponent();
-            LayoutManager.Instance.LayoutLoaded += ProjectLayoutLoaded;
-            LayoutManager.Instance.ElementOrderAdjustRequest += Instance_ElementOrderAdjustRequest;
-            LayoutManager.Instance.ElementSelectAdjustRequest += Instance_ElementSelectAdjustRequest;
-            LayoutManager.Instance.LayoutUpdated += Instance_LayoutUpdated;
-            LayoutManager.Instance.DeckIndexChangeRequested += Instance_DeckIndexChangeRequested;
-            ElementManager.Instance.ElementSelectRequested += Instance_ElementSelected;
+            LayoutManager.Instance.LayoutLoaded += ProjectLayout_Loaded;
+            LayoutManager.Instance.ElementOrderAdjustRequest += ElementOrderAdjust_Request;
+            LayoutManager.Instance.ElementSelectAdjustRequest += ElementSelectAdjust_Request;
+            LayoutManager.Instance.LayoutUpdated += Layout_Updated;
+            LayoutManager.Instance.DeckIndexChangeRequested += DeckIndexChange_Requested;
+            ElementManager.Instance.ElementSelectRequested += Element_Selected;
         }
 
-        void Instance_DeckIndexChangeRequested(object sender, DeckChangeEventArgs args)
-        {
-            int adjustedValue = args.Index + 1;
-            if (adjustedValue >= numericCardIndex.Minimum &&
-                adjustedValue <= numericCardIndex.Maximum)
-            {
-                numericCardIndex.Value = adjustedValue;
-            }
-        }
-
-        void Instance_ElementSelectAdjustRequest(object sender, LayoutElementNumericAdjustEventArgs args)
-        {
-            ChangeSelectedElement(args.Adjustment);
-        }
-
-        void Instance_ElementOrderAdjustRequest(object sender, LayoutElementNumericAdjustEventArgs args)
-        {
-            ChangeElementOrder(args.Adjustment);
-        }
-
-        void Instance_LayoutUpdated(object sender, LayoutEventArgs args)
-        {
-            RefreshElementTypes();
-        }
-
-        void Instance_ElementSelected(object sender, ElementEventArgs args)
-        {
-            if (null != args.Elements && args.Elements.Count == 1)
-            {
-                ChangeSelectedElement(args.Elements[0].name);
-            }
-        }
-
-        void ProjectLayoutLoaded(object sender, LayoutEventArgs args)
-        {
-            UpdateLayoutInfo(args.Layout);
-        }
+        #region overrides
 
         protected override CreateParams CreateParams
         {
@@ -107,100 +71,51 @@ namespace CardMaker.Forms
             }
         }
 
-        private ListViewItem CreateListViewItem(ProjectLayoutElement zElement)
-        {
-            var zLvi = new ListViewItem(new string[] {zElement.enabled.ToString(), zElement.name, zElement.type})
-            {
-                Tag = zElement
-            };
-            UpdateListViewItemState(zLvi, zElement);
-            m_dictionaryItems.Add(zElement.name, zLvi);
-            return zLvi;
-        }
+        #endregion
 
-        private void ClearSelection()
+        #region manager events
+
+        void DeckIndexChange_Requested(object sender, DeckChangeEventArgs args)
         {
-            while (0 < listViewElements.SelectedItems.Count)
+            int adjustedValue = args.Index + 1;
+            if (adjustedValue >= numericCardIndex.Minimum &&
+                adjustedValue <= numericCardIndex.Maximum)
             {
-                listViewElements.SelectedItems[0].Selected = false;
+                numericCardIndex.Value = adjustedValue;
             }
         }
 
-        private void ChangeSelectedElement(int nChange)
+        void ElementSelectAdjust_Request(object sender, LayoutElementNumericAdjustEventArgs args)
         {
-            // TODO: this needs to fire the element selected event
-            if (1 == listViewElements.SelectedIndices.Count)
+            ChangeSelectedElement(args.Adjustment);
+        }
+
+        void ElementOrderAdjust_Request(object sender, LayoutElementNumericAdjustEventArgs args)
+        {
+            ChangeElementOrder(args.Adjustment);
+        }
+
+        void Layout_Updated(object sender, LayoutEventArgs args)
+        {
+            RefreshElementTypes();
+        }
+
+        void Element_Selected(object sender, ElementEventArgs args)
+        {
+            if (null != args.Elements && args.Elements.Count == 1)
             {
-                if ((nChange == -1 && 0 == listViewElements.SelectedIndices[0]) ||
-                    (nChange == 1 && (listViewElements.SelectedIndices[0] == listViewElements.Items.Count - 1)))
-                {
-                    return;
-                }
-                int nSelectedIndex = listViewElements.SelectedItems[0].Index;
-                listViewElements.SelectedItems[0].Selected = false;
-                ListViewItem zItem = listViewElements.Items[nSelectedIndex + nChange];
-                zItem.Selected = true;
-                zItem.EnsureVisible();
+                ChangeSelectedElement(args.Elements[0].name);
             }
         }
 
-        public void ChangeSelectedElement(string sName)
+        void ProjectLayout_Loaded(object sender, LayoutEventArgs args)
         {
-            ClearSelection();
-            ListViewItem zItem;
-            if (m_dictionaryItems.TryGetValue(sName, out zItem))
-            {
-                zItem.Selected = true;
-                zItem.EnsureVisible();
-            }
+            UpdateLayoutInfo(args.Layout);
         }
 
-        private void AddElements(IEnumerable<string> collectionNames, ProjectLayoutElement zBaseElement)
-        {
-            // construct a new list of elements
-            var listElements = new List<ProjectLayoutElement>();
-            if (null != LayoutManager.Instance.ActiveLayout.Element)
-            {
-                listElements.AddRange(LayoutManager.Instance.ActiveLayout.Element);
-            }
+        #endregion
 
-            foreach (string sName in collectionNames)
-            {
-                string sTrimmed = sName.Trim();
-                if (m_dictionaryItems.ContainsKey(sTrimmed)) // no duplicates!
-                {
-                    continue;
-                }
-                var zCardElement = new ProjectLayoutElement(sTrimmed);
-
-                if (null != zBaseElement)
-                {
-                    zCardElement.DeepCopy(zBaseElement, true);
-                }
-                else
-                {
-                    zCardElement.lineheight = 14;
-                    zCardElement.SetElementColor(Color.Black);
-                    zCardElement.SetElementFont(new Font("Arial", 12));
-                }
-                listElements.Add(zCardElement);
-                ListViewItem zLvi = CreateListViewItem(zCardElement);
-                listViewElements.Items.Add(zLvi);
-            }
-
-            var zLayout = LayoutManager.Instance.ActiveLayout;
-            if (null == zLayout.Element ||
-                // it is possible nothing was added if all names were duplicates (skip in that case)
-                zLayout.Element.Length < listElements.Count)
-            {
-                // UserAction
-                SetupLayoutUndo(listElements);
-
-                // assign the new list to the actual project layout
-                LayoutManager.Instance.ActiveLayout.Element = listElements.ToArray();
-                LayoutManager.Instance.FireLayoutUpdatedEvent(true);
-            }
-        }
+        #region form events
 
         private void btnAddElement_Click(object sender, EventArgs e)
         {
@@ -313,6 +228,309 @@ namespace CardMaker.Forms
 
         }
 
+        private void btnElementRename_Click(object sender, EventArgs e)
+        {
+            if (1 != listViewElements.SelectedItems.Count)
+            {
+                return;
+            }
+            const string NAME = "NAME";
+            var zElement = (ProjectLayoutElement)listViewElements.SelectedItems[0].Tag;
+            var zQuery = new QueryPanelDialog("Rename", 350, false);
+            zQuery.SetIcon(Properties.Resources.CardMakerIcon);
+            zQuery.AddTextBox("Name: ", zElement.name, false, NAME);
+            if (DialogResult.OK == zQuery.ShowDialog(this))
+            {
+                string sName = zQuery.GetString(NAME).Trim();
+                if (!m_dictionaryItems.ContainsKey(sName))
+                {
+                    // UserAction
+                    var lvItem = listViewElements.SelectedItems[0];
+                    var sRedoName = sName;
+                    var sUndoName = zElement.name;
+                    UserAction.PushAction(bRedo =>
+                    {
+                        string sOldName = bRedo ? sUndoName : sRedoName;
+                        string sNewName = bRedo ? sRedoName : sUndoName;
+
+                        RenameElement(zElement, lvItem, sOldName, sNewName);
+                    });
+
+                    RenameElement(zElement, lvItem, zElement.name, sName);
+
+                    LayoutManager.Instance.FireLayoutUpdatedEvent(true);
+                }
+                else
+                {
+                    MessageBox.Show(this, "The new name already exists!", "Duplicate Name", MessageBoxButtons.OK);
+                }
+            }
+        }
+
+        private void btnElementChangeOrder_Click(object sender, EventArgs e)
+        {
+            int nChange = (sender == btnElementDown) ? 1 : -1;
+            ChangeElementOrder(nChange);
+        }
+
+        private void numericCardIndex_ValueChanged(object sender, EventArgs e)
+        {
+            var nTargetIndex = (int)numericCardIndex.Value - 1;
+            m_nDestinationCardIndex = nTargetIndex;
+            m_zLastProjectLayout = LayoutManager.Instance.ActiveLayout;
+            ChangeCardIndex(nTargetIndex);
+            m_bFireLayoutChangeEvents = false;
+            numericRowIndex.Value = m_arrayIndexToRow[nTargetIndex] + 1;
+            m_bFireLayoutChangeEvents = true;
+        }
+
+
+        private void numericRowIndex_ValueChanged(object sender, EventArgs e)
+        {
+            // use the numeric card index to control this
+            if (m_bFireLayoutChangeEvents)
+            {
+                numericCardIndex.Value = m_arrayRowToIndex[(int)numericRowIndex.Value - 1] + 1;
+            }
+        }
+
+        private void btnGenCards_Click(object sender, EventArgs e)
+        {
+            if (LayoutManager.Instance.ActiveDeck.CardLayout.Reference != null &&
+                LayoutManager.Instance.ActiveDeck.CardLayout.Reference.Length > 0)
+            {
+                FormUtils.ShowErrorMessage("You cannot assign a default card count to a layout with an associated reference.");
+                return;
+            }
+            const string CARD_COUNT = "CARD_COUNT";
+            var zQuery = new QueryPanelDialog("Default Card Count", 240, false);
+            zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
+            zQuery.AddNumericBox("Card Count", 10, 1, int.MaxValue, CARD_COUNT);
+            if (DialogResult.OK == zQuery.ShowDialog(this))
+            {
+                LayoutManager.Instance.ActiveLayout.defaultCount = (int)zQuery.GetDecimal(CARD_COUNT);
+                LayoutManager.Instance.InitializeActiveLayout();
+                LayoutManager.Instance.FireLayoutUpdatedEvent(true);
+            }
+        }
+
+        private void listViewElements_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Shift)
+            {
+                switch (e.KeyCode)
+                {
+                    case Keys.Up:
+                        ChangeElementOrder(-1);
+                        e.Handled = true; // block the up action
+                        break;
+                    case Keys.Down:
+                        ChangeElementOrder(1);
+                        e.Handled = true; // block the down action
+                        break;
+                }
+            }
+        }
+
+        private void listViewElements_Resize(object sender, EventArgs e)
+        {
+            ListViewAssist.ResizeColumnHeaders(listViewElements);
+        }
+
+        private void listViewElements_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var listSelectedElements = new List<ProjectLayoutElement>(listViewElements.SelectedItems.Count);
+            for (var nIdx = 0; nIdx < listViewElements.SelectedItems.Count; nIdx++)
+            {
+                listSelectedElements.Add((ProjectLayoutElement)listViewElements.SelectedItems[nIdx].Tag);
+            }
+
+            // todo: multi layout selection is broken! order is messed up causing elements to overwrite one another
+
+            ElementManager.Instance.FireElementSelectedEvent(listSelectedElements);
+        }
+
+        private void listViewElements_DoubleClick(object sender, EventArgs e)
+        {
+            if (1 == listViewElements.SelectedItems.Count)
+            {
+                ToggleEnableState();
+            }
+        }
+
+        private void listViewElements_KeyPress(object sender, KeyPressEventArgs e)
+        {
+
+            switch (e.KeyChar)
+            {
+                case ' ':
+                    ToggleEnableState();
+                    break;
+            }
+        }
+
+        private void MDILayoutControl_Load(object sender, EventArgs e)
+        {
+            listViewElements_Resize(sender, new EventArgs());
+        }
+
+        private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (0 < listViewElements.SelectedItems.Count)
+            {
+                m_listClipboardElements.Clear();
+                for (int nIdx = 0; nIdx < listViewElements.SelectedItems.Count; nIdx++)
+                {
+                    m_listClipboardElements.Add((ProjectLayoutElement)listViewElements.SelectedItems[nIdx].Tag);
+                }
+            }
+        }
+
+        private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (0 < m_listClipboardElements.Count)
+            {
+                m_listClipboardElements.ForEach(x => AddElements(new string[] { x.name }, x));
+            }
+        }
+
+        private void contextMenuElements_Opening(object sender, CancelEventArgs e)
+        {
+            if (0 == m_listClipboardElements.Count && 0 == listViewElements.SelectedItems.Count)
+                e.Cancel = true;
+
+            copyToolStripMenuItem.Enabled = 0 != listViewElements.SelectedItems.Count;
+            pasteToolStripMenuItem.Enabled = 0 < m_listClipboardElements.Count;
+        }
+
+        private void resize_Click(object sender, EventArgs e)
+        {
+            var zQuery = new QueryPanelDialog("Resize Elements", 500, false);
+            const string WIDTH_ADJUST = "widthadjust";
+            const string HEIGHT_ADJUST = "heightadjust";
+            zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
+            zQuery.AddNumericBox("Width Adjust", 0, -65536, 65536, WIDTH_ADJUST);
+            zQuery.AddNumericBox("Height Adjust", 0, -65536, 65536, HEIGHT_ADJUST);
+            if (DialogResult.OK == zQuery.ShowDialog(this))
+            {
+                var nWidthAdjust = (int)zQuery.GetDecimal(WIDTH_ADJUST);
+                var nHeightAdjust = (int)zQuery.GetDecimal(HEIGHT_ADJUST);
+                ElementManager.Instance.ProcessSelectedElementsChange(0, 0, nWidthAdjust, nHeightAdjust);
+            }
+        }
+
+        private void btnScale_Click(object sender, EventArgs e)
+        {
+            var zQuery = new QueryPanelDialog("Resize Elements", 500, false);
+            const string WIDTH_ADJUST = "widthadjust";
+            const string HEIGHT_ADJUST = "heightadjust";
+            zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
+            zQuery.AddNumericBox("Width Scale", 1, 0.001m, 1000, 0.001m, 3, WIDTH_ADJUST);
+            zQuery.AddNumericBox("Height Scale", 1, 0.001m, 1000, 0.001m, 3, HEIGHT_ADJUST);
+            if (DialogResult.OK == zQuery.ShowDialog(this))
+            {
+                var dWidthAdjust = zQuery.GetDecimal(WIDTH_ADJUST);
+                var dHeightAdjust = zQuery.GetDecimal(HEIGHT_ADJUST);
+                ElementManager.Instance.ProcessSelectedElementsChange(0, 0, 0, 0, dWidthAdjust, dHeightAdjust);
+            }
+        }
+
+        #endregion
+
+        private ListViewItem CreateListViewItem(ProjectLayoutElement zElement)
+        {
+            var zLvi = new ListViewItem(new string[] { zElement.enabled.ToString(), zElement.name, zElement.type })
+            {
+                Tag = zElement
+            };
+            UpdateListViewItemState(zLvi, zElement);
+            m_dictionaryItems.Add(zElement.name, zLvi);
+            return zLvi;
+        }
+
+        private void ClearSelection()
+        {
+            while (0 < listViewElements.SelectedItems.Count)
+            {
+                listViewElements.SelectedItems[0].Selected = false;
+            }
+        }
+
+        private void ChangeSelectedElement(int nChange)
+        {
+            if (1 == listViewElements.SelectedIndices.Count)
+            {
+                if ((nChange == -1 && 0 == listViewElements.SelectedIndices[0]) ||
+                    (nChange == 1 && (listViewElements.SelectedIndices[0] == listViewElements.Items.Count - 1)))
+                {
+                    return;
+                }
+                int nSelectedIndex = listViewElements.SelectedItems[0].Index;
+                listViewElements.SelectedItems[0].Selected = false;
+                ListViewItem zItem = listViewElements.Items[nSelectedIndex + nChange];
+                zItem.Selected = true;
+                zItem.EnsureVisible();
+            }
+        }
+
+        public void ChangeSelectedElement(string sName)
+        {
+            ClearSelection();
+            ListViewItem zItem;
+            if (m_dictionaryItems.TryGetValue(sName, out zItem))
+            {
+                zItem.Selected = true;
+                zItem.EnsureVisible();
+            }
+        }
+
+        private void AddElements(IEnumerable<string> collectionNames, ProjectLayoutElement zBaseElement)
+        {
+            // construct a new list of elements
+            var listElements = new List<ProjectLayoutElement>();
+            if (null != LayoutManager.Instance.ActiveLayout.Element)
+            {
+                listElements.AddRange(LayoutManager.Instance.ActiveLayout.Element);
+            }
+
+            foreach (string sName in collectionNames)
+            {
+                string sTrimmed = sName.Trim();
+                if (m_dictionaryItems.ContainsKey(sTrimmed)) // no duplicates!
+                {
+                    continue;
+                }
+                var zCardElement = new ProjectLayoutElement(sTrimmed);
+
+                if (null != zBaseElement)
+                {
+                    zCardElement.DeepCopy(zBaseElement, true);
+                }
+                else
+                {
+                    zCardElement.lineheight = 14;
+                    zCardElement.SetElementColor(Color.Black);
+                    zCardElement.SetElementFont(new Font("Arial", 12));
+                }
+                listElements.Add(zCardElement);
+                ListViewItem zLvi = CreateListViewItem(zCardElement);
+                listViewElements.Items.Add(zLvi);
+            }
+
+            var zLayout = LayoutManager.Instance.ActiveLayout;
+            if (null == zLayout.Element ||
+                // it is possible nothing was added if all names were duplicates (skip in that case)
+                zLayout.Element.Length < listElements.Count)
+            {
+                // UserAction
+                SetupLayoutUndo(listElements);
+
+                // assign the new list to the actual project layout
+                LayoutManager.Instance.ActiveLayout.Element = listElements.ToArray();
+                LayoutManager.Instance.FireLayoutUpdatedEvent(true);
+            }
+        }
+
         private void HandleCardSetValueChange(object sender, EventArgs e)
         {
             if (!m_bFireLayoutChangeEvents)
@@ -376,51 +594,6 @@ namespace CardMaker.Forms
             LayoutManager.Instance.FireLayoutUpdatedEvent(true);
         }
 
-        private void btnElementChangeOrder_Click(object sender, EventArgs e)
-        {
-            int nChange = (sender == btnElementDown) ? 1 : -1;
-            ChangeElementOrder(nChange);
-        }
-
-        private void btnElementRename_Click(object sender, EventArgs e)
-        {
-            if (1 != listViewElements.SelectedItems.Count)
-            {
-                return;
-            }
-            const string NAME = "NAME";
-            var zElement = (ProjectLayoutElement)listViewElements.SelectedItems[0].Tag;
-            var zQuery = new QueryPanelDialog("Rename", 350, false);
-            zQuery.SetIcon(Properties.Resources.CardMakerIcon);
-            zQuery.AddTextBox("Name: ", zElement.name, false, NAME);
-            if (DialogResult.OK == zQuery.ShowDialog(this))
-            {
-                string sName = zQuery.GetString(NAME).Trim();
-                if (!m_dictionaryItems.ContainsKey(sName))
-                {
-                    // UserAction
-                    var lvItem = listViewElements.SelectedItems[0];
-                    var sRedoName = sName;
-                    var sUndoName = zElement.name;
-                    UserAction.PushAction(bRedo =>
-                        {
-                            string sOldName = bRedo ? sUndoName : sRedoName;
-                            string sNewName = bRedo ? sRedoName : sUndoName;
-
-                            RenameElement(zElement, lvItem, sOldName, sNewName);
-                        });
-
-                    RenameElement(zElement, lvItem, zElement.name, sName);
-
-                    LayoutManager.Instance.FireLayoutUpdatedEvent(true);
-                }
-                else
-                {
-                    MessageBox.Show(this, "The new name already exists!", "Duplicate Name", MessageBoxButtons.OK);
-                }
-            }
-        }
-
         private void RenameElement(ProjectLayoutElement zElement, ListViewItem lvItem, string sOldName, string sNewName)
         {
             m_dictionaryItems.Remove(sOldName);
@@ -430,51 +603,10 @@ namespace CardMaker.Forms
             m_dictionaryItems.Add(zElement.name, listViewElements.SelectedItems[0]);
         }
 
-        private void numericCardIndex_ValueChanged(object sender, EventArgs e)
-        {
-            var nTargetIndex = (int) numericCardIndex.Value - 1;
-            m_nDestinationCardIndex = nTargetIndex;
-            m_zLastProjectLayout = LayoutManager.Instance.ActiveLayout;
-            ChangeCardIndex(nTargetIndex);
-            m_bFireLayoutChangeEvents = false;
-            numericRowIndex.Value = m_arrayIndexToRow[nTargetIndex] + 1;
-            m_bFireLayoutChangeEvents = true;
-        }
-
-
-        private void numericRowIndex_ValueChanged(object sender, EventArgs e)
-        {
-            // use the numeric card index to control this
-            if (m_bFireLayoutChangeEvents)
-            {
-                numericCardIndex.Value = m_arrayRowToIndex[(int) numericRowIndex.Value - 1] + 1;
-            }
-        }
-
         private void ChangeCardIndex(int nDesiredIndex)
         {
             LayoutManager.Instance.ActiveDeck.CardIndex = nDesiredIndex;
             LayoutManager.Instance.FireDeckIndexChangedEvent();
-        }
-
-        private void btnGenCards_Click(object sender, EventArgs e)
-        {
-            if (LayoutManager.Instance.ActiveDeck.CardLayout.Reference != null &&
-                LayoutManager.Instance.ActiveDeck.CardLayout.Reference.Length > 0)
-            {
-                FormUtils.ShowErrorMessage("You cannot assign a default card count to a layout with an associated reference.");
-                return;
-            }
-            const string CARD_COUNT = "CARD_COUNT";
-            var zQuery = new QueryPanelDialog("Default Card Count", 240, false);
-            zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
-            zQuery.AddNumericBox("Card Count", 10, 1, int.MaxValue, CARD_COUNT);
-            if (DialogResult.OK == zQuery.ShowDialog(this))
-            {
-                LayoutManager.Instance.ActiveLayout.defaultCount = (int)zQuery.GetDecimal(CARD_COUNT);
-                LayoutManager.Instance.InitializeActiveLayout();
-                LayoutManager.Instance.FireLayoutUpdatedEvent(true);
-            }
         }
 
         private void SetupCardIndices(int nMaxIndex)
@@ -576,83 +708,10 @@ namespace CardMaker.Forms
             }
         }
 
-        public List<ProjectLayoutElement> GetSelectedLayoutElements() 
-        {
-            var listElements = new List<ProjectLayoutElement>();
-            foreach (ListViewItem zItem in listViewElements.SelectedItems)
-            {
-                var zElement = (ProjectLayoutElement)zItem.Tag;
-                if (zElement.enabled) // selected AND enabled
-                {
-                    listElements.Add(zElement);
-                }
-            }
-
-            if (0 == listElements.Count)
-            {
-                return null;
-            }
-
-            return listElements;
-        }
-
-        public ProjectLayoutElement GetSelectedLayoutElement()
-        {
-            if (0 < listViewElements.SelectedItems.Count && groupBoxCardSet.Enabled)
-            {
-                return (ProjectLayoutElement)listViewElements.SelectedItems[0].Tag;
-            }
-            return null;
-        }
-
-        private void listViewElements_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Shift)
-            {
-                switch (e.KeyCode)
-                {
-                    case Keys.Up:
-                        ChangeElementOrder(-1);
-                        e.Handled = true; // block the up action
-                        break;
-                    case Keys.Down:
-                        ChangeElementOrder(1);
-                        e.Handled = true; // block the down action
-                        break;
-                }
-            }
-        }
-
-        private void listViewElements_Resize(object sender, EventArgs e)
-        {
-            ListViewAssist.ResizeColumnHeaders(listViewElements);
-        }
-
-        private void listViewElements_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            var listSelectedElements = new List<ProjectLayoutElement>(listViewElements.SelectedItems.Count);
-            for (var nIdx = 0; nIdx < listViewElements.SelectedItems.Count; nIdx++)
-            {
-                listSelectedElements.Add((ProjectLayoutElement)listViewElements.SelectedItems[nIdx].Tag);
-            }
-
-            // todo: multi layout selection is broken! order is messed up causing elements to overwrite one another
-
-            ElementManager.Instance.FireElementSelectedEvent(listSelectedElements);
-        }
-
         private void UpdateListViewItemState(ListViewItem zLvi, ProjectLayoutElement zElement)
         {
             //zLvi.BackColor = zElement.enabled ? Color.White : Color.Tomato;
             zLvi.SubItems[0].Text = zElement.enabled.ToString();
-        }
-
-        private void listViewElements_DoubleClick(object sender, EventArgs e)
-        {
-            if (1 == listViewElements.SelectedItems.Count)
-            {
-                ToggleEnableState();
-            }
         }
 
         private void ToggleEnableState()
@@ -667,51 +726,6 @@ namespace CardMaker.Forms
                 }
                 LayoutManager.Instance.FireLayoutUpdatedEvent(true);
             }
-        }
-
-        private void listViewElements_KeyPress(object sender, KeyPressEventArgs e)
-        {
-
-            switch (e.KeyChar)
-            {
-                case ' ':
-                    ToggleEnableState();
-                    break;
-            }
-        }
-
-        private void MDILayoutControl_Load(object sender, EventArgs e)
-        {
-            listViewElements_Resize(sender, new EventArgs());
-        }
-
-        private void copyToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (0 < listViewElements.SelectedItems.Count)
-            {
-                m_listClipboardElements.Clear();
-                for(int nIdx = 0; nIdx < listViewElements.SelectedItems.Count; nIdx++)
-                {
-                    m_listClipboardElements.Add((ProjectLayoutElement)listViewElements.SelectedItems[nIdx].Tag);
-                }
-            }
-        }
-
-        private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (0 < m_listClipboardElements.Count)
-            {
-                m_listClipboardElements.ForEach(x => AddElements(new string[] { x.name }, x));
-            }
-        }
-
-        private void contextMenuElements_Opening(object sender, CancelEventArgs e)
-        {
-            if (0 == m_listClipboardElements.Count && 0 == listViewElements.SelectedItems.Count)
-                e.Cancel = true;
-
-            copyToolStripMenuItem.Enabled = 0 != listViewElements.SelectedItems.Count;
-            pasteToolStripMenuItem.Enabled = 0 < m_listClipboardElements.Count;
         }
 
         private void RefreshElementTypes()
@@ -757,38 +771,6 @@ namespace CardMaker.Forms
                     listViewElements_SelectedIndexChanged(null, null);
                     LayoutManager.Instance.FireLayoutUpdatedEvent(true);
                 });
-            }
-        }
-
-        private void resize_Click(object sender, EventArgs e)
-        {
-            var zQuery = new QueryPanelDialog("Resize Elements", 500, false);
-            const string WIDTH_ADJUST = "widthadjust";
-            const string HEIGHT_ADJUST = "heightadjust";
-            zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
-            zQuery.AddNumericBox("Width Adjust", 0, -65536, 65536, WIDTH_ADJUST);
-            zQuery.AddNumericBox("Height Adjust", 0, -65536, 65536, HEIGHT_ADJUST);
-            if (DialogResult.OK == zQuery.ShowDialog(this))
-            {
-                var nWidthAdjust = (int)zQuery.GetDecimal(WIDTH_ADJUST);
-                var nHeightAdjust = (int)zQuery.GetDecimal(HEIGHT_ADJUST);
-                ElementManager.Instance.ProcessSelectedElementsChange(0, 0, nWidthAdjust, nHeightAdjust);
-            }
-        }
-
-        private void btnScale_Click(object sender, EventArgs e)
-        {
-            var zQuery = new QueryPanelDialog("Resize Elements", 500, false);
-            const string WIDTH_ADJUST = "widthadjust";
-            const string HEIGHT_ADJUST = "heightadjust";
-            zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
-            zQuery.AddNumericBox("Width Scale", 1, 0.001m, 1000, 0.001m, 3, WIDTH_ADJUST);
-            zQuery.AddNumericBox("Height Scale", 1, 0.001m, 1000, 0.001m, 3, HEIGHT_ADJUST);
-            if (DialogResult.OK == zQuery.ShowDialog(this))
-            {
-                var dWidthAdjust = zQuery.GetDecimal(WIDTH_ADJUST);
-                var dHeightAdjust = zQuery.GetDecimal(HEIGHT_ADJUST);
-                ElementManager.Instance.ProcessSelectedElementsChange(0, 0, 0, 0, dWidthAdjust, dHeightAdjust);
             }
         }
     }

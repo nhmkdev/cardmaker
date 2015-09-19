@@ -39,10 +39,27 @@ namespace CardMaker.Forms
         public MDIDefines()
         {
             InitializeComponent();
-            LayoutManager.Instance.LayoutLoaded += Instance_LayoutLoaded;
+            LayoutManager.Instance.LayoutLoaded += Layout_Loaded;
         }
 
-        void Instance_LayoutLoaded(object sender, LayoutEventArgs args)
+        #region overrides
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            switch (keyData)
+            {
+                case Keys.Control | Keys.C:
+                    copyDefineAsReferenceToolStripMenuItem_Click(null, null);
+                    break;
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        #endregion
+
+        #region manager events
+
+        void Layout_Loaded(object sender, LayoutEventArgs args)
         {
             listViewDefines.Items.Clear();
 
@@ -58,6 +75,10 @@ namespace CardMaker.Forms
             }
             listViewDefines.Items.AddRange(listItems.ToArray());
         }
+
+        #endregion
+
+        #region form events
 
         private void listViewDefines_ColumnClick(object sender, ColumnClickEventArgs e)
         {
@@ -111,15 +132,6 @@ namespace CardMaker.Forms
             }
         }
 
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-        {
-            switch (keyData)
-            {
-                case Keys.Control | Keys.C:
-                    copyDefineAsReferenceToolStripMenuItem_Click(null, null);
-                    break;
-            }
-            return base.ProcessCmdKey(ref msg, keyData);
-        }
+        #endregion
     }
 }

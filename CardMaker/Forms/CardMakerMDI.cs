@@ -83,17 +83,17 @@ namespace CardMaker.Forms
             // always before any dialogs
             ShapeManager.Init();
 
-            ProjectManager.Instance.ProjectOpened += ProjectOpened;
-            ProjectManager.Instance.ProjectUpdated += ProjectUpdated;
+            ProjectManager.Instance.ProjectOpened += Project_Opened;
+            ProjectManager.Instance.ProjectUpdated += Project_Updated;
 
-            LayoutManager.Instance.LayoutUpdated += LayoutUpdated;
-            LayoutManager.Instance.LayoutLoaded += LayoutLoaded;
+            LayoutManager.Instance.LayoutUpdated += Layout_Updated;
+            LayoutManager.Instance.LayoutLoaded += Layout_Loaded;
 
-            ExportManager.Instance.ExportRequested += ExportRequested;
+            ExportManager.Instance.ExportRequested += Export_Requested;
 
             // Same handler for both events
-            GoogleAuthManager.Instance.GoogleAuthUpdateRequested += GoogleAuthUpdateRequested;
-            GoogleAuthManager.Instance.GoogleAuthCredentialsError += GoogleAuthUpdateRequested;
+            GoogleAuthManager.Instance.GoogleAuthUpdateRequested += GoogleAuthUpdate_Requested;
+            GoogleAuthManager.Instance.GoogleAuthCredentialsError += GoogleAuthUpdate_Requested;
 
             // Setup all the child dialogs
             var zCanvasForm = SetupMDIForm(new MDICanvas(), true);
@@ -401,7 +401,7 @@ namespace CardMaker.Forms
             }
             catch (Exception ex)
             {
-                Logger.AddLogLine("Error Loading Project File: " + ex.ToString());
+                Logger.AddLogLine("Error Loading Project File: " + ex.Message);
             }
 
             if (null == zProject)
@@ -580,11 +580,28 @@ namespace CardMaker.Forms
             UpdateGoogleAuth();
         }
 
+        private void clearGoogleCacheToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                File.Delete(Path.Combine(CardMakerInstance.StartupPath, CardMakerConstants.GOOGLE_CACHE_FILE));
+                Logger.AddLogLine("Cleared Google Cache");
+                if (LayoutManager.Instance.ActiveDeck != null)
+                {
+                    LayoutManager.Instance.InitializeActiveLayout();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.AddLogLine("Failed to delete Google Cache File: {0}".FormatString(ex.Message));
+            }
+        }
+
         #endregion
 
         #region Manager Events
 
-        private void ExportRequested(object sender, ExportEventArgs args)
+        private void Export_Requested(object sender, ExportEventArgs args)
         {
             switch (args.ExportType)
             {
@@ -597,13 +614,13 @@ namespace CardMaker.Forms
             }
         }
 
-        private void GoogleAuthUpdateRequested(object sender, GoogleAuthEventArgs args)
+        private void GoogleAuthUpdate_Requested(object sender, GoogleAuthEventArgs args)
         {
             UpdateGoogleAuth(args.SuccessAction, args.CancelAction);
         }
 
 
-        void ProjectUpdated(object sender, ProjectEventArgs e)
+        void Project_Updated(object sender, ProjectEventArgs e)
         {
             if (e.DataChange)
             {
@@ -611,7 +628,7 @@ namespace CardMaker.Forms
             }
         }
 
-        void LayoutUpdated(object sender, LayoutEventArgs e)
+        void Layout_Updated(object sender, LayoutEventArgs e)
         {
             if (e.DataChange)
             {
@@ -619,12 +636,12 @@ namespace CardMaker.Forms
             }
         }
 
-        void LayoutLoaded(object sender, LayoutEventArgs e)
+        void Layout_Loaded(object sender, LayoutEventArgs e)
         {
             UserAction.ClearUndoRedoStacks();
         }
 
-        private void ProjectOpened(object sender, ProjectEventArgs e)
+        private void Project_Opened(object sender, ProjectEventArgs e)
         {
             var sProjectFilePath = string.IsNullOrEmpty(e.ProjectFilePath) ? string.Empty : e.ProjectFilePath;
             SetLoadedFile(sProjectFilePath);
@@ -822,8 +839,9 @@ namespace CardMaker.Forms
                     {
                         Directory.CreateDirectory(sFolder);
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
+                        Logger.AddLogLine("Error creating folder {0}: {1}".FormatString(sFolder, e.Message));
                     }
                 }
                 if (Directory.Exists(sFolder))
@@ -871,8 +889,6 @@ namespace CardMaker.Forms
             }
         }
 
-        #region Google Auth
-
         public void UpdateGoogleAuth(Action zSuccessAction = null, Action zCancelAction = null)
         {
             var zDialog = new GoogleCredentialsDialog()
@@ -892,8 +908,6 @@ namespace CardMaker.Forms
                     break;
             }
         }
-
-        #endregion
 
         private void RestoreReplacementChars()
         {
@@ -924,23 +938,6 @@ namespace CardMaker.Forms
         {
             m_listRecentFiles.Remove(sFileName);
             m_listRecentFiles.Insert(0, sFileName);            
-        }
-
-        private void clearGoogleCacheToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                File.Delete(Path.Combine(CardMakerInstance.StartupPath, CardMakerConstants.GOOGLE_CACHE_FILE));
-                Logger.AddLogLine("Cleared Google Cache");
-                if (LayoutManager.Instance.ActiveDeck != null)
-                {
-                    LayoutManager.Instance.InitializeActiveLayout();
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.AddLogLine("Failed to delete Google Cache File: {0}".FormatString(ex.Message));
-            }
         }
     }
 }

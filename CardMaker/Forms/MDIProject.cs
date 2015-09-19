@@ -43,21 +43,38 @@ namespace CardMaker.Forms
 {
     public partial class MDIProject : Form
     {
-        public static Color DEFAULT_REFERENCE_COLOR = Color.LightGreen;
+        private static readonly Color DEFAULT_REFERENCE_COLOR = Color.LightGreen;
 
         private TreeNode m_tnCurrentLayout;
 
         public MDIProject()
         {
             InitializeComponent();
-            ProjectManager.Instance.ProjectOpened += ProjectProjectOpened;
-            ProjectManager.Instance.LayoutAdded += Instance_LayoutAdded;
+            ProjectManager.Instance.ProjectOpened += Project_Opened;
+            ProjectManager.Instance.LayoutAdded += Layout_Added;
 
             // layout selection may occur outside of the project window (MDIIssues)
-            LayoutManager.Instance.LayoutSelectRequested += Instance_LayoutSelectRequested;
+            LayoutManager.Instance.LayoutSelectRequested += LayoutSelect_Requested;
         }
 
-        void Instance_LayoutSelectRequested(object sender, LayoutEventArgs args)
+        #region overrides
+
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                const int CP_NOCLOSE_BUTTON = 0x200;
+                var zParams = base.CreateParams;
+                zParams.ClassStyle = zParams.ClassStyle | CP_NOCLOSE_BUTTON;
+                return zParams;
+            }
+        }
+
+        #endregion
+
+        #region manager events
+
+        void LayoutSelect_Requested(object sender, LayoutEventArgs args)
         {
             if (null == m_tnCurrentLayout || (ProjectLayout)m_tnCurrentLayout.Tag != args.Layout)
             {
@@ -72,29 +89,20 @@ namespace CardMaker.Forms
             }
         }
 
-        void Instance_LayoutAdded(object sender, LayoutEventArgs args)
+        void Layout_Added(object sender, LayoutEventArgs args)
         {
             AddProjectLayout(args.Layout);
         }
 
-        public TreeView ProjectTreeView
+        void Project_Opened(object sender, ProjectEventArgs e)
         {
-            get
-            {
-                return treeView;
-            }
+            ResetTreeToProject(e.Project);
+            LayoutManager.Instance.SetActiveLayout(null);
         }
 
-        protected override CreateParams CreateParams
-        {
-            get
-            {
-                const int CP_NOCLOSE_BUTTON = 0x200;
-                CreateParams zParams = base.CreateParams;
-                zParams.ClassStyle = zParams.ClassStyle | CP_NOCLOSE_BUTTON;
-                return zParams;
-            }
-        }
+        #endregion
+
+        #region form events
 
         private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
@@ -255,7 +263,17 @@ namespace CardMaker.Forms
             {
                 if (DialogResult.Yes == MessageBox.Show(this, "Are you sure you want to remove this Layout?", "Remove Layout", MessageBoxButtons.YesNo))
                 {
-                    ProjectManager.Instance.LoadedProject.RemoveProjectLayout(treeView.SelectedNode);
+
+                    var zLayout = (ProjectLayout)treeView.SelectedNode.Tag;
+
+                    // no need to null check, 1 layout must always exist
+                    var zProject = ProjectManager.Instance.LoadedProject;
+                    var listLayouts = new List<ProjectLayout>(zProject.Layout);
+                    listLayouts.Remove(zLayout);
+                    zProject.Layout = listLayouts.ToArray();
+
+                    treeView.SelectedNode.Parent.Nodes.Remove(treeView.SelectedNode);
+
                     ProjectManager.Instance.FireProjectUpdated(true);
                 }
             }
@@ -386,28 +404,6 @@ namespace CardMaker.Forms
             ProjectManager.Instance.FireProjectUpdated(true);
         }
 
-        public ProjectLayout GetCurrentProjectLayout()
-        {
-            if (null != m_tnCurrentLayout)
-            {
-                return (ProjectLayout)m_tnCurrentLayout.Tag;
-            }
-            return null;
-        }
-
-        private void UpdateSelectedNodeLayoutColor()
-        {
-            if (null != treeView.SelectedNode && 1 == treeView.SelectedNode.Level) // only do this on layout level nodes
-            {
-                if (null != m_tnCurrentLayout)
-                {
-                    m_tnCurrentLayout.BackColor = Color.White; // restore the previous
-                }
-                m_tnCurrentLayout = treeView.SelectedNode;
-                m_tnCurrentLayout.BackColor = Color.LightBlue;
-            }
-        }
-
         private void exportCardLayoutAsImagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ExportManager.Instance.FireExportRequestedEvent(ExportType.Image);
@@ -522,11 +518,29 @@ namespace CardMaker.Forms
             }
         }
 
+        #endregion
+
+        /// <summary>
+        /// Updates the selected layout node color (if applicable)
+        /// </summary>
+        private void UpdateSelectedNodeLayoutColor()
+        {
+            if (null != treeView.SelectedNode && 1 == treeView.SelectedNode.Level) // only do this on layout level nodes
+            {
+                if (null != m_tnCurrentLayout)
+                {
+                    m_tnCurrentLayout.BackColor = Color.White; // restore the previous
+                }
+                m_tnCurrentLayout = treeView.SelectedNode;
+                m_tnCurrentLayout.BackColor = Color.LightBlue;
+            }
+        }
+
         /// <summary>
         /// Resets the treeview to the specified project
         /// </summary>
         /// <param name="zProject">The project to display</param>
-        public void ResetTreeToProject(Project zProject)
+        private void ResetTreeToProject(Project zProject)
         {
             if (null != treeView)
             {
@@ -577,7 +591,7 @@ namespace CardMaker.Forms
         /// <param name="bSetAsDefault"></param>
         /// <param name="zLayout"></param>
         /// <returns>The new Reference tree node or null if there is an existing reference by the same definition</returns>
-        public static TreeNode AddReferenceNode(TreeNode tnLayout, string sFile, bool bSetAsDefault,
+        private static TreeNode AddReferenceNode(TreeNode tnLayout, string sFile, bool bSetAsDefault,
             ProjectLayout zLayout)
         {
             var sProjectPath = ProjectManager.Instance.ProjectPath;
@@ -641,12 +655,6 @@ namespace CardMaker.Forms
             }
 
             return tnReference;
-        }
-
-        void ProjectProjectOpened(object sender, ProjectEventArgs e)
-        {
-            ResetTreeToProject(e.Project);
-            LayoutManager.Instance.SetActiveLayout(null);
         }
     }
 }

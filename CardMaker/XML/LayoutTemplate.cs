@@ -27,7 +27,11 @@ namespace CardMaker.XML
 {
     public class LayoutTemplate
     {
+        #region properties
+
         public ProjectLayout Layout { get; set; }
+
+        #endregion
 
         public LayoutTemplate()
         {

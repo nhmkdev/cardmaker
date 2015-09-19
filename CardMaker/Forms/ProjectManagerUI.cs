@@ -44,6 +44,8 @@ namespace CardMaker.Forms
             UpdateProjects();
         }
 
+        #region form events
+
         private void btnBrowse_Click(object sender, EventArgs e)
         {
             var fbd = new FolderBrowserDialog
@@ -59,7 +61,26 @@ namespace CardMaker.Forms
             }
         }
 
-        public void UpdateProjects()
+        private void listViewProjects_Resize(object sender, EventArgs e)
+        {
+            ListViewAssist.ResizeColumnHeaders(listViewProjects);
+        }
+
+        private void listViewProjects_DoubleClick(object sender, EventArgs e)
+        {
+            if (1 == listViewProjects.SelectedItems.Count)
+            {
+                ProjectManager.Instance.OpenProject((string)listViewProjects.SelectedItems[0].Tag);
+                Close();
+            }
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Updates the list of available projects
+        /// </summary>
+        private void UpdateProjects()
         {
             if (Directory.Exists(txtFolder.Text))
             {
@@ -68,6 +89,9 @@ namespace CardMaker.Forms
             }
         }
 
+        /// <summary>
+        /// Thread used to load the various project files in the project folder
+        /// </summary>
         private void UpdateThread()
         {
             WaitDialog.Instance.SetStatusText("Scanning for Projects...");
@@ -92,20 +116,6 @@ namespace CardMaker.Forms
             }
             WaitDialog.Instance.ThreadSuccess = true;
             WaitDialog.Instance.CloseWaitDialog();
-        }
-
-        private void listViewProjects_Resize(object sender, EventArgs e)
-        {
-            ListViewAssist.ResizeColumnHeaders(listViewProjects);
-        }
-
-        private void listViewProjects_DoubleClick(object sender, EventArgs e)
-        {
-            if (1 == listViewProjects.SelectedItems.Count)
-            {
-                ProjectManager.Instance.OpenProject((string)listViewProjects.SelectedItems[0].Tag);
-                Close();
-            }
         }
     }
 }

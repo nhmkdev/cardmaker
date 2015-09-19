@@ -52,7 +52,7 @@ namespace CardMaker.Forms
         private TranslationLock m_eTranslationLock = TranslationLock.Unset;
         private readonly ContextMenuStrip m_zContextMenu = new ContextMenuStrip();
 
-        private CardCanvas m_zCardCanvas;
+        private readonly CardCanvas m_zCardCanvas;
         private float m_fZoom = 1.0f;
         private float m_fZoomRatio = 1.0f;
 
@@ -115,13 +115,143 @@ namespace CardMaker.Forms
 
             panelCardCanvas.Controls.Add(m_zCardCanvas);
 
-            LayoutManager.Instance.LayoutUpdated += LayoutUpdated;
-            LayoutManager.Instance.LayoutLoaded += LayoutLoaded;
-            LayoutManager.Instance.LayoutRenderUpdated += Instance_LayoutRenderUpdated;
-            LayoutManager.Instance.DeckIndexChanged += DeckIndexChanged;
-            ElementManager.Instance.ElementSelected += ElementSelected;
-            ProjectManager.Instance.ProjectOpened += ProjectOpened;
+            LayoutManager.Instance.LayoutUpdated += Layout_Updated;
+            LayoutManager.Instance.LayoutLoaded += Layout_Loaded;
+            LayoutManager.Instance.LayoutRenderUpdated += LayoutRender_Updated;
+            LayoutManager.Instance.DeckIndexChanged += DeckIndex_Changed;
+            ElementManager.Instance.ElementSelected += Element_Selected;
+            ProjectManager.Instance.ProjectOpened += Project_Opened;
         }
+
+        #region Form Overrides
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (!numericUpDownZoom.Focused)
+            {
+                int nHChange = 0;
+                int nVChange = 0;
+                // NOTE: this method only detects keydown events
+                switch (keyData)
+                {
+                    case Keys.Control | Keys.Add:
+                        numericUpDownZoom.Value = Math.Min(numericUpDownZoom.Maximum,
+                            numericUpDownZoom.Value + numericUpDownZoom.Increment);
+                        break;
+                    case Keys.Control | Keys.Subtract:
+                        numericUpDownZoom.Value = Math.Max(numericUpDownZoom.Minimum,
+                            numericUpDownZoom.Value - numericUpDownZoom.Increment);
+                        break;
+                    // focus is taken by the MDICanvas, reset it after each change below & reset the translation lock
+                    case Keys.Shift | Keys.Up:
+                        LayoutManager.Instance.FireElementOrderAdjustRequest(-1);
+                        m_eTranslationLock = TranslationLock.Unset;
+                        m_zCardCanvas.Focus();
+                        break;
+                    case Keys.Shift | Keys.Down:
+                        LayoutManager.Instance.FireElementOrderAdjustRequest(1);
+                        m_eTranslationLock = TranslationLock.Unset;
+                        m_zCardCanvas.Focus();
+                        break;
+                    case Keys.Control | Keys.Up:
+                        LayoutManager.Instance.FireElementSelectAdjustRequest(-1);
+                        m_eTranslationLock = TranslationLock.Unset;
+                        m_zCardCanvas.Focus();
+                        break;
+                    case Keys.Control | Keys.Down:
+                        LayoutManager.Instance.FireElementSelectAdjustRequest(1);
+                        m_eTranslationLock = TranslationLock.Unset;
+                        m_zCardCanvas.Focus();
+                        break;
+                    case Keys.ShiftKey | Keys.Shift:
+                        if (TranslationLock.Unset == m_eTranslationLock)
+                        {
+                            m_eTranslationLock = TranslationLock.WaitingToSet;
+                        }
+                        break;
+                    case Keys.Up:
+                        nVChange = -1;
+                        m_zCardCanvas.Focus();
+                        break;
+                    case Keys.Down:
+                        nVChange = 1;
+                        m_zCardCanvas.Focus();
+                        break;
+                    case Keys.Left:
+                        nHChange = -1;
+                        m_zCardCanvas.Focus();
+                        break;
+                    case Keys.Right:
+                        nHChange = 1;
+                        m_zCardCanvas.Focus();
+                        break;
+                    case Keys.M:
+                        m_eMouseMode = MouseMode.Move == m_eMouseMode
+                            ? MouseMode.MoveResize
+                            : MouseMode.Move;
+                        UpdateText();
+                        // get the position of the mouse to trigger a standard mouse move (updates the cursor/mode)
+                        var pLocation = panelCardCanvas.PointToClient(Cursor.Position);
+                        cardCanvas_MouseMove(null, new MouseEventArgs(MouseButtons.None, 0, pLocation.X, pLocation.Y, 0));
+                        break;
+
+                }
+                ElementManager.Instance.ProcessSelectedElementsChange(nHChange, nVChange, 0, 0);
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                const int CP_NOCLOSE_BUTTON = 0x200;
+                CreateParams zParams = base.CreateParams;
+                zParams.ClassStyle = zParams.ClassStyle | CP_NOCLOSE_BUTTON;
+                return zParams;
+            }
+        }
+
+        #endregion
+
+        #region Manager Events
+
+        void Element_Selected(object sender, ElementEventArgs args)
+        {
+            Redraw();
+        }
+
+        void DeckIndex_Changed(object sender, DeckChangeEventArgs args)
+        {
+            Redraw();
+        }
+
+        void Layout_Updated(object sender, LayoutEventArgs args)
+        {
+            // pass the loaded deck into the renderer
+            m_zCardCanvas.Reset(args.Deck);
+            Redraw();
+        }
+
+        void Layout_Loaded(object sender, LayoutEventArgs args)
+        {
+            // pass the loaded deck into the renderer
+            m_zCardCanvas.Reset(args.Deck);
+            Redraw();
+        }
+
+        void LayoutRender_Updated(object sender, LayoutEventArgs args)
+        {
+            Redraw();
+        }
+
+        void Project_Opened(object sender, ProjectEventArgs e)
+        {
+            m_zCardCanvas.Reset(null);
+            Redraw();
+        }
+
+        #endregion
 
         #region Form Events
 
@@ -426,136 +556,6 @@ namespace CardMaker.Forms
 
         #endregion
 
-        #region Manager Events
-        
-        void ElementSelected(object sender, ElementEventArgs args)
-        {
-            Redraw();
-        }
-
-        void DeckIndexChanged(object sender, DeckChangeEventArgs args)
-        {
-            Redraw();
-        }
-
-        void LayoutUpdated(object sender, LayoutEventArgs args)
-        {
-            // pass the loaded deck into the renderer
-            m_zCardCanvas.Reset(args.Deck);
-            Redraw();
-        }
-
-        void LayoutLoaded(object sender, LayoutEventArgs args)
-        {
-            // pass the loaded deck into the renderer
-            m_zCardCanvas.Reset(args.Deck);
-            Redraw();
-        }
-
-        void Instance_LayoutRenderUpdated(object sender, LayoutEventArgs args)
-        {
-            Redraw();
-        }
-
-        void ProjectOpened(object sender, ProjectEventArgs e)
-        {
-            m_zCardCanvas.Reset(null);
-            Redraw();
-        }
-
-        #endregion
-
-        #region Form Overrides
-
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-        {
-            if (!numericUpDownZoom.Focused)
-            {
-                int nHChange = 0;
-                int nVChange = 0;
-                // NOTE: this method only detects keydown events
-                switch (keyData)
-                {
-                    case Keys.Control | Keys.Add:
-                        numericUpDownZoom.Value = Math.Min(numericUpDownZoom.Maximum,
-                            numericUpDownZoom.Value + numericUpDownZoom.Increment);
-                        break;
-                    case Keys.Control | Keys.Subtract:
-                        numericUpDownZoom.Value = Math.Max(numericUpDownZoom.Minimum,
-                            numericUpDownZoom.Value - numericUpDownZoom.Increment);
-                        break;
-                        // focus is taken by the MDICanvas, reset it after each change below & reset the translation lock
-                    case Keys.Shift | Keys.Up:
-                        LayoutManager.Instance.FireElementOrderAdjustRequest(-1);
-                        m_eTranslationLock = TranslationLock.Unset;
-                        m_zCardCanvas.Focus();
-                        break;
-                    case Keys.Shift | Keys.Down:
-                        LayoutManager.Instance.FireElementOrderAdjustRequest(1);
-                        m_eTranslationLock = TranslationLock.Unset;
-                        m_zCardCanvas.Focus();
-                        break;
-                    case Keys.Control | Keys.Up:
-                        LayoutManager.Instance.FireElementSelectAdjustRequest(-1);
-                        m_eTranslationLock = TranslationLock.Unset;
-                        m_zCardCanvas.Focus();
-                        break;
-                    case Keys.Control | Keys.Down:
-                        LayoutManager.Instance.FireElementSelectAdjustRequest(1);
-                        m_eTranslationLock = TranslationLock.Unset;
-                        m_zCardCanvas.Focus();
-                        break;
-                    case Keys.ShiftKey | Keys.Shift:
-                        if (TranslationLock.Unset == m_eTranslationLock)
-                        {
-                            m_eTranslationLock = TranslationLock.WaitingToSet;
-                        }
-                        break;
-                    case Keys.Up:
-                        nVChange = -1;
-                        m_zCardCanvas.Focus();
-                        break;
-                    case Keys.Down:
-                        nVChange = 1;
-                        m_zCardCanvas.Focus();
-                        break;
-                    case Keys.Left:
-                        nHChange = -1;
-                        m_zCardCanvas.Focus();
-                        break;
-                    case Keys.Right:
-                        nHChange = 1;
-                        m_zCardCanvas.Focus();
-                        break;
-                    case Keys.M:
-                        m_eMouseMode = MouseMode.Move == m_eMouseMode
-                            ? MouseMode.MoveResize
-                            : MouseMode.Move;
-                        UpdateText();
-                        // get the position of the mouse to trigger a standard mouse move (updates the cursor/mode)
-                        var pLocation = panelCardCanvas.PointToClient(Cursor.Position);
-                        cardCanvas_MouseMove(null, new MouseEventArgs(MouseButtons.None, 0, pLocation.X, pLocation.Y, 0));
-                        break;
-
-                }
-                ElementManager.Instance.ProcessSelectedElementsChange(nHChange, nVChange, 0, 0);
-            }
-            return base.ProcessCmdKey(ref msg, keyData);
-        }
-
-        protected override CreateParams CreateParams
-        {
-            get
-            {
-                const int CP_NOCLOSE_BUTTON = 0x200;
-                CreateParams zParams = base.CreateParams;
-                zParams.ClassStyle = zParams.ClassStyle | CP_NOCLOSE_BUTTON;
-                return zParams;
-            }
-        }
-
-        #endregion
-
         /// <summary>
         /// Invalidates the panel and card canvas
         /// </summary>
@@ -565,7 +565,7 @@ namespace CardMaker.Forms
             m_zCardCanvas.Invalidate();
         }
 
-        public bool ResizeRight(int nX)
+        private bool ResizeRight(int nX)
         {
             int nWidth = (int)((float)nX * m_fZoomRatio) - m_zSelectedElement.x;
             if (1 <= nWidth)
@@ -576,7 +576,7 @@ namespace CardMaker.Forms
             return false;
         }
 
-        public bool ResizeLeft(int nX)
+        private bool ResizeLeft(int nX)
         {
             int nWidth = m_zSelectedElement.width + (m_zSelectedElement.x - (int)((float)nX * m_fZoomRatio));
             if ((0 <= nX) && (1 <= nWidth))
@@ -588,7 +588,7 @@ namespace CardMaker.Forms
             return false;
         }
 
-        public bool ResizeUp(int nY)
+        private bool ResizeUp(int nY)
         {
             int nHeight = m_zSelectedElement.height + (m_zSelectedElement.y - (int)((float)nY * m_fZoomRatio));
             if ((0 <= nY) && (1 <= nHeight))
@@ -600,7 +600,7 @@ namespace CardMaker.Forms
             return false;
         }
 
-        public bool ResizeDown(int nY)
+        private bool ResizeDown(int nY)
         {
             int nHeight = (int)((float)nY * m_fZoomRatio) - m_zSelectedElement.y;
             if (1 <= nHeight)

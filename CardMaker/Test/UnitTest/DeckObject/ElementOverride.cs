@@ -1,7 +1,6 @@
 ﻿using CardMaker.XML;
 using NUnit.Framework;
 using System.Collections.Generic;
-using CardMaker.Card;
 
 namespace UnitTest.DeckObject
 {

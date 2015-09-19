@@ -38,6 +38,8 @@ namespace CardMaker.Forms
             Logger.InitLogger(this, false);
         }
 
+        #region overrides
+
         protected override CreateParams CreateParams
         {
             get
@@ -49,25 +51,9 @@ namespace CardMaker.Forms
             }
         }
 
-        public void AddLogLines(string[] arrayLines)
-        {
-            if (listBoxLog.InvokeActionIfRequired(() => AddLogLines(arrayLines)))
-            {
-                listBoxLog.BeginUpdate();
-                foreach (string sLine in arrayLines)
-                {
-                    listBoxLog.SelectedIndex = listBoxLog.Items.Add(DateTime.Now.ToString("HH:mm:ss.ff") + "::" + sLine);
-                }
-                listBoxLog.SelectedIndex = -1;
-                listBoxLog.EndUpdate();
-            }
-        }
-        public void SetStatusText(string sStatus) { }
+        #endregion
 
-        public void ClearLog()
-        {
-            listBoxLog.InvokeAction(() => listBoxLog.Items.Clear());
-        }
+        #region form events
 
         private void copyLineToClipboardToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -86,5 +72,30 @@ namespace CardMaker.Forms
             }
             Clipboard.SetText(zBuilder.ToString());
         }
+        
+        #endregion
+
+        #region LoggerI
+
+        public void AddLogLines(string[] arrayLines)
+        {
+            if (listBoxLog.InvokeActionIfRequired(() => AddLogLines(arrayLines)))
+            {
+                listBoxLog.BeginUpdate();
+                foreach (string sLine in arrayLines)
+                {
+                    listBoxLog.SelectedIndex = listBoxLog.Items.Add(DateTime.Now.ToString("HH:mm:ss.ff") + "::" + sLine);
+                }
+                listBoxLog.SelectedIndex = -1;
+                listBoxLog.EndUpdate();
+            }
+        }
+
+        public void ClearLog()
+        {
+            listBoxLog.InvokeAction(() => listBoxLog.Items.Clear());
+        }
+
+        #endregion
     }
 }
