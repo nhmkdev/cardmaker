@@ -59,12 +59,6 @@ namespace CardMaker.Data
         /// </summary>
         public static string GoogleAccessToken { get; set; }
 
-#warning This variable is duplicated in the ProjectManager ... is there any reason to not eliminate it?
-        /// <summary>
-        /// The loaded project file path
-        /// </summary>
-        public static string LoadedProjectFilePath { get; set; }
-
         /// <summary>
         /// The project file indicated on the command line (first argument)
         /// </summary>
@@ -115,7 +109,6 @@ namespace CardMaker.Data
             DrawElementBorder = true;
             GoogleCredentialsInvalid = false;
             GoogleAccessToken = null;
-            LoadedProjectFilePath = String.Empty;
             ProcessingUserAction = false;
         }
     }

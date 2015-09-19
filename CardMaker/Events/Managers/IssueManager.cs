@@ -107,7 +107,6 @@ namespace CardMaker.Events.Managers
         /// <summary>
         /// Fires the request event to refresh the issues
         /// </summary>
-        /// <param name="sIssue"></param>
         public void FireRefreshRequestedEvent()
         {
             if (null != RefreshRequested)

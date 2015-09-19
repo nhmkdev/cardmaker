@@ -67,7 +67,7 @@ namespace CardMaker.Events.Managers
             {
                 if (m_zInstance == null)
                 {
-                    m_zInstance = new ProjectManager(); ;
+                    m_zInstance = new ProjectManager();
                 }
                 return m_zInstance;
             }
@@ -91,7 +91,7 @@ namespace CardMaker.Events.Managers
         /// <summary>
         /// Loads the project file for use by ProjectManager event listeners
         /// </summary>
-        /// <param name="sFile"></param>
+        /// <param name="sProjectFile"></param>
         /// <returns></returns>
         public void OpenProject(string sProjectFile)
         {
@@ -107,7 +107,6 @@ namespace CardMaker.Events.Managers
         /// Performs a save of the current Project
         /// </summary>
         /// <param name="sFile">The path to save</param>
-        /// <param name="sOldFile">The old file path (necessary for reference updating)</param>
         /// <returns></returns>
         public bool Save(string sFile)
         {

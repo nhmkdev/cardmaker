@@ -25,7 +25,6 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using CardMaker.Data;
 using CardMaker.XML;
 using Support.IO;
 using Support.UI;

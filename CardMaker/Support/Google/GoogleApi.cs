@@ -48,7 +48,7 @@ namespace Support.UI
                 var root = (IDictionary<string, object>)zObject;
                 if (root.ContainsKey(EXPIRES_IN))
                 {
-                    var nExpiresInSeconds = -1;
+                    int nExpiresInSeconds;
                     if (int.TryParse(root[EXPIRES_IN].ToString(), out nExpiresInSeconds))
                     {
                         var dtExpiry = DateTime.Now.AddSeconds(nExpiresInSeconds);

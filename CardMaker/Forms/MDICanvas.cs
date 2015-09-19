@@ -73,7 +73,7 @@ namespace CardMaker.Forms
         }
 
         [Flags]
-        public enum ResizeDirection
+        private enum ResizeDirection
         {
             None = 0,
             Up = 1 << 0,

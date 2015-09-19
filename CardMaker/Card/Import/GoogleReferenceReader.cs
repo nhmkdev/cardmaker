@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using CardMaker.Data;
+using CardMaker.Events.Managers;
 using CardMaker.XML;
 using Google.GData.Client;
 using Google.GData.Spreadsheets;
@@ -38,7 +39,7 @@ namespace CardMaker.Card.Import
     {
         public const string APP_NAME = "CardMaker";
         public const string CLIENT_ID = "455195524701-cmdvv6fl5ru9uftin99kjmhojt36mnm9.apps.googleusercontent.com";
-        private SpreadsheetsService m_zSpreadsheetsService;
+        private readonly SpreadsheetsService m_zSpreadsheetsService;
 
         public class GoogleCacheItem
         {
@@ -46,7 +47,7 @@ namespace CardMaker.Card.Import
             public List<List<string>> Data { get; set; } 
         }
 
-        private Dictionary<string, List<List<string>>> m_dictionaryDataCache = new Dictionary<string, List<List<string>>>();
+        private readonly Dictionary<string, List<List<string>>> m_dictionaryDataCache = new Dictionary<string, List<List<string>>>();
 
         private bool m_bCacheUpdated = false;
 
@@ -105,7 +106,7 @@ namespace CardMaker.Card.Import
             }
 
             string sCacheKey = GetCacheKey(sGoogleReference, sNameAppend);
-            List<List<string>> listCacheData = null;
+            List<List<string>> listCacheData;
             if (!CardMakerInstance.ForceDataCacheRefresh && m_dictionaryDataCache.TryGetValue(sCacheKey, out listCacheData))
             {
                 Logger.AddLogLine("Loading {0} from local cache".FormatString(sCacheKey));
@@ -177,7 +178,7 @@ namespace CardMaker.Card.Import
         {
             return CardMakerConstants.GOOGLE_REFERENCE
                 + CardMakerConstants.GOOGLE_REFERENCE_SPLIT_CHAR
-                + Path.GetFileNameWithoutExtension(CardMakerInstance.LoadedProjectFilePath)
+                + Path.GetFileNameWithoutExtension(ProjectManager.Instance.ProjectFilePath)
                 + CardMakerConstants.GOOGLE_REFERENCE_SPLIT_CHAR
                 + "defines";
         }

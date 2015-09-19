@@ -29,11 +29,7 @@ namespace UnitTest.DeckObject
         public string GetDefine(string key)
         {
             string value;
-            if (!m_dictionaryDefines.TryGetValue(key, out value))
-            {
-                value = null;
-            }
-            return value;
+            return m_dictionaryDefines.TryGetValue(key, out value) ? value : null;
         }
 
         public void SetDisallowedCharReplacement(char c, string replacement)

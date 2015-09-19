@@ -46,6 +46,7 @@ namespace Support.UI
 		/// </summary>
 		/// <param name="sTitle">Title of the dialog</param>
 		/// <param name="nWidth">Width of the dialog</param>
+		/// <param name="bTabbed">Whether the panel should be tabbed</param>
 		public QueryPanelDialog(string sTitle, int nWidth, bool bTabbed) 
             : base(null, bTabbed)
 		{
@@ -112,6 +113,8 @@ namespace Support.UI
 		/// </summary>
 		/// <param name="sTitle">Title of the dialog</param>
 		/// <param name="nWidth">Width of the dialog</param>
+		/// <param name="arrayButtons">The names of the buttons to put on the dialog</param>
+		/// <param name="arrayHandlers">event handlers for the buttons</param>
 		private void InitForm(string sTitle, int nWidth, string[] arrayButtons, EventHandler[] arrayHandlers)
 		{
 		    m_zForm = new Form

@@ -63,7 +63,6 @@ namespace CardMaker.Card.Export
             CurrentDeck.SetAndLoadLayout(zLayout ?? CurrentDeck.CardLayout, true);
         }
 
-#warning consider removing this extra step...
         protected Deck CurrentDeck 
         {
             get
@@ -99,6 +98,25 @@ namespace CardMaker.Card.Export
                 m_zExportCardBuffer = null == zGraphics
                     ? new Bitmap(nWidth, nHeight)
                     : new Bitmap(nWidth, nHeight, zGraphics);
+            }
+        }
+
+        /// <summary>
+        /// Rotates the export buffer based on the Layout exportRotation setting
+        /// </summary>
+        /// <param name="zBuffer"></param>
+        /// <param name="zLayout"></param>
+        /// <param name="postTransition"></param>
+        protected void ProcessRotateExport(Bitmap zBuffer, ProjectLayout zLayout, bool postTransition)
+        {
+            switch (zLayout.exportRotation)
+            {
+                case 90:
+                    zBuffer.RotateFlip(postTransition ? RotateFlipType.Rotate270FlipNone : RotateFlipType.Rotate90FlipNone);
+                    break;
+                case -90:
+                    zBuffer.RotateFlip(postTransition ? RotateFlipType.Rotate90FlipNone : RotateFlipType.Rotate270FlipNone);
+                    break;
             }
         }
     }

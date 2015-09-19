@@ -38,7 +38,6 @@ using System.IO;
 
 namespace PhotoshopFile
 {
-#warning move this to another file and look for all the constants in this code
     public class LayerConstants
     {
         public const string EightBimSignature = "8BIM";

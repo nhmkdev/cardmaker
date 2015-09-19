@@ -128,7 +128,7 @@ namespace CardMaker.Card.Export
                     CardRenderer.DrawPrintLineToGraphics(Graphics.FromImage(zBuffer));
 
                     // apply any export rotation
-                    RotateImageBuffer(zBuffer, CurrentDeck.CardLayout, false);
+                    ProcessRotateExport(zBuffer, CurrentDeck.CardLayout, false);
 
                     // before rendering to the PDF bump the DPI to the desired value
                     zBuffer.SetResolution(CurrentDeck.CardLayout.dpi, CurrentDeck.CardLayout.dpi);
@@ -142,7 +142,7 @@ namespace CardMaker.Card.Export
                     MoveToNextColumnPosition();
 
                     // undo any export rotation
-                    RotateImageBuffer(zBuffer, CurrentDeck.CardLayout, false);
+                    ProcessRotateExport(zBuffer, CurrentDeck.CardLayout, true);
 
                     zWait.ProgressStep(1);
                 }
@@ -161,7 +161,7 @@ namespace CardMaker.Card.Export
             }
             catch (Exception ex)
             {
-                Logger.AddLogLine("Error saving PDF (is it open?) " + ex.ToString());
+                Logger.AddLogLine("Error saving PDF (is it open?) " + ex.Message);
                 zWait.ThreadSuccess = false;
             }
 
@@ -288,26 +288,6 @@ namespace CardMaker.Card.Export
             m_dDrawY = m_dMarginY;
 
             m_dNextRowYAdjust = m_dLayoutPointHeight + m_dBufferY;
-        }
-
-#warning this and the FileCardExporter are so close -- this should be a shared method in the CardExportBase class
-        /// <summary>
-        /// Rotates the export buffer based on the Layout exportRotation setting
-        /// </summary>
-        /// <param name="zBuffer"></param>
-        /// <param name="zLayout"></param>
-        /// <param name="postTransition"></param>
-        private void RotateImageBuffer(Bitmap zBuffer, ProjectLayout zLayout, bool postTransition)
-        {
-            switch (zLayout.exportRotation)
-            {
-                case 90:
-                    zBuffer.RotateFlip(postTransition ? RotateFlipType.Rotate270FlipNone : RotateFlipType.Rotate90FlipNone);
-                    break;
-                case -90:
-                    zBuffer.RotateFlip(postTransition ? RotateFlipType.Rotate90FlipNone : RotateFlipType.Rotate270FlipNone);
-                    break;
-            }
         }
     }
 }

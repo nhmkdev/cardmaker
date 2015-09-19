@@ -150,9 +150,7 @@ namespace Support.UI
         public static AtomEntryCollection GetSpreadsheetList(SpreadsheetsService zSpreadsheetService)
         {
             // get all spreadsheet names
-            var query = new SpreadsheetQuery
-            {
-            };
+            var query = new SpreadsheetQuery();
             var feed = zSpreadsheetService.Query(query);
             return feed.Entries;
         }
@@ -161,9 +159,7 @@ namespace Support.UI
         {
             var link = zSheetEntry.Links.FindService(GDataSpreadsheetsNameTable.WorksheetRel, null);
 
-            var wsquery = new WorksheetQuery(link.HRef.ToString())
-            {
-            };
+            var wsquery = new WorksheetQuery(link.HRef.ToString());
             var wsfeed = zSpreadsheetService.Query(wsquery);
             return wsfeed.Entries;
         }

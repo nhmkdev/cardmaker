@@ -45,7 +45,7 @@ namespace CardMaker.Card.FormattedText
                 return false;
             }
 
-            var nXPush = 0;
+            int nXPush;
             if (!int.TryParse(arrayComponents[0], out nXPush))
             {
                 return false;

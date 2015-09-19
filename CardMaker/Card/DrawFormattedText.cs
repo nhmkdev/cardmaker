@@ -68,7 +68,7 @@ namespace CardMaker.Card
                 // - Generate list of markups to continue to process (those that are used in the next pass)
                 // - Specify Markup rectanlges
                 // - Generate markup rows
-                var nIdx = 0;
+                int nIdx;
                 MarkupBase zMarkup;
                 for (nIdx = 0; nIdx < zFormattedData.AllMarkups.Count; nIdx++)
                 {
@@ -143,7 +143,7 @@ namespace CardMaker.Card
         /// Updates the alignment of all alignable markups
         /// </summary>
         /// <param name="zElement"></param>
-        /// <param name="listMarkups"></param>
+        /// <param name="listAllMarkups"></param>
         private static void UpdateAlignment(ProjectLayoutElement zElement, IEnumerable<MarkupBase> listAllMarkups)
         {
             var listMarkups = listAllMarkups.Where(x => x.Aligns).ToList();

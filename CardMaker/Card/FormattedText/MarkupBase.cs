@@ -61,6 +61,7 @@ namespace CardMaker.Card.FormattedText
         /// <summary>
         /// Second pass after rectangles are configured
         /// </summary>
+        /// <param name="zElement"></param>
         /// <param name="listAllMarkups"></param>
         /// <param name="nMarkup"></param>
         /// <returns>true if this markup is to be further processed</returns>

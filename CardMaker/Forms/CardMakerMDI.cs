@@ -66,7 +66,7 @@ namespace CardMaker.Forms
 
             m_sBaseTitle = "Card Maker Beta " + Application.ProductVersion;
 #if UNSTABLE
-            m_sBaseTitle += "[UNSTABLE] V.A8";
+            m_sBaseTitle += "[UNSTABLE] V.A9";
 #endif
             m_sFileOpenFilter = "CMP files (*.cmp)|*.cmp|All files (*.*)|*.*";
 
@@ -372,7 +372,13 @@ namespace CardMaker.Forms
                 CardMakerSettings.PrintAutoHorizontalCenter = zQuery.GetBool(IniSettings.PrintAutoCenterLayout);
                 CardMakerSettings.PrintLayoutBorder = zQuery.GetBool(IniSettings.PrintLayoutBorder);
                 CardMakerSettings.PrintLayoutsOnNewPage = zQuery.GetBool(IniSettings.PrintLayoutsOnNewPage);
+
+                var bWasGoogleCacheEnabled = CardMakerSettings.EnableGoogleCache;
                 CardMakerSettings.EnableGoogleCache = zQuery.GetBool(IniSettings.EnableGoogleCache);
+                if (!CardMakerSettings.EnableGoogleCache && bWasGoogleCacheEnabled)
+                {
+                    DeleteGoogleCache();
+                }
             }
         }
 
@@ -582,18 +588,9 @@ namespace CardMaker.Forms
 
         private void clearGoogleCacheToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            try
+            if (DeleteGoogleCache() && LayoutManager.Instance.ActiveDeck != null)
             {
-                File.Delete(Path.Combine(CardMakerInstance.StartupPath, CardMakerConstants.GOOGLE_CACHE_FILE));
-                Logger.AddLogLine("Cleared Google Cache");
-                if (LayoutManager.Instance.ActiveDeck != null)
-                {
-                    LayoutManager.Instance.InitializeActiveLayout();
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.AddLogLine("Failed to delete Google Cache File: {0}".FormatString(ex.Message));
+                LayoutManager.Instance.InitializeActiveLayout();
             }
         }
 
@@ -645,7 +642,6 @@ namespace CardMaker.Forms
         {
             var sProjectFilePath = string.IsNullOrEmpty(e.ProjectFilePath) ? string.Empty : e.ProjectFilePath;
             SetLoadedFile(sProjectFilePath);
-            CardMakerInstance.LoadedProjectFilePath = sProjectFilePath;
         }
 
         #endregion
@@ -699,7 +695,7 @@ namespace CardMaker.Forms
 
         #endregion
 
-        public void ExportViaPDFSharp(bool bExportAllLayouts)
+        private void ExportViaPDFSharp(bool bExportAllLayouts)
         {
             var zQuery = new QueryPanelDialog("Export to PDF (via PDFSharp)", 750, false);
             zQuery.SetIcon(Icon);
@@ -765,7 +761,7 @@ namespace CardMaker.Forms
             }
         }
 
-        public void ExportImages(bool bExportAllLayouts)
+        private void ExportImages(bool bExportAllLayouts)
         {
             var zQuery = new QueryPanelDialog("Export to Images", 750, false);
             zQuery.SetIcon(Properties.Resources.CardMakerIcon);
@@ -889,7 +885,7 @@ namespace CardMaker.Forms
             }
         }
 
-        public void UpdateGoogleAuth(Action zSuccessAction = null, Action zCancelAction = null)
+        private void UpdateGoogleAuth(Action zSuccessAction = null, Action zCancelAction = null)
         {
             var zDialog = new GoogleCredentialsDialog()
             {
@@ -925,8 +921,13 @@ namespace CardMaker.Forms
         private Form SetupMDIForm(Form zForm, bool bDefaultShow)
         {
             zForm.MdiParent = this;
-            var bShow = bDefaultShow;
-            bool.TryParse(CardMakerSettings.IniManager.GetValue(zForm.Name + CardMakerConstants.VISIBLE_SETTING, bDefaultShow.ToString()), out bShow);
+            bool bShow;
+            if (!bool.TryParse(
+                    CardMakerSettings.IniManager.GetValue(zForm.Name + CardMakerConstants.VISIBLE_SETTING,
+                        bDefaultShow.ToString()), out bShow))
+            {
+                bShow = bDefaultShow;
+            }
             if (bShow)
             {
                 zForm.Show();
@@ -938,6 +939,21 @@ namespace CardMaker.Forms
         {
             m_listRecentFiles.Remove(sFileName);
             m_listRecentFiles.Insert(0, sFileName);            
+        }
+
+        private bool DeleteGoogleCache()
+        {
+            try
+            {
+                File.Delete(Path.Combine(CardMakerInstance.StartupPath, CardMakerConstants.GOOGLE_CACHE_FILE));
+                Logger.AddLogLine("Cleared Google Cache");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.AddLogLine("Failed to delete Google Cache File: {0}".FormatString(ex.Message));
+            }
+            return false;
         }
     }
 }

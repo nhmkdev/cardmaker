@@ -511,7 +511,7 @@ namespace CardMaker.Forms
             }
         }
 
-        public void HandleTypeEnableStates()
+        private void HandleTypeEnableStates()
         {
             tabControl.Visible = true;
 
@@ -554,13 +554,13 @@ namespace CardMaker.Forms
             btnElementBrowseImage.Enabled = (comboElementType.SelectedIndex == (int)ElementType.Graphic);
         }
 
-        public void HandleEnableStates()
+        private void HandleEnableStates()
         {
             // TODO: this is duplicated in UpdateElementValues
             groupBoxElement.Enabled = (null != ElementManager.Instance.GetSelectedElement());
         }
 
-        public void CreateControlFieldDictionary()
+        private void CreateControlFieldDictionary()
         {
             Type zType = typeof(ProjectLayoutElement);
 
@@ -588,7 +588,7 @@ namespace CardMaker.Forms
             m_dictionaryControlField.Add(numericWordSpace, zType.GetProperty("wordspace"));
         }
 
-        public void SetupControlActions()
+        private void SetupControlActions()
         {
             m_dictionaryControlActions.Add(txtElementVariable, zElement =>
             {

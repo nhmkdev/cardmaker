@@ -315,7 +315,6 @@ namespace Support.IO
             foreach (Control zControl in zForm.Controls)
             {
                 string sKeyName = string.Format(CONTROL_FORMAT, zForm.Name, zControl.Name);
-#warning -- Is there a better solution for control value restoration / storage
                 if (zControl is TextBox)
                 {
                     ((TextBox) zControl).Text = GetValue(sKeyName, string.Empty);

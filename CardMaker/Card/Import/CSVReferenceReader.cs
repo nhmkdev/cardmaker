@@ -103,9 +103,9 @@ namespace CardMaker.Card.Import
         public void GetProjectDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData)
         {
             var sReferencePath =
-                Path.GetDirectoryName(CardMakerInstance.LoadedProjectFilePath)
+                Path.GetDirectoryName(ProjectManager.Instance.ProjectFilePath)
                 + Path.DirectorySeparatorChar
-                + Path.GetFileNameWithoutExtension(CardMakerInstance.LoadedProjectFilePath)
+                + Path.GetFileNameWithoutExtension(ProjectManager.Instance.ProjectFilePath)
                 + ".csv";
 
             GetData(sReferencePath, listDefineData, false, 1, Deck.DEFINES_DATA_POSTFIX);

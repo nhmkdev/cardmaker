@@ -125,12 +125,12 @@ namespace CardMaker.Card.Export
                     }
                     try
                     {
-                        ProcessRotateExport(CurrentDeck.CardLayout, true);
+                        ProcessRotateExport(m_zExportCardBuffer, CurrentDeck.CardLayout, false);
                         m_zExportCardBuffer.Save(
                             m_sExportFolder + sFileName +
                             "." + m_eImageFormat.ToString().ToLower(),
                             m_eImageFormat);
-                        ProcessRotateExport(CurrentDeck.CardLayout, false);
+                        ProcessRotateExport(m_zExportCardBuffer, CurrentDeck.CardLayout, true);
                     }
                     catch (Exception)
                     {
@@ -146,24 +146,6 @@ namespace CardMaker.Card.Export
 
             zWait.ThreadSuccess = true;
             zWait.CloseWaitDialog();
-        }
-
-        /// <summary>
-        /// Rotates the export buffer based on the Layout exportRotation setting
-        /// </summary>
-        /// <param name="zLayout"></param>
-        /// <param name="preExport"></param>
-        protected void ProcessRotateExport(ProjectLayout zLayout, bool preExport)
-        {
-            switch (zLayout.exportRotation)
-            {
-                case 90:
-                    m_zExportCardBuffer.RotateFlip(preExport ? RotateFlipType.Rotate90FlipNone : RotateFlipType.Rotate270FlipNone);
-                    break;
-                case -90:
-                    m_zExportCardBuffer.RotateFlip(preExport ? RotateFlipType.Rotate270FlipNone : RotateFlipType.Rotate90FlipNone);
-                    break;
-            }
         }
 
         /// <summary>

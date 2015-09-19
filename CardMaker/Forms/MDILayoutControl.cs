@@ -473,7 +473,7 @@ namespace CardMaker.Forms
             }
         }
 
-        public void ChangeSelectedElement(string sName)
+        private void ChangeSelectedElement(string sName)
         {
             ClearSelection();
             ListViewItem zItem;

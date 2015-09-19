@@ -24,7 +24,6 @@
 
 using CardMaker.Data;
 using CardMaker.XML;
-using Support.UI;
 
 namespace CardMaker.Card.Import
 {

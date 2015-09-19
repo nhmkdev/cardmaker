@@ -185,7 +185,7 @@ namespace CardMaker.Card
             }
             catch (Exception ex)
             {
-                Logger.AddLogLine("Failed to read data file(s). " + ex.ToString());
+                Logger.AddLogLine("Failed to read data file(s). " + ex.Message);
                 WaitDialog.Instance.ThreadSuccess = false;
                 WaitDialog.Instance.CloseWaitDialog();
             }
@@ -219,14 +219,14 @@ namespace CardMaker.Card
                     // 0 index is always the default reference in the case of multi load
                     if (nIdx == 0)
                     {
-                        if (!string.IsNullOrEmpty(CardMakerInstance.LoadedProjectFilePath))
+                        if (!string.IsNullOrEmpty(ProjectManager.Instance.ProjectFilePath))
                         {
                             zRefReader.GetProjectDefineData(zReference, listDefineLines);
                             if (listDefineLines.Count == 0)
                             {
                                 Logger.AddLogLine(
                                     "No defines found for project file: {0}".FormatString(
-                                        CardMakerInstance.LoadedProjectFilePath));
+                                        ProjectManager.Instance.ProjectFilePath));
                             }
                         }
                         else
@@ -533,9 +533,10 @@ namespace CardMaker.Card
         /// Translates the string representing the element. (also handles any nodraw text input)
         /// </summary>
         /// <param name="sRawString"></param>
-        /// <param name="listLine"></param>
+        /// <param name="zDeckLine"></param>
         /// <param name="zElement"></param>
         /// <param name="bPrint"></param>
+        /// <param name="sCacheSuffix"></param>
         /// <returns></returns>
         public ElementString TranslateString(string sRawString, DeckLine zDeckLine, ProjectLayoutElement zElement, bool bPrint, string sCacheSuffix = "")
         {

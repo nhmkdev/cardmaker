@@ -32,7 +32,7 @@ namespace CardMaker.Data
     /// </summary>
     class CardMakerSettings
     {
-        private static IniManager s_zIniManager;
+        private static readonly IniManager s_zIniManager;
 
         static CardMakerSettings()
         {

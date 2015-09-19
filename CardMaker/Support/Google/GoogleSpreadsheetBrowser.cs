@@ -36,7 +36,7 @@ namespace Support.UI
     {
         private readonly bool m_bRequireSheetSelect;
         private AtomEntryCollection m_zAllEntries;
-        private SpreadsheetsService m_zSpreadsheetsService;
+        private readonly SpreadsheetsService m_zSpreadsheetsService;
 
         public AtomEntry SelectedSpreadsheet
         {

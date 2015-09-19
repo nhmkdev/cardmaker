@@ -73,7 +73,9 @@ namespace Support.IO
                             if (bQuote)
                             {
                                 if (bKeepQuotes)
+                                {
                                     zBuilder.Append("\"");
+                                }
 
                                 listColumns.Add(zBuilder.ToString());
                                 // no further characters should be added so the builder is null'd
@@ -102,7 +104,9 @@ namespace Support.IO
                             break;
                         case ',':
                             if (bQuote)
+                            {
                                 zBuilder.Append(sLine[nIdx]);
+                            }
                             else
                             {
                                 listColumns.Add(zBuilder.ToString());
