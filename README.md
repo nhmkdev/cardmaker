@@ -4,6 +4,10 @@ An application that generates graphics via data sources.
 
 This application was created to help me generate components for a board game. You can put all of your variable data into a CSV or Google Spreadsheet and then create layouts in CardMaker. This separates your layout and data so you do not have to manually re-create each card. 
 
+## Download
+
+Latest stable (I hope) release binary: [Download 0.99.2.0](https://github.com/nhmkdev/cardmaker/releases/tag/v.0.99.2.0)
+
 ## Sample
 
 ![](https://raw.githubusercontent.com/wiki/nhmkdev/cardmaker/readme_sample.png)
@@ -18,9 +22,7 @@ While there is some interpretation of the data by CardMaker to generate the fina
 
 [Further Details on how the Elements for this Layout are configured](https://github.com/nhmkdev/cardmaker/wiki/user-readme-sample)
 
-## Download
-
-Latest binary: [Download 0.99.2.0](https://github.com/nhmkdev/cardmaker/releases/tag/v.0.99.2.0)
+## Guides / Help
 
 * [CardMaker User Guides Section](https://github.com/nhmkdev/cardmaker/wiki/user)
 * [BoardGameGeek CardMaker Guild](https://www.boardgamegeek.com/guild/2250) - Good place for bugs/request/discussions
