@@ -20,10 +20,9 @@ While there is some interpretation of the data by CardMaker to generate the fina
 
 ## Download
 
-Latest binary: [Download 0.99.1.10](https://www.nhmk.com/applications/CardMaker_0.99.1.10.zip)
+Latest binary: [Download 0.99.2.0](https://github.com/nhmkdev/cardmaker/releases/tag/v.0.99.2.0)
 
-* [Tutorials](https://www.nhmk.com/cardmakertutorials/)
-* [CardMaker User Guides Section](https://github.com/nhmkdev/cardmaker/wiki/user) (Work in progress, all tutorials will be moved over)
+* [CardMaker User Guides Section](https://github.com/nhmkdev/cardmaker/wiki/user)
 * [BoardGameGeek CardMaker Guild](https://www.boardgamegeek.com/guild/2250) - Good place for bugs/request/discussions
 
 Note: The code that is submitted may not match the latest binary.
