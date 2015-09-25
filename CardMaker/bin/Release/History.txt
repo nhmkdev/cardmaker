@@ -1,11 +1,12 @@
 Card Maker Version History
 --------------------------
 0.99.2.0
+- First open source release (and a massive code refactor)
 - Removed Printing
 - Removed Preview Dialog
 - Added rendered message if no layout is selected in the Project window
 - Changed Layout Template storage to create individual files (easy sharing/backup)
-- Added translate functionality to overrides (should match definition translation)
+- Added translate functionality to overrides (should match definition translation functionality)
 - Critical -- Fixed the issue with the font size not matching when an outline is specifed (previously it was much smaller)
 -- This means your previous projects that used outline+text may need to be revisited for font size if you used outline
 - Fixed Bottom aligned FormattedText elements (they were being cut off in most cases)
