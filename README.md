@@ -1,6 +1,6 @@
 # CardMaker
 
-An application that generates graphics via data sources.
+CardMaker is an application that generates graphics via data sources. It has a graphical user interface for designing layouts and offers scripting functionality.
 
 This application was created to help me generate components for a board game. You can put all of your variable data into a CSV or Google Spreadsheet and then create layouts in CardMaker. This separates your layout and data so you do not have to manually re-create each card. 
 
