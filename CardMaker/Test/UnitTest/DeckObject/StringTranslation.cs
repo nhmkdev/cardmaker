@@ -3,6 +3,7 @@ using CardMaker.XML;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using CardMaker.Card.Translation;
 using CardMaker.Data;
 
 namespace UnitTest.DeckObject
@@ -28,6 +29,7 @@ namespace UnitTest.DeckObject
         public void ValidateCache()
         {
             const string expected = "sample string with nothing special.";
+            _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
             var result = _testDeck.TranslateString(expected, _testLine, _testElement, false);
             var secondResult = _testDeck.TranslateString(expected, _testLine, _testElement, false);
             // TODO: moq or something to validate the cache was actually hit
@@ -37,6 +39,7 @@ namespace UnitTest.DeckObject
         [TestCase("sample string with nothing special.", Result = "sample string with nothing special.")]
         public string ValidateNonTranslate(string input)
         {
+            _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
             var result = _testDeck.TranslateString(input, _testLine, _testElement, false);
             Assert.IsTrue(result.DrawElement);
             return result.String;
@@ -51,11 +54,12 @@ namespace UnitTest.DeckObject
         [TestCase("#(if [1;2;3] == [a;3;b] then #nodraw)#", false, Result = "#nodraw")]
         [TestCase("#(if [1;2;3] == [a;b;c] then #nodraw)#", true, Result = "")]
         [TestCase("Test: #(if a == a then #nodraw)#", false, Result = "Test: #nodraw")]
-        [TestCase("#nodraw", true, Result = "#nodraw")]
+        [TestCase("#nodraw", false, Result = "#nodraw")]
         [TestCase("#(if a<4 == a>4 then 6 &lt; 7 else #nodraw)#", false, Result = "#nodraw")]
         [TestCase("#(if a<4 == a>4 then #nodraw else 6 &lt; 7)#", true, Result = "6 < 7")]
         public string ValidateNoDraw(string input, bool expectedDrawElement)
         {
+            _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
             var result = _testDeck.TranslateString(input, _testLine, _testElement, false);
             Assert.AreEqual(expectedDrawElement, result.DrawElement);
             return result.String;
@@ -67,6 +71,7 @@ namespace UnitTest.DeckObject
         [TestCase("##500;10;8#", 1, Result = "00000510")]
         public string ValidateCounter(string input, int cardIndex)
         {
+            _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
             _testDeck.SetCardIndex(cardIndex);
             return _testDeck.TranslateString(input, _testLine, _testElement, false).String;
         }
@@ -145,6 +150,7 @@ namespace UnitTest.DeckObject
         [TestCase("&lt;", Result = "<")]
         public string ValidateSpecialCharacterTranslation(string input)
         {
+            _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
             var result = _testDeck.TranslateString(input, _testLine, _testElement, false);
             return result.String;
         }
@@ -152,6 +158,7 @@ namespace UnitTest.DeckObject
         [Test]
         public void ValidateNewlineSpecialCharacterTranslation()
         {
+            _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
             var result = _testDeck.TranslateString("\\n", _testLine, _testElement, false);
             Assert.AreEqual(Environment.NewLine, result.String);
         }
@@ -160,6 +167,7 @@ namespace UnitTest.DeckObject
         [TestCase("\\q", Result = "\\q")]
         public string ValidateSpecialCharacterNonTranslation(string input)
         {
+            _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
             _testElement.type = ElementType.FormattedText.ToString();
             var result = _testDeck.TranslateString(input, _testLine, _testElement, false);
             return result.String;
@@ -170,6 +178,7 @@ namespace UnitTest.DeckObject
         {
             const string slashN = "\\n";
             _testElement.type = ElementType.FormattedText.ToString();
+            _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
             var result = _testDeck.TranslateString(slashN, _testLine, _testElement, false);
             Assert.AreEqual(slashN, result.String);
         }

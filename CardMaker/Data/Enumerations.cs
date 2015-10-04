@@ -47,12 +47,19 @@ namespace CardMaker.Data
         PrintLayoutBorder,
         LastImageExportFormat,
         PrintLayoutsOnNewPage,
-        EnableGoogleCache
+        EnableGoogleCache,
+        DefaultTranslator
     }
 
     public enum ExportType
     {
         PDFSharp,
         Image
+    }
+
+    public enum Translator
+    {
+        Incept = 0,
+        JavaScript
     }
 }

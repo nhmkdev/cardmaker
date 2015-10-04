@@ -1,0 +1,7 @@
+Define,Value
+Coin, 1 Coin
+Secret, My secret!
+NestedSecret,'' + secret
+
+
+

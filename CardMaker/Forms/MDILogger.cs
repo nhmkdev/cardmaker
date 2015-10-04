@@ -72,7 +72,12 @@ namespace CardMaker.Forms
             }
             Clipboard.SetText(zBuilder.ToString());
         }
-        
+
+        private void clearToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            listBoxLog.Items.Clear();
+        }
+
         #endregion
 
         #region LoggerI

@@ -34,6 +34,8 @@ namespace CardMaker.XML
         [XmlElement("Layout")]
         public ProjectLayout[] Layout { get; set; }
 
+        public string translatorName { get; set; }
+
         public string lastExportPath { get; set; }
 
         public string exportNameFormat { get; set; }

@@ -1,0 +1,5 @@
+Duplication,Title,Image,Description,Faction
+,A Title,../images/biohazard.png,"'Sample, with a \\qcomma and quotes.\\q\\nBy default a card listed in a reference file has one instance. Earn ' + coin",empire
+10,Title 2,../images/biohazard.png,A card duplicated 10 times.,empire
+5,Another Title!,../images/pirate_jack_rackham.png,Another card that is duplicated many times.,pirate
+2,Last Title,../images/invalid.png,"'This card has an invalid image. Here\'s a reference to a nested define: ' + nestedsecret",pirate

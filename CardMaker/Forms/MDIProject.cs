@@ -470,6 +470,29 @@ namespace CardMaker.Forms
             }
         }
 
+        private void projectSettingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            const string TRANSLATOR = "translator";
+
+            var zQuery = new QueryPanelDialog("Project Settings", 450, 200, false);
+            zQuery.SetIcon(Resources.CardMakerIcon);
+
+            Translator eTranslator;
+            if (!Translator.TryParse(ProjectManager.Instance.LoadedProject.translatorName, true, out eTranslator))
+            {
+                eTranslator = Translator.Incept;
+            }
+
+            zQuery.AddPullDownBox("Translator",
+                new string[] {Translator.Incept.ToString(), Translator.JavaScript.ToString()}, (int)eTranslator, TRANSLATOR);
+
+            if (DialogResult.OK == zQuery.ShowDialog(this))
+            {
+                ProjectManager.Instance.LoadedProject.translatorName = ((Translator) zQuery.GetIndex(TRANSLATOR)).ToString();
+                ProjectManager.Instance.FireProjectUpdated(true);
+                LayoutManager.Instance.InitializeActiveLayout();
+            }
+        }
 
         private void treeView_ItemDrag(object sender, ItemDragEventArgs e)
         {

@@ -223,6 +223,7 @@ namespace CardMaker.Events.Managers
                 Logger.AddLogLine("No existing file specified. Loading defaults...");
                 zProject = new Project
                 {
+                    translatorName = CardMakerSettings.DefaultTranslator.ToString(),
                     Layout = new ProjectLayout[] { new ProjectLayout("Default") }
                 };
             }

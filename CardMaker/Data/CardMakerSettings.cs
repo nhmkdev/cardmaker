@@ -135,5 +135,19 @@ namespace CardMaker.Data
             get { return s_zIniManager.GetValue(IniSettings.EnableGoogleCache, bool.FalseString).Equals(bool.TrueString); }
             set { s_zIniManager.SetValue(IniSettings.EnableGoogleCache, value.ToString()); }
         }
+
+        public static Translator DefaultTranslator
+        {
+            get
+            {
+                Translator eTranslator;
+                if (!Translator.TryParse(s_zIniManager.GetValue(IniSettings.DefaultTranslator, Translator.Incept.ToString()), true, out eTranslator))
+                {
+                    eTranslator = Translator.Incept;
+                }
+                return eTranslator;
+            }
+            set { s_zIniManager.SetValue(IniSettings.DefaultTranslator, value.ToString()); }
+        }
     }
 }

@@ -22,7 +22,7 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-//#define UNSTABLE
+#define UNSTABLE
 
 using System;
 using System.Collections.Generic;
@@ -38,6 +38,7 @@ using System.Windows.Forms;
 using CardMaker.Card;
 using CardMaker.Card.Export;
 using CardMaker.Card.Shapes;
+using CardMaker.Card.Translation;
 using CardMaker.Data;
 using CardMaker.Events.Args;
 using CardMaker.Events.Managers;
@@ -66,7 +67,7 @@ namespace CardMaker.Forms
 
             m_sBaseTitle = "Card Maker Beta " + Application.ProductVersion;
 #if UNSTABLE
-            m_sBaseTitle += "[UNSTABLE] V.A9";
+            m_sBaseTitle += "[UNSTABLE] V.A1";
 #endif
             m_sFileOpenFilter = "CMP files (*.cmp)|*.cmp|All files (*.*)|*.*";
 
@@ -291,6 +292,8 @@ namespace CardMaker.Forms
             SaveOnEvent(eCancel, true);
             if (!eCancel.Cancel)
             {
+                LayoutManager.Instance.SetActiveLayout(null);
+                ElementManager.Instance.FireElementSelectedEvent(null);
                 ProjectManager.Instance.OpenProject(null);
             }
         }
@@ -353,6 +356,8 @@ namespace CardMaker.Forms
             zQuery.AddTab("General");
             zQuery.AddCheckBox("Enable Google Cache", CardMakerSettings.EnableGoogleCache, IniSettings.EnableGoogleCache);
             zQuery.AddCheckBox("Print/Export Layout Border", CardMakerSettings.PrintLayoutBorder, IniSettings.PrintLayoutBorder);
+            zQuery.AddPullDownBox("Translator",
+                new string[] { Translator.Incept.ToString(), Translator.JavaScript.ToString() }, (int)CardMakerSettings.DefaultTranslator, IniSettings.DefaultTranslator);
 
             zQuery.AddTab("PDF Export");
             zQuery.AddNumericBox("Page Width (inches)", CardMakerSettings.PrintPageWidth, 1, 1024, 1, 2, IniSettings.PrintPageWidth);
@@ -372,6 +377,7 @@ namespace CardMaker.Forms
                 CardMakerSettings.PrintAutoHorizontalCenter = zQuery.GetBool(IniSettings.PrintAutoCenterLayout);
                 CardMakerSettings.PrintLayoutBorder = zQuery.GetBool(IniSettings.PrintLayoutBorder);
                 CardMakerSettings.PrintLayoutsOnNewPage = zQuery.GetBool(IniSettings.PrintLayoutsOnNewPage);
+                CardMakerSettings.DefaultTranslator = (Translator)zQuery.GetIndex(IniSettings.DefaultTranslator);
 
                 var bWasGoogleCacheEnabled = CardMakerSettings.EnableGoogleCache;
                 CardMakerSettings.EnableGoogleCache = zQuery.GetBool(IniSettings.EnableGoogleCache);
@@ -495,9 +501,9 @@ namespace CardMaker.Forms
         {
             var zQuery = new QueryPanelDialog("Illegal File Name Character Replacement", 350, false);
             zQuery.SetIcon(Properties.Resources.CardMakerIcon);
-            var arrayBadChars = Deck.DISALLOWED_FILE_CHARS_ARRAY;
+            var arrayBadChars = FilenameTranslator.DISALLOWED_FILE_CHARS_ARRAY;
             var arrayReplacementChars = CardMakerSettings.IniManager.GetValue(IniSettings.ReplacementChars, string.Empty).Split(new char[] { CardMakerConstants.CHAR_FILE_SPLIT });
-            if (arrayReplacementChars.Length == Deck.DISALLOWED_FILE_CHARS_ARRAY.Length)
+            if (arrayReplacementChars.Length == FilenameTranslator.DISALLOWED_FILE_CHARS_ARRAY.Length)
             {
                 // from ini
                 for (int nIdx = 0; nIdx < arrayBadChars.Length; nIdx++)
@@ -908,9 +914,9 @@ namespace CardMaker.Forms
         private void RestoreReplacementChars()
         {
             string[] arrayReplacementChars = CardMakerSettings.IniManager.GetValue(IniSettings.ReplacementChars, string.Empty).Split(new char[] { CardMakerConstants.CHAR_FILE_SPLIT });
-            if (arrayReplacementChars.Length == Deck.DISALLOWED_FILE_CHARS_ARRAY.Length)
+            if (arrayReplacementChars.Length == FilenameTranslator.DISALLOWED_FILE_CHARS_ARRAY.Length)
             {
-                Deck.IllegalCharReplacementArray = arrayReplacementChars;
+                FilenameTranslator.IllegalCharReplacementArray = arrayReplacementChars;
             }
             else
             {
