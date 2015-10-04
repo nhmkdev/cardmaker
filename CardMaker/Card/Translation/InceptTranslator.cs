@@ -111,6 +111,14 @@ namespace CardMaker.Card.Translation
                 {
                     sDefineValue = (nIndex >= listLine.Count ? String.Empty : listLine[nIndex].Trim());
                 }
+                else if (sKey.Equals("cardindex"))
+                {
+                    sDefineValue = (nCardIndex + 1).ToString();
+                }
+                else if (sKey.Equals("deckindex"))
+                {
+                    sDefineValue = (zDeckLine.RowSubIndex + 1).ToString();
+                }
                 else
                 {
                     IssueManager.Instance.FireAddIssueEvent("Bad reference key: " + sKey);
