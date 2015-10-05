@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System.Globalization;
+using CardMaker.Events.Managers;
 using Support.IO;
 
 namespace CardMaker.Data
@@ -136,16 +137,12 @@ namespace CardMaker.Data
             set { s_zIniManager.SetValue(IniSettings.EnableGoogleCache, value.ToString()); }
         }
 
-        public static Translator DefaultTranslator
+        public static TranslatorType DefaultTranslatorType
         {
             get
             {
-                Translator eTranslator;
-                if (!Translator.TryParse(s_zIniManager.GetValue(IniSettings.DefaultTranslator, Translator.Incept.ToString()), true, out eTranslator))
-                {
-                    eTranslator = Translator.Incept;
-                }
-                return eTranslator;
+                return ProjectManager.GetTranslatorTypeFromString(s_zIniManager.GetValue(IniSettings.DefaultTranslator,
+                        TranslatorType.Incept.ToString()));
             }
             set { s_zIniManager.SetValue(IniSettings.DefaultTranslator, value.ToString()); }
         }

@@ -356,8 +356,8 @@ namespace CardMaker.Forms
             zQuery.AddTab("General");
             zQuery.AddCheckBox("Enable Google Cache", CardMakerSettings.EnableGoogleCache, IniSettings.EnableGoogleCache);
             zQuery.AddCheckBox("Print/Export Layout Border", CardMakerSettings.PrintLayoutBorder, IniSettings.PrintLayoutBorder);
-            zQuery.AddPullDownBox("Translator",
-                new string[] { Translator.Incept.ToString(), Translator.JavaScript.ToString() }, (int)CardMakerSettings.DefaultTranslator, IniSettings.DefaultTranslator);
+            zQuery.AddPullDownBox("TranslatorType",
+                new string[] { TranslatorType.Incept.ToString(), TranslatorType.JavaScript.ToString() }, (int)CardMakerSettings.DefaultTranslatorType, IniSettings.DefaultTranslator);
 
             zQuery.AddTab("PDF Export");
             zQuery.AddNumericBox("Page Width (inches)", CardMakerSettings.PrintPageWidth, 1, 1024, 1, 2, IniSettings.PrintPageWidth);
@@ -377,7 +377,7 @@ namespace CardMaker.Forms
                 CardMakerSettings.PrintAutoHorizontalCenter = zQuery.GetBool(IniSettings.PrintAutoCenterLayout);
                 CardMakerSettings.PrintLayoutBorder = zQuery.GetBool(IniSettings.PrintLayoutBorder);
                 CardMakerSettings.PrintLayoutsOnNewPage = zQuery.GetBool(IniSettings.PrintLayoutsOnNewPage);
-                CardMakerSettings.DefaultTranslator = (Translator)zQuery.GetIndex(IniSettings.DefaultTranslator);
+                CardMakerSettings.DefaultTranslatorType = (TranslatorType)zQuery.GetIndex(IniSettings.DefaultTranslator);
 
                 var bWasGoogleCacheEnabled = CardMakerSettings.EnableGoogleCache;
                 CardMakerSettings.EnableGoogleCache = zQuery.GetBool(IniSettings.EnableGoogleCache);

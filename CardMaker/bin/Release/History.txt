@@ -1,5 +1,10 @@
 Card Maker Version History
 --------------------------
+0.99.3.0
+- Added JavaScript Translation functionality (this is optional!)
+- Added @[cardindex] and @[deckindex] as reference values
+- Resolved issue with FormattedText bottom aligned containing images in the last row (quite specific!)
+
 0.99.2.0
 - First open source release (and a massive code refactor)
 - Removed Printing

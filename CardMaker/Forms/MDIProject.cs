@@ -477,18 +477,14 @@ namespace CardMaker.Forms
             var zQuery = new QueryPanelDialog("Project Settings", 450, 200, false);
             zQuery.SetIcon(Resources.CardMakerIcon);
 
-            Translator eTranslator;
-            if (!Translator.TryParse(ProjectManager.Instance.LoadedProject.translatorName, true, out eTranslator))
-            {
-                eTranslator = Translator.Incept;
-            }
+            TranslatorType eTranslator = ProjectManager.Instance.LoadedProjectTranslatorType;
 
             zQuery.AddPullDownBox("Translator",
-                new string[] {Translator.Incept.ToString(), Translator.JavaScript.ToString()}, (int)eTranslator, TRANSLATOR);
+                new string[] { TranslatorType.Incept.ToString(), TranslatorType.JavaScript.ToString()}, (int)eTranslator, TRANSLATOR);
 
             if (DialogResult.OK == zQuery.ShowDialog(this))
             {
-                ProjectManager.Instance.LoadedProject.translatorName = ((Translator) zQuery.GetIndex(TRANSLATOR)).ToString();
+                ProjectManager.Instance.LoadedProject.translatorName = ((TranslatorType) zQuery.GetIndex(TRANSLATOR)).ToString();
                 ProjectManager.Instance.FireProjectUpdated(true);
                 LayoutManager.Instance.InitializeActiveLayout();
             }

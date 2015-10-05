@@ -467,6 +467,7 @@ namespace CardMaker.Forms
             this.propertyGridShape.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.propertyGridShape.CategoryForeColor = System.Drawing.SystemColors.InactiveCaptionText;
             this.propertyGridShape.HelpVisible = false;
             this.propertyGridShape.Location = new System.Drawing.Point(130, 3);
             this.propertyGridShape.Name = "propertyGridShape";
@@ -894,6 +895,7 @@ namespace CardMaker.Forms
             // 
             // txtElementVariable
             // 
+            this.txtElementVariable.AcceptsReturn = true;
             this.txtElementVariable.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -902,9 +904,10 @@ namespace CardMaker.Forms
             this.txtElementVariable.Location = new System.Drawing.Point(73, 264);
             this.txtElementVariable.Multiline = true;
             this.txtElementVariable.Name = "txtElementVariable";
-            this.txtElementVariable.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtElementVariable.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtElementVariable.Size = new System.Drawing.Size(544, 43);
             this.txtElementVariable.TabIndex = 1;
+            this.txtElementVariable.WordWrap = false;
             this.txtElementVariable.TextChanged += new System.EventHandler(this.HandleElementValueChange);
             this.txtElementVariable.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtElementVariable_KeyDown);
             // 

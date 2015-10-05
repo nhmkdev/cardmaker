@@ -22,6 +22,7 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -239,14 +240,30 @@ namespace CardMaker.Card
                 return 0;
             }
 
-            var rectLast = listMarkups[listMarkups.Count - 1].TargetRect;
-            var nEndOfLastLine = rectLast.Y + rectLast.Height;
+            var zLastMarkup = listMarkups[listMarkups.Count - 1];
+            var nLineNumber = zLastMarkup.LineNumber;
+            // find the largest total height on the last row (inclusive of the Y position)
+            var fLargestTotal = zLastMarkup.TargetRect.Y + zLastMarkup.TargetRect.Height;
+            int nIdx = listMarkups.Count - 2;
+            while (nIdx > -1)
+            {
+                var zMarkup = listMarkups[nIdx];
+                if (nLineNumber == zMarkup.LineNumber)
+                {
+                    fLargestTotal = Math.Max(fLargestTotal, zMarkup.TargetRect.Y + zMarkup.TargetRect.Height);
+                }
+                else
+                {
+                    break;
+                }
+                nIdx--;
+            }
             switch ((StringAlignment)zElement.verticalalign)
             {
                 case StringAlignment.Center:
-                    return ((float)(zElement.height - nEndOfLastLine)) / 2f;
+                    return (((float)zElement.height - fLargestTotal)) / 2f;
                 case StringAlignment.Far:
-                    return (float)zElement.height - nEndOfLastLine;
+                    return (float)zElement.height - fLargestTotal;
             }
             return 0;
         }

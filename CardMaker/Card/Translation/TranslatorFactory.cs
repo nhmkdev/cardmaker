@@ -36,18 +36,18 @@ namespace CardMaker.Card.Translation
         public static TranslatorBase GetTranslator(Dictionary<string, int> dictionaryColumnNames, Dictionary<string, string> dictionaryDefines,
             Dictionary<string, Dictionary<string, int>> dictionaryElementOverrides, List<string> listColumnNames)
         {
-            Translator eTranslator;
+            TranslatorType eTranslator;
             if (ProjectManager.Instance.LoadedProject == null ||
                 !Enum.TryParse(ProjectManager.Instance.LoadedProject.translatorName, true, out eTranslator))
             {
-                eTranslator = Translator.Incept;
+                eTranslator = TranslatorType.Incept;
             }
 
             Logger.AddLogLine("Deck Translator: {0}".FormatString(eTranslator.ToString()));
 
             switch (eTranslator)
             {
-                case Translator.JavaScript:
+                case TranslatorType.JavaScript:
                     return new JavaScriptTranslator(dictionaryColumnNames, dictionaryDefines, dictionaryElementOverrides, listColumnNames);
                 default:
                     return new InceptTranslator(dictionaryColumnNames, dictionaryDefines, dictionaryElementOverrides, listColumnNames);

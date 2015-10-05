@@ -42,6 +42,8 @@ namespace CardMaker.Events.Managers
 
         public Project LoadedProject { get; private set; }
 
+        public TranslatorType LoadedProjectTranslatorType { get; private set; }
+
         public string ProjectFilePath { get; private set; }
 
         public string ProjectPath { get; private set; }
@@ -96,6 +98,7 @@ namespace CardMaker.Events.Managers
         public void OpenProject(string sProjectFile)
         {
             LoadedProject = LoadProject(sProjectFile);
+            LoadedProjectTranslatorType = GetTranslatorTypeFromString(LoadedProject.translatorName);
             SetLoadedProjectFile(sProjectFile);
             if (ProjectOpened != null)
             {
@@ -190,6 +193,16 @@ namespace CardMaker.Events.Managers
             return -1;
         }
 
+        public static TranslatorType GetTranslatorTypeFromString(string sInput)
+        {
+            TranslatorType eTranslatorType;
+            if (!TranslatorType.TryParse(sInput, true, out eTranslatorType))
+            {
+                return TranslatorType.Incept;
+            }
+            return eTranslatorType;
+        }
+
         /// <summary>
         /// Opens a project file for static usage (no events are fired)
         /// </summary>
@@ -215,7 +228,6 @@ namespace CardMaker.Events.Managers
                     {
                         Logger.AddLogLine("This project file is in an older format. Please save it using this version.");
                     }
-
                 }
             }
             else
@@ -223,7 +235,7 @@ namespace CardMaker.Events.Managers
                 Logger.AddLogLine("No existing file specified. Loading defaults...");
                 zProject = new Project
                 {
-                    translatorName = CardMakerSettings.DefaultTranslator.ToString(),
+                    translatorName = CardMakerSettings.DefaultTranslatorType.ToString(),
                     Layout = new ProjectLayout[] { new ProjectLayout("Default") }
                 };
             }

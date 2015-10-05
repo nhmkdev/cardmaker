@@ -145,6 +145,8 @@ namespace CardMaker.Forms
                 UpdateElementValues(args.Elements[0]);
                 HandleTypeEnableStates();
             }
+            txtElementVariable.AcceptsTab = ProjectManager.Instance.LoadedProjectTranslatorType ==
+                                            TranslatorType.JavaScript;
         }
 
         #endregion
@@ -221,8 +223,6 @@ namespace CardMaker.Forms
 
         private void HandleElementValueChange(object sender, EventArgs e)
         {
-            // this is the big nasty... should be centralized
-
             if (null == ElementManager.Instance.GetSelectedElement() ||
                 !m_bFireElementChangeEvents ||
                 CardMakerInstance.ProcessingUserAction)
@@ -396,7 +396,7 @@ namespace CardMaker.Forms
             switch (e.KeyCode)
             {
                 case Keys.Enter:
-                    e.SuppressKeyPress = true;
+                        e.SuppressKeyPress = ProjectManager.Instance.LoadedProjectTranslatorType == TranslatorType.Incept;
                     break;
             }
         }
@@ -450,45 +450,86 @@ namespace CardMaker.Forms
         private void btnAssist_Click(object sender, EventArgs e)
         {
             contextMenuStripAssist.Items.Clear();
-            contextMenuStripAssist.Items.Add("Add Empty", null, (os, ea) => InsertVariableText("#empty"));
-            contextMenuStripAssist.Items.Add("Add If Statement", null, (os, ea) => InsertVariableText("#(if x == y then a)#"));
-            contextMenuStripAssist.Items.Add("Add If Else Statement", null, (os, ea) => InsertVariableText("#(if x == y then a else b)#"));
-            contextMenuStripAssist.Items.Add("Add Switch Statement", null, (os, ea) => InsertVariableText("#(switch;key;keytocheck1;value1;keytocheck2;value2;#default;#empty)#"));
-            switch ((ElementType)comboElementType.SelectedIndex)
+            // NOTE: if there is ever a third scripting language (hopefully not) break this kind of logic out into the Translator classes
+            if (TranslatorType.Incept == ProjectManager.Instance.LoadedProjectTranslatorType)
             {
-                case ElementType.FormattedText:
-                    contextMenuStripAssist.Items.Add("Add New Line", null, (os, ea) => InsertVariableText("<br>"));
-                    contextMenuStripAssist.Items.Add("Add Quote (\")", null, (os, ea) => InsertVariableText("<q>"));
-                    contextMenuStripAssist.Items.Add("Add Comma", null, (os, ea) => InsertVariableText("<c>"));
-                    break;
-                case ElementType.Text:
-                    contextMenuStripAssist.Items.Add("Add Counter...", null, (os, ea) =>
-                    {
-                        var zQuery = new QueryPanelDialog("Add Counter", 450, false);
-                        zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
-                        const string INIT_VALUE = "initialValue";
-                        const string MULT_VALUE = "multValue";
-                        const string PAD_VALUE = "padValue";
-                        zQuery.AddNumericBox("Initial Value", 1, int.MinValue, int.MaxValue, INIT_VALUE);
-                        zQuery.AddNumericBox("Multiplier Value", 1, int.MinValue, int.MaxValue, MULT_VALUE);
-                        zQuery.AddNumericBox("Left 0 Padding", 0, int.MinValue, int.MaxValue, PAD_VALUE);
-                        if (DialogResult.OK == zQuery.ShowDialog(this))
+                contextMenuStripAssist.Items.Add("Add Empty", null, (os, ea) => InsertVariableText("#empty"));
+                contextMenuStripAssist.Items.Add("No Draw", null, (os, ea) => InsertVariableText("#nodraw"));
+                contextMenuStripAssist.Items.Add("Add If Statement", null,
+                    (os, ea) => InsertVariableText("#(if x == y then a)#"));
+                contextMenuStripAssist.Items.Add("Add If Else Statement", null,
+                    (os, ea) => InsertVariableText("#(if x == y then a else b)#"));
+                contextMenuStripAssist.Items.Add("Add Switch Statement", null,
+                    (os, ea) =>
+                        InsertVariableText("#(switch;key;keytocheck1;value1;keytocheck2;value2;#default;#empty)#"));
+                switch ((ElementType) comboElementType.SelectedIndex)
+                {
+                    case ElementType.FormattedText:
+                        contextMenuStripAssist.Items.Add("Add New Line", null, (os, ea) => InsertVariableText("<br>"));
+                        contextMenuStripAssist.Items.Add("Add Quote (\")", null, (os, ea) => InsertVariableText("<q>"));
+                        contextMenuStripAssist.Items.Add("Add Comma", null, (os, ea) => InsertVariableText("<c>"));
+                        break;
+                    case ElementType.Text:
+                        contextMenuStripAssist.Items.Add("Add Counter...", null, (os, ea) =>
                         {
-                            InsertVariableText("##" +
-                                zQuery.GetDecimal(INIT_VALUE) + ";" +
-                                zQuery.GetDecimal(MULT_VALUE) + ";" +
-                                zQuery.GetDecimal(PAD_VALUE) + "#");
-                        }
-                    });
-                    contextMenuStripAssist.Items.Add("Add New Line", null, (os, ea) => InsertVariableText("\\n"));
-                    contextMenuStripAssist.Items.Add("Add Quote (\")", null, (os, ea) => InsertVariableText("\\q"));
-                    contextMenuStripAssist.Items.Add("Add Comma", null, (os, ea) => InsertVariableText("\\c"));
-                    break;
-                case ElementType.Graphic:
-                    contextMenuStripAssist.Items.Add("Add Draw No Image", null, (os, ea) => InsertVariableText("none"));
-                    break;
-                case ElementType.Shape:
-                    break;
+                            var zQuery = new QueryPanelDialog("Add Counter", 450, false);
+                            zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
+                            const string INIT_VALUE = "initialValue";
+                            const string MULT_VALUE = "multValue";
+                            const string PAD_VALUE = "padValue";
+                            zQuery.AddNumericBox("Initial Value", 1, int.MinValue, int.MaxValue, INIT_VALUE);
+                            zQuery.AddNumericBox("Multiplier Value", 1, int.MinValue, int.MaxValue, MULT_VALUE);
+                            zQuery.AddNumericBox("Left 0 Padding", 0, int.MinValue, int.MaxValue, PAD_VALUE);
+                            if (DialogResult.OK == zQuery.ShowDialog(this))
+                            {
+                                InsertVariableText("##" +
+                                                   zQuery.GetDecimal(INIT_VALUE) + ";" +
+                                                   zQuery.GetDecimal(MULT_VALUE) + ";" +
+                                                   zQuery.GetDecimal(PAD_VALUE) + "#");
+                            }
+                        });
+                        contextMenuStripAssist.Items.Add("Add New Line", null, (os, ea) => InsertVariableText("\\n"));
+                        contextMenuStripAssist.Items.Add("Add Quote (\")", null, (os, ea) => InsertVariableText("\\q"));
+                        contextMenuStripAssist.Items.Add("Add Comma", null, (os, ea) => InsertVariableText("\\c"));
+                        break;
+                    case ElementType.Graphic:
+                        contextMenuStripAssist.Items.Add("Add Draw No Image", null,
+                            (os, ea) => InsertVariableText("none"));
+                        break;
+                    case ElementType.Shape:
+                        break;
+                }
+            }
+            else if (TranslatorType.JavaScript == ProjectManager.Instance.LoadedProjectTranslatorType)
+            {
+                contextMenuStripAssist.Items.Add("Add Empty", null, (os, ea) => InsertVariableText("'#empty'"));
+                contextMenuStripAssist.Items.Add("No Draw", null, (os, ea) => InsertVariableText("'#nodraw'"));
+                contextMenuStripAssist.Items.Add("Add If Statement", null,
+                    (os, ea) => InsertVariableText(string.Format("if(x == y){0}{{{0}{0}}}", Environment.NewLine)));
+                contextMenuStripAssist.Items.Add("Add If Else Statement", null,
+                    (os, ea) => InsertVariableText(string.Format("if(x == y){0}{{{0}{0}}}{0}else{0}{{{0}{0}}}", Environment.NewLine)));
+                contextMenuStripAssist.Items.Add("Add Switch Statement", null,
+                    (os, ea) =>
+                        InsertVariableText(string.Format("switch(key){0}{{{0}case keytocheck1:{0}\tvalue1;{0}}}", Environment.NewLine)));
+                switch ((ElementType)comboElementType.SelectedIndex)
+                {
+                    case ElementType.FormattedText:
+                        contextMenuStripAssist.Items.Add("Add New Line", null, (os, ea) => InsertVariableText("<br>"));
+                        contextMenuStripAssist.Items.Add("Add Quote (\")", null, (os, ea) => InsertVariableText("<q>"));
+                        contextMenuStripAssist.Items.Add("Add Comma", null, (os, ea) => InsertVariableText("<c>"));
+                        break;
+                    case ElementType.Text:
+                        contextMenuStripAssist.Items.Add("Add New Line", null, (os, ea) => InsertVariableText("\\\\n"));
+                        contextMenuStripAssist.Items.Add("Add Quote (\")", null, (os, ea) => InsertVariableText("\\\\q"));
+                        contextMenuStripAssist.Items.Add("Add Comma", null, (os, ea) => InsertVariableText("\\\\c"));
+                        break;
+                    case ElementType.Graphic:
+                        contextMenuStripAssist.Items.Add("Add Draw No Image", null,
+                            (os, ea) => InsertVariableText("none"));
+                        break;
+                    case ElementType.Shape:
+                        break;
+                }
             }
             contextMenuStripAssist.Show(btnAssist, new Point(btnAssist.Width, 0), ToolStripDropDownDirection.AboveLeft);
         }

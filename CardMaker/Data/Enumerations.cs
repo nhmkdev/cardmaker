@@ -57,7 +57,7 @@ namespace CardMaker.Data
         Image
     }
 
-    public enum Translator
+    public enum TranslatorType
     {
         Incept = 0,
         JavaScript
