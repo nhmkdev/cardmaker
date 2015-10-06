@@ -50,6 +50,7 @@ namespace CardMaker.Card.Translation
         }
 
         private static readonly Regex s_regexColumnVariable = new Regex(@"(.*)(@\[)(.+?)(\])(.*)", RegexOptions.Compiled);
+        private static readonly Regex s_regexCardVariable = new Regex(@"(.*)(\!\[)(.+?)(\])(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexCardCounter = new Regex(@"(.*)(##)(\d+)(;)(\d+)(;)(\d+)(#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexSubCardCounter = new Regex(@"(.*)(#sc;)(\d+)(;)(\d+)(;)(\d+)(#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexIfLogic = new Regex(@"(.*)(#\()(if.+)(\)#)(.*)", RegexOptions.Compiled);
@@ -76,7 +77,6 @@ namespace CardMaker.Card.Translation
         /// <returns></returns>
         protected override ElementString TranslateToElementString(string sRawString, int nCardIndex, DeckLine zDeckLine, ProjectLayoutElement zElement)
         {
-#warning nodraw and caching should be handled at a higher call (base)
             List<string> listLine = zDeckLine.LineColumns;
 
             string sOutput = sRawString;
@@ -85,11 +85,39 @@ namespace CardMaker.Card.Translation
 
             var zElementString = new ElementString();
 
+            // Translate card variables (non-reference information
+            // Groups
+            //     1    2    3   4   5
+            // @"(.*)(!\[)(.+?)(\])(.*)"
+            Match zMatch;
+            while (s_regexCardVariable.IsMatch(sOutput))
+            {
+                zMatch = s_regexCardVariable.Match(sOutput);
+                string sDefineValue;
+                var sKey = zMatch.Groups[3].ToString().ToLower();
+
+                // NOTE: if this expands into more variables move all this into some other method and use a dictionary lookup
+                if (sKey.Equals("cardindex"))
+                {
+                    sDefineValue = (nCardIndex + 1).ToString();
+                }
+                else if (sKey.Equals("deckindex"))
+                {
+                    sDefineValue = (zDeckLine.RowSubIndex + 1).ToString();
+                }
+                else
+                {
+                    IssueManager.Instance.FireAddIssueEvent("Bad card variable: " + sKey);
+                    sDefineValue = "[BAD NAME: " + sKey + "]";
+                }
+
+                sOutput = zMatch.Groups[1] + sDefineValue + zMatch.Groups[5];
+            }
+
             // Translate named items (column names / defines)
             //Groups
             //    1    2    3   4   5
             //@"(.*)(@\[)(.+?)(\])(.*)"
-            Match zMatch;
             while (s_regexColumnVariable.IsMatch(sOutput))
             {
                 zMatch = s_regexColumnVariable.Match(sOutput);
@@ -111,17 +139,9 @@ namespace CardMaker.Card.Translation
                 {
                     sDefineValue = (nIndex >= listLine.Count ? String.Empty : listLine[nIndex].Trim());
                 }
-                else if (sKey.Equals("cardindex"))
-                {
-                    sDefineValue = (nCardIndex + 1).ToString();
-                }
-                else if (sKey.Equals("deckindex"))
-                {
-                    sDefineValue = (zDeckLine.RowSubIndex + 1).ToString();
-                }
                 else
                 {
-                    IssueManager.Instance.FireAddIssueEvent("Bad reference key: " + sKey);
+                    IssueManager.Instance.FireAddIssueEvent("Bad reference name: " + sKey);
                     sDefineValue = "[BAD NAME: " + sKey + "]";
                 }
                 if (arrayParams.Length > 1)
