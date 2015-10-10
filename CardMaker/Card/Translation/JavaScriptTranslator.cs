@@ -82,23 +82,32 @@ namespace CardMaker.Card.Translation
                 return "''";
             }
 
-            addVar(zBuilder, "deckIndex", nCardIndex.ToString());
-            addVar(zBuilder, "cardIndex", zDeckLine.RowSubIndex.ToString());
+            AddVar(zBuilder, "deckIndex", nCardIndex.ToString());
+            AddVar(zBuilder, "cardIndex", zDeckLine.RowSubIndex.ToString());
 
             foreach (var sKey in DictionaryDefines.Keys)
             {
-                addVar(zBuilder, sKey, DictionaryDefines[sKey]);
+                AddVar(zBuilder, sKey, ConvertQuoteEscape(DictionaryDefines[sKey]));
             }
 
             for (int nIdx = 0; nIdx < ListColumnNames.Count; nIdx++)
             {
-                addVar(zBuilder, ListColumnNames[nIdx], zDeckLine.LineColumns[nIdx]);
+                AddVar(zBuilder, ListColumnNames[nIdx], ConvertQuoteEscape(zDeckLine.LineColumns[nIdx]));
             }
             zBuilder.Append(sDefintion);
             return zBuilder.ToString();
         }
 
-        private void addVar(StringBuilder zBuilder, string sVar, string sValue)
+        private string ConvertQuoteEscape(string sInput)
+        {
+            if (sInput.StartsWith("~'"))
+            {
+                return sInput.Substring(1);
+            }
+            return sInput;
+        }
+
+        private void AddVar(StringBuilder zBuilder, string sVar, string sValue)
         {
             zBuilder.Append("this.");
             zBuilder.Append(sVar);
