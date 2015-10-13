@@ -67,7 +67,7 @@ namespace CardMaker.Forms
 
             m_sBaseTitle = "Card Maker Beta " + Application.ProductVersion;
 #if UNSTABLE
-            m_sBaseTitle += "[UNSTABLE] V.A1";
+            m_sBaseTitle += "[UNSTABLE] V.A2";
 #endif
             m_sFileOpenFilter = "CMP files (*.cmp)|*.cmp|All files (*.*)|*.*";
 
@@ -757,7 +757,11 @@ namespace CardMaker.Forms
                 "Export",
                 new string[] { "Layout", "Card" },
                 450);
+#if true
             zWait.ShowDialog(this);
+#else
+            zFileCardExporter.ExportThread();
+#endif
 
             if (zWait.ThreadSuccess && 
                 m_bPdfExportLastOpen &&

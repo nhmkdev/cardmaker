@@ -32,6 +32,7 @@ using CardMaker.Data;
 using CardMaker.Events.Args;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
+using Support.UI;
 using LayoutEventArgs = CardMaker.Events.Args.LayoutEventArgs;
 
 namespace CardMaker.Forms
@@ -70,6 +71,13 @@ namespace CardMaker.Forms
             WaitingToSet,
             Vertical, // lock to vertical only
             Horizontal, // lock to horizontal only
+        }
+
+        private enum ElementCenterAlign
+        {
+            None,
+            Layout,
+            FirstElement
         }
 
         [Flags]
@@ -121,6 +129,13 @@ namespace CardMaker.Forms
             LayoutManager.Instance.DeckIndexChanged += DeckIndex_Changed;
             ElementManager.Instance.ElementSelected += Element_Selected;
             ProjectManager.Instance.ProjectOpened += Project_Opened;
+
+            verticalCenterButton.Image = Properties.Resources.VerticalAlign.ToBitmap();
+            customVerticalAlignButton.Image = Properties.Resources.VerticalCustomAlign.ToBitmap();
+            horizontalCenterButton.Image = Properties.Resources.HorizontalAlign.ToBitmap();
+            customHoritonalAlignButton.Image = Properties.Resources.HorizontalCustomAlign.ToBitmap();
+            customAlignButton.Image = Properties.Resources.CustomAlign.ToBitmap();
+
         }
 
         #region Form Overrides
@@ -545,6 +560,10 @@ namespace CardMaker.Forms
 
         private void numericUpDownZoom_ValueChanged(object sender, EventArgs e)
         {
+            if (LayoutManager.Instance.ActiveDeck == null)
+            {
+                return;
+            }
             m_fZoom = (float)numericUpDownZoom.Value;
             m_fZoomRatio = 1.0f / m_fZoom;
             m_eTranslationLock = TranslationLock.Unset;
@@ -614,6 +633,235 @@ namespace CardMaker.Forms
         private void UpdateText()
         {
             Text = MouseMode.MoveResize == m_eMouseMode ? "Canvas [Mode: Normal]" : "Canvas [Mode: Move-only]";
+        }
+
+        private void verticalCenterButton_Click(object sender, EventArgs e)
+        {
+            var listSelectedElements = ElementManager.Instance.SelectedElements;
+            if (listSelectedElements == null || listSelectedElements.Count == 0)
+            {
+                return;
+            }
+            var zLayout = LayoutManager.Instance.ActiveLayout;
+            var dictionaryOriginalPositions = ElementManager.Instance.GetUndoRedoPoints();
+            foreach (var zElement in ElementManager.Instance.SelectedElements)
+            {
+                zElement.y = (zLayout.height - zElement.height) / 2;
+            }
+            ElementManager.Instance.ConfigureUserAction(dictionaryOriginalPositions,
+                ElementManager.Instance.GetUndoRedoPoints());
+            ElementManager.Instance.FireElementBoundsUpdateEvent();
+        }
+
+        private void horizontalCenterButton_Click(object sender, EventArgs e)
+        {
+            var listSelectedElements = ElementManager.Instance.SelectedElements;
+            if (listSelectedElements == null || listSelectedElements.Count == 0)
+            {
+                return;
+            }
+            var zLayout = LayoutManager.Instance.ActiveLayout;
+            var dictionaryOriginalPositions = ElementManager.Instance.GetUndoRedoPoints();
+            foreach (var zElement in ElementManager.Instance.SelectedElements)
+            {
+                zElement.x = (zLayout.width - zElement.width) / 2;
+            }
+
+            ElementManager.Instance.ConfigureUserAction(dictionaryOriginalPositions,
+                ElementManager.Instance.GetUndoRedoPoints());
+            ElementManager.Instance.FireElementBoundsUpdateEvent();
+        }
+
+        private void customAlignElementButton_Click(object sender, EventArgs e)
+        {
+            var listSelectedElements = ElementManager.Instance.SelectedElements;
+            if (listSelectedElements == null || listSelectedElements.Count == 0)
+            {
+                return;
+            }
+
+            const string VERTICAL_SPACING = "vertical_spacing";
+            const string APPLY_ELEMENT_WIDTHS = "apply_element_widths";
+            const string HORIZONTAL_SPACING = "horizontal_spacing";
+            const string APPLY_ELEMENT_HEIGHTS = "apply_element_heights";
+
+            var zQuery = new QueryPanelDialog("Custom Align Elements", 450, 150, false);
+            zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
+
+            zQuery.AddNumericBox("Vertical Pixel Spacing", 0, int.MinValue, int.MaxValue, VERTICAL_SPACING);
+            zQuery.AddCheckBox("Include Element Heights", false, APPLY_ELEMENT_HEIGHTS);
+            zQuery.AddNumericBox("Horizontal Pixel Spacing", 0, int.MinValue, int.MaxValue, HORIZONTAL_SPACING);
+            zQuery.AddCheckBox("Include Element Widths", false, APPLY_ELEMENT_WIDTHS);
+
+            if (DialogResult.OK != zQuery.ShowDialog(CardMakerInstance.ApplicationForm))
+            {
+                return;
+            }
+
+            var nVerticalSpace = (int)zQuery.GetDecimal(VERTICAL_SPACING);
+            var nHorizontalSpace = (int)zQuery.GetDecimal(HORIZONTAL_SPACING);
+            var bApplyElementWidths = zQuery.GetBool(APPLY_ELEMENT_WIDTHS);
+            var bApplyElementHeights = zQuery.GetBool(APPLY_ELEMENT_HEIGHTS);
+
+            var dictionaryOriginalPositions = ElementManager.Instance.GetUndoRedoPoints();
+
+            // apply the translation
+            var nX = listSelectedElements[0].x;
+            var nY = listSelectedElements[0].y;
+            for (var nIdx = 0; nIdx < listSelectedElements.Count; nIdx++)
+            {
+                var zElement = listSelectedElements[nIdx];
+                zElement.x = nX;
+                zElement.y = nY;
+                nX += bApplyElementWidths ? zElement.width : 0;
+                nY += bApplyElementHeights ? zElement.height : 0;
+                nX += nHorizontalSpace;
+                nY += nVerticalSpace;
+            }
+            ElementManager.Instance.ConfigureUserAction(dictionaryOriginalPositions,
+                ElementManager.Instance.GetUndoRedoPoints());
+
+            ElementManager.Instance.FireElementBoundsUpdateEvent();
+        }
+
+        private void customVerticalAlignButton_Click(object sender, EventArgs e)
+        {
+            var listSelectedElements = ElementManager.Instance.SelectedElements;
+            if (listSelectedElements == null || listSelectedElements.Count == 0)
+            {
+                return;
+            }
+
+            const string VERTICAL_SPACING = "vertical_spacing";
+            const string APPLY_ELEMENT_HEIGHTS = "apply_element_heights";
+            const string ELEMENT_CENTERING = "element_centering";
+
+            var zQuery = new QueryPanelDialog("Custom Vertical Align Elements", 450, 150, false);
+            zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
+
+            zQuery.AddNumericBox("Vertical Pixel Spacing", 0, int.MinValue, int.MaxValue, VERTICAL_SPACING);
+            zQuery.AddCheckBox("Include Element Heights", false, APPLY_ELEMENT_HEIGHTS);
+            zQuery.AddPullDownBox("Horizontal Centering", Enum.GetNames(typeof (ElementCenterAlign)), 0,
+                ELEMENT_CENTERING);
+
+            if (DialogResult.OK != zQuery.ShowDialog(CardMakerInstance.ApplicationForm))
+            {
+                return;
+            }
+
+            var nVerticalSpace = (int)zQuery.GetDecimal(VERTICAL_SPACING);
+            var bApplyElementHeights = zQuery.GetBool(APPLY_ELEMENT_HEIGHTS);
+            var eCenterAlignment = (ElementCenterAlign) zQuery.GetIndex(ELEMENT_CENTERING);
+
+            // determine the centering
+            var nCenterX = 0;
+            switch (eCenterAlignment)
+            {
+                case ElementCenterAlign.FirstElement:
+                    nCenterX = listSelectedElements[0].x + (listSelectedElements[0].width/2);
+                    break;
+                case ElementCenterAlign.Layout:
+                    nCenterX = LayoutManager.Instance.ActiveLayout.width / 2;
+                    break;
+            }
+
+            // apply the translation
+            var dictionaryOriginalPositions = ElementManager.Instance.GetUndoRedoPoints();
+            var nY = listSelectedElements[0].y;
+            for (var nIdx = 0; nIdx < listSelectedElements.Count; nIdx++)
+            {
+                var zElement = listSelectedElements[nIdx];
+                zElement.y = nY;
+                nY += bApplyElementHeights ? zElement.height : 0;
+                nY += nVerticalSpace;
+                switch (eCenterAlignment)
+                {
+                    case ElementCenterAlign.FirstElement:
+                        if (0 < nIdx)
+                        {
+                            zElement.x = nCenterX - (zElement.width / 2);
+                        }
+                        break;
+                    case ElementCenterAlign.Layout:
+                        zElement.x = nCenterX - (zElement.width / 2);
+                        break;
+                }
+            }
+            ElementManager.Instance.ConfigureUserAction(dictionaryOriginalPositions,
+                ElementManager.Instance.GetUndoRedoPoints());
+
+            ElementManager.Instance.FireElementBoundsUpdateEvent();
+        }
+
+        private void customHoritonalAlignButton_Click(object sender, EventArgs e)
+        {
+            var listSelectedElements = ElementManager.Instance.SelectedElements;
+            if (listSelectedElements == null || listSelectedElements.Count == 0)
+            {
+                return;
+            }
+
+            const string HORIZONTAL_SPACING = "horizontal_spacing";
+            const string APPLY_ELEMENT_WIDTHS = "apply_element_widths";
+            const string ELEMENT_CENTERING = "element_centering";
+
+            var zQuery = new QueryPanelDialog("Custom Horizontal Align Elements", 450, 150, false);
+            zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
+
+            zQuery.AddNumericBox("Horizontal Pixel Spacing", 0, int.MinValue, int.MaxValue, HORIZONTAL_SPACING);
+            zQuery.AddCheckBox("Include Element Widths", false, APPLY_ELEMENT_WIDTHS);
+            zQuery.AddPullDownBox("Vertical Centering", Enum.GetNames(typeof(ElementCenterAlign)), 0,
+                ELEMENT_CENTERING);
+
+
+            if (DialogResult.OK != zQuery.ShowDialog(CardMakerInstance.ApplicationForm))
+            {
+                return;
+            }
+
+            var nHorizontalSpace = (int)zQuery.GetDecimal(HORIZONTAL_SPACING);
+            var bApplyElementWidths = zQuery.GetBool(APPLY_ELEMENT_WIDTHS);
+            var eCenterAlignment = (ElementCenterAlign)zQuery.GetIndex(ELEMENT_CENTERING);
+
+            // determine the centering
+            var nCenterY = 0;
+            switch (eCenterAlignment)
+            {
+                case ElementCenterAlign.FirstElement:
+                    nCenterY = listSelectedElements[0].y + (listSelectedElements[0].height / 2);
+                    break;
+                case ElementCenterAlign.Layout:
+                    nCenterY = LayoutManager.Instance.ActiveLayout.height / 2;
+                    break;
+            }
+
+            var dictionaryOriginalPositions = ElementManager.Instance.GetUndoRedoPoints();
+
+            // apply the translation
+            var nX = listSelectedElements[0].x;
+            for (var nIdx = 0; nIdx < listSelectedElements.Count; nIdx++)
+            {
+                var zElement = listSelectedElements[nIdx];
+                zElement.x = nX;
+                nX += bApplyElementWidths ? zElement.width : 0;
+                nX += nHorizontalSpace;
+                switch (eCenterAlignment)
+                {
+                    case ElementCenterAlign.FirstElement:
+                        if (0 < nIdx)
+                        {
+                            zElement.y = nCenterY - (zElement.width / 2);
+                        }
+                        break;
+                    case ElementCenterAlign.Layout:
+                        zElement.y = nCenterY - (zElement.width / 2);
+                        break;
+                }
+            }
+            ElementManager.Instance.ConfigureUserAction(dictionaryOriginalPositions,
+                ElementManager.Instance.GetUndoRedoPoints());
+
+            ElementManager.Instance.FireElementBoundsUpdateEvent();
         }
     }
 }

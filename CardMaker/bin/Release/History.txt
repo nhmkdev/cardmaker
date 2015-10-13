@@ -1,9 +1,10 @@
 Card Maker Version History
 --------------------------
 0.99.3.0
-- Added JavaScript Translation functionality (this is optional!)
+- Added JavaScript Translation functionality (this is optional/experimental!)
 - Added ![cardindex] and ![deckindex] as card values (usable in the element definition)
 - Resolved issue with FormattedText bottom aligned containing images in the last row (quite specific!)
+- Added basic alignment tools to the Canvas
 
 0.99.2.0
 - First open source release (and a massive code refactor)

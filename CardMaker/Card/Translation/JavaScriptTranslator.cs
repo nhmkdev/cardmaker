@@ -25,7 +25,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using CardMaker.Events.Args;
 using CardMaker.XML;
 using Microsoft.ClearScript.V8;
 using Support.IO;
@@ -110,7 +109,7 @@ namespace CardMaker.Card.Translation
         private void AddVar(StringBuilder zBuilder, string sVar, string sValue)
         {
             zBuilder.Append("this.");
-            zBuilder.Append(sVar);
+            zBuilder.Append(sVar.Replace(' ', '_'));
             zBuilder.Append("=");
             // functions or single quoted items are left as-is
             // note this does not tolerate (whitespace)'

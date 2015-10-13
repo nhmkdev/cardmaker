@@ -375,7 +375,13 @@
   <ItemGroup>
     <None Include="Resources\CardMakerIcon.ico" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Resources\CustomAlign.ico" />
+    <Content Include="Resources\HorizontalAlign.ico" />
+    <Content Include="Resources\HorizontalCustomAlign.ico" />
+    <Content Include="Resources\VerticalAlign.ico" />
+    <Content Include="Resources\VerticalCustomAlign.ico" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

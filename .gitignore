@@ -23,6 +23,7 @@
 /CardMaker/bin/Release/templates
 /CardMaker/bin/Release/CardMaker.vshost.*
 /CardMaker/obj/
+/CardMaker/CardMaker.csproj.user
 /CardMaker/Test/UnitTest/bin/
 /CardMaker/Test/UnitTest/obj/
 /packages/

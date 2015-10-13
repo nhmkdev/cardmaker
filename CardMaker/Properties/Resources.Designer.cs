@@ -69,5 +69,55 @@ namespace CardMaker.Properties {
                 return ((System.Drawing.Icon)(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon CustomAlign {
+            get {
+                object obj = ResourceManager.GetObject("CustomAlign", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon HorizontalAlign {
+            get {
+                object obj = ResourceManager.GetObject("HorizontalAlign", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon HorizontalCustomAlign {
+            get {
+                object obj = ResourceManager.GetObject("HorizontalCustomAlign", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon VerticalAlign {
+            get {
+                object obj = ResourceManager.GetObject("VerticalAlign", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon VerticalCustomAlign {
+            get {
+                object obj = ResourceManager.GetObject("VerticalCustomAlign", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
     }
 }
