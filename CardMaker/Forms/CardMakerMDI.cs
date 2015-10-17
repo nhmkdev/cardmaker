@@ -356,7 +356,7 @@ namespace CardMaker.Forms
             zQuery.AddTab("General");
             zQuery.AddCheckBox("Enable Google Cache", CardMakerSettings.EnableGoogleCache, IniSettings.EnableGoogleCache);
             zQuery.AddCheckBox("Print/Export Layout Border", CardMakerSettings.PrintLayoutBorder, IniSettings.PrintLayoutBorder);
-            zQuery.AddPullDownBox("TranslatorType",
+            zQuery.AddPullDownBox("Default Translator Type",
                 new string[] { TranslatorType.Incept.ToString(), TranslatorType.JavaScript.ToString() }, (int)CardMakerSettings.DefaultTranslatorType, IniSettings.DefaultTranslator);
 
             zQuery.AddTab("PDF Export");

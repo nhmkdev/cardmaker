@@ -133,7 +133,7 @@ namespace CardMaker.Forms
             this.verticalCenterButton.Name = "verticalCenterButton";
             this.verticalCenterButton.Size = new System.Drawing.Size(23, 22);
             this.verticalCenterButton.Text = "toolStripButton1";
-            this.verticalCenterButton.ToolTipText = "Center Elements Horizontally";
+            this.verticalCenterButton.ToolTipText = "Center Elements Vertically";
             this.verticalCenterButton.Click += new System.EventHandler(this.verticalCenterButton_Click);
             // 
             // horizontalCenterButton
@@ -144,7 +144,7 @@ namespace CardMaker.Forms
             this.horizontalCenterButton.Name = "horizontalCenterButton";
             this.horizontalCenterButton.Size = new System.Drawing.Size(23, 22);
             this.horizontalCenterButton.Text = "toolStripButton1";
-            this.horizontalCenterButton.ToolTipText = "Center Elements Vertically";
+            this.horizontalCenterButton.ToolTipText = "Center Elements Horizontally";
             this.horizontalCenterButton.Click += new System.EventHandler(this.horizontalCenterButton_Click);
             // 
             // customAlignButton
@@ -166,7 +166,7 @@ namespace CardMaker.Forms
             this.customVerticalAlignButton.Name = "customVerticalAlignButton";
             this.customVerticalAlignButton.Size = new System.Drawing.Size(23, 22);
             this.customVerticalAlignButton.Text = "toolStripButton1";
-            this.customVerticalAlignButton.ToolTipText = "Custom Center Elements Horizontally";
+            this.customVerticalAlignButton.ToolTipText = "Custom Align Elements Vertically";
             this.customVerticalAlignButton.Click += new System.EventHandler(this.customVerticalAlignButton_Click);
             // 
             // customHoritonalAlignButton
@@ -177,7 +177,7 @@ namespace CardMaker.Forms
             this.customHoritonalAlignButton.Name = "customHoritonalAlignButton";
             this.customHoritonalAlignButton.Size = new System.Drawing.Size(23, 22);
             this.customHoritonalAlignButton.Text = "toolStripButton2";
-            this.customHoritonalAlignButton.ToolTipText = "Custom Center Elements Vertically";
+            this.customHoritonalAlignButton.ToolTipText = "Custom Align Elements Horizontally";
             this.customHoritonalAlignButton.Click += new System.EventHandler(this.customHoritonalAlignButton_Click);
             // 
             // panelCardCanvas
