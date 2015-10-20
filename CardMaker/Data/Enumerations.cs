@@ -48,7 +48,8 @@ namespace CardMaker.Data
         LastImageExportFormat,
         PrintLayoutsOnNewPage,
         EnableGoogleCache,
-        DefaultTranslator
+        DefaultTranslator,
+        ExportSkipStitchIndex
     }
 
     public enum ExportType

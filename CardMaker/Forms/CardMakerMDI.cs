@@ -779,6 +779,7 @@ namespace CardMaker.Forms
             const string NAME_FORMAT = "NAME_FORMAT";
             const string NAME_FORMAT_LAYOUT_OVERRIDE = "NAME_FORMAT_LAYOUT_OVERRIDE";
             const string FOLDER = "FOLDER";
+            const string STITCH_SKIP_INDEX = "DUMMY_IDX";
             var arrayImageFormats = new ImageFormat[] { 
                 ImageFormat.Bmp,
                 ImageFormat.Emf,
@@ -823,6 +824,8 @@ namespace CardMaker.Forms
             {
                 zQuery.AddCheckBox("Override Layout File Name Formats", false, NAME_FORMAT_LAYOUT_OVERRIDE);
             }
+
+            zQuery.AddNumericBox("Stitch Skip Index", CardMakerSettings.ExportStitchSkipIndex, 0, 65535, 1, 0, STITCH_SKIP_INDEX);
 
             zQuery.AddTextBox("File Name Format (optional)", sDefinition ?? string.Empty, false, NAME_FORMAT);
 
@@ -873,9 +876,10 @@ namespace CardMaker.Forms
                     }
 
                     CardMakerSettings.IniManager.SetValue(IniSettings.LastImageExportFormat, arrayImageFormats[zQuery.GetIndex(FORMAT)].ToString());
+                    CardMakerSettings.ExportStitchSkipIndex = (int) zQuery.GetDecimal(STITCH_SKIP_INDEX);
 
                     ICardExporter zFileCardExporter = new FileCardExporter(nStartLayoutIdx, nEndLayoutIdx, sFolder, bOverrideLayout, zQuery.GetString(NAME_FORMAT), 
-                        arrayImageFormats[zQuery.GetIndex(FORMAT)]);
+                        (int)zQuery.GetDecimal(STITCH_SKIP_INDEX), arrayImageFormats[zQuery.GetIndex(FORMAT)]);
 #if true
                     var zWait = new WaitDialog(
                         2,
@@ -885,7 +889,7 @@ namespace CardMaker.Forms
                         450);
                     zWait.ShowDialog(this);
 #else // non threaded
-                    ExportImagesThread(zThreadObject);
+                    zFileCardExporter.ExportThread();
 #endif
                 }
                 else

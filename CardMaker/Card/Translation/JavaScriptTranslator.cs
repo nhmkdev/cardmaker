@@ -81,8 +81,8 @@ namespace CardMaker.Card.Translation
                 return "''";
             }
 
-            AddVar(zBuilder, "deckIndex", nCardIndex.ToString());
-            AddVar(zBuilder, "cardIndex", zDeckLine.RowSubIndex.ToString());
+            AddVar(zBuilder, "deckIndex", (nCardIndex + 1).ToString());
+            AddVar(zBuilder, "cardIndex", (zDeckLine.RowSubIndex + 1).ToString());
 
             foreach (var sKey in DictionaryDefines.Keys)
             {

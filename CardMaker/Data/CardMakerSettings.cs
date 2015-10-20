@@ -146,5 +146,19 @@ namespace CardMaker.Data
             }
             set { s_zIniManager.SetValue(IniSettings.DefaultTranslator, value.ToString()); }
         }
+
+        public static int ExportStitchSkipIndex
+        {
+            get
+            {
+                int nValue;
+                if(int.TryParse(s_zIniManager.GetValue(IniSettings.ExportSkipStitchIndex, "0"), out nValue))
+                {
+                    return nValue;
+                }
+                return 0;
+            }
+            set { s_zIniManager.SetValue(IniSettings.ExportSkipStitchIndex, value.ToString()); }
+        }
     }
 }

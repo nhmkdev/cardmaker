@@ -424,7 +424,7 @@ namespace CardMaker.Forms
 
             Type typeObj = treeView.SelectedNode.Tag.GetType();
             string sExistingFormat = String.Empty;
-            var zQuery = new QueryPanelDialog("Configure Layout Export", 450, 200, false);
+            var zQuery = new QueryPanelDialog("Configure Layout Export", 550, 300, false);
             zQuery.SetIcon(Resources.CardMakerIcon);
 
             if (typeof(Project) == typeObj)
@@ -441,12 +441,44 @@ namespace CardMaker.Forms
                         .IndexOf(zProjectLayout.exportRotation.ToString()));
                 zQuery.AddPullDownBox("Export Rotation (Print/PDF/Export)", ProjectLayout.AllowedExportRotations,
                     nDefaultRotationIndex, ROTATION);
-                zQuery.AddNumericBox("Export Width", zProjectLayout.exportWidth,
+
+                var nColumns = 0;
+                var nRows = 0;
+
+                if (zProjectLayout.exportWidth > 0)
+                {
+                    var nWidth = zProjectLayout.width + zProjectLayout.buffer;
+                    nColumns = zProjectLayout.exportWidth / nWidth;
+                }
+
+                if (zProjectLayout.exportHeight > 0)
+                {
+                    var nHeight = zProjectLayout.width + zProjectLayout.buffer;
+                    nRows = zProjectLayout.exportHeight / nHeight;
+                }
+
+                var numericColumns = zQuery.AddNumericBox("Stitched Columns (changes export width)", nColumns, 0, 100, "COLUMNS");
+
+                var numericRows = zQuery.AddNumericBox("Stitched Rows (changes export height)", nRows, 0, 100, "ROWS");
+
+                var numericExportWidth = zQuery.AddNumericBox("Export Width", zProjectLayout.exportWidth,
                     0, 65536, EXPORT_WIDTH);
-                zQuery.AddNumericBox("Export Height", zProjectLayout.exportHeight,
+                var numericExportHeight = zQuery.AddNumericBox("Export Height", zProjectLayout.exportHeight,
                     0, 65536, EXPORT_HEIGHT);
                 zQuery.AddCheckBox("Export Transparent Background", zProjectLayout.exportTransparentBackground,
                     EXPORT_TRANSPARENT);
+
+                numericColumns.ValueChanged += (o, args) =>
+                {
+                    numericExportWidth.Value = (zProjectLayout.width * numericColumns.Value) + 
+                        Math.Max(0, (numericColumns.Value - 1) * zProjectLayout.buffer);
+                };
+
+                numericRows.ValueChanged += (o, args) =>
+                {
+                    numericExportHeight.Value = (zProjectLayout.height * numericRows.Value) +
+                        Math.Max(0, (numericRows.Value - 1) * zProjectLayout.buffer);
+                };
             }
 
             zQuery.AddTextBox("Name Format", sExistingFormat ?? String.Empty, false, NAME);

@@ -37,9 +37,10 @@ namespace CardMaker.Card.Export
         private readonly string m_sExportFolder;
         private readonly string m_sStringFormat;
         private readonly System.Drawing.Imaging.ImageFormat m_eImageFormat;
+        private readonly int m_nSkipStitchIndex;
 
-        public FileCardExporter(int nLayoutStartIndex, int nLayoutEndIdx, string sExportFolder, bool bOverrideLayoutStringFormat, string sStringFormat,
-            System.Drawing.Imaging.ImageFormat eImageFormat)
+        public FileCardExporter(int nLayoutStartIndex, int nLayoutEndIdx, string sExportFolder, bool bOverrideLayoutStringFormat, string sStringFormat, int
+            nSkipStitchIndex, System.Drawing.Imaging.ImageFormat eImageFormat)
             : base(nLayoutStartIndex, nLayoutEndIdx)
         {
             if (!sExportFolder.EndsWith(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture)))
@@ -52,6 +53,7 @@ namespace CardMaker.Card.Export
             {
                 m_sStringFormat = sStringFormat;
             }
+            m_nSkipStitchIndex = nSkipStitchIndex;
             m_eImageFormat = eImageFormat;
         }
 
@@ -86,6 +88,7 @@ namespace CardMaker.Card.Export
                 {
                     var nX = 0;
                     var nY = 0;
+                    var nCardsExportedInImage = 0;
                     zGraphics.Clear(CurrentDeck.CardLayout.exportTransparentBackground ? 
                         Color.FromArgb(0, 0, 0, 0) :
                         Color.White);
@@ -93,24 +96,45 @@ namespace CardMaker.Card.Export
                     {
                         CurrentDeck.ResetDeckCache();
                         CurrentDeck.CardPrintIndex = nCardIdx;
+                        nCardsExportedInImage++;
                         CardRenderer.DrawPrintLineToGraphics(zGraphics, nX, nY, !CurrentDeck.CardLayout.exportTransparentBackground);
                         m_zExportCardBuffer.SetResolution(CurrentDeck.CardLayout.dpi, CurrentDeck.CardLayout.dpi);
 
                         zWait.ProgressStep(1);
                         nCardIdx++;
 
-                        nX += CurrentDeck.CardLayout.width;
-                        if (nX + CurrentDeck.CardLayout.width > exportWidth)
+                        int nMoveCount = 1;
+                        if (m_nSkipStitchIndex > 0)
                         {
-                            nX = 0;
-                            nY += CurrentDeck.CardLayout.height;
-                        }
-                        if (nY + CurrentDeck.CardLayout.height > exportHeight)
-                        {
-                            // no more space
-                            break;
+                            var x = ((nCardsExportedInImage + 1)%m_nSkipStitchIndex);
+                            if (x == 0)
+                            {
+                                // shift forward an extra spot to ignore the dummy index
+                                nMoveCount = 2;
+                            }
                         }
 
+                        var bOutOfSpace = false;
+                        for (int nShift = 0; nShift < nMoveCount; nShift++)
+                        {
+                            nX += CurrentDeck.CardLayout.width + CurrentDeck.CardLayout.buffer;
+                            if (nX + CurrentDeck.CardLayout.width > exportWidth)
+                            {
+                                nX = 0;
+                                nY += CurrentDeck.CardLayout.height + CurrentDeck.CardLayout.buffer;
+                            }
+                            if (nY + CurrentDeck.CardLayout.height > exportHeight)
+                            {
+                                // no more space
+                                bOutOfSpace = true;
+                                break;
+                            }
+                        }
+
+                        if (bOutOfSpace)
+                        {
+                            break;
+                        }
                     } while (nCardIdx < CurrentDeck.CardCount);
 
                     string sFileName;

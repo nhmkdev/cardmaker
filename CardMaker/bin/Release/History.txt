@@ -5,6 +5,8 @@ Card Maker Version History
 - Added ![cardindex] and ![deckindex] as card values (usable in the element definition)
 - Resolved issue with FormattedText bottom aligned containing images in the last row (quite specific!)
 - Added basic alignment tools to the Canvas
+- Added export card columns/rows functionality to export dialog (configures the export width/height)
+- Added skip index when stitching (for use with tools like Tabletop Simulator)
 
 0.99.2.0
 - First open source release (and a massive code refactor)

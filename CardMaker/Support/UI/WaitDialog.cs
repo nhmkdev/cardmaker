@@ -237,6 +237,7 @@ namespace Support.UI
         /// <param name="nStartVal">The starting value to set on the progress bar</param>
         public void ProgressReset(int nProgressBar, int nMin, int nMax, int nStartVal)
         {
+            if (m_arrayProgressBars.Length <= nProgressBar) { return; }
             if (m_arrayProgressBars[nProgressBar].InvokeActionIfRequired(() => ProgressReset(nProgressBar, nMin, nMax, nStartVal)))
             {
                 if (m_arrayProgressBars.Length <= nProgressBar) { return; }
@@ -254,6 +255,7 @@ namespace Support.UI
         /// <param name="nValue">The value to set</param>
         public void ProgressSet(int nProgressBar, int nValue)
         {
+            if (m_arrayProgressBars.Length <= nProgressBar) { return; }
             if (m_arrayProgressBars[nProgressBar].InvokeActionIfRequired(() => ProgressSet(nProgressBar, nValue)))
             {
                 if (m_arrayProgressBars.Length <= nProgressBar) { return; }
@@ -270,6 +272,7 @@ namespace Support.UI
         /// <param name="nProgressBar">The progress bar to step (0 based)</param>
         public void ProgressStep(int nProgressBar)
         {
+            if (m_arrayProgressBars.Length <= nProgressBar) { return; }
             if (m_arrayProgressBars[nProgressBar].InvokeActionIfRequired(() => ProgressStep(nProgressBar)))
             {
                 if (m_arrayProgressBars.Length <= nProgressBar) { return; }
