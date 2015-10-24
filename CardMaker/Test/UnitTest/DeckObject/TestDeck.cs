@@ -15,6 +15,15 @@ namespace UnitTest.DeckObject
             };
         }
 
+        public TestDeck(ITranslatorFactory zTranslatorFactory)
+        {
+            CardLayout = new ProjectLayout()
+            {
+                defaultCount = 10
+            };
+            TranslatorFactory = zTranslatorFactory;
+        }
+
         public void SetCardIndex(int idx)
         {
             m_nCardIndex = idx;

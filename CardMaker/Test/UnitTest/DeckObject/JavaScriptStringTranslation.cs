@@ -11,7 +11,7 @@ namespace UnitTest.DeckObject
     // TODO: "bad name" test!
 
     [TestFixture]
-    internal class StringTranslation
+    internal class JavaScriptStringTranslation
     {
         private TestDeck _testDeck;
         private DeckLine _testLine;
@@ -20,12 +20,13 @@ namespace UnitTest.DeckObject
         [SetUp]
         public void Setup()
         {
-            _testDeck = new TestDeck();
+            _testDeck = new TestDeck(new JavaScriptTranslatorFactory());
             _testLine = new DeckLine(new List<string>());
             _testElement = new ProjectLayoutElement("testElement");
         }
 
-        [Test]
+        // this test is useless without the moq or something to detect cache
+        //[Test]
         public void ValidateCache()
         {
             const string expected = "sample string with nothing special.";
@@ -36,7 +37,7 @@ namespace UnitTest.DeckObject
             Assert.AreEqual(result, secondResult);
         }
 
-        [TestCase("sample string with nothing special.", Result = "sample string with nothing special.")]
+        [TestCase("'sample string with nothing special.'", Result = "sample string with nothing special.")]
         public string ValidateNonTranslate(string input)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
@@ -45,18 +46,9 @@ namespace UnitTest.DeckObject
             return result.String;
         }
 
-        [TestCase("#(switch;goodkey;badkey;1;goodkey;#nodraw)#", false, Result = "#nodraw")]
-        [TestCase("Test: #(switch;goodkey;badkey;1;goodkey;#nodraw)#", false, Result = "Test: #nodraw")]
-        [TestCase("Test: #(switch;goodkey;badkey;1;goodkey;#nodraw)#", false, Result = "Test: #nodraw")]
-        [TestCase("#(switch;goodkey;badkey;1;goodkey;#nodraw)# [test]", false, Result = "#nodraw [test]")]
-        [TestCase("Test: #(switch;goodkey;badkey;1;otherbadkey;2;#default;#nodraw)#", false, Result = "Test: #nodraw")]
-        [TestCase("#(if a == a then #nodraw)#", false, Result = "#nodraw")]
-        [TestCase("#(if [1;2;3] == [a;3;b] then #nodraw)#", false, Result = "#nodraw")]
-        [TestCase("#(if [1;2;3] == [a;b;c] then #nodraw)#", true, Result = "")]
-        [TestCase("Test: #(if a == a then #nodraw)#", false, Result = "Test: #nodraw")]
-        [TestCase("#nodraw", false, Result = "#nodraw")]
-        [TestCase("#(if a<4 == a>4 then 6 &lt; 7 else #nodraw)#", false, Result = "#nodraw")]
-        [TestCase("#(if a<4 == a>4 then #nodraw else 6 &lt; 7)#", true, Result = "6 < 7")]
+        [TestCase("'#nodraw'", false, Result = "#nodraw")]
+        [TestCase("'Test: #nodraw'", false, Result = "Test: #nodraw")]
+        [TestCase("'#nodraw [test]'", false, Result = "#nodraw [test]")]
         public string ValidateNoDraw(string input, bool expectedDrawElement)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
@@ -66,9 +58,8 @@ namespace UnitTest.DeckObject
         }
 
         // x + (current card index * y) with left padded 0's numbering z
-        [TestCase("##0;0;0#", 0, Result = "0")]
-        [TestCase("##0;0;0#", 10, Result = "0")]
-        [TestCase("##500;10;8#", 1, Result = "00000510")]
+        [TestCase("cardIndex", 0, Result = "1")]
+        [TestCase("cardIndex - 1", 0, Result = "0")]
         public string ValidateCounter(string input, int cardIndex)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
@@ -77,10 +68,10 @@ namespace UnitTest.DeckObject
         }
 
         [TestCase("a", "3", Result = "3")]
-        [TestCase("3", "a", Result = "a")]
-        [TestCase("", "a", Result = "@[]")]
-        [TestCase("-", "a", Result = "a")]
-        //[TestCase(" ", "a", Result = "a")] // TODO: this is not a valid key and should throw an error in processing
+        [TestCase("3", "a", Result = "")] // error case in js
+        [TestCase("", "a", Result = "")] // error case in js
+        [TestCase("-", "a", Result = "")] // error case in js
+        [TestCase(" ", "a", Result = "")] // TODO: this is not a valid key and should throw an error in processing
         public string ValidateColumnReference(string keyName, string keyValue)
         {
             _testDeck.ProcessLinesPublic(
@@ -91,7 +82,7 @@ namespace UnitTest.DeckObject
                 },
                 new List<List<string>>(),
                 null);
-            return _testDeck.TranslateString("@["+ keyName + "]", _testDeck.ValidLines[0], _testElement, false).String;
+            return _testDeck.TranslateString(keyName, _testDeck.ValidLines[0], _testElement, false).String;
         }
 
         [TestCase("x", "x" , Result = 1)]
@@ -144,10 +135,10 @@ namespace UnitTest.DeckObject
             return _testDeck.CardCount;
         }
 
-        [TestCase("\\c", Result=",")]
-        [TestCase("\\q", Result = "\"")]
-        [TestCase("&gt;", Result = ">")]
-        [TestCase("&lt;", Result = "<")]
+        [TestCase("'\\\\c'", Result=",")]
+        [TestCase("'\\\\q'", Result = "\"")]
+        [TestCase("'&gt;'", Result = ">")]
+        [TestCase("'&lt;'", Result = "<")]
         public string ValidateSpecialCharacterTranslation(string input)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
@@ -159,12 +150,12 @@ namespace UnitTest.DeckObject
         public void ValidateNewlineSpecialCharacterTranslation()
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
-            var result = _testDeck.TranslateString("\\n", _testLine, _testElement, false);
+            var result = _testDeck.TranslateString("'\\\\n'", _testLine, _testElement, false);
             Assert.AreEqual(Environment.NewLine, result.String);
         }
 
-        [TestCase("\\c", Result = "\\c")]
-        [TestCase("\\q", Result = "\\q")]
+        [TestCase("'\\\\c'", Result = "\\c")]
+        [TestCase("'\\\\q'", Result = "\\q")]
         public string ValidateSpecialCharacterNonTranslation(string input)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
@@ -176,11 +167,11 @@ namespace UnitTest.DeckObject
         [Test]
         public void ValidateNewlineSpecialCharacterNonTranslation()
         {
-            const string slashN = "\\n";
+            const string slashN = "'\\n'";
             _testElement.type = ElementType.FormattedText.ToString();
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
             var result = _testDeck.TranslateString(slashN, _testLine, _testElement, false);
-            Assert.AreEqual(slashN, result.String);
+            Assert.AreEqual("\n", result.String);
         }
 
         [TestCase("a","1","b","2","c","3")]
@@ -203,22 +194,23 @@ namespace UnitTest.DeckObject
             }
         }
 
-        [TestCase("@[1]@[2]", Result = "ab")]
-        [TestCase("@[4]@[2]@[1]", Result = "bbbba")]
-        [TestCase("@[5]", Result = "bbb")]
-        [TestCase("@[5] at the @[1] end test @[5]", Result = "bbb at the a end test bbb")]
-        public String ValidateNestedDefines(string line)
+        [TestCase("j + k", Result = "ab")]
+        [TestCase("m + k + j", Result = "bbbba")]
+        [TestCase("n", Result = "bbb")]
+        [TestCase("n + ' at the ' + j + ' end test ' + n", Result = "bbb at the a end test bbb")]
+        public string ValidateNestedDefines(string line)
         {
+            // TODO: Nested defines with JavaScript is not possible at this time!
+
             var listLines = new List<List<string>>();
             var listDefines = new List<List<string>>()
             {
                 new List<string>() { "define", "value" },
-                new List<string>() { "1", "a" },
-                new List<string>() { "2", "b" },
-                new List<string>() { "3", "@[2]" },
-                new List<string>() { "4", "@[3]@[2]@[3]" },
-                new List<string>() { "4ex", "4" },
-                new List<string>() { "5", "@[@[4ex]]" }
+                new List<string>() { "j", "'a'" },//1
+                new List<string>() { "k", "'b'" },//2
+                new List<string>() { "l", "~k" },//3
+                new List<string>() { "m", "~l + k + l" },//4
+                new List<string>() { "n", "~this['m']" }//5
             };
             _testDeck.ProcessLinesPublic(
                 listLines,
@@ -228,17 +220,13 @@ namespace UnitTest.DeckObject
             return result.String;
         }
 
-        [TestCase("@[action,aa,bb]", Result = "aa::bb")]
-        [TestCase("@[action,@[L4],bb]", Result = "bbb::bb")]
-        [TestCase("@[actionCaller,@[L1]]", Result = "a::zork")]
-        [TestCase("@[smallImgTag,@[theCoin]]", Result = @"<img=\images\coin.png;.90;0;3>")]
-        [TestCase("@[smallImgTag, @[theCoin]]", Result = @"<img= \images\coin.png;.90;0;3>")]
-        [TestCase("@[smallImgTag,\t@[theCoin]]", Result = "<img=\t\\images\\coin.png;.90;0;3>")]
-        [TestCase("@[smallImgTag,]", Result = @"<img=;.90;0;3>")]
-        [TestCase("@[action,,]", Result = @"::")]
-        [TestCase("@[smallImgTag]", Result = @"<img={1};.90;0;3>")]
-        [TestCase("@[L1,@[L2],@[L4]]", Result = @"a")]
-        public String ValidateParameterDefines(string line)
+        [TestCase("action('aa', 'bb')", Result = "aa::bb")]
+        [TestCase("action(l4, 'bb')", Result = "bbb::bb")]
+        [TestCase("action('','')", Result = @"::")]
+        [TestCase("actioncaller(l1)", Result = "a::zork")]
+        [TestCase("smallimgtag(thecoin)", Result = @"<img=\images\coin.png;.90;0;3>")]
+        [TestCase("smallimgtag('')", Result = @"<img=;.90;0;3>")]
+        public string ValidateParameterDefines(string line)
         {
             var listLines = new List<List<string>>();
             var listDefines = new List<List<string>>()
@@ -246,12 +234,12 @@ namespace UnitTest.DeckObject
                 new List<string>() { "define", "value" },
                 new List<string>() { "L1", "a" },
                 new List<string>() { "L2", "b" },
-                new List<string>() { "L3", "@[L2]" },
-                new List<string>() { "L4", "@[L3]@[L2]@[L3]" },
-                new List<string>() { "action", "{1}::{2}" },
-                new List<string>() { "actionCaller", "@[action,{1},zork]" },
-                new List<string>() { "smallImgTag", "<img={1};.90;0;3>" },
-                new List<string>() { "theCoin", @"\images\coin.png" }
+                new List<string>() { "L3", "~l2" },
+                new List<string>() { "L4", "~l3 + l2 + l3" },
+                new List<string>() { "action", "function(x, y) { return x + '::' + y; }" },
+                new List<string>() { "actionCaller", "function(x) { return action(x, 'zork'); }" },
+                new List<string>() { "smallImgTag", "function(x) { return '<img=' + x + ';.90;0;3>'; }" },
+                new List<string>() { "theCoin", @"'\\images\\coin.png'" }
             };
             _testDeck.ProcessLinesPublic(
                 listLines,
@@ -261,29 +249,6 @@ namespace UnitTest.DeckObject
             var result = _testDeck.TranslateString(line, _testLine, _testElement, false);
             return result.String;
         }
-
-        [TestCase("##?", 15, 8, Result = "00000015bb")]
-        [TestCase("@[a] ##", 123456, 4, Result = "1 123456")]
-        [TestCase("@[aa] ##", 123456, 4, Result = "2 123456")]
-        [TestCase("@[bb] ##?", 123456, 8, Result = "[UNKNOWN] 00123456bb")]
-        public string TestFileNameExport(string input, int cardNumber, int leftPad)
-        {
-            _testDeck.ProcessLinesPublic(
-                new List<List<string>>()
-                {
-                    new List<string>(){"a"},
-                    new List<string>() {"1"}
-                },
-                new List<List<string>>()
-                {
-                    new List<string>(){"define", "value"},
-                    new List<string>(){"aa", "2"}
-                },
-                null);
-            _testDeck.SetDisallowedCharReplacement('?', "bb");
-            return _testDeck.TranslateFileNameString(input, cardNumber, leftPad);
-        }
-
         // graphic elements
     }
 }

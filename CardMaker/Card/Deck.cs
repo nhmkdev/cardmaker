@@ -49,6 +49,8 @@ namespace CardMaker.Card
 
         public ProjectLayout CardLayout { get; protected set; }
 
+        protected  ITranslatorFactory TranslatorFactory { get; set; }
+
         protected TranslatorBase m_zTranslator;
 
         public List<DeckLine> ValidLines { get; private set; }
@@ -125,6 +127,7 @@ namespace CardMaker.Card
         public Deck()
         {
             ValidLines = new List<DeckLine>();
+            TranslatorFactory = new TranslatorFactory();
         }
 
         protected void ReadData(object zRefData)

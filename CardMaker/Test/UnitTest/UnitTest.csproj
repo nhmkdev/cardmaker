@@ -35,6 +35,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ClearScript, Version=5.4.3.0, Culture=neutral, PublicKeyToken=935d0c957da47c73, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\3rdParty\ClearScript\ClearScript.dll</HintPath>
+    </Reference>
     <Reference Include="Moq">
       <HintPath>..\..\packages\Moq.4.2.1408.0619\lib\net40\Moq.dll</HintPath>
     </Reference>
@@ -59,7 +63,9 @@
   <ItemGroup>
     <Compile Include="DeckObject\ElementOverride.cs" />
     <Compile Include="DeckObject\FormattedText.cs" />
-    <Compile Include="DeckObject\StringTranslation.cs" />
+    <Compile Include="DeckObject\JavaScriptStringTranslation.cs" />
+    <Compile Include="DeckObject\InceptStringTranslation.cs" />
+    <Compile Include="DeckObject\JavaScriptTranslatorFactory.cs" />
     <Compile Include="DeckObject\TestDeck.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -92,6 +98,10 @@
   </Choose>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>COPY /Y $(SolutionDir)\3rdParty\ClearScript\ClearScriptV8* $(TargetDir)
+COPY /Y $(SolutionDir)\3rdParty\ClearScript\v8* $(TargetDir)</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

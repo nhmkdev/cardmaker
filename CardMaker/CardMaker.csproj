@@ -134,6 +134,7 @@
     <Compile Include="Card\Translation\JavaScriptTranslator.cs" />
     <Compile Include="Card\Translation\TranslatorBase.cs" />
     <Compile Include="Card\Translation\TranslatorFactory.cs" />
+    <Compile Include="Card\Translation\ITranslatorFactory.cs" />
     <Compile Include="Data\CardMakerConstants.cs" />
     <Compile Include="Data\CardMakerInstance.cs" />
     <Compile Include="Data\CardMakerSettings.cs" />

@@ -22,36 +22,14 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
-using CardMaker.Data;
-using CardMaker.Events.Managers;
-using Support.IO;
-using Support.UI;
 
 namespace CardMaker.Card.Translation
 {
-    public class TranslatorFactory : ITranslatorFactory
+    public interface ITranslatorFactory
     {
-        public TranslatorBase GetTranslator(Dictionary<string, int> dictionaryColumnNames, Dictionary<string, string> dictionaryDefines,
-            Dictionary<string, Dictionary<string, int>> dictionaryElementOverrides, List<string> listColumnNames)
-        {
-            TranslatorType eTranslator;
-            if (ProjectManager.Instance.LoadedProject == null ||
-                !Enum.TryParse(ProjectManager.Instance.LoadedProject.translatorName, true, out eTranslator))
-            {
-                eTranslator = TranslatorType.Incept;
-            }
-
-            Logger.AddLogLine("Deck Translator: {0}".FormatString(eTranslator.ToString()));
-
-            switch (eTranslator)
-            {
-                case TranslatorType.JavaScript:
-                    return new JavaScriptTranslator(dictionaryColumnNames, dictionaryDefines, dictionaryElementOverrides, listColumnNames);
-                default:
-                    return new InceptTranslator(dictionaryColumnNames, dictionaryDefines, dictionaryElementOverrides, listColumnNames);
-            }
-        }
+        TranslatorBase GetTranslator(Dictionary<string, int> dictionaryColumnNames,
+            Dictionary<string, string> dictionaryDefines,
+            Dictionary<string, Dictionary<string, int>> dictionaryElementOverrides, List<string> listColumnNames);
     }
 }

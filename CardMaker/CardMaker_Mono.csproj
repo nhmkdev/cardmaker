@@ -132,6 +132,7 @@
     <Compile Include="Card\Import\ReferenceReaderFactory.cs" />
     <Compile Include="Card\Translation\FilenameTranslator.cs" />
     <Compile Include="Card\Translation\InceptTranslator.cs" />
+    <Compile Include="Card\Translation\ITranslatorFactory.cs" />
     <Compile Include="Card\Translation\JavaScriptTranslator.cs" />
     <Compile Include="Card\Translation\TranslatorBase.cs" />
     <Compile Include="Card\Translation\TranslatorFactory.cs" />

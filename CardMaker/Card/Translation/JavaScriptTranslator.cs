@@ -31,7 +31,7 @@ using Support.IO;
 
 namespace CardMaker.Card.Translation
 {
-    class JavaScriptTranslator : TranslatorBase
+    public class JavaScriptTranslator : TranslatorBase
     {
         private const string FUNCTION_PREFIX = "function(";
 
@@ -50,11 +50,11 @@ namespace CardMaker.Card.Translation
                 try
                 {
                     var sValue = engine.Evaluate(sScript);
-                    if (sValue is string)
+                    if (sValue is string || sValue is int)
                     {
                         return new ElementString()
                         {
-                            String = (string)sValue
+                            String = sValue.ToString()
                         };
                     }
                     else
@@ -81,29 +81,29 @@ namespace CardMaker.Card.Translation
                 return "''";
             }
 
-            AddVar(zBuilder, "deckIndex", (nCardIndex + 1).ToString());
-            AddVar(zBuilder, "cardIndex", (zDeckLine.RowSubIndex + 1).ToString());
+            AddNumericVar(zBuilder, "deckIndex", (nCardIndex + 1).ToString());
+            AddNumericVar(zBuilder, "cardIndex", (zDeckLine.RowSubIndex + 1).ToString());
 
             foreach (var sKey in DictionaryDefines.Keys)
             {
-                AddVar(zBuilder, sKey, ConvertQuoteEscape(DictionaryDefines[sKey]));
+                AddVar(zBuilder, sKey, DictionaryDefines[sKey]);
             }
 
             for (int nIdx = 0; nIdx < ListColumnNames.Count; nIdx++)
             {
-                AddVar(zBuilder, ListColumnNames[nIdx], ConvertQuoteEscape(zDeckLine.LineColumns[nIdx]));
+                AddVar(zBuilder, ListColumnNames[nIdx], zDeckLine.LineColumns[nIdx]);
             }
             zBuilder.Append(sDefintion);
             return zBuilder.ToString();
         }
 
-        private string ConvertQuoteEscape(string sInput)
+        private void AddNumericVar(StringBuilder zBuilder, string sVar, string sValue)
         {
-            if (sInput.StartsWith("~'"))
-            {
-                return sInput.Substring(1);
-            }
-            return sInput;
+            zBuilder.Append("this.");
+            zBuilder.Append(sVar.Replace(' ', '_'));
+            zBuilder.Append("=");
+            zBuilder.Append(sValue);
+            zBuilder.AppendLine(";");
         }
 
         private void AddVar(StringBuilder zBuilder, string sVar, string sValue)
@@ -113,9 +113,18 @@ namespace CardMaker.Card.Translation
             zBuilder.Append("=");
             // functions or single quoted items are left as-is
             // note this does not tolerate (whitespace)'
-            if (sValue.StartsWith(FUNCTION_PREFIX) || sValue.StartsWith("'"))
+            if (sValue.StartsWith(FUNCTION_PREFIX))
+            {
+                zBuilder.AppendLine(sValue);
+            }
+            else if (sValue.StartsWith("'"))
             {
                 zBuilder.Append(sValue);
+                zBuilder.AppendLine(";");
+            }
+            else if (sValue.StartsWith("~'") || sValue.StartsWith("~"))
+            {
+                zBuilder.Append(sValue.Substring(1));
                 zBuilder.AppendLine(";");
             }
             else
