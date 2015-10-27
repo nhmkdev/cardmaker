@@ -95,7 +95,6 @@ namespace CardMaker.Card.Translation
                     sOutput = zMatch.Groups[1] + "[UNKNOWN]" + zMatch.Groups[5];
                 }
             }
-#warning there may be a bug here with the cardLayout name if the user changes the layout name...
             // replace ##, #L, Newlines
             sOutput = sOutput.Replace("##", nCardNumber.ToString(CultureInfo.InvariantCulture).PadLeft(nLeftPad, '0')).Replace("#L", zLayout.Name).Replace(Environment.NewLine, String.Empty);
 

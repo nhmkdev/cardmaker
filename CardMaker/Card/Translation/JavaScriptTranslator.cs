@@ -122,7 +122,7 @@ namespace CardMaker.Card.Translation
                 zBuilder.Append(sValue);
                 zBuilder.AppendLine(";");
             }
-            else if (sValue.StartsWith("~'") || sValue.StartsWith("~"))
+            else if (sValue.StartsWith("~"))
             {
                 zBuilder.Append(sValue.Substring(1));
                 zBuilder.AppendLine(";");

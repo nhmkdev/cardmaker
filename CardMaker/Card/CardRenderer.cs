@@ -49,7 +49,7 @@ namespace CardMaker.Card
         public void DrawCard(int nX, int nY, Graphics zGraphics, DeckLine zDeckLine, bool bExport, bool bDrawBackground)
         {
             List<string> listLine = zDeckLine.LineColumns;
-#warning this thing is the main choke point of the app, minimize and cache!
+
             // Custom Graphics Setting
             zGraphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
             zGraphics.SmoothingMode = SmoothingMode.AntiAlias;
@@ -143,7 +143,6 @@ namespace CardMaker.Card
                     }
                 }
             }
-#warning this results in a border draw when not desired on export...
             // draw the card border
             if ((bExport && CardMakerSettings.PrintLayoutBorder) || (!bExport && CurrentDeck.CardLayout.drawBorder))
             {
