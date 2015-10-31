@@ -440,7 +440,17 @@ namespace CardMaker.Forms
                         m_zContextMenu.Items.Clear();
                         m_zContextMenu.Items.Add("Add Reference to [" + columnText + "] column", null,
                             (osender, ea) =>
-                                InsertVariableText("@[" + columnText + "]"));
+                            {
+                                if (TranslatorType.Incept == ProjectManager.Instance.LoadedProjectTranslatorType)
+                                {
+                                    InsertVariableText("@[" + columnText + "]");
+                                }
+                                else if(TranslatorType.JavaScript == ProjectManager.Instance.LoadedProjectTranslatorType)
+                                {
+#warning this is a bit of a hack, this kind of logic should be handled by the translator
+                                    InsertVariableText(columnText.StartsWith("~") ? columnText.Substring(1) : columnText);
+                                }
+                            });
                         m_zContextMenu.Show(listViewElementColumns.PointToScreen(e.Location));
                     }
                 }
@@ -451,6 +461,7 @@ namespace CardMaker.Forms
         {
             contextMenuStripAssist.Items.Clear();
             // NOTE: if there is ever a third scripting language (hopefully not) break this kind of logic out into the Translator classes
+#warning this is a bit of a hack, this kind of logic should be handled by the translator
             if (TranslatorType.Incept == ProjectManager.Instance.LoadedProjectTranslatorType)
             {
                 contextMenuStripAssist.Items.Add("Add Empty", null, (os, ea) => InsertVariableText("#empty"));
