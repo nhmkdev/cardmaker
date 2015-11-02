@@ -75,7 +75,9 @@ namespace CardMaker.Card.Export
         {
             var zWait = WaitDialog.Instance;
 
+#if !MONO_BUILD
             Bitmap zBuffer = null;
+#endif
 
             zWait.ProgressReset(0, 0, ExportLayoutEndIndex - ExportLayoutStartIndex, 0);
             for (var nIdx = ExportLayoutStartIndex; nIdx < ExportLayoutEndIndex; nIdx++)
@@ -107,15 +109,16 @@ namespace CardMaker.Card.Export
                     CenterLayoutPositionOnNewRow();
                 }
 
+#if !MONO_BUILD
                 if (null != zBuffer)
                 {
                     zBuffer.Dispose();
                 }
-
                 zBuffer = new Bitmap(CurrentDeck.CardLayout.width, CurrentDeck.CardLayout.height);
 
                 float fOriginalXDpi = zBuffer.HorizontalResolution;
                 float fOriginalYDpi = zBuffer.VerticalResolution;
+#endif
 
                 for (var nCardIdx = 0; nCardIdx < CurrentDeck.CardCount; nCardIdx++)
                 {
@@ -123,7 +126,13 @@ namespace CardMaker.Card.Export
                     CurrentDeck.CardPrintIndex = nCardIdx;
 
                     // minor optimization, reuse the same bitmap (for drawing sake the DPI has to be reset)
+#if MONO_BUILD
+                    Bitmap zBuffer = new Bitmap(CurrentDeck.CardLayout.width, CurrentDeck.CardLayout.height);
+#endif
+
+#if !MONO_BUILD
                     zBuffer.SetResolution(fOriginalXDpi, fOriginalYDpi);
+#endif
 
                     CardRenderer.DrawPrintLineToGraphics(Graphics.FromImage(zBuffer));
 
@@ -149,10 +158,12 @@ namespace CardMaker.Card.Export
                 zWait.ProgressStep(0);
             }
 
+#if !MONO_BUILD
             if (null != zBuffer)
             {
                 zBuffer.Dispose();
             }
+#endif
 
             try
             {
