@@ -350,16 +350,32 @@ namespace CardMaker.Forms
 
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var zQuery = new QueryPanelDialog("CardMaker Settings", 450, 250, true);
+            var zQuery = new QueryPanelDialog(
+                "CardMaker Settings",
+                450, 
+                250,
+#if !MONO_BUILD
+                true
+#else
+                false
+#endif
+                );
             zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
             zQuery.SetMaxHeight(600);
+#if !MONO_BUILD
             zQuery.AddTab("General");
+#endif
             zQuery.AddCheckBox("Enable Google Cache", CardMakerSettings.EnableGoogleCache, IniSettings.EnableGoogleCache);
             zQuery.AddCheckBox("Print/Export Layout Border", CardMakerSettings.PrintLayoutBorder, IniSettings.PrintLayoutBorder);
             zQuery.AddPullDownBox("Default Translator Type",
                 new string[] { TranslatorType.Incept.ToString(), TranslatorType.JavaScript.ToString() }, (int)CardMakerSettings.DefaultTranslatorType, IniSettings.DefaultTranslator);
 
+#if !MONO_BUILD
             zQuery.AddTab("PDF Export");
+#else
+            zQuery.AddVerticalSpace(20);
+            zQuery.AddLabel("---- PDF Export Settings ----", 16);
+#endif
             zQuery.AddNumericBox("Page Width (inches)", CardMakerSettings.PrintPageWidth, 1, 1024, 1, 2, IniSettings.PrintPageWidth);
             zQuery.AddNumericBox("Page Height (inches)", CardMakerSettings.PrintPageHeight, 1, 1024, 1, 2, IniSettings.PrintPageHeight);
             zQuery.AddNumericBox("Page Horizontal Margin (inches)", CardMakerSettings.PrintPageHorizontalMargin, 0, 1024, 0.01m, 2, IniSettings.PrintPageHorizontalMargin);
@@ -600,9 +616,9 @@ namespace CardMaker.Forms
             }
         }
 
-        #endregion
+#endregion
 
-        #region Manager Events
+#region Manager Events
 
         private void Export_Requested(object sender, ExportEventArgs args)
         {
@@ -650,9 +666,9 @@ namespace CardMaker.Forms
             SetLoadedFile(sProjectFilePath);
         }
 
-        #endregion
+#endregion
 
-        #region AbstractDirtyForm overrides
+#region AbstractDirtyForm overrides
 
         protected override bool SaveFormData(string sFileName)
         {
@@ -699,7 +715,7 @@ namespace CardMaker.Forms
             return false;
         }
 
-        #endregion
+#endregion
 
         private void ExportViaPDFSharp(bool bExportAllLayouts)
         {
