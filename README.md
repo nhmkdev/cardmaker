@@ -6,7 +6,7 @@ This application was created to help me generate components for a board game. Yo
 
 ## Download
 
-Latest stable (I hope) release binary: [Download 0.99.2.0](https://github.com/nhmkdev/cardmaker/releases/tag/v.0.99.2.0)
+Latest stable (I hope) release binary: [Download 0.99.3.0](https://github.com/nhmkdev/cardmaker/releases/tag/v.0.99.3.0)
 
 ## Sample
 
