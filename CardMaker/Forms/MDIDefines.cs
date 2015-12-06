@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using CardMaker.Data;
 using CardMaker.Events.Managers;
 using Support.UI;
 using LayoutEventArgs = CardMaker.Events.Args.LayoutEventArgs;
@@ -71,9 +72,14 @@ namespace CardMaker.Forms
             var listItems = new List<ListViewItem>();
             foreach (var zDefine in args.Deck.Defines)
             {
-                listItems.Add(new ListViewItem(new string[] { zDefine.Key, zDefine.Value }));
+                var zLvi = new ListViewItem(new string[] {zDefine.Key, zDefine.Value});
+                // the tag stores the original define value
+                zLvi.Tag = zDefine.Value;
+                listItems.Add(zLvi);
             }
             listViewDefines.Items.AddRange(listItems.ToArray());
+
+            updateDefineValues();
         }
 
         #endregion
@@ -132,6 +138,29 @@ namespace CardMaker.Forms
             }
         }
 
+        private void checkTranslatePrimitiveCharacters_CheckedChanged(object sender, EventArgs e)
+        {
+            CardMakerSettings.DefineTranslatePrimitiveCharacters = checkTranslatePrimitiveCharacters.Checked;
+            updateDefineValues();
+        }
+
         #endregion
+
+        private void updateDefineValues()
+        {
+            ListView.ListViewItemCollection zCollection = listViewDefines.Items;
+            for (int nIdx = 0; nIdx < zCollection.Count; nIdx++)
+            {
+                var zItem = zCollection[nIdx];
+                if (CardMakerSettings.DefineTranslatePrimitiveCharacters)
+                {
+                    zItem.SubItems[1].Text = ((string)zItem.Tag).Replace("<c>", ",").Replace("<q>", "\"").Replace("\\c", ",").Replace("\\q", "\"");
+                }
+                else
+                {
+                    zItem.SubItems[1].Text = (string) zItem.Tag;
+                }
+            }
+        }
     }
 }

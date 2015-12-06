@@ -49,7 +49,8 @@ namespace CardMaker.Data
         PrintLayoutsOnNewPage,
         EnableGoogleCache,
         DefaultTranslator,
-        ExportSkipStitchIndex
+        ExportSkipStitchIndex,
+        DefineTranslatePrimitiveCharacters
     }
 
     public enum ExportType

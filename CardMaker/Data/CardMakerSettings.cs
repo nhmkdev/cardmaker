@@ -160,5 +160,11 @@ namespace CardMaker.Data
             }
             set { s_zIniManager.SetValue(IniSettings.ExportSkipStitchIndex, value.ToString()); }
         }
+
+        public static bool DefineTranslatePrimitiveCharacters
+        {
+            get { return s_zIniManager.GetValue(IniSettings.DefineTranslatePrimitiveCharacters, bool.FalseString).Equals(bool.TrueString); }
+            set { s_zIniManager.SetValue(IniSettings.DefineTranslatePrimitiveCharacters, value.ToString()); }
+        }
     }
 }
