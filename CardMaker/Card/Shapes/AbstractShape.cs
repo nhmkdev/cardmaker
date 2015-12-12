@@ -33,8 +33,8 @@ namespace CardMaker.Card.Shapes
     public abstract class AbstractShape
     {
         protected int m_nThickness = 0;
-        protected string m_nOverrideWidth = NO_SIZE_OVERRIDE;
-        protected string m_nOverrideHeight = NO_SIZE_OVERRIDE;
+        protected string m_sOverrideWidth = NO_SIZE_OVERRIDE;
+        protected string m_sOverrideHeight = NO_SIZE_OVERRIDE;
         protected string m_sName = string.Empty;
 
         public const string NO_SIZE_OVERRIDE = "-";
@@ -64,15 +64,15 @@ namespace CardMaker.Card.Shapes
         [Description("Override Width (- is none)")]
         public string OverrideWidth
         {
-            get { return m_nOverrideWidth; }
-            set { m_nOverrideWidth = value; }
+            get { return m_sOverrideWidth; }
+            set { m_sOverrideWidth = value; }
         }
 
         [Description("Override Height (- is none)")]
         public string OverrideHeight
         {
-            get { return m_nOverrideHeight; }
-            set { m_nOverrideHeight = value; }
+            get { return m_sOverrideHeight; }
+            set { m_sOverrideHeight = value; }
         }
 
         public override string ToString()
@@ -82,12 +82,12 @@ namespace CardMaker.Card.Shapes
 
         public virtual string ToCardMakerString()
         {
-            return "#" + m_sName + ";" + m_nThickness + ";" + m_nOverrideWidth + ";" + m_nOverrideHeight + "#";
+            return "#" + m_sName + ";" + m_nThickness + ";" + m_sOverrideWidth + ";" + m_sOverrideHeight + "#";
         }
 
         protected string ToCardMakerString(string sExtendedVariables)
         {
-            return "#" + m_sName + ";" + m_nThickness + ";" + m_nOverrideWidth + ";" + m_nOverrideHeight + ";" + sExtendedVariables + "#";
+            return "#" + m_sName + ";" + m_nThickness + ";" + m_sOverrideWidth + ";" + m_sOverrideHeight + ";" + sExtendedVariables + "#";
         }
 
         public virtual void InitializeItem(string sInput)
@@ -104,8 +104,8 @@ namespace CardMaker.Card.Shapes
                 {
                     bool bParse = true;
                     bParse &= int.TryParse(arrayVariables[(int)ShapeInformationIndex.Thickness], out m_nThickness);
-                    m_nOverrideWidth = arrayVariables[(int)ShapeInformationIndex.OverrideWidth];
-                    m_nOverrideHeight = arrayVariables[(int)ShapeInformationIndex.OverrideHeight];
+                    m_sOverrideWidth = arrayVariables[(int)ShapeInformationIndex.OverrideWidth];
+                    m_sOverrideHeight = arrayVariables[(int)ShapeInformationIndex.OverrideHeight];
                     if (bParse)
                         return arrayVariables;
                 }

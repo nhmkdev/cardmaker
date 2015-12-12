@@ -72,6 +72,9 @@ namespace CardMaker.Card.Shapes
                 AbstractShape zShape;
                 if (s_dictionaryShapeByName.TryGetValue(sShapeName, out zShape))
                 {
+                    // allow any shapes with extended settings to read in the values (ShapeInformationIndex extension)
+                    zShape.InitializeItem(sShapeInfo);
+
                     if ((int)AbstractShape.ShapeInformationIndex.BasicShapeInformation < arraySplit.Length)
                     {
                         int nThickness;

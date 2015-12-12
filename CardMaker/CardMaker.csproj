@@ -39,7 +39,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>bin\debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -129,6 +129,7 @@
     <Compile Include="Card\Import\GoogleReferenceReader.cs" />
     <Compile Include="Card\Import\ReferenceReader.cs" />
     <Compile Include="Card\Import\ReferenceReaderFactory.cs" />
+    <Compile Include="Card\Shapes\Definitions\TriangleShape.cs" />
     <Compile Include="Card\Translation\FilenameTranslator.cs" />
     <Compile Include="Card\Translation\InceptTranslator.cs" />
     <Compile Include="Card\Translation\JavaScriptTranslator.cs" />
