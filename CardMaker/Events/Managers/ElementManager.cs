@@ -81,6 +81,16 @@ namespace CardMaker.Events.Managers
             }
         }
 
+        public ElementManager()
+        {
+            ProjectManager.Instance.ProjectOpened += Project_Opened;
+        }
+
+        private void Project_Opened(object sender, ProjectEventArgs projectEventArgs)
+        {
+            FireElementSelectedEvent(null);
+        }
+
         #region Event Triggers
 
         /// <summary>
