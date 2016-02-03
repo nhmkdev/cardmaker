@@ -291,6 +291,20 @@ namespace CardMaker.Forms
             ProjectManager.Instance.AddLayout(zLayoutCopy);
         }
 
+        private void resizeLayoutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (null == treeView.SelectedNode) return;
+
+            AdjustLayoutSettings(false, (ProjectLayout)treeView.SelectedNode.Tag);
+        }
+
+        private void duplicateLayoutCustomToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (null == treeView.SelectedNode) return;
+
+            AdjustLayoutSettings(true, (ProjectLayout) treeView.SelectedNode.Tag);
+        }
+
         private void addReferenceToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var sFile = FormUtils.FileOpenHandler("CSV files (*.csv)|*.csv|All files (*.*)|*.*", null, true);
@@ -706,6 +720,64 @@ namespace CardMaker.Forms
             }
 
             return tnReference;
+        }
+
+        private void AdjustLayoutSettings(bool bCreateNew, ProjectLayout zLayout)
+        {
+            var zQuery = new QueryPanelDialog("Resize Layout", 450, false);
+            zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
+            const string LAYOUT_NAME = "layoutName";
+            const string CENTER_ELEMENTS = "centerElements";
+            const string WIDTH = "width";
+            const string HEIGHT = "height";
+
+            if (bCreateNew)
+            {
+                zQuery.AddTextBox("Layout Name", zLayout.Name + " copy", false, LAYOUT_NAME);
+            }
+            zQuery.AddNumericBox("Width", zLayout.width, 1, int.MaxValue, WIDTH);
+            zQuery.AddNumericBox("Height", zLayout.height, 1, int.MaxValue, HEIGHT);
+            zQuery.AddCheckBox("Center Elements", false, CENTER_ELEMENTS);
+
+            if (DialogResult.OK == zQuery.ShowDialog(this))
+            {
+                var zLayoutAdjusted = bCreateNew ? new ProjectLayout(zQuery.GetString(LAYOUT_NAME)) : zLayout;
+
+                var nOriginalWidth = zLayout.width;
+                var nOriginalHeight = zLayout.height;
+
+                if (bCreateNew)
+                {
+                    zLayoutAdjusted.DeepCopy(zLayout);
+                }
+
+                zLayoutAdjusted.width = (int)zQuery.GetDecimal(WIDTH);
+                zLayoutAdjusted.height = (int)zQuery.GetDecimal(HEIGHT);
+
+                if (zQuery.GetBool(CENTER_ELEMENTS) && null != zLayoutAdjusted.Element)
+                {
+                    var pointOldCenter = new Point(nOriginalWidth / 2, nOriginalHeight / 2);
+                    var pointNewCenter = new Point(zLayoutAdjusted.width / 2, zLayoutAdjusted.height / 2);
+                    var nXAdjust = pointNewCenter.X - pointOldCenter.X;
+                    var nYAdjust = pointNewCenter.Y - pointOldCenter.Y;
+                    foreach (var zElement in zLayoutAdjusted.Element)
+                    {
+                        zElement.x += nXAdjust;
+                        zElement.y += nYAdjust;
+                    }
+                }
+
+                UserAction.ClearUndoRedoStacks();
+
+                if (bCreateNew)
+                {
+                    ProjectManager.Instance.AddLayout(zLayoutAdjusted);
+                }
+                else
+                {
+                    LayoutManager.Instance.FireLayoutUpdatedEvent(true);
+                }
+            }
         }
     }
 }

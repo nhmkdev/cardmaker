@@ -1,5 +1,12 @@
 Card Maker Version History
 --------------------------
+0.99.4.0
+- Added ability to resize layouts (keeping the relative location of the elements centered)
+- Added Triangle shape
+- Added ability to translate primitives (quotes/commas) in the definitions dialog
+- Mono specific hack for the settings dialog
+- Mono fixes related to PDF export
+
 0.99.3.0
 - Added JavaScript Translation functionality (this is optional/experimental)
 - Added ![cardindex] and ![deckindex] as card values (usable in the element definition)

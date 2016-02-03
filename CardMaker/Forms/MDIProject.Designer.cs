@@ -66,6 +66,8 @@ namespace CardMaker.Forms
             this.addCardLayoutFromTemplateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItemSetProjectNameFormat = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripSeparator();
+            this.projectSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStripLayout = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.duplicateLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.defineAsTemplateLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -81,8 +83,8 @@ namespace CardMaker.Forms
             this.contextMenuStripReference = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.setAsDefaultReferenceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeReferenceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripSeparator();
-            this.projectSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resizeLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.duplicateLayoutCustomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStripProject.SuspendLayout();
             this.contextMenuStripLayout.SuspendLayout();
             this.contextMenuStripReference.SuspendLayout();
@@ -119,7 +121,7 @@ namespace CardMaker.Forms
             this.projectSettingsToolStripMenuItem});
             this.contextMenuStripProject.Name = "contextMenuStripTreeView";
             this.contextMenuStripProject.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.contextMenuStripProject.Size = new System.Drawing.Size(242, 126);
+            this.contextMenuStripProject.Size = new System.Drawing.Size(242, 104);
             this.contextMenuStripProject.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStripTreeView_Opening);
             // 
             // addCardLayoutToolStripMenuItem
@@ -148,10 +150,24 @@ namespace CardMaker.Forms
             this.toolStripMenuItemSetProjectNameFormat.Text = "Set Name Format...";
             this.toolStripMenuItemSetProjectNameFormat.Click += new System.EventHandler(this.setNameFormatToolStripMenuItem_Click);
             // 
+            // toolStripMenuItem5
+            // 
+            this.toolStripMenuItem5.Name = "toolStripMenuItem5";
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(238, 6);
+            // 
+            // projectSettingsToolStripMenuItem
+            // 
+            this.projectSettingsToolStripMenuItem.Name = "projectSettingsToolStripMenuItem";
+            this.projectSettingsToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
+            this.projectSettingsToolStripMenuItem.Text = "Project Settings...";
+            this.projectSettingsToolStripMenuItem.Click += new System.EventHandler(this.projectSettingsToolStripMenuItem_Click);
+            // 
             // contextMenuStripLayout
             // 
             this.contextMenuStripLayout.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.duplicateLayoutToolStripMenuItem,
+            this.duplicateLayoutCustomToolStripMenuItem,
+            this.resizeLayoutToolStripMenuItem,
             this.defineAsTemplateLayoutToolStripMenuItem,
             this.removeCardLayoutToolStripMenuItem,
             this.toolStripMenuItem2,
@@ -164,7 +180,7 @@ namespace CardMaker.Forms
             this.toolStripMenuItemSetLayoutNameFormat});
             this.contextMenuStripLayout.Name = "contextMenuStripLayout";
             this.contextMenuStripLayout.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.contextMenuStripLayout.Size = new System.Drawing.Size(259, 198);
+            this.contextMenuStripLayout.Size = new System.Drawing.Size(259, 264);
             // 
             // duplicateLayoutToolStripMenuItem
             // 
@@ -260,17 +276,19 @@ namespace CardMaker.Forms
             this.removeReferenceToolStripMenuItem.Text = "Remove Reference";
             this.removeReferenceToolStripMenuItem.Click += new System.EventHandler(this.removeReferenceToolStripMenuItem_Click);
             // 
-            // toolStripMenuItem5
+            // resizeLayoutToolStripMenuItem
             // 
-            this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(238, 6);
+            this.resizeLayoutToolStripMenuItem.Name = "resizeLayoutToolStripMenuItem";
+            this.resizeLayoutToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
+            this.resizeLayoutToolStripMenuItem.Text = "Resize Layout...";
+            this.resizeLayoutToolStripMenuItem.Click += new System.EventHandler(this.resizeLayoutToolStripMenuItem_Click);
             // 
-            // projectSettingsToolStripMenuItem
+            // duplicateLayoutCustomToolStripMenuItem
             // 
-            this.projectSettingsToolStripMenuItem.Name = "projectSettingsToolStripMenuItem";
-            this.projectSettingsToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
-            this.projectSettingsToolStripMenuItem.Text = "Project Settings...";
-            this.projectSettingsToolStripMenuItem.Click += new System.EventHandler(this.projectSettingsToolStripMenuItem_Click);
+            this.duplicateLayoutCustomToolStripMenuItem.Name = "duplicateLayoutCustomToolStripMenuItem";
+            this.duplicateLayoutCustomToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
+            this.duplicateLayoutCustomToolStripMenuItem.Text = "Duplicate Layout (Custom)...";
+            this.duplicateLayoutCustomToolStripMenuItem.Click += new System.EventHandler(this.duplicateLayoutCustomToolStripMenuItem_Click);
             // 
             // MDIProject
             // 
@@ -311,5 +329,7 @@ namespace CardMaker.Forms
         private ToolStripMenuItem exportCardLayoutAsPDFToolStripMenuItem;
         private ToolStripSeparator toolStripMenuItem5;
         private ToolStripMenuItem projectSettingsToolStripMenuItem;
+        private ToolStripMenuItem resizeLayoutToolStripMenuItem;
+        private ToolStripMenuItem duplicateLayoutCustomToolStripMenuItem;
     }
 }
