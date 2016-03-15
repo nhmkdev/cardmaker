@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("NHMK")]
 [assembly: AssemblyProduct("Card Maker")]
-[assembly: AssemblyCopyright("Copyright © NHMK 2015")]
+[assembly: AssemblyCopyright("Copyright © NHMK 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

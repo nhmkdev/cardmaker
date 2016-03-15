@@ -201,12 +201,18 @@ namespace CardMaker.Forms
             {
                 var listToDelete = new List<ListViewItem>();
                 var listToKeep = new List<ProjectLayoutElement>();
+#if MONO_BUILD
+                var listItemsToKeep = new List<ListViewItem>();
+#endif
                 foreach (ListViewItem zLvi in listViewElements.Items)
                 {
                     var zElement = (ProjectLayoutElement)zLvi.Tag;
                     if (!zLvi.Selected)
                     {
                         listToKeep.Add(zElement);
+#if MONO_BUILD
+                        listItemsToKeep.Add(zLvi);
+#endif
                     }
                     else
                     {
@@ -215,11 +221,15 @@ namespace CardMaker.Forms
                     }
                 }
 
+#if MONO_BUILD  // HACK: mono has had a bug for years with .remove :(
+                listViewElements.Items.Clear();
+                listViewElements.Items.AddRange(listItemsToKeep.ToArray());
+#else
                 foreach (var zLvi in listToDelete)
                 {
                     listViewElements.Items.Remove(zLvi);
                 }
-
+#endif
                 SetupLayoutUndo(listToKeep);
 
                 LayoutManager.Instance.ActiveLayout.Element = listToKeep.ToArray();
@@ -435,7 +445,7 @@ namespace CardMaker.Forms
             }
         }
 
-        #endregion
+#endregion
 
         private ListViewItem CreateListViewItem(ProjectLayoutElement zElement)
         {
