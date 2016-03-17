@@ -575,6 +575,33 @@ namespace CardMaker.Forms
             comboGraphicVerticalAlign.SelectedIndex = zElement.verticalalign;
 
             tabControl.Enabled = false;
+#if MONO_BUILD
+            switch ((ElementType)comboElementType.SelectedIndex)
+            {
+                case ElementType.Graphic:
+                    tabControl.SelectedTab = tabPageGraphic;
+                    break;
+                case ElementType.Shape:
+                    tabControl.SelectedTab = tabPageShape;
+                    break;
+                case ElementType.Text:
+                    tabControl.SelectedTab = tabPageFont;
+                    checkFontAutoScale.Visible = true;
+                    lblWordSpacing.Visible = false;
+                    numericWordSpace.Visible = false;
+                    lblLineSpace.Visible = false;
+                    numericLineSpace.Visible = false;
+                    break;
+                case ElementType.FormattedText:
+                    tabControl.SelectedTab = tabPageFont;
+                    checkFontAutoScale.Visible = false;
+                    lblWordSpacing.Visible = true;
+                    numericWordSpace.Visible = true;
+                    numericLineSpace.Visible = true;
+                    lblLineSpace.Visible = true;
+                    break;
+            }
+#else
             tabControl.TabPages.Clear();
             switch ((ElementType)comboElementType.SelectedIndex)
             {
@@ -601,7 +628,7 @@ namespace CardMaker.Forms
                     lblLineSpace.Visible = true;
                     break;
             }
-
+#endif
             tabControl.Enabled = true;
             btnElementBrowseImage.Enabled = (comboElementType.SelectedIndex == (int)ElementType.Graphic);
         }
