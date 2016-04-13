@@ -137,7 +137,7 @@ namespace CardMaker.Card.Translation
                 }
                 else if (DictionaryColumnNameToIndex.TryGetValue(sKey, out nIndex))
                 {
-                    sDefineValue = (nIndex >= listLine.Count ? String.Empty : listLine[nIndex].Trim());
+                    sDefineValue = (nIndex >= listLine.Count ? String.Empty : (listLine[nIndex] ?? "").Trim());
                 }
                 else
                 {
