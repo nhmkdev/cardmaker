@@ -595,12 +595,7 @@ namespace CardMaker.Forms
 
         private void reloadReferencesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (LayoutManager.Instance.ActiveDeck != null)
-            {
-                CardMakerInstance.ForceDataCacheRefresh = true;
-                LayoutManager.Instance.InitializeActiveLayout();
-                CardMakerInstance.ForceDataCacheRefresh = false;
-            }
+            LayoutManager.Instance.RefreshActiveLayout();
         }
 
         private void updateGoogleCredentialsToolStripMenuItem_Click(object sender, EventArgs e)

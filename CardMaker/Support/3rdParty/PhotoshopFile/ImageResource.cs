@@ -116,7 +116,7 @@ namespace PhotoshopFile
             set { m_id = value; }
         }
 
-        private string m_name = String.Empty;
+        private string m_name = string.Empty;
 
         public string Name
         {
@@ -132,7 +132,7 @@ namespace PhotoshopFile
             set { m_data = value; }
         }
 
-        private string m_osType = String.Empty;
+        private string m_osType = string.Empty;
 
         public string OSType
         {
@@ -184,7 +184,7 @@ namespace PhotoshopFile
         {
             StoreData();
 
-            if (m_osType == String.Empty)
+            if (m_osType == string.Empty)
                 m_osType = "8BIM";
 
             writer.Write(m_osType.ToCharArray());

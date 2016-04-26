@@ -96,7 +96,7 @@ namespace CardMaker.Card.Translation
                 }
             }
             // replace ##, #L, Newlines
-            sOutput = sOutput.Replace("##", nCardNumber.ToString(CultureInfo.InvariantCulture).PadLeft(nLeftPad, '0')).Replace("#L", zLayout.Name).Replace(Environment.NewLine, String.Empty);
+            sOutput = sOutput.Replace("##", nCardNumber.ToString(CultureInfo.InvariantCulture).PadLeft(nLeftPad, '0')).Replace("#L", zLayout.Name).Replace(Environment.NewLine, string.Empty);
 
             // last chance: replace unsupported characters (for file name)
             var zBuilder = new StringBuilder();

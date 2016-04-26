@@ -219,7 +219,7 @@ namespace CardMaker.Events.Managers
                     Logger.AddLogLine("Failed to load project. Attempting upgrade from previous version.");
                     string sContents = File.ReadAllText(sFile);
                     // Fix the previous version's mistakes!
-                    sContents = sContents.Replace("xmlns=\"http://tempuri.org/Project.xsd\"", String.Empty);
+                    sContents = sContents.Replace("xmlns=\"http://tempuri.org/Project.xsd\"", string.Empty);
                     if (!SerializationUtils.DeserializeFromXmlString(sContents, CardMakerConstants.XML_ENCODING, ref zProject))
                     {
                         Logger.AddLogLine("Failed to load project. The project file appears to be corrupt.");

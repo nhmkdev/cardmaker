@@ -24,6 +24,7 @@
 
 
 using CardMaker.Card;
+using CardMaker.Data;
 using CardMaker.Events.Args;
 using CardMaker.XML;
 
@@ -236,6 +237,19 @@ namespace CardMaker.Events.Managers
                 }
             }
             return null;
+        }
+
+        /// <summary>
+        /// Refreshes the active layout
+        /// </summary>
+        public void RefreshActiveLayout()
+        {
+            if (ActiveDeck != null)
+            {
+                CardMakerInstance.ForceDataCacheRefresh = true;
+                InitializeActiveLayout();
+                CardMakerInstance.ForceDataCacheRefresh = false;
+            }
         }
     }
 }

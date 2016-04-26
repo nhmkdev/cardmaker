@@ -81,7 +81,7 @@ namespace CardMaker.Card.Translation
 
             string sOutput = sRawString;
 
-            sOutput = sOutput.Replace("#empty", String.Empty);
+            sOutput = sOutput.Replace("#empty", string.Empty);
 
             var zElementString = new ElementString();
 
@@ -137,7 +137,7 @@ namespace CardMaker.Card.Translation
                 }
                 else if (DictionaryColumnNameToIndex.TryGetValue(sKey, out nIndex))
                 {
-                    sDefineValue = (nIndex >= listLine.Count ? String.Empty : (listLine[nIndex] ?? "").Trim());
+                    sDefineValue = (nIndex >= listLine.Count ? string.Empty : (listLine[nIndex] ?? "").Trim());
                 }
                 else
                 {
@@ -230,7 +230,7 @@ namespace CardMaker.Card.Translation
             //    1    2  3            4    5      6    7      8
             //@"(if)(.*?)([!=><]=|<|>)(.*?)(then )(.*?)(else )(.*)");
             Match zIfMatch = null;
-            string sOutput = String.Empty;
+            string sOutput = string.Empty;
             bool bHasElse = false;
             if (s_regexIfThenElseStatement.IsMatch(sInput))
             {
@@ -293,7 +293,7 @@ namespace CardMaker.Card.Translation
                     bSuccess &= Decimal.TryParse(zIfMatch.Groups[4].ToString(), out nValue2);
                     if (!bSuccess)
                     {
-                        return String.Empty; // a mess!
+                        return string.Empty; // a mess!
                     }
                     bool bCompare = false;
                     switch (eCheck)

@@ -410,11 +410,7 @@ namespace CardMaker.Forms
             tnNode.BackColor = DEFAULT_REFERENCE_COLOR;
             zReference.Default = true;
 
-            // reinit canvas
-            if (LayoutManager.Instance.ActiveDeck.CardLayout != null)
-            {
-                LayoutManager.Instance.FireLayoutUpdatedEvent(true);
-            }
+            LayoutManager.Instance.RefreshActiveLayout();
             ProjectManager.Instance.FireProjectUpdated(true);
         }
 
@@ -437,7 +433,7 @@ namespace CardMaker.Forms
             const string EXPORT_TRANSPARENT = "EXPORT_TRANSPARENT";
 
             Type typeObj = treeView.SelectedNode.Tag.GetType();
-            string sExistingFormat = String.Empty;
+            string sExistingFormat = string.Empty;
             var zQuery = new QueryPanelDialog("Configure Layout Export", 550, 300, false);
             zQuery.SetIcon(Resources.CardMakerIcon);
 
@@ -495,7 +491,7 @@ namespace CardMaker.Forms
                 };
             }
 
-            zQuery.AddTextBox("Name Format", sExistingFormat ?? String.Empty, false, NAME);
+            zQuery.AddTextBox("Name Format", sExistingFormat ?? string.Empty, false, NAME);
 
             if(DialogResult.OK == zQuery.ShowDialog(this))
             {
