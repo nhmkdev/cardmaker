@@ -50,6 +50,11 @@ namespace CardMaker.Data
         public static bool DrawElementBorder { get; set; }
 
         /// <summary>
+        /// Flag indicating whether to draw the selected element guides
+        /// </summary>
+        public static bool DrawSelectedElementGuides { get; set; }
+
+        /// <summary>
         /// Flag indicating if the Google credentials are invalid
         /// </summary>
         public static bool GoogleCredentialsInvalid { get; set; }
@@ -107,6 +112,7 @@ namespace CardMaker.Data
             ApplicationDPI = 72f;
             DrawFormattedTextBorder = false;
             DrawElementBorder = true;
+            DrawSelectedElementGuides = true;
             GoogleCredentialsInvalid = false;
             GoogleAccessToken = null;
             ProcessingUserAction = false;

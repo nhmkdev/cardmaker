@@ -67,7 +67,7 @@ namespace CardMaker.Forms
 
             m_sBaseTitle = "Card Maker Beta " + Application.ProductVersion;
 #if UNSTABLE
-            m_sBaseTitle += "[UNSTABLE] V.A6";
+            m_sBaseTitle += "[UNSTABLE] V.A7";
 #endif
             m_sFileOpenFilter = "CMP files (*.cmp)|*.cmp|All files (*.*)|*.*";
 
@@ -250,6 +250,13 @@ namespace CardMaker.Forms
             LayoutManager.Instance.FireLayoutRenderUpdatedEvent();
         }
 
+        private void drawSelectedElementGuidesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            drawSelectedElementGuidesToolStripMenuItem.Checked = !drawSelectedElementGuidesToolStripMenuItem.Checked;
+            CardMakerInstance.DrawSelectedElementGuides = drawSelectedElementGuidesToolStripMenuItem.Checked;
+            LayoutManager.Instance.FireLayoutRenderUpdatedEvent();
+        }
+
         private void drawFormattedTextWordBordersToolStripMenuItem_Click(object sender, EventArgs e)
         {
             drawFormattedTextWordOutlinesToolStripMenuItem.Checked = !drawFormattedTextWordOutlinesToolStripMenuItem.Checked;
@@ -367,7 +374,6 @@ namespace CardMaker.Forms
 #endif
             zQuery.AddCheckBox("Enable Google Cache", CardMakerSettings.EnableGoogleCache, IniSettings.EnableGoogleCache);
             zQuery.AddCheckBox("Print/Export Layout Border", CardMakerSettings.PrintLayoutBorder, IniSettings.PrintLayoutBorder);
-            zQuery.AddCheckBox("Show Selected Element Guides", CardMakerSettings.ShowSelectedElementGuides, IniSettings.ShowSelectedElementGuides);
             zQuery.AddPullDownBox("Default Translator Type",
                 new string[] { TranslatorType.Incept.ToString(), TranslatorType.JavaScript.ToString() }, (int)CardMakerSettings.DefaultTranslatorType, IniSettings.DefaultTranslator);
 
@@ -395,7 +401,6 @@ namespace CardMaker.Forms
                 CardMakerSettings.PrintLayoutBorder = zQuery.GetBool(IniSettings.PrintLayoutBorder);
                 CardMakerSettings.PrintLayoutsOnNewPage = zQuery.GetBool(IniSettings.PrintLayoutsOnNewPage);
                 CardMakerSettings.DefaultTranslatorType = (TranslatorType)zQuery.GetIndex(IniSettings.DefaultTranslator);
-                CardMakerSettings.ShowSelectedElementGuides = zQuery.GetBool(IniSettings.ShowSelectedElementGuides);
 
                 var bWasGoogleCacheEnabled = CardMakerSettings.EnableGoogleCache;
                 CardMakerSettings.EnableGoogleCache = zQuery.GetBool(IniSettings.EnableGoogleCache);

@@ -80,7 +80,7 @@ namespace CardMaker.Card
         {
             // note that the border is inclusive in the width/height consuming 2 pixels (0 to total-1)
             zGraphics.TranslateTransform(nX, nY);
-            if (bSelected && CardMakerSettings.ShowSelectedElementGuides)
+            if (bSelected && CardMakerInstance.DrawSelectedElementGuides)
             {
                 zGraphics.DrawLine(s_zPenDebugGuides, new PointF(0, zElement.y), new PointF(zGraphics.ClipBounds.Width, zElement.y));
                 zGraphics.DrawLine(s_zPenDebugGuides, new PointF(0, zElement.y + zElement.height - 1),

@@ -70,6 +70,7 @@ namespace CardMaker.Forms
             this.redoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.drawElementBordersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.drawSelectedElementGuidesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.drawFormattedTextWordOutlinesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.projectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearCacheToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -234,6 +235,7 @@ namespace CardMaker.Forms
             // 
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.drawElementBordersToolStripMenuItem,
+            this.drawSelectedElementGuidesToolStripMenuItem,
             this.drawFormattedTextWordOutlinesToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
@@ -248,6 +250,15 @@ namespace CardMaker.Forms
             this.drawElementBordersToolStripMenuItem.Size = new System.Drawing.Size(290, 22);
             this.drawElementBordersToolStripMenuItem.Text = "&Draw Element Borders";
             this.drawElementBordersToolStripMenuItem.Click += new System.EventHandler(this.drawElementBordersToolStripMenuItem_Click);
+            // 
+            // drawSelectedElementGuidesToolStripMenuItem
+            // 
+            this.drawSelectedElementGuidesToolStripMenuItem.Checked = true;
+            this.drawSelectedElementGuidesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.drawSelectedElementGuidesToolStripMenuItem.Name = "drawSelectedElementGuidesToolStripMenuItem";
+            this.drawSelectedElementGuidesToolStripMenuItem.Size = new System.Drawing.Size(290, 22);
+            this.drawSelectedElementGuidesToolStripMenuItem.Text = "Draw Selected Element Guides";
+            this.drawSelectedElementGuidesToolStripMenuItem.Click += new System.EventHandler(this.drawSelectedElementGuidesToolStripMenuItem_Click);
             // 
             // drawFormattedTextWordOutlinesToolStripMenuItem
             // 
@@ -467,6 +478,7 @@ namespace CardMaker.Forms
         private System.Windows.Forms.ToolStripMenuItem clearGoogleCacheToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem layoutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem reloadReferencesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem drawSelectedElementGuidesToolStripMenuItem;
     }
 }
 
