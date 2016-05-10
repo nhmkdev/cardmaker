@@ -50,7 +50,8 @@ namespace CardMaker.Data
         EnableGoogleCache,
         DefaultTranslator,
         ExportSkipStitchIndex,
-        DefineTranslatePrimitiveCharacters
+        DefineTranslatePrimitiveCharacters,
+        ShowSelectedElementGuides
     }
 
     public enum ExportType

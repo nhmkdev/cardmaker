@@ -166,5 +166,12 @@ namespace CardMaker.Data
             get { return s_zIniManager.GetValue(IniSettings.DefineTranslatePrimitiveCharacters, bool.FalseString).Equals(bool.TrueString); }
             set { s_zIniManager.SetValue(IniSettings.DefineTranslatePrimitiveCharacters, value.ToString()); }
         }
+
+        public static bool ShowSelectedElementGuides
+        {
+#warning All of these need caching!
+            get { return s_zIniManager.GetValue(IniSettings.ShowSelectedElementGuides, bool.TrueString).Equals(bool.TrueString); }
+            set { s_zIniManager.SetValue(IniSettings.ShowSelectedElementGuides, value.ToString()); }
+        }
     }
 }
