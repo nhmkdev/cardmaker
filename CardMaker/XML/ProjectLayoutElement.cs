@@ -23,7 +23,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Reflection;
 using System.Xml.Serialization;
 using CardMaker.Data;
 using Support.IO;
@@ -33,6 +35,7 @@ namespace CardMaker.XML
     public class ProjectLayoutElement
     {
         private const string COLOR_HEX_STR = "0x";
+        private static readonly List<PropertyInfo> s_listPropertyInfos;
 
         #region Properties
 
@@ -361,6 +364,24 @@ namespace CardMaker.XML
                    (zFont.Italic ? "1" : "0") + ";" +
                    (zFont.Strikeout ? "1" : "0");
             m_fontText = zFont;
+        }
+
+        /// <summary>
+        /// Gets the set of PropertyInfo objects associated with this type (sorted by name)
+        /// </summary>
+        public static PropertyInfo[] SortedPropertyInfos
+        {
+            get { return s_listPropertyInfos.ToArray(); }
+        }
+
+        static ProjectLayoutElement()
+        {
+            s_listPropertyInfos = new List<PropertyInfo>(typeof(ProjectLayoutElement).GetProperties(
+                BindingFlags.Public |
+                BindingFlags.NonPublic |
+                BindingFlags.Instance |
+                BindingFlags.DeclaredOnly));
+            s_listPropertyInfos.Sort((zPropA, zPropB) => zPropA.Name.CompareTo(zPropB.Name));
         }
 
     }

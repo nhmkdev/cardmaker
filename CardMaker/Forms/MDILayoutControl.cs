@@ -26,6 +26,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 using CardMaker.Data;
 using CardMaker.Events.Args;
@@ -404,6 +406,67 @@ namespace CardMaker.Forms
             }
         }
 
+        private void pasteSettingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (1 != m_listClipboardElements.Count)
+            {
+                return;
+            }
+            var zSourceElement = m_listClipboardElements[0];
+            var zQuery = new QueryPanelDialog("Apply Element Settings", 400, false);
+            zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
+            const string SETTINGS_TO_COPY = "settings_to_copy";
+
+            // TODO: if this ever expands to more fields just use a dictionary.contains
+            var listProperties = ProjectLayoutElement.SortedPropertyInfos.Where(x => !x.Name.Equals("name")).ToList();
+
+            zQuery.AddLabel("Select the settings to apply to the selected Elements.", 40);
+            zQuery.AddListBox("Settings to apply", listProperties.Select(x => x.Name).ToArray(), null, true, 400, SETTINGS_TO_COPY);
+            if (DialogResult.OK == zQuery.ShowDialog(this))
+            {
+                var dictionaryNewElementValues = new Dictionary<PropertyInfo, object>();
+                var dictionaryOldElementsValues = new Dictionary<ProjectLayoutElement, Dictionary<PropertyInfo, object>>();
+                // construct the set of values from the source element
+                foreach (var nIdx in zQuery.GetIndices(SETTINGS_TO_COPY))
+                {
+                    dictionaryNewElementValues.Add(listProperties[nIdx], listProperties[nIdx].GetValue(zSourceElement, null));
+                }
+                // construct the set of values from the destination element(s)
+                foreach (var zElement in ElementManager.Instance.SelectedElements)
+                {
+                    var dictionaryOldValues = new Dictionary<PropertyInfo, object>();
+                    dictionaryOldElementsValues.Add(zElement, dictionaryOldValues);
+                    foreach (var zEntry in dictionaryNewElementValues)
+                    {
+                        dictionaryOldValues.Add(zEntry.Key, zEntry.Key.GetValue(zElement, null));
+                    }
+                }
+
+                UserAction.PushAction(bRedo =>
+                {
+                    CardMakerInstance.ProcessingUserAction = true;
+
+                    foreach (var zElement in dictionaryOldElementsValues)
+                    {
+                        foreach (var zEntry in zElement.Value)
+                        {
+                            // pull the value from the old element dictionary or the source element
+                            var zValue = bRedo ? dictionaryNewElementValues[zEntry.Key] : zEntry.Value;
+                            zEntry.Key.SetValue(zElement.Key, zValue, null);
+                        }
+                    }
+
+                    CardMakerInstance.ProcessingUserAction = false;
+
+                    // clear the deck cache so element translations are re-processed
+                    LayoutManager.Instance.ActiveDeck.ResetDeckCache();
+                    // trigger a re-select (this will cause the element window to update)
+                    listViewElements_SelectedIndexChanged(null, null);
+                    LayoutManager.Instance.FireLayoutUpdatedEvent(true);
+                }, true);
+            }
+        }
+
         private void contextMenuElements_Opening(object sender, CancelEventArgs e)
         {
             if (0 == m_listClipboardElements.Count && 0 == listViewElements.SelectedItems.Count)
@@ -411,6 +474,7 @@ namespace CardMaker.Forms
 
             copyToolStripMenuItem.Enabled = 0 != listViewElements.SelectedItems.Count;
             pasteToolStripMenuItem.Enabled = 0 < m_listClipboardElements.Count;
+            pasteSettingsToolStripMenuItem.Enabled = 1 == m_listClipboardElements.Count;
         }
 
         private void resize_Click(object sender, EventArgs e)
