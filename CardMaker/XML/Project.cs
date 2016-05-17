@@ -40,6 +40,8 @@ namespace CardMaker.XML
 
         public string exportNameFormat { get; set; }
 
+        public string defaultDefineReferenceType { get; set; }
+
         #endregion
 
         /// <summary>

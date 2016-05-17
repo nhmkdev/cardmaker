@@ -516,18 +516,23 @@ namespace CardMaker.Forms
         private void projectSettingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             const string TRANSLATOR = "translator";
+            const string DEFAULT_DEFINE_REFERENCE_TYPE = "default_define_reference_type";
 
             var zQuery = new QueryPanelDialog("Project Settings", 450, 200, false);
             zQuery.SetIcon(Resources.CardMakerIcon);
 
             TranslatorType eTranslator = ProjectManager.Instance.LoadedProjectTranslatorType;
+            ReferenceType eDefaultDefineReferenceType = ProjectManager.Instance.LoadedProjectDefaultDefineReferenceType;
 
             zQuery.AddPullDownBox("Translator",
-                new string[] { TranslatorType.Incept.ToString(), TranslatorType.JavaScript.ToString()}, (int)eTranslator, TRANSLATOR);
+                Enum.GetNames(typeof(TranslatorType)), (int)eTranslator, TRANSLATOR);
+
+            zQuery.AddPullDownBox("Default Define Reference Type", Enum.GetNames(typeof(ReferenceType)), (int)eDefaultDefineReferenceType, DEFAULT_DEFINE_REFERENCE_TYPE);
 
             if (DialogResult.OK == zQuery.ShowDialog(this))
             {
                 ProjectManager.Instance.LoadedProject.translatorName = ((TranslatorType) zQuery.GetIndex(TRANSLATOR)).ToString();
+                ProjectManager.Instance.LoadedProject.defaultDefineReferenceType = ((ReferenceType)zQuery.GetIndex(DEFAULT_DEFINE_REFERENCE_TYPE)).ToString();
                 ProjectManager.Instance.FireProjectUpdated(true);
                 LayoutManager.Instance.InitializeActiveLayout();
             }

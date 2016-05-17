@@ -153,9 +153,13 @@ namespace CardMaker.Card
 
             ReferenceReader zRefReader = null;
 
-            if (null != zReferenceData)
+            if (null == zReferenceData || zReferenceData.Length == 0)
             {
-                WaitDialog.Instance.ProgressReset(0, 0, zReferenceData.Length * 2 + 1, 0);             
+                ReadDefaultProjectDefinitions(listDefineLines);
+            }
+            else
+            {
+                WaitDialog.Instance.ProgressReset(0, 0, zReferenceData.Length * 2 + 1, 0);
 
                 for(int nIdx = 0; nIdx < zReferenceData.Length; nIdx++)
                 {
@@ -418,6 +422,29 @@ namespace CardMaker.Card
 #endif
             WaitDialog.Instance.ThreadSuccess = true;
             WaitDialog.Instance.CloseWaitDialog();
+        }
+
+        /// <summary>
+        /// Populates the project defines based on the default reference type. If nothing is found on Google then attempt the local CSV.
+        /// </summary>
+        /// <param name="listDefineLines"></param>
+        private void ReadDefaultProjectDefinitions(List<List<string>> listDefineLines)
+        {
+            WaitDialog.Instance.ProgressReset(0, 0, 2, 0);
+            ReferenceReader zRefReader;
+            if (ReferenceType.Google == ProjectManager.Instance.LoadedProjectDefaultDefineReferenceType)
+            {
+                zRefReader = ReferenceReaderFactory.GetDefineReader(ReferenceType.Google);
+                zRefReader?.GetProjectDefineData(null, listDefineLines);
+            }
+            WaitDialog.Instance.ProgressStep(0);
+            // always attempt to load the local if nothing was pulled from google
+            if (0 == listDefineLines.Count)
+            {
+                zRefReader = ReferenceReaderFactory.GetDefineReader(ReferenceType.CSV);
+                zRefReader?.GetProjectDefineData(null, listDefineLines);
+            }
+            WaitDialog.Instance.ProgressStep(0);
         }
 
         public ElementString TranslateString(string sRawString, DeckLine zDeckLine,

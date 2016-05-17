@@ -37,6 +37,8 @@ namespace CardMaker.Card.Import
     {
         public string ReferencePath { get; private set; }
 
+        public CSVReferenceReader() { }
+
         public CSVReferenceReader(ProjectLayoutReference zReference)
         {
             var previousCurrentDirectory = Directory.GetCurrentDirectory();
@@ -102,6 +104,11 @@ namespace CardMaker.Card.Import
 
         public void GetProjectDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData)
         {
+            if (null == ProjectManager.Instance.ProjectFilePath)
+            {
+                return;
+            }
+
             var sReferencePath =
                 Path.GetDirectoryName(ProjectManager.Instance.ProjectFilePath)
                 + Path.DirectorySeparatorChar

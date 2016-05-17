@@ -53,9 +53,8 @@ namespace CardMaker.Card.Import
 
         public string ReferencePath { get; private set; }
 
-        public GoogleReferenceReader(ProjectLayoutReference zReference)
+        public GoogleReferenceReader()
         {
-            ReferencePath = zReference.RelativePath;
             m_zSpreadsheetsService = GoogleSpreadsheet.GetSpreadsheetsService(APP_NAME, CLIENT_ID,
                 CardMakerInstance.GoogleAccessToken);
 
@@ -69,6 +68,11 @@ namespace CardMaker.Card.Import
                     CardMakerInstance.GoogleCredentialsInvalid = true;
                 }
             }
+        }
+
+        public GoogleReferenceReader(ProjectLayoutReference zReference) : this()
+        {
+            ReferencePath = zReference.RelativePath;
         }
 
         private void LoadCache()
@@ -119,7 +123,7 @@ namespace CardMaker.Card.Import
 
             var bCredentialsError = false;
 
-            List<List<String>> listGoogleData;
+            List<List<string>> listGoogleData;
             try
             {
                 listGoogleData = GoogleSpreadsheet.GetSpreadsheet(m_zSpreadsheetsService, sSpreadsheetName, sSheetName);
@@ -164,6 +168,11 @@ namespace CardMaker.Card.Import
 
         public void GetProjectDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData)
         {
+            if (null == ProjectManager.Instance.ProjectFilePath)
+            {
+                return;
+            }
+
             var sProjectDefineSheetReference = GetDefinesReference();
 
             GetData(sProjectDefineSheetReference, listDefineData, true);

@@ -64,4 +64,10 @@ namespace CardMaker.Data
         Incept = 0,
         JavaScript
     }
+
+    public enum ReferenceType
+    {
+        CSV = 0,
+        Google = 1
+    }
 }

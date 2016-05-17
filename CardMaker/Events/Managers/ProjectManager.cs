@@ -44,6 +44,8 @@ namespace CardMaker.Events.Managers
 
         public TranslatorType LoadedProjectTranslatorType { get; private set; }
 
+        public ReferenceType LoadedProjectDefaultDefineReferenceType { get; private set; }
+
         public string ProjectFilePath { get; private set; }
 
         public string ProjectPath { get; private set; }
@@ -75,6 +77,11 @@ namespace CardMaker.Events.Managers
             }
         }
 
+        public ProjectManager()
+        {
+            ProjectUpdated += (sender, e) => UpdateSettings();
+        }
+
         #region Event Triggers
 
         /// <summary>
@@ -98,7 +105,7 @@ namespace CardMaker.Events.Managers
         public void OpenProject(string sProjectFile)
         {
             LoadedProject = LoadProject(sProjectFile);
-            LoadedProjectTranslatorType = GetTranslatorTypeFromString(LoadedProject.translatorName);
+            UpdateSettings();
             SetLoadedProjectFile(sProjectFile);
             if (ProjectOpened != null)
             {
@@ -193,12 +200,28 @@ namespace CardMaker.Events.Managers
             return -1;
         }
 
+        private void UpdateSettings()
+        {
+            LoadedProjectTranslatorType = GetTranslatorTypeFromString(LoadedProject.translatorName);
+            LoadedProjectDefaultDefineReferenceType = GetReferenceTypeFromString(LoadedProject.defaultDefineReferenceType);
+        }
+
         public static TranslatorType GetTranslatorTypeFromString(string sInput)
         {
             TranslatorType eTranslatorType;
             if (!TranslatorType.TryParse(sInput, true, out eTranslatorType))
             {
                 return TranslatorType.Incept;
+            }
+            return eTranslatorType;
+        }
+
+        public static ReferenceType GetReferenceTypeFromString(string sInput)
+        {
+            ReferenceType eTranslatorType;
+            if (!ReferenceType.TryParse(sInput, true, out eTranslatorType))
+            {
+                return ReferenceType.CSV;
             }
             return eTranslatorType;
         }

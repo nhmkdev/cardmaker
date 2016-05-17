@@ -47,5 +47,17 @@ namespace CardMaker.Card.Import
             }
             return new CSVReferenceReader(zReference);
         }
+
+        public static ReferenceReader GetDefineReader(ReferenceType eReferenceType)
+        {
+            switch (eReferenceType)
+            {
+                case ReferenceType.CSV:
+                    return new CSVReferenceReader();
+                case ReferenceType.Google:
+                    return new GoogleReferenceReader();
+            }
+            return null;
+        }            
     }
 }
