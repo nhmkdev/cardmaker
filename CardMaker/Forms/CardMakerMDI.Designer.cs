@@ -91,6 +91,7 @@ namespace CardMaker.Forms
             this.pDFToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.samplePDFToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.drawSelectedElementRotationBoundsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStripMain.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -236,6 +237,7 @@ namespace CardMaker.Forms
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.drawElementBordersToolStripMenuItem,
             this.drawSelectedElementGuidesToolStripMenuItem,
+            this.drawSelectedElementRotationBoundsToolStripMenuItem,
             this.drawFormattedTextWordOutlinesToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
@@ -420,6 +422,15 @@ namespace CardMaker.Forms
             this.aboutToolStripMenuItem.Text = "&About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
+            // drawSelectedElementRotationBoundsToolStripMenuItem
+            // 
+            this.drawSelectedElementRotationBoundsToolStripMenuItem.Checked = true;
+            this.drawSelectedElementRotationBoundsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.drawSelectedElementRotationBoundsToolStripMenuItem.Name = "drawSelectedElementRotationBoundsToolStripMenuItem";
+            this.drawSelectedElementRotationBoundsToolStripMenuItem.Size = new System.Drawing.Size(290, 22);
+            this.drawSelectedElementRotationBoundsToolStripMenuItem.Text = "Draw Selected Element Rotation Bounds";
+            this.drawSelectedElementRotationBoundsToolStripMenuItem.Click += new System.EventHandler(this.drawSelectedElementRotationBoundsToolStripMenuItem_Click);
+            // 
             // CardMakerMDI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -479,6 +490,7 @@ namespace CardMaker.Forms
         private System.Windows.Forms.ToolStripMenuItem layoutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem reloadReferencesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem drawSelectedElementGuidesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem drawSelectedElementRotationBoundsToolStripMenuItem;
     }
 }
 

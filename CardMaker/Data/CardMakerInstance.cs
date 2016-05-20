@@ -55,6 +55,11 @@ namespace CardMaker.Data
         public static bool DrawSelectedElementGuides { get; set; }
 
         /// <summary>
+        /// Flag indicating whether to draw the selected element rotation bounds
+        /// </summary>
+        public static bool DrawSelectedElementRotationBounds { get; set; }
+
+        /// <summary>
         /// Flag indicating if the Google credentials are invalid
         /// </summary>
         public static bool GoogleCredentialsInvalid { get; set; }
@@ -113,6 +118,7 @@ namespace CardMaker.Data
             DrawFormattedTextBorder = false;
             DrawElementBorder = true;
             DrawSelectedElementGuides = true;
+            DrawSelectedElementRotationBounds = true;
             GoogleCredentialsInvalid = false;
             GoogleAccessToken = null;
             ProcessingUserAction = false;

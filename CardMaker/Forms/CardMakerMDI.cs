@@ -257,6 +257,13 @@ namespace CardMaker.Forms
             LayoutManager.Instance.FireLayoutRenderUpdatedEvent();
         }
 
+        private void drawSelectedElementRotationBoundsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            drawSelectedElementRotationBoundsToolStripMenuItem.Checked = !drawSelectedElementRotationBoundsToolStripMenuItem.Checked;
+            CardMakerInstance.DrawSelectedElementRotationBounds = drawSelectedElementRotationBoundsToolStripMenuItem.Checked;
+            LayoutManager.Instance.FireLayoutRenderUpdatedEvent();
+        }
+
         private void drawFormattedTextWordBordersToolStripMenuItem_Click(object sender, EventArgs e)
         {
             drawFormattedTextWordOutlinesToolStripMenuItem.Checked = !drawFormattedTextWordOutlinesToolStripMenuItem.Checked;
