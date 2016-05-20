@@ -142,7 +142,7 @@ namespace CardMaker.Card
                 zGraphics.TranslateTransform(zElement.x + nX + (zElement.width >> 1), zElement.y + nY + (zElement.height >> 1));
                 zGraphics.RotateTransform(zElement.rotation);
                 zGraphics.TranslateTransform(-(zElement.width >> 1), -(zElement.height >> 1));
-                if (CardMakerInstance.DrawSelectedElementRotationBounds)
+                if (CardMakerInstance.DrawElementBorder && CardMakerInstance.DrawSelectedElementRotationBounds)
                 {
                     zGraphics.DrawRectangle(Pens.LightGreen, 0, 0, zElement.width - 1, zElement.height - 1);
                 }
