@@ -446,14 +446,17 @@ namespace CardMaker.Forms
                 {
                     CardMakerInstance.ProcessingUserAction = true;
 
-                    foreach (var zElement in dictionaryOldElementsValues)
+                    foreach (var zElementToValue in dictionaryOldElementsValues)
                     {
-                        foreach (var zEntry in zElement.Value)
+                        foreach (var zEntry in zElementToValue.Value)
                         {
                             // pull the value from the old element dictionary or the source element
                             var zValue = bRedo ? dictionaryNewElementValues[zEntry.Key] : zEntry.Value;
-                            zEntry.Key.SetValue(zElement.Key, zValue, null);
+                            zEntry.Key.SetValue(zElementToValue.Key, zValue, null);
                         }
+                        // re-init any translated string values (colors/fonts) 
+                        // TODO: consider using an event for this kind of thing...
+                        zElementToValue.Key.InitializeCache();
                     }
 
                     CardMakerInstance.ProcessingUserAction = false;
