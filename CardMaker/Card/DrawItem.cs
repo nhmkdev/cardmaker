@@ -50,6 +50,13 @@ namespace CardMaker.Card
 
         public const float OutlineFontScale = 395f / 300f;
 
+        private static IDrawText s_zDrawText =
+#if false
+            new DrawTextRenderer();
+#else
+            new DrawTextGraphics();
+#endif
+
         static DrawItem()
         {
             for (int nIdx = 0; nIdx < (int)ElementType.End; nIdx++)
@@ -158,7 +165,7 @@ namespace CardMaker.Card
             switch (eType)
             {   
                 case ElementType.Text:
-                    DrawText(zGraphics, zElement, sInput, zBrush, zFont, colorFont);
+                    s_zDrawText.DrawText(zGraphics, zElement, sInput, zBrush, zFont, colorFont);
                     break;
                 case ElementType.FormattedText:
                     DrawFormattedText(zGraphics, zDeck, zElement, sInput, zBrush, zFont, colorFont);
@@ -294,6 +301,8 @@ namespace CardMaker.Card
             if (0 < zElement.outlinethickness)
             {
                 var outlinePen = new Pen(Color.FromArgb(zElement.opacity, zElement.GetElementOutlineColor()), zElement.outlinethickness);
+#warning This outline pen linejoin should be customizable (as it rounds the corners but corrects other issues!)
+                outlinePen.LineJoin = LineJoin.Round;
                 zGraphics.DrawPath(outlinePen, zPath);
             }
         }

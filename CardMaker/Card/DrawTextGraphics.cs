@@ -31,20 +31,20 @@ using Support.UI;
 
 namespace CardMaker.Card
 {
-    static public partial class DrawItem
+    public class DrawTextGraphics : IDrawText
     {
-        public static void DrawText(Graphics zGraphics, ProjectLayoutElement zElement, string sInput, Brush zBrush, Font zFont, Color colorFont)
+        public void DrawText(Graphics zGraphics, ProjectLayoutElement zElement, string sInput, Brush zBrush, Font zFont, Color colorFont)
         {
             if (null == zFont) // default to something!
             {
                 // font will show up in red if it's not yet set
-                zFont = s_zDefaultFont;
+                zFont = DrawItem.DefaultFont;
                 zBrush = Brushes.Red;
             }
             var zFormat = new StringFormat
             {
-                LineAlignment = (StringAlignment) zElement.verticalalign,
-                Alignment = (StringAlignment) zElement.horizontalalign
+                LineAlignment = (StringAlignment)zElement.verticalalign,
+                Alignment = (StringAlignment)zElement.horizontalalign
             };
 
             if (255 != zElement.opacity)
@@ -105,70 +105,47 @@ namespace CardMaker.Card
                 zFormat.Trimming = StringTrimming.EllipsisCharacter;
             }
 
-            var arrayDrawLines = new string[] { sInput };
-            var nLineOffset = 0;
-
-            // hackery -- would be nice if this was not used... (if words could be measured)
-            var bAutoNewline = true;
-
-            // configure line height (if specified)
-#if false
-            if (!zElement.autoscalefont && 0 < zElement.lineheight && -1 != sInput.IndexOf(Environment.NewLine))
-            {
-                bAutoNewline = false;
-                arrayDrawLines = sInput.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
-                // if bottom aligned start the line offset however many y pixels up
-                if (StringAlignment.Far == zFormat.LineAlignment)
-                    nLineOffset = -(zElement.lineheight * (arrayDrawLines.Length - 1));
-            }
-#endif
-
             var fEmSize = zFont.Size;
 
             switch (zFont.Unit)
             {
                 case GraphicsUnit.Point:
-                    fEmSize = zGraphics.DpiY*(zFont.Size/72f);
+                    fEmSize = zGraphics.DpiY * (zFont.Size / 72f);
                     break;
                 default:
                     Logger.AddLogLine("This font is using the Unit: {0} (not currently supported)".FormatString(zFont.Unit.ToString()));
                     break;
             }
 
-            foreach (var sLine in arrayDrawLines)
+            if (0 == zElement.outlinethickness)
             {
-                if (0 == zElement.outlinethickness)
+                try
                 {
-                    try
-                    {
-                        zGraphics.DrawString(sLine, zFont, zBrush,
-                            new RectangleF(0, nLineOffset, bAutoNewline ? zElement.width : zElement.width*100,
-                                zElement.height), zFormat);
-                    }
-                    catch (Exception)
-                    {
-                        Logger.AddLogLine("Unable to render text (font issue?)");
-                    }
+                    zGraphics.DrawString(sInput, zFont, zBrush,
+                        new RectangleF(0, 0, zElement.width, zElement.height), zFormat);
                 }
-                else
+                catch (Exception)
                 {
-                    // prepare to draw text
-                    var zPath = new GraphicsPath();
-
-                    try
-                    {
-                        zPath.AddString(sLine, zFont.FontFamily, (int)zFont.Style, fEmSize, new RectangleF(0, nLineOffset, bAutoNewline ? zElement.width : zElement.width * 100, zElement.height), zFormat);
-                        DrawOutline(zElement, zGraphics, zPath);
-                    }
-                    catch (Exception)
-                    {
-                        Logger.AddLogLine("Unable to render text (font issue?)");
-                    }
-
-                    // fill in the outline
-                    zGraphics.FillPath(zBrush, zPath);
+                    Logger.AddLogLine("Unable to render text (font issue?)");
                 }
-                nLineOffset += zElement.lineheight;
+            }
+            else
+            {
+                // prepare to draw text
+                var zPath = new GraphicsPath();
+
+                try
+                {
+                    zPath.AddString(sInput, zFont.FontFamily, (int)zFont.Style, fEmSize, new RectangleF(0, 0, zElement.width, zElement.height), zFormat);
+                    DrawItem.DrawOutline(zElement, zGraphics, zPath);
+                }
+                catch (Exception)
+                {
+                    Logger.AddLogLine("Unable to render text (font issue?)");
+                }
+
+                // fill in the outline
+                zGraphics.FillPath(zBrush, zPath);
             }
         }
     }

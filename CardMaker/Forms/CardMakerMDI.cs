@@ -223,7 +223,7 @@ namespace CardMaker.Forms
             if (!string.IsNullOrEmpty(CardMakerInstance.CommandLineProjectFile))
                 InitOpen(CardMakerInstance.CommandLineProjectFile);
 
-#if UNSTABLE
+#if UNSTABLE && !DEBUG
             MessageBox.Show(
                 "This is an UNSTABLE build of CardMaker. Please make backups of any projects before opening them with this version.");
 #endif
