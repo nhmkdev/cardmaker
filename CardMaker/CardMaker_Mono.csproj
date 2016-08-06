@@ -101,6 +101,7 @@
     <Compile Include="Card\DrawTextRenderer.cs" />
     <Compile Include="Card\ElementString.cs" />
     <Compile Include="Card\Export\CardExportBase.cs" />
+    <Compile Include="Card\Export\FileCardExporterFactory.cs" />
     <Compile Include="Card\Export\ICardExporter.cs" />
     <Compile Include="Card\Export\PdfSharpExporter.cs" />
     <Compile Include="Card\FormattedText\BackgroundColorMarkup.cs" />

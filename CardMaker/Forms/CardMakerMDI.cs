@@ -704,10 +704,6 @@ namespace CardMaker.Forms
             if (null != ProjectManager.Instance.LoadedProject)
             {
                 UpdateProjectsList(sFileName);
-                while (CardMakerConstants.MAX_RECENT_PROJECTS < m_listRecentFiles.Count)
-                {
-                    m_listRecentFiles.RemoveAt(CardMakerConstants.MAX_RECENT_PROJECTS);
-                }
 
                 bool bHasExternalReference = ProjectManager.Instance.LoadedProject.HasExternalReference();
 
@@ -798,130 +794,23 @@ namespace CardMaker.Forms
 
         private void ExportImages(bool bExportAllLayouts)
         {
-            var zQuery = new QueryPanelDialog("Export to Images", 750, false);
-            zQuery.SetIcon(Properties.Resources.CardMakerIcon);
-            const string FORMAT = "FORMAT";
-            const string NAME_FORMAT = "NAME_FORMAT";
-            const string NAME_FORMAT_LAYOUT_OVERRIDE = "NAME_FORMAT_LAYOUT_OVERRIDE";
-            const string FOLDER = "FOLDER";
-            const string STITCH_SKIP_INDEX = "DUMMY_IDX";
-            var arrayImageFormats = new ImageFormat[] { 
-                ImageFormat.Bmp,
-                ImageFormat.Emf,
-                ImageFormat.Exif,
-                ImageFormat.Gif,
-                ImageFormat.Icon,
-                ImageFormat.Jpeg,
-                ImageFormat.Png,
-                ImageFormat.Tiff,
-                ImageFormat.Wmf
-            };
-            var arrayImageFormatStrings = new string[arrayImageFormats.Length];
-            for (int nIdx = 0; nIdx < arrayImageFormats.Length; nIdx++)
+            ICardExporter zFileCardExporter = FileCardExporterFactory.BuildFileCardExporter(bExportAllLayouts);
+            if (null == zFileCardExporter)
             {
-                arrayImageFormatStrings[nIdx] = arrayImageFormats[nIdx].ToString();
+                return;
             }
 
-
-            var nDefaultFormatIndex = 0;
-            var lastImageFormat = CardMakerSettings.IniManager.GetValue(IniSettings.LastImageExportFormat, string.Empty);
-            // TODO: .NET 4.x offers enum.parse... when the project gets to that version
-            if (lastImageFormat != string.Empty)
-            {
-                for (int nIdx = 0; nIdx < arrayImageFormats.Length; nIdx++)
-                {
-                    if (arrayImageFormats[nIdx].ToString().Equals(lastImageFormat))
-                    {
-                        nDefaultFormatIndex = nIdx;
-                        break;
-                    }
-                }
-            }
-
-            zQuery.AddPullDownBox("Format", arrayImageFormatStrings, nDefaultFormatIndex, FORMAT);
-
-            var sDefinition = ProjectManager.Instance.LoadedProject.exportNameFormat; // default to the project level definition
-            if (!bExportAllLayouts)
-            {
-                sDefinition = LayoutManager.Instance.ActiveLayout.exportNameFormat;
-            }
-            else
-            {
-                zQuery.AddCheckBox("Override Layout File Name Formats", false, NAME_FORMAT_LAYOUT_OVERRIDE);
-            }
-
-            zQuery.AddNumericBox("Stitch Skip Index", CardMakerSettings.ExportStitchSkipIndex, 0, 65535, 1, 0, STITCH_SKIP_INDEX);
-
-            zQuery.AddTextBox("File Name Format (optional)", sDefinition ?? string.Empty, false, NAME_FORMAT);
-
-            if (bExportAllLayouts)
-            {
-                // associated check box and the file format text box
-                zQuery.AddEnableControl(NAME_FORMAT_LAYOUT_OVERRIDE, NAME_FORMAT);
-
-            }
-            zQuery.AddFolderBrowseBox("Output Folder", Directory.Exists(ProjectManager.Instance.LoadedProject.lastExportPath) ? ProjectManager.Instance.LoadedProject.lastExportPath : string.Empty, FOLDER);
-            
-            zQuery.UpdateEnableStates();
-
-            if (DialogResult.OK == zQuery.ShowDialog(this))
-            {
-                string sFolder = zQuery.GetString(FOLDER);
-                if (!Directory.Exists(sFolder))
-                {
-                    try
-                    {
-                        Directory.CreateDirectory(sFolder);
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.AddLogLine("Error creating folder {0}: {1}".FormatString(sFolder, e.Message));
-                    }
-                }
-                if (Directory.Exists(sFolder))
-                {
-                    ProjectManager.Instance.LoadedProject.lastExportPath = sFolder;
-                    var nStartLayoutIdx = 0;
-                    var nEndLayoutIdx = ProjectManager.Instance.LoadedProject.Layout.Length;
-                    var bOverrideLayout = false;
-                    if (!bExportAllLayouts)
-                    {
-                        int nIdx = ProjectManager.Instance.GetLayoutIndex(LayoutManager.Instance.ActiveLayout);
-                        if (-1 == nIdx)
-                        {
-                            FormUtils.ShowErrorMessage("Unable to determine the current layout. Please select a layout in the tree view and try again.");
-                            return;
-                        }
-                        nStartLayoutIdx = nIdx;
-                        nEndLayoutIdx = nIdx + 1;
-                    }
-                    else
-                    {
-                        bOverrideLayout = zQuery.GetBool(NAME_FORMAT_LAYOUT_OVERRIDE);
-                    }
-
-                    CardMakerSettings.IniManager.SetValue(IniSettings.LastImageExportFormat, arrayImageFormats[zQuery.GetIndex(FORMAT)].ToString());
-                    CardMakerSettings.ExportStitchSkipIndex = (int) zQuery.GetDecimal(STITCH_SKIP_INDEX);
-
-                    ICardExporter zFileCardExporter = new FileCardExporter(nStartLayoutIdx, nEndLayoutIdx, sFolder, bOverrideLayout, zQuery.GetString(NAME_FORMAT), 
-                        (int)zQuery.GetDecimal(STITCH_SKIP_INDEX), arrayImageFormats[zQuery.GetIndex(FORMAT)]);
 #if true
-                    var zWait = new WaitDialog(
-                        2,
-                        zFileCardExporter.ExportThread,
-                        "Export",
-                        new string[] { "Layout", "Card" },
-                        450);
-                    zWait.ShowDialog(this);
+            var zWait = new WaitDialog(
+                2,
+                zFileCardExporter.ExportThread,
+                "Export",
+                new string[] { "Layout", "Card" },
+                450);
+            zWait.ShowDialog(this);
 #else // non threaded
-                    zFileCardExporter.ExportThread();
+            zFileCardExporter.ExportThread();
 #endif
-                }
-                else
-                {
-                    FormUtils.ShowErrorMessage("The folder specified does not exist!");
-                }
-            }
         }
 
         private void UpdateGoogleAuth(Action zSuccessAction = null, Action zCancelAction = null)
@@ -977,7 +866,11 @@ namespace CardMaker.Forms
         private void UpdateProjectsList(string sFileName)
         {
             m_listRecentFiles.Remove(sFileName);
-            m_listRecentFiles.Insert(0, sFileName);            
+            m_listRecentFiles.Insert(0, sFileName);
+            while (CardMakerConstants.MAX_RECENT_PROJECTS < m_listRecentFiles.Count)
+            {
+                m_listRecentFiles.RemoveAt(CardMakerConstants.MAX_RECENT_PROJECTS);
+            }
         }
 
         private bool DeleteGoogleCache()

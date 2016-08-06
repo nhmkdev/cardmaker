@@ -24,9 +24,9 @@
 
 using System;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
-using CardMaker.XML;
 using Support.IO;
 using Support.UI;
 
@@ -35,11 +35,11 @@ namespace CardMaker.Card.Export
     public class FileCardExporter : CardExportBase, ICardExporter
     {
         private readonly string m_sExportFolder;
-        private readonly string m_sStringFormat;
-        private readonly System.Drawing.Imaging.ImageFormat m_eImageFormat;
+        private readonly string m_sOverrideStringFormat;
+        private readonly ImageFormat m_eImageFormat;
         private readonly int m_nSkipStitchIndex;
 
-        public FileCardExporter(int nLayoutStartIndex, int nLayoutEndIdx, string sExportFolder, bool bOverrideLayoutStringFormat, string sStringFormat, int
+        public FileCardExporter(int nLayoutStartIndex, int nLayoutEndIdx, string sExportFolder, string sOverrideStringFormat, int
             nSkipStitchIndex, System.Drawing.Imaging.ImageFormat eImageFormat)
             : base(nLayoutStartIndex, nLayoutEndIdx)
         {
@@ -49,10 +49,8 @@ namespace CardMaker.Card.Export
             }
 
             m_sExportFolder = sExportFolder;
-            if (!bOverrideLayoutStringFormat)
-            {
-                m_sStringFormat = sStringFormat;
-            }
+            m_sOverrideStringFormat = sOverrideStringFormat;
+
             m_nSkipStitchIndex = nSkipStitchIndex;
             m_eImageFormat = eImageFormat;
         }
@@ -139,9 +137,15 @@ namespace CardMaker.Card.Export
 
                     string sFileName;
 
-                    if (!string.IsNullOrEmpty(m_sStringFormat))
+                    if (!string.IsNullOrEmpty(m_sOverrideStringFormat))
                     {
-                        sFileName = CurrentDeck.TranslateFileNameString(m_sStringFormat, nCardIdx, nPadSize);
+                        // check for the super override
+                        sFileName = CurrentDeck.TranslateFileNameString(m_sOverrideStringFormat, nCardIdx, nPadSize);
+                    }
+                    else if (!string.IsNullOrEmpty(CurrentDeck.CardLayout.exportNameFormat))
+                    {
+                        // check for the per layout override
+                        sFileName = CurrentDeck.TranslateFileNameString(CurrentDeck.CardLayout.exportNameFormat, nCardIdx, nPadSize);
                     }
                     else // default
                     {
