@@ -114,7 +114,7 @@ namespace CardMaker.Card
                         //{
                             //matrixPrevious = zGraphics.Transform;
                         //}
-                        DrawItem.DrawElement(zGraphics, CurrentDeck, zDrawElement, eType, nX, nY, zElementString.String);
+                        DrawItem.DrawElement(zGraphics, CurrentDeck, zDrawElement, eType, nX, nY, zElementString.String, bExport);
                         if (!bExport)
                         {
                             //zGraphics.Transform = matrixPrevious;
