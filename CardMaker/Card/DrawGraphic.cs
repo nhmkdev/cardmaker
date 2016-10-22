@@ -30,7 +30,7 @@ using CardMaker.XML;
 
 namespace CardMaker.Card
 {
-    static public partial class DrawItem
+    public static partial class DrawItem
     {
         private static void DrawGraphic(Graphics zGraphics, string sFile, ProjectLayoutElement zElement)
         {

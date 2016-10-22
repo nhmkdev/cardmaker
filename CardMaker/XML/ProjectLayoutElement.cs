@@ -369,10 +369,7 @@ namespace CardMaker.XML
         /// <summary>
         /// Gets the set of PropertyInfo objects associated with this type (sorted by name)
         /// </summary>
-        public static PropertyInfo[] SortedPropertyInfos
-        {
-            get { return s_listPropertyInfos.ToArray(); }
-        }
+        public static PropertyInfo[] SortedPropertyInfos => s_listPropertyInfos.ToArray();
 
         static ProjectLayoutElement()
         {

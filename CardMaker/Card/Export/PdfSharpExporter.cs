@@ -110,10 +110,7 @@ namespace CardMaker.Card.Export
                 }
 
 #if !MONO_BUILD
-                if (null != zBuffer)
-                {
-                    zBuffer.Dispose();
-                }
+                zBuffer?.Dispose();
                 zBuffer = new Bitmap(CurrentDeck.CardLayout.width, CurrentDeck.CardLayout.height);
 
                 float fOriginalXDpi = zBuffer.HorizontalResolution;
@@ -159,10 +156,7 @@ namespace CardMaker.Card.Export
             }
 
 #if !MONO_BUILD
-            if (null != zBuffer)
-            {
-                zBuffer.Dispose();
-            }
+            zBuffer?.Dispose();
 #endif
 
             try

@@ -31,7 +31,7 @@ namespace CardMaker.Card.Shapes.Definitions
 {
     class TriangleShape : AbstractShape
     {
-        private int m_nCorner = 0;
+        private int m_nCorner;
 
         private enum TriangleVariables
         {

@@ -45,21 +45,21 @@ namespace CardMaker.Card.FormattedText
 
     public class FontStyleBoldMarkup : FontStyleMarkup
     {
-        protected override FontStyle Style { get { return FontStyle.Bold; } }
+        protected override FontStyle Style => FontStyle.Bold;
     }
 
     public class FontStyleItalicMarkup : FontStyleMarkup
     {
-        protected override FontStyle Style { get { return FontStyle.Italic; } }
+        protected override FontStyle Style => FontStyle.Italic;
     }
 
     public class FontStyleUnderlineMarkup : FontStyleMarkup
     {
-        protected override FontStyle Style { get { return FontStyle.Underline; } }
+        protected override FontStyle Style => FontStyle.Underline;
     }
 
     public class FontStyleStrikeoutMarkup : FontStyleMarkup
     {
-        protected override FontStyle Style { get { return FontStyle.Strikeout; } }
+        protected override FontStyle Style => FontStyle.Strikeout;
     }
 }

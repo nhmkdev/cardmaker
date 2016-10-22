@@ -25,10 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using CardMaker.Data;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
 
@@ -71,9 +68,9 @@ namespace CardMaker.Card.Translation
         /// Translates the string representing the element. (also handles any nodraw text input)
         /// </summary>
         /// <param name="sRawString"></param>
+        /// <param name="nCardIndex"></param>
         /// <param name="zDeckLine"></param>
         /// <param name="zElement"></param>
-        /// <param name="sCacheSuffix"></param>
         /// <returns></returns>
         protected override ElementString TranslateToElementString(string sRawString, int nCardIndex, DeckLine zDeckLine, ProjectLayoutElement zElement)
         {
@@ -351,9 +348,9 @@ namespace CardMaker.Card.Translation
             {
                 var zMatch = s_regexIfSet.Match(sSet);
                 var arraySplit = zMatch.Groups[2].ToString().Split(new char[] { ';' });
-                for (var nIdx = 0; nIdx < arraySplit.Length; nIdx++)
+                foreach (var sEntry in arraySplit)
                 {
-                    var sItem = arraySplit[nIdx].Trim().ToLower();
+                    var sItem = sEntry.Trim().ToLower();
                     if (!hSet.Contains(sItem))
                     {
                         hSet.Add(sItem);

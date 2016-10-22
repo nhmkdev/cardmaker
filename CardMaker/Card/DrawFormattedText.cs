@@ -32,7 +32,7 @@ using CardMaker.XML;
 
 namespace CardMaker.Card
 {
-    static public partial class DrawItem
+    public static partial class DrawItem
     {
         public static void DrawFormattedText(Graphics zGraphics, Deck zDeck, ProjectLayoutElement zElement, string sInput, Brush zBrush, Font zFont, Color colorFont)
         {
@@ -55,10 +55,9 @@ namespace CardMaker.Card
 
                 zDataFormattedCache = new FormattedTextDataCache();
                 var zFormattedData = new FormattedTextData(GetMarkups(sInput));
-                var zProcessData = new FormattedTextProcessData();
+                var zProcessData = new FormattedTextProcessData {FontBrush = zBrush};
 
                 // set the initial font
-                zProcessData.FontBrush = zBrush;
                 zProcessData.SetFont(zFont, zGraphics);
 
                 var listPassMarkups = new List<MarkupBase>(); // only contains the markups that will be actively drawn (for caching)

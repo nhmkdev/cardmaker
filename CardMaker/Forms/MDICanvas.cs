@@ -708,9 +708,8 @@ namespace CardMaker.Forms
             // apply the translation
             var nX = listSelectedElements[0].x;
             var nY = listSelectedElements[0].y;
-            for (var nIdx = 0; nIdx < listSelectedElements.Count; nIdx++)
+            foreach (var zElement in listSelectedElements)
             {
-                var zElement = listSelectedElements[nIdx];
                 zElement.x = nX;
                 zElement.y = nY;
                 nX += bApplyElementWidths ? zElement.width : 0;

@@ -38,10 +38,7 @@ namespace CardMaker.Card.FormattedText
 
         public int LineNumber { get; set; }
 
-        public virtual bool Aligns
-        {
-            get { return false; }
-        }
+        public virtual bool Aligns => false;
 
         public RectangleF TargetRect { get; set; }
 
@@ -109,14 +106,13 @@ namespace CardMaker.Card.FormattedText
         public static MarkupBase GetMarkup(string sInput)
         {
             // check for the value based tags
-            Type typeMarkup;
             var arraySplit = sInput.Split(new char[] { '=' });
 
             try
             {
                 if (2 == arraySplit.Length)
                 {
-                    typeMarkup = GetMarkupType(arraySplit[0]);
+                    var typeMarkup = GetMarkupType(arraySplit[0]);
                     if (null != typeMarkup)
                     {
                         return (MarkupBase) Activator.CreateInstance(typeMarkup, new object[] {arraySplit[1]});
@@ -125,7 +121,7 @@ namespace CardMaker.Card.FormattedText
                 else
                 {
                     // this check is after the value based tag check because some tags may optionally use values
-                    typeMarkup = GetMarkupType(sInput);
+                    var typeMarkup = GetMarkupType(sInput);
                     if (null != typeMarkup)
                     {
                         return (MarkupBase) Activator.CreateInstance(typeMarkup);

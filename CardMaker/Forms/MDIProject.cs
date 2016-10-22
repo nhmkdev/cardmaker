@@ -106,9 +106,9 @@ namespace CardMaker.Forms
 
         private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            if (null != treeView.SelectedNode && null != treeView.SelectedNode.Tag)
+            if (treeView.SelectedNode?.Tag != null)
             {
-                Type type = treeView.SelectedNode.Tag.GetType();
+                var type = treeView.SelectedNode.Tag.GetType();
                 if(typeof(Project) == type)
                 {
                     treeView.ContextMenuStrip = contextMenuStripProject;
@@ -541,9 +541,7 @@ namespace CardMaker.Forms
         private void treeView_ItemDrag(object sender, ItemDragEventArgs e)
         {
             var tnSource = e.Item as TreeNode;
-            if (null != tnSource && 
-                null != tnSource.Tag && 
-                tnSource.Tag is ProjectLayout)
+            if (tnSource?.Tag != null && tnSource.Tag is ProjectLayout)
             {
                 DoDragDrop(e.Item, DragDropEffects.Move);
             }
@@ -562,8 +560,7 @@ namespace CardMaker.Forms
                 var tnTarget = ((TreeView)sender).GetNodeAt(pt);
                 var tnDrag = (TreeNode)e.Data.GetData(typeof(TreeNode));
 
-                if (null != tnTarget && 
-                    null != tnTarget.Tag && 
+                if (null != tnTarget?.Tag && 
                     tnDrag != tnTarget &&
                     tnTarget.Tag is ProjectLayout &&
                     tnTarget.TreeView == tnDrag.TreeView)

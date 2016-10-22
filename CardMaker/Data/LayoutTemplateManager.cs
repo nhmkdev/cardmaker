@@ -44,17 +44,7 @@ namespace CardMaker.Data
 
         public List<LayoutTemplate> LayoutTemplates { get; set; } 
         
-        public static LayoutTemplateManager Instance
-        {
-            get
-            {
-                if (m_zInstance == null)
-                {
-                    m_zInstance = new LayoutTemplateManager();
-                }
-                return m_zInstance;
-            }
-        }
+        public static LayoutTemplateManager Instance => m_zInstance ?? (m_zInstance = new LayoutTemplateManager());
 
         /// <summary>
         /// Loads the template files from the specified startup path

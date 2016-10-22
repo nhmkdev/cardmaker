@@ -26,7 +26,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using CardMaker.Data;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
 using Support.IO;
@@ -35,7 +34,7 @@ namespace CardMaker.Card.Import
 {
     public class CSVReferenceReader : ReferenceReader
     {
-        public string ReferencePath { get; private set; }
+        public string ReferencePath { get; }
 
         public CSVReferenceReader() { }
 

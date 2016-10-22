@@ -44,7 +44,7 @@ namespace Support.UI
 
         private readonly int m_nColumn;
 		private readonly SortOrder m_sOrder;
-		private bool m_bNumber = false;
+		private readonly bool m_bNumber;
 		
 		public ListViewItemComparer(SortOrder sOrder)
 		{

@@ -22,7 +22,6 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -89,13 +88,7 @@ namespace CardMaker.Data
         /// </summary>
         public static Form ApplicationForm { get; set; }
 
-        public static string StartupPath
-        {
-            get
-            {
-                return Application.StartupPath + Path.DirectorySeparatorChar;
-            }
-        }
+        public static string StartupPath => Application.StartupPath + Path.DirectorySeparatorChar;
 
         /// <summary>
         /// User actively operating on the canvas

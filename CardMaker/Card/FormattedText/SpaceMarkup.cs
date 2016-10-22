@@ -31,12 +31,9 @@ namespace CardMaker.Card.FormattedText
 {
     public class SpaceMarkup : MarkupValueBase
     {
-        public bool Optional { get; private set; }
+        public bool Optional { get; }
 
-        public override bool Aligns
-        {
-            get { return true; }
-        }
+        public override bool Aligns => true;
 
         public SpaceMarkup() : base("1")
         {

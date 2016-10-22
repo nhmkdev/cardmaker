@@ -49,9 +49,9 @@ namespace CardMaker.Card.Import
 
         private readonly Dictionary<string, List<List<string>>> m_dictionaryDataCache = new Dictionary<string, List<List<string>>>();
 
-        private bool m_bCacheUpdated = false;
+        private bool m_bCacheUpdated;
 
-        public string ReferencePath { get; private set; }
+        public string ReferencePath { get; }
 
         public GoogleReferenceReader()
         {

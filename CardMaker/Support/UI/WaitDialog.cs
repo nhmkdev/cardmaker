@@ -92,12 +92,9 @@ namespace Support.UI
         private void Initialize(int nProgressBarCount, string sTitle, string[] arrayDescriptions, int nWidth)
         {
             Text = sTitle;
-            if (null != arrayDescriptions)
+            if (nProgressBarCount == arrayDescriptions?.Length)
             {
-                if (nProgressBarCount == arrayDescriptions.Length)
-                {
-                    m_arrayDescriptions = arrayDescriptions;
-                }
+                m_arrayDescriptions = arrayDescriptions;
             }
             m_zWaitDialog = this;
 
@@ -299,7 +296,7 @@ namespace Support.UI
         /// </summary>
         public void CloseWaitDialog()
         {
-            this.InvokeAction(() => Close());
+            this.InvokeAction(Close);
             m_zWaitDialog = null;
         }
 

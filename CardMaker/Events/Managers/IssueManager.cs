@@ -53,17 +53,7 @@ namespace CardMaker.Events.Managers
         /// </summary>
         public event IssueAdded IssueAdded;
 
-        public static IssueManager Instance
-        {
-            get
-            {
-                if (null == m_zInstance)
-                {
-                    m_zInstance = new IssueManager();
-                }
-                return m_zInstance;
-            }
-        }
+        public static IssueManager Instance => m_zInstance ?? (m_zInstance = new IssueManager());
 
         #region Event Triggers
 
@@ -74,10 +64,7 @@ namespace CardMaker.Events.Managers
         /// <param name="nCard"></param>
         public void FireChangeCardInfoEvent(int nLayout, int nCard)
         {
-            if (null != CardInfoChanged)
-            {
-                CardInfoChanged(this, new IssueCardInfoEventArgs(nLayout, nCard));
-            }
+            CardInfoChanged?.Invoke(this, new IssueCardInfoEventArgs(nLayout, nCard));
         }
 
         /// <summary>
@@ -86,10 +73,7 @@ namespace CardMaker.Events.Managers
         /// <param name="sName"></param>
         public void FireChangeElementEvent(string sName)
         {
-            if (null != ElementChanged)
-            {
-                ElementChanged(this, new IssueElementEventArgs(sName));
-            }            
+            ElementChanged?.Invoke(this, new IssueElementEventArgs(sName));
         }
 
         /// <summary>
@@ -98,10 +82,7 @@ namespace CardMaker.Events.Managers
         /// <param name="sIssue">The issue message</param>
         public void FireAddIssueEvent(string sIssue)
         {
-            if (null != IssueAdded)
-            {
-                IssueAdded(this, new IssueMessageEventArgs(sIssue));
-            }
+            IssueAdded?.Invoke(this, new IssueMessageEventArgs(sIssue));
         }
 
         /// <summary>
@@ -109,10 +90,7 @@ namespace CardMaker.Events.Managers
         /// </summary>
         public void FireRefreshRequestedEvent()
         {
-            if (null != RefreshRequested)
-            {
-                RefreshRequested(this, new IssueRefreshEventArgs());
-            }
+            RefreshRequested?.Invoke(this, new IssueRefreshEventArgs());
         }
 
         #endregion

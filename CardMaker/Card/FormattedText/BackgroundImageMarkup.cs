@@ -39,10 +39,7 @@ namespace CardMaker.Card.FormattedText
         private int m_nWidth;
         private int m_nHeight;
 
-        public override bool Aligns
-        {
-            get { return true; }
-        }
+        public override bool Aligns => true;
 
         /// <summary>
         /// Processes the image markup and if the image is valid associates it with the current process data.

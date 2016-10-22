@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using CardMaker.Card.Translation;
-using CardMaker.Data;
-using CardMaker.Events.Managers;
-using Support.IO;
-using Support.UI;
 
 namespace UnitTest.DeckObject
 {

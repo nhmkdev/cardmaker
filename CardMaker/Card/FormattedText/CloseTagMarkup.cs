@@ -31,7 +31,7 @@ namespace CardMaker.Card.FormattedText
 {
     public class CloseTagMarkup : MarkupBase
     {
-        public MarkupBase MarkupToClose { get; private set; }
+        public MarkupBase MarkupToClose { get; }
 
         private static readonly Dictionary<Type, int> s_dictionaryKeepTypesOnProcess = new Dictionary<Type, int>
         {

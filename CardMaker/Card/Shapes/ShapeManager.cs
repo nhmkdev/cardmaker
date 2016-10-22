@@ -41,10 +41,7 @@ namespace CardMaker.Card.Shapes
 
         private ShapeManager(){}
 
-        public static Dictionary<string, AbstractShape> ShapeDictionary
-        {
-            get { return s_dictionaryShapeByName; }
-        }
+        public static Dictionary<string, AbstractShape> ShapeDictionary => s_dictionaryShapeByName;
 
         public static void Init()
         {
@@ -154,9 +151,9 @@ namespace CardMaker.Card.Shapes
 
     public class ShapeInfo
     {
-        public int Thickness { get; private set; }
-        public int OverrideWidth { get; private set; }
-        public int OverrideHeight { get; private set; }
+        public int Thickness { get; }
+        public int OverrideWidth { get; }
+        public int OverrideHeight { get; }
         public string[] Arguments { get; private set; }
 
         private ShapeInfo() { }

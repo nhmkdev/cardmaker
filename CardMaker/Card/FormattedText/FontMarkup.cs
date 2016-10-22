@@ -31,7 +31,7 @@ namespace CardMaker.Card.FormattedText
     {
         public FontMarkup(string sVariable) : base(sVariable) { }
 
-        private Font m_zPreviousFont = null;
+        private Font m_zPreviousFont;
 
         public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {

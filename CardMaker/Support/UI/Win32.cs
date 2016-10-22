@@ -76,7 +76,7 @@ namespace Support.UI
         public static extern Int32 SetForegroundWindow(int hWnd);
 
         [DllImport("user32.dll")]
-        private extern static IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wp, IntPtr lp);
+        private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wp, IntPtr lp);
 
 		/// <summary>
 		/// Used to show/hide windows by their title.
@@ -85,16 +85,9 @@ namespace Support.UI
 		/// <param name="bShow"></param>
 		private static void ShowWindow(string sName, bool bShow)
 		{
-			var nHandle = FindWindow(null, sName);
+		    var nHandle = FindWindow(null, sName);
 
-			if(bShow)
-			{
-				ShowWindow(nHandle, SW_RESTORE);
-			}
-			else
-			{
-				ShowWindow(nHandle, SW_HIDE);
-			}
+		    ShowWindow(nHandle, bShow ? SW_RESTORE : SW_HIDE);
 		}
 
 		/// <summary>
@@ -135,7 +128,7 @@ namespace Support.UI
 
         // it's this or using actual pointers and forcing unsafe code
         [DllImport("user32.dll")]
-        private extern static IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wp, ref Point lp);
+        private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wp, ref Point lp);
 
         public static Point GetRichTextScrollPosition(IntPtr HANDLE)
         {

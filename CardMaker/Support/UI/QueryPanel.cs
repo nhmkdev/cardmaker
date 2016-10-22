@@ -47,9 +47,9 @@ namespace Support.UI
         private bool m_bTabbed;
         private int m_nTabIndex; // the tab index value of a control
 
-        protected int m_nButtonHeight = 0;
-        protected TabControl m_zTabControl = null;
-        protected Panel m_zPanel = null;
+        protected int m_nButtonHeight;
+        protected TabControl m_zTabControl;
+        protected Panel m_zPanel;
 
 		public enum ControlType
 		{
@@ -402,9 +402,9 @@ namespace Support.UI
             var zCombo = new ComboBox();
             if (null != arrayEntries)
             {
-                for (var nIdx = 0; nIdx < arrayEntries.Length; nIdx++)
+                foreach (var entry in arrayEntries)
                 {
-                    zCombo.Items.Add(arrayEntries[nIdx]);
+                    zCombo.Items.Add(entry);
                 }
                 if (zCombo.Items.Count > nDefaultIndex)
                 {
@@ -926,19 +926,13 @@ namespace Support.UI
             private ControlType m_eControlType = ControlType.None;
 			private Control m_zControl;
             private readonly List<QueryItem> m_listEnableControls = new List<QueryItem>();
-			public object Tag = null; // always good to have an extra object reference just in case...
+			public object Tag; // always good to have an extra object reference just in case...
 	
-			public ControlType Type
-			{
-				get { return m_eControlType; }
-			}
+			public ControlType Type => m_eControlType;
 
-			public Control QueryControl
-			{
-				get { return m_zControl; }
-			}
+		    public Control QueryControl => m_zControl;
 
-            /// <summary>
+		    /// <summary>
             /// Constructor
             /// </summary>
             /// <param name="eControlType">The ControlType to create</param>

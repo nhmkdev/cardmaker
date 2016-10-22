@@ -37,10 +37,7 @@ namespace CardMaker.Card.Translation
 
         private static readonly Dictionary<char, string> s_dictionaryCharReplacement = new Dictionary<char, string>();
 
-        public static Dictionary<char, string> CharReplacement 
-        {
-            get { return s_dictionaryCharReplacement; }
-        }
+        public static Dictionary<char, string> CharReplacement => s_dictionaryCharReplacement;
 
         public static readonly char[] DISALLOWED_FILE_CHARS_ARRAY = { '\\', '/', ':', '*', '?', '\"', '>', '<', '|' };
 
@@ -65,6 +62,10 @@ namespace CardMaker.Card.Translation
         /// <param name="sRawString"></param>
         /// <param name="nCardNumber"></param>
         /// <param name="nLeftPad"></param>
+        /// <param name="zCurrentPrintLine"></param>
+        /// <param name="dictionaryDefines"></param>
+        /// <param name="dictionaryColumnNameToIndex"></param>
+        /// <param name="zLayout"></param>
         /// <returns></returns>
         public static string TranslateFileNameString(string sRawString, int nCardNumber, int nLeftPad, DeckLine zCurrentPrintLine, Dictionary<string, string> dictionaryDefines,
             Dictionary<string, int> dictionaryColumnNameToIndex, ProjectLayout zLayout)

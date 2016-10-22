@@ -36,12 +36,9 @@ namespace Support.UI
         private int m_nMaxDesiredHeight = -1;
         private string m_sButtonPressed = string.Empty;
 
-        public Form Form
-        {
-            get { return m_zForm; }
-        }
+        public Form Form => m_zForm;
 
-		/// <summary>
+	    /// <summary>
 		/// Constructor
 		/// </summary>
 		/// <param name="sTitle">Title of the dialog</param>
@@ -150,14 +147,11 @@ namespace Support.UI
                 for (int nIdx = arrayButtons.Length - 1; nIdx > -1; nIdx--)
                 {
                     btnDefault = new Button();
-                    bool bHandlerSet = false;
-                    if (null != arrayHandlers)
+                    var bHandlerSet = false;
+                    if (arrayHandlers?[nIdx] != null)
                     {
-                        if (null != arrayHandlers[nIdx])
-                        {
-                            btnDefault.Click += arrayHandlers[nIdx];
-                            bHandlerSet = true;
-                        }
+                        btnDefault.Click += arrayHandlers[nIdx];
+                        bHandlerSet = true;
                     }
                     if (!bHandlerSet)
                     {

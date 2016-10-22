@@ -58,28 +58,11 @@ namespace CardMaker.Events.Managers
         /// <summary>
         /// The current set of selected elements (may be empty)
         /// </summary>
-        public List<ProjectLayoutElement> SelectedElements
-        {
-            get
-            {
-                // always return a copy of the list
-                return m_listSelectedElements == null
-                    ? m_listSelectedElements
-                    : new List<ProjectLayoutElement>(m_listSelectedElements);
-            }
-        }
+        public List<ProjectLayoutElement> SelectedElements => m_listSelectedElements == null
+            ? m_listSelectedElements
+            : new List<ProjectLayoutElement>(m_listSelectedElements);
 
-        public static ElementManager Instance
-        {
-            get
-            {
-                if (null == m_zInstance)
-                {
-                    m_zInstance = new ElementManager();
-                }
-                return m_zInstance;
-            }
-        }
+        public static ElementManager Instance => m_zInstance ?? (m_zInstance = new ElementManager());
 
         public ElementManager()
         {
@@ -100,10 +83,7 @@ namespace CardMaker.Events.Managers
         public void FireElementSelectedEvent(List<ProjectLayoutElement> listElements)
         {
             m_listSelectedElements = listElements;
-            if (null != ElementSelected)
-            {
-                ElementSelected(this, new ElementEventArgs(listElements));
-            }
+            ElementSelected?.Invoke(this, new ElementEventArgs(listElements));
         }
 
         /// <summary>
@@ -112,10 +92,7 @@ namespace CardMaker.Events.Managers
         /// <param name="zElement">The element to select</param>
         public void FireElementSelectRequestedEvent(ProjectLayoutElement zElement)
         {
-            if (null != ElementSelectRequested)
-            {
-                ElementSelectRequested(this, new ElementEventArgs(zElement));
-            }
+            ElementSelectRequested?.Invoke(this, new ElementEventArgs(zElement));
         }
 
         /// <summary>
@@ -123,10 +100,7 @@ namespace CardMaker.Events.Managers
         /// </summary>
         public void FireElementBoundsUpdateEvent()
         {
-            if (null != ElementBoundsUpdated)
-            {
-                ElementBoundsUpdated(this, new ElementEventArgs(m_listSelectedElements));
-            }
+            ElementBoundsUpdated?.Invoke(this, new ElementEventArgs(m_listSelectedElements));
         }
 
         #endregion

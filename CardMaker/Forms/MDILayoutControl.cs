@@ -46,7 +46,7 @@ namespace CardMaker.Forms
         private int[] m_arrayRowToIndex;
         private int[] m_arrayIndexToRow;
 
-        private ProjectLayout m_zLastProjectLayout = null;
+        private ProjectLayout m_zLastProjectLayout;
         private int m_nDestinationCardIndex = -1;
 
         public MDILayoutControl() 
@@ -162,7 +162,8 @@ namespace CardMaker.Forms
                                         .Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
                     if (arrayNames.Length != listViewElements.SelectedItems.Count)
                     {
-                        MessageBox.Show(zQuery.Form, string.Format("Please specify {0} element names.", listViewElements.SelectedItems.Count), "", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        MessageBox.Show(zQuery.Form,
+                            $"Please specify {listViewElements.SelectedItems.Count} element names.", "", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         args.Cancel = true;
                     }
                 };
@@ -691,8 +692,7 @@ namespace CardMaker.Forms
             // TODO: this is only used in one place
             var listDeckLines = LayoutManager.Instance.ActiveDeck.ValidLines;
             m_arrayIndexToRow = new int[listDeckLines.Count];
-            var listRowToIndex = new List<int>();
-            listRowToIndex.Add(0);
+            var listRowToIndex = new List<int> {0};
             var nCurrentRow = 0;
             for (var nIdx = 0; nIdx < listDeckLines.Count; nIdx++)
             {

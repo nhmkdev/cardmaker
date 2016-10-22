@@ -40,10 +40,7 @@ namespace CardMaker.Data
             s_zIniManager = new IniManager("cardmaker", false, true, true);
         }
 
-        public static IniManager IniManager
-        {
-            get { return s_zIniManager; }
-        }
+        public static IniManager IniManager => s_zIniManager;
 
         public static string ProjectManagerRoot
         {

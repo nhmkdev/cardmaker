@@ -36,7 +36,7 @@ namespace Support.IO
         private readonly List<List<string>> m_listRows = new List<List<string>>();
         private readonly List<string> m_listRawText = new List<string>();
 
-        public string Filename { get; private set; }
+        public string Filename { get; }
         public bool DisplayFullPath { get; set; }
 
         private CSVFile() { }
@@ -215,13 +215,7 @@ namespace Support.IO
             m_listRows[nRow].Add(sItem);
         }
 
-        public int Rows
-        {
-            get
-            {
-                return m_listRows.Count;
-            }
-        }
+        public int Rows => m_listRows.Count;
 
         public override string ToString()
         {

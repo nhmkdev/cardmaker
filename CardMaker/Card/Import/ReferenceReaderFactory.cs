@@ -35,11 +35,10 @@ namespace CardMaker.Card.Import
             {
                 return null;
             }
-            ReferenceReader zReader;
             if (zReference.RelativePath.StartsWith(CardMakerConstants.GOOGLE_REFERENCE +
                                                            CardMakerConstants.GOOGLE_REFERENCE_SPLIT_CHAR))
             {
-                zReader = new GoogleReferenceReader(zReference);
+                var zReader = new GoogleReferenceReader(zReference);
                 if (!CardMakerInstance.GoogleCredentialsInvalid)
                 {
                     return zReader;

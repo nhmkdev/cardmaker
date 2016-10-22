@@ -159,10 +159,7 @@ namespace Support.IO
                 return true;
             }
             catch(Exception){}
-            if (null != zStream)
-            {
-                zStream.Close();
-            }
+            zStream?.Close();
             return false;
         }
     }

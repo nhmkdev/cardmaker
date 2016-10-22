@@ -37,17 +37,14 @@ namespace CardMaker.Card.FormattedText
     {
         private Brush m_zFontBrush;
         private Font m_zFont;
-        public float m_fFontHeight = 0f;
-        public float m_fFontOutlineSize = 0f;
+        public float m_fFontHeight;
+        public float m_fFontOutlineSize;
         private float m_fXOffset;
         private float m_fYOffset;
 
         private RectangleF m_rectMeasuredRectangle = RectangleF.Empty;
 
-        public override bool Aligns
-        {
-            get { return true; }
-        }
+        public override bool Aligns => true;
 
         public TextMarkup(string sVariable)
             : base(sVariable)

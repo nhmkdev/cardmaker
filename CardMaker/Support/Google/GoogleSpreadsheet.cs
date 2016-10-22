@@ -46,8 +46,10 @@ namespace Support.UI
                 AccessToken = sGoogleAccessToken
             };
 
-            var spreadsheetsService = new SpreadsheetsService(sAppName);
-            spreadsheetsService.RequestFactory = new GOAuth2RequestFactory(null, sAppName, zAuthParameters);
+            var spreadsheetsService = new SpreadsheetsService(sAppName)
+            {
+                RequestFactory = new GOAuth2RequestFactory(null, sAppName, zAuthParameters)
+            };
 
             return spreadsheetsService;
         }

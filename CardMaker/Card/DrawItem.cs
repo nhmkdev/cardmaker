@@ -35,7 +35,7 @@ using CardMaker.XML;
 
 namespace CardMaker.Card
 {
-    static public partial class DrawItem
+    public static partial class DrawItem
     {
         private const int IMAGE_CACHE_MAX = 50;
 
@@ -50,7 +50,7 @@ namespace CardMaker.Card
 
         public const float OutlineFontScale = 395f / 300f;
 
-        private static IDrawText s_zDrawText =
+        private static readonly IDrawText s_zDrawText =
 #if false
             new DrawTextRenderer();
 #else
@@ -65,13 +65,7 @@ namespace CardMaker.Card
             }
         }
 
-        public static Font DefaultFont
-        {
-            get
-            {
-                return s_zDefaultFont;
-            }
-        }
+        public static Font DefaultFont => s_zDefaultFont;
 
         public static ElementType GetElementType(string sType)
         {
@@ -300,9 +294,12 @@ namespace CardMaker.Card
             // draw the outline
             if (0 < zElement.outlinethickness)
             {
-                var outlinePen = new Pen(Color.FromArgb(zElement.opacity, zElement.GetElementOutlineColor()), zElement.outlinethickness);
+                var outlinePen = new Pen(Color.FromArgb(zElement.opacity, zElement.GetElementOutlineColor()),
+                    zElement.outlinethickness)
+                {
+                    LineJoin = LineJoin.Round
+                };
 #warning This outline pen linejoin should be customizable (as it rounds the corners but corrects other issues!)
-                outlinePen.LineJoin = LineJoin.Round;
                 zGraphics.DrawPath(outlinePen, zPath);
             }
         }

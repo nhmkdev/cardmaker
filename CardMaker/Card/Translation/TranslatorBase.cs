@@ -35,13 +35,13 @@ namespace CardMaker.Card.Translation
     {
         public Dictionary<string, int> DictionaryColumnNameToIndex { get; private set; }
         public Dictionary<string, string> DictionaryDefines { get; private set; }
-        public Dictionary<string, Dictionary<string, int>> DictionaryElementOverrides { get; private set; }
+        public Dictionary<string, Dictionary<string, int>> DictionaryElementOverrides { get; }
         public List<string> ListColumnNames { get; private set; }
 
         protected readonly Dictionary<string, ElementString> m_dictionaryElementStringCache = new Dictionary<string, ElementString>();
         protected readonly Dictionary<string, FormattedTextDataCache> m_dictionaryMarkupCache = new Dictionary<string, FormattedTextDataCache>();
 
-        public TranslatorBase(Dictionary<string, int> dictionaryColumnNameToIndex, Dictionary<string, string> dictionaryDefines,
+        protected TranslatorBase(Dictionary<string, int> dictionaryColumnNameToIndex, Dictionary<string, string> dictionaryDefines,
             Dictionary<string, Dictionary<string, int>> dictionaryElementOverrides, List<string> listColumnNames)
         {
             DictionaryColumnNameToIndex = dictionaryColumnNameToIndex;

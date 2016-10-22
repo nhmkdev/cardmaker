@@ -65,17 +65,7 @@ namespace CardMaker.Events.Managers
         /// </summary>
         public event LayoutAdded LayoutAdded;
 
-        public static ProjectManager Instance
-        {
-            get
-            {
-                if (m_zInstance == null)
-                {
-                    m_zInstance = new ProjectManager();
-                }
-                return m_zInstance;
-            }
-        }
+        public static ProjectManager Instance => m_zInstance ?? (m_zInstance = new ProjectManager());
 
         public ProjectManager()
         {
@@ -89,10 +79,7 @@ namespace CardMaker.Events.Managers
         /// </summary>
         public void FireProjectUpdated(bool bDataChange)
         {
-            if (null != ProjectUpdated)
-            {
-                ProjectUpdated(this, new ProjectEventArgs(LoadedProject, ProjectFilePath, bDataChange));
-            }
+            ProjectUpdated?.Invoke(this, new ProjectEventArgs(LoadedProject, ProjectFilePath, bDataChange));
         }
 
         #endregion
@@ -107,10 +94,7 @@ namespace CardMaker.Events.Managers
             LoadedProject = LoadProject(sProjectFile);
             UpdateSettings();
             SetLoadedProjectFile(sProjectFile);
-            if (ProjectOpened != null)
-            {
-                ProjectOpened(this, new ProjectEventArgs(LoadedProject, ProjectFilePath)); 
-            }
+            ProjectOpened?.Invoke(this, new ProjectEventArgs(LoadedProject, ProjectFilePath));
         }
 
         /// <summary>
@@ -159,14 +143,10 @@ namespace CardMaker.Events.Managers
         public void AddLayout(ProjectLayout zLayout)
         {
             // update the Project (no null check on zProject.Layout necessary... can never have 0 layouts)
-            var listLayouts = new List<ProjectLayout>(LoadedProject.Layout);
-            listLayouts.Add(zLayout);
+            var listLayouts = new List<ProjectLayout>(LoadedProject.Layout) {zLayout};
             LoadedProject.Layout = listLayouts.ToArray();
             LayoutManager.InitializeElementCache(zLayout);
-            if (null != LayoutAdded)
-            {
-                LayoutAdded(this, new LayoutEventArgs(zLayout, null));
-            }
+            LayoutAdded?.Invoke(this, new LayoutEventArgs(zLayout, null));
             FireProjectUpdated(true);
         }
 
@@ -209,7 +189,7 @@ namespace CardMaker.Events.Managers
         public static TranslatorType GetTranslatorTypeFromString(string sInput)
         {
             TranslatorType eTranslatorType;
-            if (!TranslatorType.TryParse(sInput, true, out eTranslatorType))
+            if (!Enum.TryParse(sInput, true, out eTranslatorType))
             {
                 return TranslatorType.Incept;
             }
@@ -219,7 +199,7 @@ namespace CardMaker.Events.Managers
         public static ReferenceType GetReferenceTypeFromString(string sInput)
         {
             ReferenceType eTranslatorType;
-            if (!ReferenceType.TryParse(sInput, true, out eTranslatorType))
+            if (!Enum.TryParse(sInput, true, out eTranslatorType))
             {
                 return ReferenceType.CSV;
             }
@@ -243,14 +223,9 @@ namespace CardMaker.Events.Managers
                     string sContents = File.ReadAllText(sFile);
                     // Fix the previous version's mistakes!
                     sContents = sContents.Replace("xmlns=\"http://tempuri.org/Project.xsd\"", string.Empty);
-                    if (!SerializationUtils.DeserializeFromXmlString(sContents, CardMakerConstants.XML_ENCODING, ref zProject))
-                    {
-                        Logger.AddLogLine("Failed to load project. The project file appears to be corrupt.");
-                    }
-                    else
-                    {
-                        Logger.AddLogLine("This project file is in an older format. Please save it using this version.");
-                    }
+                    Logger.AddLogLine(!SerializationUtils.DeserializeFromXmlString(sContents, CardMakerConstants.XML_ENCODING, ref zProject)
+                            ? "Failed to load project. The project file appears to be corrupt."
+                            : "This project file is in an older format. Please save it using this version.");
                 }
             }
             else

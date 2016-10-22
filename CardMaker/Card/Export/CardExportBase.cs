@@ -36,11 +36,7 @@ namespace CardMaker.Card.Export
         protected int ExportLayoutStartIndex { get; private set; }
         protected int ExportLayoutEndIndex { get; private set; }
         
-        protected CardRenderer CardRenderer
-        {
-            get;
-            private set;
-        }
+        protected CardRenderer CardRenderer { get; }
 
         protected CardExportBase(int nLayoutStartIndex, int nLayoutEndIndex)
         {
@@ -63,20 +59,11 @@ namespace CardMaker.Card.Export
             CurrentDeck.SetAndLoadLayout(zLayout ?? CurrentDeck.CardLayout, true);
         }
 
-        protected Deck CurrentDeck 
-        {
-            get
-            {
-                return CardRenderer.CurrentDeck;
-            }
-        }
+        protected Deck CurrentDeck => CardRenderer.CurrentDeck;
 
         ~CardExportBase()
         {
-            if (m_zExportCardBuffer != null)
-            {
-                m_zExportCardBuffer.Dispose();
-            }
+            m_zExportCardBuffer?.Dispose();
         }
 
         /// <summary>
@@ -91,10 +78,7 @@ namespace CardMaker.Card.Export
                 nWidth != m_zExportCardBuffer.Width ||
                 nHeight != m_zExportCardBuffer.Height)
             {
-                if (null != m_zExportCardBuffer)
-                {
-                    m_zExportCardBuffer.Dispose();
-                }
+                m_zExportCardBuffer?.Dispose();
                 m_zExportCardBuffer = null == zGraphics
                     ? new Bitmap(nWidth, nHeight)
                     : new Bitmap(nWidth, nHeight, zGraphics);

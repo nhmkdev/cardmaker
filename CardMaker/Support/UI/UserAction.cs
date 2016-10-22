@@ -96,14 +96,11 @@ namespace Support.UI
         {
             m_stackRedo.Clear();
             m_stackUndo.Clear();
-            if (null != OnClearUserActions)
-            {
-                OnClearUserActions();
-            }
+            OnClearUserActions?.Invoke();
         }
 
-        public static int UndoCount { get { return m_stackUndo.Count; } }
-        public static int RedoCount { get { return m_stackRedo.Count; } }
+        public static int UndoCount => m_stackUndo.Count;
+        public static int RedoCount => m_stackRedo.Count;
     }
 
 }

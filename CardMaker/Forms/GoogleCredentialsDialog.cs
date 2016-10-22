@@ -63,9 +63,6 @@ namespace CardMaker.Forms
 
         #endregion 
 
-        public string GoogleAccessToken
-        {
-            get { return txtAccessToken.Text; }
-        }
+        public string GoogleAccessToken => txtAccessToken.Text;
     }
 }

@@ -176,10 +176,7 @@ namespace Support.UI
             panelColor.BackColor = colorCurrent;
 
             m_bEventsEnabled = true;
-            if (null != PreviewEvent)
-            {
-                PreviewEvent(this, colorCurrent);
-            }
+            PreviewEvent?.Invoke(this, colorCurrent);
         }
 
         private void UpdateColorHexText()
@@ -191,13 +188,7 @@ namespace Support.UI
                 m_lastColor.B.ToString("X").PadLeft(2, '0');            
         }
 
-        public Color Color
-        {
-            get
-            {
-                return Color.FromArgb((int)numericRed.Value, (int)numericGreen.Value, (int)numericBlue.Value);
-            }
-        }
+        public Color Color => Color.FromArgb((int)numericRed.Value, (int)numericGreen.Value, (int)numericBlue.Value);
 
         public void SetHueColor()
         {

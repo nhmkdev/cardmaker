@@ -72,9 +72,11 @@ namespace CardMaker.Forms
             var listItems = new List<ListViewItem>();
             foreach (var zDefine in args.Deck.Defines)
             {
-                var zLvi = new ListViewItem(new string[] {zDefine.Key, zDefine.Value});
+                var zLvi = new ListViewItem(new string[] {zDefine.Key, zDefine.Value})
+                {
+                    Tag = zDefine.Value
+                };
                 // the tag stores the original define value
-                zLvi.Tag = zDefine.Value;
                 listItems.Add(zLvi);
             }
             listViewDefines.Items.AddRange(listItems.ToArray());
@@ -134,7 +136,7 @@ namespace CardMaker.Forms
         {
             if (1 == listViewDefines.SelectedItems.Count)
             {
-                Clipboard.SetText(string.Format("@[{0}]", listViewDefines.SelectedItems[0].SubItems[0].Text));
+                Clipboard.SetText($"@[{listViewDefines.SelectedItems[0].SubItems[0].Text}]");
             }
         }
 

@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -335,11 +334,8 @@ namespace CardMaker.Forms
                 return;
             }
 
-            Action<bool> redoAction = UserAction.GetRedoAction();
-            if (null != redoAction)
-            {
-                redoAction(true);
-            }
+            var redoAction = UserAction.GetRedoAction();
+            redoAction?.Invoke(true);
         }
 
         private void undoToolStripMenuItem_Click(object sender, EventArgs e)
@@ -349,11 +345,8 @@ namespace CardMaker.Forms
                 return;
             }
 
-            Action<bool> undoAction = UserAction.GetUndoAction();
-            if (null != undoAction)
-            {
-                undoAction(false);
-            }
+            var undoAction = UserAction.GetUndoAction();
+            undoAction?.Invoke(false);
         }
 
         private void editToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
@@ -825,10 +818,10 @@ namespace CardMaker.Forms
                 case DialogResult.OK:
                     CardMakerInstance.GoogleAccessToken = zDialog.GoogleAccessToken;
                     Logger.AddLogLine("Updated Google Credentials");
-                    if (null != zSuccessAction) zSuccessAction();
+                    zSuccessAction?.Invoke();
                     break;
                 default:
-                    if (null != zCancelAction) zCancelAction();
+                    zCancelAction?.Invoke();
                     break;
             }
         }

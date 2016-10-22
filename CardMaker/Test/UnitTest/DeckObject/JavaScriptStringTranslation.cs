@@ -3,7 +3,6 @@ using CardMaker.XML;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using CardMaker.Card.Translation;
 using CardMaker.Data;
 
 namespace UnitTest.DeckObject

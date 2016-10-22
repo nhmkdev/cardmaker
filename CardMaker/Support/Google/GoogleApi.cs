@@ -52,7 +52,7 @@ namespace Support.UI
                     if (int.TryParse(root[EXPIRES_IN].ToString(), out nExpiresInSeconds))
                     {
                         var dtExpiry = DateTime.Now.AddSeconds(nExpiresInSeconds);
-                        Logger.AddLogLine(string.Format("Token expires in {0} seconds ({1})", nExpiresInSeconds, dtExpiry.ToString()));
+                        Logger.AddLogLine($"Token expires in {nExpiresInSeconds} seconds ({dtExpiry.ToString()})");
                     }
                     else
                     {

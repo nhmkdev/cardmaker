@@ -32,13 +32,10 @@ namespace CardMaker.Card.FormattedText
     public class ImageMarkup : MarkupValueBase
     {
         private string m_sImageFile;
-        private float m_fXOffset = 0;
-        private float m_fYOffset = 0;
+        private float m_fXOffset;
+        private float m_fYOffset;
 
-        public override bool Aligns
-        {
-            get { return true; }
-        }
+        public override bool Aligns => true;
 
         public ImageMarkup(string sVariable) : base(sVariable){}
 

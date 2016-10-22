@@ -53,12 +53,9 @@ namespace CardMaker.Card
 
         protected TranslatorBase m_zTranslator;
 
-        public List<DeckLine> ValidLines { get; private set; }
+        public List<DeckLine> ValidLines { get; }
 
-        public Dictionary<string, string> Defines
-        {
-            get { return m_zTranslator.DictionaryDefines; }
-        }
+        public Dictionary<string, string> Defines => m_zTranslator.DictionaryDefines;
 
         public int CardIndex
         {
@@ -95,29 +92,11 @@ namespace CardMaker.Card
             }
         }
 
-        public DeckLine CurrentPrintLine
-        {
-            get
-            {
-                return ValidLines[m_nCardPrintIndex];
-            }
-        }
+        public DeckLine CurrentPrintLine => ValidLines[m_nCardPrintIndex];
 
-        public DeckLine CurrentLine
-        {
-            get
-            {
-                return ValidLines[m_nCardIndex];
-            }
-        }
+        public DeckLine CurrentLine => ValidLines[m_nCardIndex];
 
-        public int CardCount
-        {
-            get
-            {
-                return ValidLines.Count;
-            }
-        }
+        public int CardCount => ValidLines.Count;
 
         protected void ResetPrintCardIndex()
         {
@@ -170,7 +149,7 @@ namespace CardMaker.Card
                     if (zRefReader == null)
                     {
                         listLines.Clear();
-                        Logger.AddLogLine(string.Format("Failed to load reference: {0}", zReference.RelativePath));
+                        Logger.AddLogLine($"Failed to load reference: {zReference.RelativePath}");
                         break;
                     }
                     // 0 index is always the default reference in the case of multi load
@@ -215,7 +194,7 @@ namespace CardMaker.Card
                 }
             }
 
-            ProcessLines(listLines, listDefineLines, null == zRefReader ? null : zRefReader.ReferencePath);
+            ProcessLines(listLines, listDefineLines, zRefReader?.ReferencePath);
         }
 
         protected void ProcessLines(List<List<string>> listLines, 

@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
+using System.Linq;
 using CardMaker.Card;
 using CardMaker.Data;
 using CardMaker.Events.Args;
@@ -80,34 +81,18 @@ namespace CardMaker.Events.Managers
         /// </summary>
         public event DeckIndexChanged DeckIndexChangeRequested;
 
-        public static LayoutManager Instance
-        {
-            get
-            {
-                if (m_zInstance == null)
-                {
-                    m_zInstance = new LayoutManager();
-                }
-                return m_zInstance;
-            }
-        }
+        public static LayoutManager Instance => m_zInstance ?? (m_zInstance = new LayoutManager());
 
         #region Event Triggers
 
         public void FireLayoutSelectRequested(ProjectLayout zLayout)
         {
-            if (null != LayoutSelectRequested)
-            {
-                LayoutSelectRequested(this, new LayoutEventArgs(zLayout));
-            }
+            LayoutSelectRequested?.Invoke(this, new LayoutEventArgs(zLayout));
         }
 
         public void FireDeckIndexChangeRequested(int nIdx)
         {
-            if (null != DeckIndexChangeRequested)
-            {
-                DeckIndexChangeRequested(this, new DeckChangeEventArgs(ActiveDeck, nIdx));
-            }
+            DeckIndexChangeRequested?.Invoke(this, new DeckChangeEventArgs(ActiveDeck, nIdx));
         }
 
         //TODO: (might even want to include the origin sender)
@@ -116,10 +101,7 @@ namespace CardMaker.Events.Managers
         /// </summary>
         public void FireLayoutUpdatedEvent(bool bDataChanged)
         {
-            if (null != LayoutUpdated)
-            {
-                LayoutUpdated(this, new LayoutEventArgs(ActiveLayout, ActiveDeck, bDataChanged));
-            }
+            LayoutUpdated?.Invoke(this, new LayoutEventArgs(ActiveLayout, ActiveDeck, bDataChanged));
         }
 
         /// <summary>
@@ -127,10 +109,7 @@ namespace CardMaker.Events.Managers
         /// </summary>
         public void FireLayoutRenderUpdatedEvent()
         {
-            if (null != LayoutRenderUpdated)
-            {
-                LayoutRenderUpdated(this, new LayoutEventArgs(ActiveLayout));
-            }
+            LayoutRenderUpdated?.Invoke(this, new LayoutEventArgs(ActiveLayout));
         }
 
         /// <summary>
@@ -138,10 +117,7 @@ namespace CardMaker.Events.Managers
         /// </summary>
         public void FireDeckIndexChangedEvent()
         {
-            if (null != DeckIndexChanged)
-            {
-                DeckIndexChanged(this, new DeckChangeEventArgs(ActiveDeck));
-            }
+            DeckIndexChanged?.Invoke(this, new DeckChangeEventArgs(ActiveDeck));
         }
 
         // TODO: this "request" event should make the actual change and then fire the event (??)
@@ -151,10 +127,7 @@ namespace CardMaker.Events.Managers
         /// <param name="nIndexAdjust"></param>
         public void FireElementOrderAdjustRequest(int nIndexAdjust)
         {
-            if (null != ElementOrderAdjustRequest)
-            {
-                ElementOrderAdjustRequest(this, new LayoutElementNumericAdjustEventArgs(nIndexAdjust));
-            }
+            ElementOrderAdjustRequest?.Invoke(this, new LayoutElementNumericAdjustEventArgs(nIndexAdjust));
         }
 
         /// <summary>
@@ -163,10 +136,7 @@ namespace CardMaker.Events.Managers
         /// <param name="nAdjust"></param>
         public void FireElementSelectAdjustRequest(int nAdjust)
         {
-            if (null != ElementSelectAdjustRequest)
-            {
-                ElementSelectAdjustRequest(this, new LayoutElementNumericAdjustEventArgs(nAdjust));
-            }
+            ElementSelectAdjustRequest?.Invoke(this, new LayoutElementNumericAdjustEventArgs(nAdjust));
         }
 
         #endregion
@@ -210,12 +180,10 @@ namespace CardMaker.Events.Managers
         public static void InitializeElementCache(ProjectLayout zLayout)
         {
             // mark all fields as specified
-            if (null != zLayout.Element)
+            if (null == zLayout.Element) return;
+            foreach (var zElement in zLayout.Element)
             {
-                foreach (var zElement in zLayout.Element)
-                {
-                    zElement.InitializeCache();
-                }
+                zElement.InitializeCache();
             }
         }
 
@@ -226,15 +194,9 @@ namespace CardMaker.Events.Managers
         /// <returns>The ProjectLayoutElement or null if not found</returns>
         public ProjectLayoutElement GetElement(string sName)
         {
-            if (null != ActiveLayout && null != ActiveLayout.Element)
+            if (ActiveLayout?.Element != null)
             {
-                foreach (var zElement in ActiveLayout.Element)
-                {
-                    if (zElement.name.Equals(sName))
-                    {
-                        return zElement;
-                    }
-                }
+                return ActiveLayout.Element.FirstOrDefault(zElement => zElement.name.Equals(sName));
             }
             return null;
         }

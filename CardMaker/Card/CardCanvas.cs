@@ -31,21 +31,9 @@ namespace CardMaker.Card
     {
         private readonly CardRenderer m_zCardRenderer;
 
-        private Deck ActiveDeck
-        {
-            get
-            {
-                return m_zCardRenderer.CurrentDeck;
-            }
-        }
+        private Deck ActiveDeck => m_zCardRenderer.CurrentDeck;
 
-        public CardRenderer CardRenderer 
-        {
-            get
-            {
-                return m_zCardRenderer;
-            }
-        }
+        public CardRenderer CardRenderer => m_zCardRenderer;
 
         private readonly Size m_zDefaultNoLayoutSize = new Size(320, 80);
 
@@ -79,21 +67,16 @@ namespace CardMaker.Card
         public void UpdateSize()
         {
             // TODO: may want to compare current and previous size if this is costly
-            if (null != ActiveDeck && null != ActiveDeck.CardLayout)
-            {
-                Size = new Size((int)((float)ActiveDeck.CardLayout.width * m_zCardRenderer.ZoomLevel), (int)((float)ActiveDeck.CardLayout.height * m_zCardRenderer.ZoomLevel));
-            }
-            else
-            {
-                Size = m_zDefaultNoLayoutSize;
-            }
+            Size = ActiveDeck?.CardLayout != null 
+                ? new Size((int)((float)ActiveDeck.CardLayout.width * m_zCardRenderer.ZoomLevel), (int)((float)ActiveDeck.CardLayout.height * m_zCardRenderer.ZoomLevel)) 
+                : m_zDefaultNoLayoutSize;
         }
 
         #region paint overrides
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            if (null == ActiveDeck || null == ActiveDeck.CardLayout)
+            if (ActiveDeck?.CardLayout == null)
             {
                 e.Graphics.FillRectangle(Brushes.White, 0, 0, Size.Width, Size.Height);
                 e.Graphics.DrawString("Select a Layout in the Project Window", new Font(DefaultFont.FontFamily, 20), Brushes.Red, new RectangleF(10, 10, Size.Width - 10, Size.Height - 10));

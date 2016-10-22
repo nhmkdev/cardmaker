@@ -35,17 +35,7 @@ namespace CardMaker.Events.Managers
 
         public GoogleAuthCredentialsError GoogleAuthCredentialsError;
 
-        public static GoogleAuthManager Instance
-        {
-            get
-            {
-                if (m_zInstance == null)
-                {
-                    m_zInstance = new GoogleAuthManager();
-                }
-                return m_zInstance;
-            }
-        }
+        public static GoogleAuthManager Instance => m_zInstance ?? (m_zInstance = new GoogleAuthManager());
 
         private GoogleAuthManager()
         {
@@ -61,10 +51,7 @@ namespace CardMaker.Events.Managers
         /// <param name="zCancelAction">The action to perform on cancel</param>
         public void FireGoogleAuthUpdateRequestedEvent(Action zSuccessAction = null, Action zCancelAction = null)
         {
-            if (null != GoogleAuthUpdateRequested)
-            {
-                GoogleAuthUpdateRequested(this, new GoogleAuthEventArgs(zSuccessAction, zCancelAction));
-            }
+            GoogleAuthUpdateRequested?.Invoke(this, new GoogleAuthEventArgs(zSuccessAction, zCancelAction));
         }
 
         /// <summary>
@@ -74,10 +61,7 @@ namespace CardMaker.Events.Managers
         /// <param name="zCancelAction">The action to perform on cancel</param>
         public void FireGoogleAuthCredentialsErrorEvent(Action zSuccessAction = null, Action zCancelAction = null)
         {
-            if (null != GoogleAuthCredentialsError)
-            {
-                GoogleAuthCredentialsError(this, new GoogleAuthEventArgs(zSuccessAction, zCancelAction));
-            }
+            GoogleAuthCredentialsError?.Invoke(this, new GoogleAuthEventArgs(zSuccessAction, zCancelAction));
         }
 
         #endregion

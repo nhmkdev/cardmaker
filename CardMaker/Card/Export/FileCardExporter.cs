@@ -75,7 +75,8 @@ namespace CardMaker.Card.Export
                 if (CurrentDeck.CardLayout.width > exportWidth ||
                     CurrentDeck.CardLayout.height > exportHeight)
                 {
-                    Logger.AddLogLine(string.Format("ERROR: Layout: [{0}] exportWidth and/or exportHeight too small! (Skipping export)", CurrentDeck.CardLayout.Name));
+                    Logger.AddLogLine(
+                        $"ERROR: Layout: [{CurrentDeck.CardLayout.Name}] exportWidth and/or exportHeight too small! (Skipping export)");
                     continue;
                 }
 
@@ -184,10 +185,7 @@ namespace CardMaker.Card.Export
         /// <param name="zGraphics"></param>
         protected override void UpdateBufferBitmap(int nWidth, int nHeight, Graphics zGraphics = null)
         {
-            if (null != m_zExportCardBuffer)
-            {
-                m_zExportCardBuffer.Dispose();
-            }
+            m_zExportCardBuffer?.Dispose();
             m_zExportCardBuffer = null == zGraphics
                 ? new Bitmap(nWidth, nHeight)
                 : new Bitmap(nWidth, nHeight, zGraphics);

@@ -43,12 +43,9 @@ namespace Support.UI
 		protected string m_sLoadedFile = string.Empty;
 		protected string m_sFileOpenFilter = string.Empty;
 
-	    public string LoadedFile
-	    {
-	        get { return m_sLoadedFile; }
-	    }
+	    public string LoadedFile => m_sLoadedFile;
 
-        protected bool Dirty { get; private set; }
+	    protected bool Dirty { get; private set; }
 
 		/// <summary>
 		/// This method should have an override that performs the save of the data to the file.
@@ -220,13 +217,13 @@ namespace Support.UI
                 var sfn = new SaveFileDialog
                 {
                     InitialDirectory = GetDialogDirectory(),
-                    OverwritePrompt = true
+                    OverwritePrompt = true,
+                    Filter = 0 == m_sFileOpenFilter.Length
+                        ? "All files (*.*)|*.*"
+                        : m_sFileOpenFilter
                 };
-                sfn.Filter = 0 == m_sFileOpenFilter.Length
-                    ? "All files (*.*)|*.*"
-                    : m_sFileOpenFilter;
 
-			    if (DialogResult.OK == sfn.ShowDialog(this))
+                if (DialogResult.OK == sfn.ShowDialog(this))
 			    {
 			        var sPath = Path.GetDirectoryName(sfn.FileName);
 			        if (null != sPath)

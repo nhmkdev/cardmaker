@@ -33,17 +33,7 @@ namespace CardMaker.Events.Managers
 
         public ExportRequested ExportRequested;
 
-        public static ExportManager Instance
-        {
-            get
-            {
-                if (null == m_zInstance)
-                {
-                    m_zInstance = new ExportManager();
-                }
-                return m_zInstance;
-            }
-        }
+        public static ExportManager Instance => m_zInstance ?? (m_zInstance = new ExportManager());
 
         private ExportManager()
         {
@@ -58,10 +48,7 @@ namespace CardMaker.Events.Managers
         /// <param name="eExportType">The type of export requested</param>
         public void FireExportRequestedEvent(ExportType eExportType)
         {
-            if (null != ExportRequested)
-            {
-                ExportRequested(this, new ExportEventArgs(eExportType));
-            }
+            ExportRequested?.Invoke(this, new ExportEventArgs(eExportType));
         }
 
         #endregion
