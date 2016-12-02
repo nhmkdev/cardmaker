@@ -40,6 +40,7 @@ namespace CardMaker.Forms
 {
     public partial class MDIElementControl : Form
     {
+#warning - this should be in a central spot... not in some random dialog
         private readonly Dictionary<string, ElementType> m_dictionaryElementTypes = new Dictionary<string, ElementType>();
 
         // mapping controls directly to special functions when a given control is adjusted
@@ -618,6 +619,7 @@ namespace CardMaker.Forms
                     numericWordSpace.Visible = false;
                     lblLineSpace.Visible = false;
                     numericLineSpace.Visible = false;
+                    checkJustifiedText.Visible = false;
                     break;
                 case ElementType.FormattedText:
                     tabControl.TabPages.Add(tabPageFont);
@@ -626,6 +628,7 @@ namespace CardMaker.Forms
                     numericWordSpace.Visible = true;
                     numericLineSpace.Visible = true;
                     lblLineSpace.Visible = true;
+                    checkJustifiedText.Visible = true;
                     break;
             }
 #endif
@@ -665,6 +668,7 @@ namespace CardMaker.Forms
             // HandleFontSettingChange related 
             m_dictionaryControlField.Add(numericLineSpace, zType.GetProperty("lineheight"));
             m_dictionaryControlField.Add(numericWordSpace, zType.GetProperty("wordspace"));
+            m_dictionaryControlField.Add(checkJustifiedText, zType.GetProperty("justifiedtext"));
         }
 
         private void SetupControlActions()
@@ -691,6 +695,9 @@ namespace CardMaker.Forms
                 LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElement.name));
 
             m_dictionaryControlActions.Add(numericElementOpacity, zElement =>
+                LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElement.name));
+
+            m_dictionaryControlActions.Add(checkJustifiedText, zElement =>
                 LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElement.name));
         }
 
@@ -850,6 +857,7 @@ namespace CardMaker.Forms
                 comboTextVerticalAlign.SelectedIndex = zElement.verticalalign;
                 comboGraphicHorizontalAlign.SelectedIndex = zElement.horizontalalign;
                 comboGraphicVerticalAlign.SelectedIndex = zElement.verticalalign;
+                checkJustifiedText.Checked = zElement.justifiedtext;
                 txtElementVariable.Text = zElement.variable;
                 txtElementVariable.SelectionStart = zElement.variable.Length;
                 txtElementVariable.SelectionLength = 0;
@@ -876,13 +884,16 @@ namespace CardMaker.Forms
                         checkFontAutoScale.Visible = true;
                         lblWordSpacing.Visible = false;
                         numericWordSpace.Visible = false;
+                        checkJustifiedText.Visible = false;
                         break;
                     case ElementType.FormattedText:
                         checkFontAutoScale.Visible = false;
                         lblWordSpacing.Visible = true;
                         numericWordSpace.Visible = true;
+                        checkJustifiedText.Visible = true;
                         break;
                 }
+                // this fires a change event on the combo box... seems like it might be wrong?
                 comboElementType.SelectedIndex = (int)eType;
                 UpdatePanelColors(zElement);
                 groupBoxElement.Enabled = true;

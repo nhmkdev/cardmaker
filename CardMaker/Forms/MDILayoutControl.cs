@@ -318,7 +318,7 @@ namespace CardMaker.Forms
             const string CARD_COUNT = "CARD_COUNT";
             var zQuery = new QueryPanelDialog("Default Card Count", 240, false);
             zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
-            zQuery.AddNumericBox("Card Count", 10, 1, int.MaxValue, CARD_COUNT);
+            zQuery.AddNumericBox("Card Count", LayoutManager.Instance.ActiveDeck.CardLayout.defaultCount, 1, int.MaxValue, CARD_COUNT);
             if (DialogResult.OK == zQuery.ShowDialog(this))
             {
                 LayoutManager.Instance.ActiveLayout.defaultCount = (int)zQuery.GetDecimal(CARD_COUNT);

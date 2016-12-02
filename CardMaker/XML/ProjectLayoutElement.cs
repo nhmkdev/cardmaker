@@ -100,6 +100,9 @@ namespace CardMaker.XML
         public int outlinethickness { get; set; }
 
         [XmlAttribute]
+        public bool justifiedtext { get; set; }
+
+        [XmlAttribute]
         public bool autoscalefont { get; set; }
 
         [XmlAttribute]
@@ -127,8 +130,8 @@ namespace CardMaker.XML
         public ProjectLayoutElement(string sName)
         {
             // actual values
-            verticalalign = 0;
-            horizontalalign = 0;
+            verticalalign = (int)StringAlignment.Near;
+            horizontalalign = (int)StringAlignment.Near;
             x = 0;
             y = 0;
             width = 40;
@@ -172,6 +175,16 @@ namespace CardMaker.XML
         public Font GetElementFont()
         {
             return m_fontText;
+        }
+
+        public StringAlignment GetHorizontalAlignment()
+        {
+            return (StringAlignment) horizontalalign;
+        }
+
+        public StringAlignment GetVerticalAlignment()
+        {
+            return (StringAlignment)verticalalign;
         }
 
         /// <summary>

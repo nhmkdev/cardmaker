@@ -161,8 +161,10 @@ namespace CardMaker.Card
                 nVertAlignOffset = -listMarkups[0].TargetRect.Y;
             }
 
+            var eStringAlignment = zElement.GetHorizontalAlignment();
+
             // If this left aligned, just update the vertical alignment and exit
-            if (StringAlignment.Near == (StringAlignment)zElement.horizontalalign)
+            if (StringAlignment.Near == eStringAlignment && !zElement.justifiedtext)
             {
                 // check if there is nothing to do
                 if (0f == nVertAlignOffset)
@@ -187,13 +189,13 @@ namespace CardMaker.Card
                 if (listMarkups[nIdx].LineNumber != currentLineNumber)
                 {
                     nLastWord = nIdx - 1;
-                    UpdateLineAlignment(nFirstWord, nLastWord, zElement, listMarkups, nVertAlignOffset);
+                    UpdateLineAlignment(nFirstWord, nLastWord, false, zElement, listMarkups, nVertAlignOffset, listAllMarkups);
                     currentLineNumber = listMarkups[nIdx].LineNumber;
                     nFirstWord = nIdx;
                 }
             }
             nLastWord = listMarkups.Count - 1;
-            UpdateLineAlignment(nFirstWord, nLastWord, zElement, listMarkups, nVertAlignOffset);
+            UpdateLineAlignment(nFirstWord, nLastWord, true, zElement, listMarkups, nVertAlignOffset, listAllMarkups);
         }
 
         /// <summary>
@@ -204,12 +206,60 @@ namespace CardMaker.Card
         /// <param name="zElement"></param>
         /// <param name="listMarkups">List of Markups (all must have Aligns set to true)</param>
         /// <param name="nVerticalAlignOffset"></param>
-        private static void UpdateLineAlignment(int nFirst, int nLast, ProjectLayoutElement zElement, List<MarkupBase> listMarkups, float nVerticalAlignOffset)
+        private static void UpdateLineAlignment(int nFirst, int nLast, bool isLastLine, ProjectLayoutElement zElement, List<MarkupBase> listMarkups, float nVerticalAlignOffset, IEnumerable<MarkupBase> listAllMarkups)
         {
             var rectLast = listMarkups[nLast].TargetRect;
             var fXOffset = -1f; // HACK: slight fudge
 
-            switch ((StringAlignment)zElement.horizontalalign)
+#warning break this into it's own class (each of the various alignments maybe?)
+            if (zElement.justifiedtext)
+            {
+                // detect if this is the last line of markups - if so don't bother with jusity alignment
+                if (isLastLine)
+                {
+                    return;
+                }
+                // detect if this line is followed by a line break - if so don't bother with justify alignment on this line
+                var lastLineMarkup = listMarkups[nLast];
+                var theBigList = listAllMarkups.ToList();
+                var lastLineMarkupIndex = theBigList.IndexOf(lastLineMarkup);
+                for (var nIdx = lastLineMarkupIndex + 1; nIdx < theBigList.Count; nIdx++)
+                {
+                    if (theBigList[nIdx] is NewlineMarkup)
+                    {
+                        // no alignment due to this line ending with a line break
+                        return;
+                    }
+                    if (theBigList[nIdx].Aligns)
+                    {
+                        // the next rendered thing aligns so treat this line as though it is part of a paragraph
+                        break;
+                    }
+                    // default to justify alignment
+                }
+
+                // TODO: the space markups are completely ignored by justified (who cares?)
+                var listTextMarkups = listMarkups.GetRange(nFirst, (nLast - nFirst) + 1).Where(zMarkup => !(zMarkup is SpaceMarkup)).ToList();
+                var fTotalTextWidth = listTextMarkups.Sum(zMarkup => zMarkup.TargetRect.Width);
+                var fDifference = (float)zElement.width - fTotalTextWidth;
+
+                fXOffset = fDifference / ((float)listTextMarkups.Count - 1);
+                //Logger.AddLogLine("TotalTextWidth: {0} Difference: {1} SpaceSize: {2} listTextMarkups: {3}".FormatString(fTotalTextWidth, fDifference, fXOffset, listTextMarkups.Count));
+                var fCurrentPosition = listMarkups[nFirst].TargetRect.X;
+                for (var nIdx = nFirst; nIdx <= nLast; nIdx++)
+                {
+                    if (listMarkups[nIdx].Aligns && !(listMarkups[nIdx] is SpaceMarkup))
+                    {
+                        var rectCurrent = listMarkups[nIdx].TargetRect;
+                        listMarkups[nIdx].TargetRect = new RectangleF(fCurrentPosition,
+                            rectCurrent.Y + nVerticalAlignOffset, rectCurrent.Width, rectCurrent.Height);
+                        fCurrentPosition += listMarkups[nIdx].TargetRect.Width + fXOffset;
+                    }
+                }
+                return;
+            }
+
+            switch (zElement.GetHorizontalAlignment())
             {
                 case StringAlignment.Center:
                     fXOffset += (zElement.width - (rectLast.X + rectLast.Width)) / 2f;
@@ -257,7 +307,7 @@ namespace CardMaker.Card
                 }
                 nIdx--;
             }
-            switch ((StringAlignment)zElement.verticalalign)
+            switch (zElement.GetVerticalAlignment())
             {
                 case StringAlignment.Center:
                     return (((float)zElement.height - fLargestTotal)) / 2f;

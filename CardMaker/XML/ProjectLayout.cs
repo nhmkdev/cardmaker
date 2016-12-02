@@ -45,6 +45,8 @@ namespace CardMaker.XML
 
         public bool exportTransparentBackground { get; set; }
 
+        public bool exportPDFAsPageBack { get; set; }
+
         public int exportWidth { get; set; }
         
         public int exportHeight { get; set; }

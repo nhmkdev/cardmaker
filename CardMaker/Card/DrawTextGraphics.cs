@@ -43,8 +43,8 @@ namespace CardMaker.Card
             }
             var zFormat = new StringFormat
             {
-                LineAlignment = (StringAlignment)zElement.verticalalign,
-                Alignment = (StringAlignment)zElement.horizontalalign
+                LineAlignment = zElement.GetVerticalAlignment(),
+                Alignment = zElement.GetHorizontalAlignment()
             };
 
             if (255 != zElement.opacity)

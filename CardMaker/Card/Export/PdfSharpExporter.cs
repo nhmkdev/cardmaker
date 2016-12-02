@@ -23,8 +23,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using CardMaker.Data;
+using CardMaker.Events.Managers;
 using CardMaker.XML;
 using PdfSharp;
 using PdfSharp.Drawing;
@@ -117,21 +119,30 @@ namespace CardMaker.Card.Export
                 float fOriginalYDpi = zBuffer.VerticalResolution;
 #endif
 
-                for (var nCardIdx = 0; nCardIdx < CurrentDeck.CardCount; nCardIdx++)
+                foreach (var nCardIdx in GetExportIndices())
                 {
                     CurrentDeck.ResetDeckCache();
+
                     CurrentDeck.CardPrintIndex = nCardIdx;
 
-                    // minor optimization, reuse the same bitmap (for drawing sake the DPI has to be reset)
 #if MONO_BUILD
+                    // mono build won't support the optimization so re-create the buffer
                     Bitmap zBuffer = new Bitmap(CurrentDeck.CardLayout.width, CurrentDeck.CardLayout.height);
 #endif
 
 #if !MONO_BUILD
+                    // minor optimization, reuse the same bitmap (for drawing sake the DPI has to be reset)
                     zBuffer.SetResolution(fOriginalXDpi, fOriginalYDpi);
 #endif
-
-                    CardRenderer.DrawPrintLineToGraphics(Graphics.FromImage(zBuffer));
+                    if (nCardIdx == -1)
+                    {
+                        Graphics.FromImage(zBuffer).FillRectangle(Brushes.White, 0, 0, zBuffer.Width, zBuffer.Height);
+                        // note: some oddities were observed where the buffer was not flood filling
+                    }
+                    else
+                    {
+                        CardRenderer.DrawPrintLineToGraphics(Graphics.FromImage(zBuffer));
+                    }
 
                     // apply any export rotation
                     ProcessRotateExport(zBuffer, CurrentDeck.CardLayout, false);
@@ -171,6 +182,35 @@ namespace CardMaker.Card.Export
             }
 
             zWait.CloseWaitDialog();
+        }
+
+        private List<int> GetExportIndices()
+        {
+            var listExportIndices = new List<int>();
+            var dWidth = m_dMarginEndX - m_dMarginX;
+            var nItemsThisRow = (int)Math.Floor(Math.Min(
+                dWidth / m_dLayoutPointWidth,
+                CurrentDeck.ValidLines.Count - CurrentDeck.CardPrintIndex));
+
+            if (CurrentDeck.CardLayout.exportPDFAsPageBack)
+            {
+                // TODO: need to deal with odd cases like 10 or 11 cards pushing them out so they match up
+                for (var nCardIdx = 0; nCardIdx < CurrentDeck.CardCount; nCardIdx += nItemsThisRow)
+                {
+                    for (var nSubIdx = (nCardIdx + nItemsThisRow) - 1; nSubIdx >= nCardIdx; nSubIdx--)
+                    {
+                        listExportIndices.Add(nSubIdx >= CurrentDeck.CardCount ? -1 : nSubIdx);
+                    }
+                }
+            }
+            else
+            {
+                for (var nCardIdx = 0; nCardIdx < CurrentDeck.CardCount; nCardIdx++)
+                {
+                    listExportIndices.Add(nCardIdx);
+                }
+            }
+            return listExportIndices;
         }
 
         /// <summary>

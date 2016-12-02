@@ -38,6 +38,9 @@ namespace CardMaker.Card.FormattedText
 
         public int LineNumber { get; set; }
 
+        /// <summary>
+        /// Indicates whether this type of markup aligns
+        /// </summary>
         public virtual bool Aligns => false;
 
         public RectangleF TargetRect { get; set; }

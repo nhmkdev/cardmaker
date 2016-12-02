@@ -432,6 +432,7 @@ namespace CardMaker.Forms
             const string EXPORT_WIDTH = "EXPORT_WIDTH";
             const string EXPORT_HEIGHT = "EXPORT_HEIGHT";
             const string EXPORT_TRANSPARENT = "EXPORT_TRANSPARENT";
+            const string EXPORT_PDF_AS_PAGE_BACK = "EXPORT_PDF_AS_PAGE_BACK";
 
             Type typeObj = treeView.SelectedNode.Tag.GetType();
             string sExistingFormat = string.Empty;
@@ -450,8 +451,10 @@ namespace CardMaker.Forms
                 var nDefaultRotationIndex =
                     Math.Max(0, ProjectLayout.AllowedExportRotations.ToList()
                         .IndexOf(zProjectLayout.exportRotation.ToString()));
-                zQuery.AddPullDownBox("Export Rotation (Print/PDF/Export)", ProjectLayout.AllowedExportRotations,
+                zQuery.AddPullDownBox("Export Rotation (PDF/Export)", ProjectLayout.AllowedExportRotations,
                     nDefaultRotationIndex, ROTATION);
+
+                zQuery.AddCheckBox("Export PDF Layout Page as Back", zProjectLayout.exportPDFAsPageBack, EXPORT_PDF_AS_PAGE_BACK);
 
                 var nColumns = 0;
                 var nRows = 0;
@@ -504,10 +507,11 @@ namespace CardMaker.Forms
                 {
                     var zProjectLayout = ((ProjectLayout)treeView.SelectedNode.Tag);
                     zProjectLayout.exportNameFormat = zQuery.GetString(NAME);
-                    zProjectLayout.exportRotation = Int32.Parse(zQuery.GetString(ROTATION));
-                    zProjectLayout.exportWidth = Int32.Parse(zQuery.GetString(EXPORT_WIDTH));
-                    zProjectLayout.exportHeight = Int32.Parse(zQuery.GetString(EXPORT_HEIGHT));
+                    zProjectLayout.exportRotation = int.Parse(zQuery.GetString(ROTATION));
+                    zProjectLayout.exportWidth = int.Parse(zQuery.GetString(EXPORT_WIDTH));
+                    zProjectLayout.exportHeight = int.Parse(zQuery.GetString(EXPORT_HEIGHT));
                     zProjectLayout.exportTransparentBackground = zQuery.GetBool(EXPORT_TRANSPARENT);
+                    zProjectLayout.exportPDFAsPageBack = zQuery.GetBool(EXPORT_PDF_AS_PAGE_BACK);
                 }
                 ProjectManager.Instance.FireProjectUpdated(true);
             }

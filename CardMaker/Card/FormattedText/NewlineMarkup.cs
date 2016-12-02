@@ -32,7 +32,7 @@ namespace CardMaker.Card.FormattedText
         public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
             zProcessData.MoveToNextLine(zElement);
-            return false;
+            return true;
         }
     }
 }

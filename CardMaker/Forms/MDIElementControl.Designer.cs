@@ -118,6 +118,7 @@ namespace CardMaker.Forms
             this.comboElementType = new System.Windows.Forms.ComboBox();
             this.contextMenuReferenceStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.contextMenuStripAssist = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.checkJustifiedText = new System.Windows.Forms.CheckBox();
             this.groupBoxElement.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.tabPageFont.SuspendLayout();
@@ -165,7 +166,7 @@ namespace CardMaker.Forms
             this.groupBoxElement.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBoxElement.Location = new System.Drawing.Point(0, 0);
             this.groupBoxElement.Name = "groupBoxElement";
-            this.groupBoxElement.Size = new System.Drawing.Size(654, 312);
+            this.groupBoxElement.Size = new System.Drawing.Size(732, 312);
             this.groupBoxElement.TabIndex = 11;
             this.groupBoxElement.TabStop = false;
             this.groupBoxElement.Text = "Element";
@@ -173,7 +174,7 @@ namespace CardMaker.Forms
             // btnAssist
             // 
             this.btnAssist.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnAssist.Location = new System.Drawing.Point(623, 264);
+            this.btnAssist.Location = new System.Drawing.Point(701, 264);
             this.btnAssist.Name = "btnAssist";
             this.btnAssist.Size = new System.Drawing.Size(25, 20);
             this.btnAssist.TabIndex = 47;
@@ -191,11 +192,12 @@ namespace CardMaker.Forms
             this.tabControl.Location = new System.Drawing.Point(12, 97);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(636, 86);
+            this.tabControl.Size = new System.Drawing.Size(714, 86);
             this.tabControl.TabIndex = 46;
             // 
             // tabPageFont
             // 
+            this.tabPageFont.Controls.Add(this.checkJustifiedText);
             this.tabPageFont.Controls.Add(this.checkBoxItalic);
             this.tabPageFont.Controls.Add(this.checkBoxBold);
             this.tabPageFont.Controls.Add(this.numericWordSpace);
@@ -217,7 +219,7 @@ namespace CardMaker.Forms
             this.tabPageFont.Location = new System.Drawing.Point(4, 22);
             this.tabPageFont.Name = "tabPageFont";
             this.tabPageFont.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageFont.Size = new System.Drawing.Size(628, 60);
+            this.tabPageFont.Size = new System.Drawing.Size(706, 60);
             this.tabPageFont.TabIndex = 0;
             this.tabPageFont.Text = "Font";
             this.tabPageFont.UseVisualStyleBackColor = true;
@@ -574,7 +576,7 @@ namespace CardMaker.Forms
             this.groupBoxOutline.Controls.Add(this.label11);
             this.groupBoxOutline.Controls.Add(this.numericElementOutLineThickness);
             this.groupBoxOutline.Controls.Add(this.btnElementOutlineColor);
-            this.groupBoxOutline.Location = new System.Drawing.Point(500, 19);
+            this.groupBoxOutline.Location = new System.Drawing.Point(577, 19);
             this.groupBoxOutline.Name = "groupBoxOutline";
             this.groupBoxOutline.Size = new System.Drawing.Size(146, 74);
             this.groupBoxOutline.TabIndex = 44;
@@ -631,7 +633,7 @@ namespace CardMaker.Forms
             this.listViewElementColumns.Location = new System.Drawing.Point(12, 189);
             this.listViewElementColumns.MultiSelect = false;
             this.listViewElementColumns.Name = "listViewElementColumns";
-            this.listViewElementColumns.Size = new System.Drawing.Size(636, 69);
+            this.listViewElementColumns.Size = new System.Drawing.Size(714, 69);
             this.listViewElementColumns.TabIndex = 35;
             this.listViewElementColumns.UseCompatibleStateImageBehavior = false;
             this.listViewElementColumns.View = System.Windows.Forms.View.Details;
@@ -753,7 +755,7 @@ namespace CardMaker.Forms
             this.groupBoxElementBorder.Controls.Add(this.label1);
             this.groupBoxElementBorder.Controls.Add(this.numericElementBorderThickness);
             this.groupBoxElementBorder.Controls.Add(this.btnElementBorderColor);
-            this.groupBoxElementBorder.Location = new System.Drawing.Point(348, 19);
+            this.groupBoxElementBorder.Location = new System.Drawing.Point(425, 19);
             this.groupBoxElementBorder.Name = "groupBoxElementBorder";
             this.groupBoxElementBorder.Size = new System.Drawing.Size(146, 74);
             this.groupBoxElementBorder.TabIndex = 24;
@@ -885,7 +887,7 @@ namespace CardMaker.Forms
             // btnElementBrowseImage
             // 
             this.btnElementBrowseImage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnElementBrowseImage.Location = new System.Drawing.Point(623, 286);
+            this.btnElementBrowseImage.Location = new System.Drawing.Point(701, 286);
             this.btnElementBrowseImage.Name = "btnElementBrowseImage";
             this.btnElementBrowseImage.Size = new System.Drawing.Size(25, 20);
             this.btnElementBrowseImage.TabIndex = 12;
@@ -905,7 +907,7 @@ namespace CardMaker.Forms
             this.txtElementVariable.Multiline = true;
             this.txtElementVariable.Name = "txtElementVariable";
             this.txtElementVariable.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtElementVariable.Size = new System.Drawing.Size(544, 43);
+            this.txtElementVariable.Size = new System.Drawing.Size(622, 43);
             this.txtElementVariable.TabIndex = 1;
             this.txtElementVariable.WordWrap = false;
             this.txtElementVariable.TextChanged += new System.EventHandler(this.HandleElementValueChange);
@@ -933,13 +935,23 @@ namespace CardMaker.Forms
             this.contextMenuStripAssist.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this.contextMenuStripAssist.Size = new System.Drawing.Size(61, 4);
             // 
+            // checkJustifiedText
+            // 
+            this.checkJustifiedText.Location = new System.Drawing.Point(627, 6);
+            this.checkJustifiedText.Name = "checkJustifiedText";
+            this.checkJustifiedText.Size = new System.Drawing.Size(77, 20);
+            this.checkJustifiedText.TabIndex = 52;
+            this.checkJustifiedText.Text = "Justified";
+            this.checkJustifiedText.UseVisualStyleBackColor = true;
+            this.checkJustifiedText.CheckedChanged += new System.EventHandler(this.HandleElementValueChange);
+            // 
             // MDIElementControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(654, 312);
+            this.ClientSize = new System.Drawing.Size(732, 312);
             this.Controls.Add(this.groupBoxElement);
-            this.MinimumSize = new System.Drawing.Size(662, 339);
+            this.MinimumSize = new System.Drawing.Size(740, 339);
             this.Name = "MDIElementControl";
             this.ShowIcon = false;
             this.Text = " Element Control";
@@ -1034,6 +1046,6 @@ namespace CardMaker.Forms
         private System.Windows.Forms.ContextMenuStrip contextMenuStripAssist;
         private System.Windows.Forms.Button btnAssist;
         private System.Windows.Forms.CheckBox checkKeepOriginalSize;
-
+        private System.Windows.Forms.CheckBox checkJustifiedText;
     }
 }

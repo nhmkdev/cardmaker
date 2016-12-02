@@ -49,7 +49,7 @@ namespace CardMaker.Card
                 TextFormatFlags.WordBreak
                 | TextFormatFlags.NoClipping;
 
-            switch ((StringAlignment)zElement.verticalalign)
+            switch (zElement.GetVerticalAlignment())
             {
                 case StringAlignment.Center:
                     zFormatFlags |= TextFormatFlags.VerticalCenter;
@@ -59,7 +59,7 @@ namespace CardMaker.Card
                     break;
             }
 
-            switch ((StringAlignment)zElement.horizontalalign)
+            switch (zElement.GetHorizontalAlignment())
             {
                 case StringAlignment.Center:
                     zFormatFlags |= TextFormatFlags.HorizontalCenter;
@@ -243,8 +243,8 @@ namespace CardMaker.Card
 #warning is there a path based text renderer thing to use?
                         var zFormat = new StringFormat
                         {
-                            LineAlignment = (StringAlignment)zElement.verticalalign,
-                            Alignment = (StringAlignment)zElement.horizontalalign,
+                            LineAlignment = zElement.GetVerticalAlignment(),
+                            Alignment = zElement.GetHorizontalAlignment(),
                             Trimming = StringTrimming.None,
                             FormatFlags = StringFormatFlags.NoClip
                         };
