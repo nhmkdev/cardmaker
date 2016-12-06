@@ -22,20 +22,26 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Collections.Generic;
-using CardMaker.Card.FormattedText.Markup;
+using System.Drawing;
+using CardMaker.XML;
 
-namespace CardMaker.Card.FormattedText
+namespace CardMaker.Card.FormattedText.Markup
 {
-    public class FormattedTextData
+    public class FontColorMarkup : MarkupValueBase
     {
-        public Dictionary<MarkupBase, int> DictionaryTagCloseIndex { get; private set; }
-        public List<MarkupBase> AllMarkups { get; private set; }
+        private Brush m_zPreviousBrush = Brushes.Black;
+        public FontColorMarkup(string sVariable) : base(sVariable) { }
 
-        public FormattedTextData(List<MarkupBase> listMarkups)
+        public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
-            AllMarkups = listMarkups;
-            DictionaryTagCloseIndex = new Dictionary<MarkupBase, int>();
+            m_zPreviousBrush = zProcessData.FontBrush;
+            zProcessData.FontBrush = new SolidBrush(ProjectLayoutElement.TranslateColorString(m_sVariable));
+            return false;
+        }
+
+        public override void CloseMarkup(FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
+        {
+            zProcessData.FontBrush = m_zPreviousBrush;
         }
     }
 }

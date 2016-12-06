@@ -27,7 +27,7 @@ using System.Drawing;
 using CardMaker.Data;
 using CardMaker.XML;
 
-namespace CardMaker.Card.FormattedText
+namespace CardMaker.Card.FormattedText.Markup
 {
     public class BackgroundImageMarkup : MarkupValueBase
     {

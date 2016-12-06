@@ -1,7 +1,7 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2015 Tim Stair
+// Copyright (c) 2016 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,23 +25,15 @@
 using System.Drawing;
 using CardMaker.XML;
 
-namespace CardMaker.Card.FormattedText
+namespace CardMaker.Card.FormattedText.Alignment
 {
-    public class FontColorMarkup : MarkupValueBase
+    public class HorizontalCenterAlignmentProcessor : HorizontalAlignmentProcessor
     {
-        private Brush m_zPreviousBrush = Brushes.Black;
-        public FontColorMarkup(string sVariable) : base(sVariable) { }
-
-        public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
+        public override float GetHorizontalOffset(ProjectLayoutElement zElement, RectangleF rectLast)
         {
-            m_zPreviousBrush = zProcessData.FontBrush;
-            zProcessData.FontBrush = new SolidBrush(ProjectLayoutElement.TranslateColorString(m_sVariable));
-            return false;
-        }
-
-        public override void CloseMarkup(FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
-        {
-            zProcessData.FontBrush = m_zPreviousBrush;
+            var fXOffset = -1f; // HACK: slight fudge
+            fXOffset += (zElement.width - (rectLast.X + rectLast.Width)) / 2f;
+            return fXOffset;
         }
     }
 }

@@ -22,17 +22,44 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+using System.Drawing;
+using CardMaker.XML;
 
-namespace CardMaker.Card.FormattedText
+namespace CardMaker.Card.FormattedText.Markup
 {
-    public abstract class MarkupValueBase : MarkupBase
+    public abstract class FontStyleMarkup : MarkupBase
     {
-        protected string m_sVariable;
+        protected abstract FontStyle Style { get; }
 
-        protected MarkupValueBase() { }
-        protected MarkupValueBase(string sVariable)
+        public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
-            m_sVariable = sVariable;
+            zProcessData.AddFontStyle(Style, zGraphics);
+            return false;
         }
+
+        public override void CloseMarkup(FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
+        {
+            zProcessData.RemoveFontStyle(Style, zGraphics);
+        }
+    }
+
+    public class FontStyleBoldMarkup : FontStyleMarkup
+    {
+        protected override FontStyle Style => FontStyle.Bold;
+    }
+
+    public class FontStyleItalicMarkup : FontStyleMarkup
+    {
+        protected override FontStyle Style => FontStyle.Italic;
+    }
+
+    public class FontStyleUnderlineMarkup : FontStyleMarkup
+    {
+        protected override FontStyle Style => FontStyle.Underline;
+    }
+
+    public class FontStyleStrikeoutMarkup : FontStyleMarkup
+    {
+        protected override FontStyle Style => FontStyle.Strikeout;
     }
 }

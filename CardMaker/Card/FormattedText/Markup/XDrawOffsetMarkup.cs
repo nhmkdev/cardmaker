@@ -25,14 +25,28 @@
 using System.Drawing;
 using CardMaker.XML;
 
-namespace CardMaker.Card.FormattedText
+namespace CardMaker.Card.FormattedText.Markup
 {
-    public class NewlineMarkup : MarkupBase
+    public class XDrawOffsetMarkup : MarkupValueBase
     {
+        private float m_fPreviousOffset;
+
+        public XDrawOffsetMarkup(string sVariable) : base(sVariable) { }
+
         public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
-            zProcessData.MoveToNextLine(zElement);
-            return true;
+            float fXOffset;
+            if (float.TryParse(m_sVariable, out fXOffset))
+            {
+                m_fPreviousOffset = zProcessData.CurrentXOffset;
+                zProcessData.CurrentXOffset = fXOffset;
+            }
+            return false;
+        }
+
+        public override void CloseMarkup(FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
+        {
+            zProcessData.CurrentXOffset = m_fPreviousOffset;
         }
     }
 }

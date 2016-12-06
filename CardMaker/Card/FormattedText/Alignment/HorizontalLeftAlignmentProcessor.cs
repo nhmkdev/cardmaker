@@ -1,7 +1,7 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2015 Tim Stair
+// Copyright (c) 2016 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,35 +22,9 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Drawing;
-using CardMaker.XML;
-
-namespace CardMaker.Card.FormattedText
+namespace CardMaker.Card.FormattedText.Alignment
 {
-    public class FontMarkup : MarkupValueBase
+    public class HorizontalLeftAlignmentProcessor : HorizontalAlignmentProcessor
     {
-        public FontMarkup(string sVariable) : base(sVariable) { }
-
-        private Font m_zPreviousFont;
-
-        public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
-        {
-            var zNewFont = ProjectLayoutElement.TranslateFontString(m_sVariable);
-            if (zNewFont != null)
-            {
-                m_zPreviousFont = zProcessData.Font;
-                zProcessData.SetFont(zNewFont, zGraphics);
-                return true;
-            }
-            return false;
-        }
-
-        public override void CloseMarkup(FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
-        {
-            if (null != m_zPreviousFont)
-            {
-                zProcessData.SetFont(m_zPreviousFont, zGraphics);
-            }
-        }
     }
 }

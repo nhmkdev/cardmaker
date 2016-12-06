@@ -1,7 +1,7 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2015 Tim Stair
+// Copyright (c) 2016 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,41 +25,15 @@
 using System.Drawing;
 using CardMaker.XML;
 
-namespace CardMaker.Card.FormattedText
+namespace CardMaker.Card.FormattedText.Alignment
 {
-    public abstract class FontStyleMarkup : MarkupBase
+    class HorizontalRightAlignmentProcessor : HorizontalAlignmentProcessor
     {
-        protected abstract FontStyle Style { get; }
-
-        public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
+        public override float GetHorizontalOffset(ProjectLayoutElement zElement, RectangleF rectLast)
         {
-            zProcessData.AddFontStyle(Style, zGraphics);
-            return false;
+            var fXOffset = -1f; // HACK: slight fudge
+            fXOffset += zElement.width - (rectLast.X + rectLast.Width);
+            return fXOffset;
         }
-
-        public override void CloseMarkup(FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
-        {
-            zProcessData.RemoveFontStyle(Style, zGraphics);
-        }
-    }
-
-    public class FontStyleBoldMarkup : FontStyleMarkup
-    {
-        protected override FontStyle Style => FontStyle.Bold;
-    }
-
-    public class FontStyleItalicMarkup : FontStyleMarkup
-    {
-        protected override FontStyle Style => FontStyle.Italic;
-    }
-
-    public class FontStyleUnderlineMarkup : FontStyleMarkup
-    {
-        protected override FontStyle Style => FontStyle.Underline;
-    }
-
-    public class FontStyleStrikeoutMarkup : FontStyleMarkup
-    {
-        protected override FontStyle Style => FontStyle.Strikeout;
     }
 }

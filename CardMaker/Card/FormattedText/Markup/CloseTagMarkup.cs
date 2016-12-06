@@ -22,77 +22,39 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Drawing;
-using CardMaker.Data;
 using CardMaker.XML;
 
-namespace CardMaker.Card.FormattedText
+namespace CardMaker.Card.FormattedText.Markup
 {
-    public class SpaceMarkup : MarkupValueBase
+    public class CloseTagMarkup : MarkupBase
     {
-        public bool Optional { get; }
+        public MarkupBase MarkupToClose { get; }
 
-        public override bool Aligns => true;
-
-        public SpaceMarkup() : base("1")
+        private static readonly Dictionary<Type, int> s_dictionaryKeepTypesOnProcess = new Dictionary<Type, int>
         {
-        }
+            { typeof(BackgroundColorMarkup), 0 },
+        };
 
-        public SpaceMarkup(string sVariable) : base(sVariable)
+        public CloseTagMarkup(MarkupBase zMarkupToClose)
         {
-        }
-
-        public SpaceMarkup(bool bOptional) : base("1")
-        {
-            Optional = bOptional;
+            MarkupToClose = zMarkupToClose;
         }
 
         public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
-            int nSpaces;
-            if (!int.TryParse(m_sVariable, out nSpaces))
-            {
-                return false;
-            }
-            
-            LineNumber = zProcessData.CurrentLine;
+            MarkupToClose.CloseMarkup(zData, zProcessData, zGraphics);
 
-            float fWidth = (float)nSpaces * ((float)zProcessData.FontSpaceWidth + (float)zElement.wordspace);
-
-            if (0 == fWidth)
-            {
-                return false;
-            }
-
-            if (zProcessData.CurrentX + fWidth >= zElement.width)
-            {
-                if (Optional)
-                {
-                    return false;
-                }
-                zProcessData.MoveToNextLine(zElement);
-            }
-
-            TargetRect = new RectangleF(zProcessData.CurrentX, zProcessData.CurrentY, fWidth, zProcessData.FontSpaceHeight);
-
-            zProcessData.CurrentX += fWidth;
-            return true;
+            // keep only the necessary markups
+            return s_dictionaryKeepTypesOnProcess.ContainsKey(MarkupToClose.GetType());
         }
 
         public override bool PostProcessMarkupRectangle(ProjectLayoutElement zElement, List<MarkupBase> listAllMarkups, int nMarkup)
         {
-            return true;
-        }
-
-        public override bool Render(ProjectLayoutElement zElement, Graphics zGraphics)
-        {
-            // draw border (debugging)
-            if (CardMakerInstance.DrawFormattedTextBorder)
-            {
-                zGraphics.FillRectangle(Optional ? Brushes.DarkBlue : Brushes.DeepSkyBlue, TargetRect.X, TargetRect.Y, TargetRect.Width, TargetRect.Height);
-            }
-            return true;
+            // remove once hit during text size processing (this would always be after something used the information for the close tag)
+            return false;
         }
     }
 }

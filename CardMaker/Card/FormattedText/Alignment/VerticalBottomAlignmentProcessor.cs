@@ -1,7 +1,7 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2015 Tim Stair
+// Copyright (c) 2016 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,18 +24,20 @@
 
 using System.Collections.Generic;
 using CardMaker.Card.FormattedText.Markup;
+using CardMaker.XML;
 
-namespace CardMaker.Card.FormattedText
+namespace CardMaker.Card.FormattedText.Alignment
 {
-    public class FormattedTextData
+    class VerticalBottomAlignmentProcessor : VerticalAlignmentProcessor
     {
-        public Dictionary<MarkupBase, int> DictionaryTagCloseIndex { get; private set; }
-        public List<MarkupBase> AllMarkups { get; private set; }
-
-        public FormattedTextData(List<MarkupBase> listMarkups)
+        public override float GetVerticalAlignOffset(ProjectLayoutElement zElement, List<MarkupBase> listMarkups)
         {
-            AllMarkups = listMarkups;
-            DictionaryTagCloseIndex = new Dictionary<MarkupBase, int>();
+            if (0 == listMarkups.Count)
+            {
+                return 0;
+            }
+            
+            return (float)zElement.height - GetLargestMarkupHeight(zElement, listMarkups);
         }
     }
 }

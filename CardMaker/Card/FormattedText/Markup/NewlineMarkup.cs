@@ -25,49 +25,14 @@
 using System.Drawing;
 using CardMaker.XML;
 
-namespace CardMaker.Card.FormattedText
+namespace CardMaker.Card.FormattedText.Markup
 {
-    public class PushMarkup : MarkupValueBase
+    public class NewlineMarkup : MarkupBase
     {
-        private PushMarkup()
-        {
-        }
-
-        public PushMarkup(string sVariable) : base(sVariable)
-        {
-        }
-
         public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
-            var arrayComponents = m_sVariable.Split(new char[] { ';' });
-            if (1 > arrayComponents.Length)
-            {
-                return false;
-            }
-
-            int nXPush;
-            if (!int.TryParse(arrayComponents[0], out nXPush))
-            {
-                return false;
-            }
-
-            var nYPush = 0;
-            if (2 <= arrayComponents.Length)
-            {
-                if (!int.TryParse(arrayComponents[1], out nYPush))
-                {
-                    return false;
-                }
-            }
-
-            zProcessData.CurrentX += nXPush;
-            zProcessData.CurrentY += nYPush;
-            if (zProcessData.CurrentX > zElement.width)
-            {
-                zProcessData.MoveToNextLine(zElement);
-            }
-
-            return false;
+            zProcessData.MoveToNextLine(zElement);
+            return true;
         }
     }
 }

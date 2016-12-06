@@ -1,0 +1,124 @@
+﻿////////////////////////////////////////////////////////////////////////////////
+// The MIT License (MIT)
+//
+// Copyright (c) 2016 Tim Stair
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+////////////////////////////////////////////////////////////////////////////////
+
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using CardMaker.Card.FormattedText.Markup;
+using CardMaker.XML;
+
+namespace CardMaker.Card.FormattedText.Alignment
+{
+    public class AlignmentController
+    {
+        enum HorizontalStringAlignment
+        {
+            Near = StringAlignment.Near,
+            Center = StringAlignment.Center,
+            Far = StringAlignment.Far,
+            Justified
+        }
+
+        private static readonly Dictionary<HorizontalStringAlignment, HorizontalAlignmentProcessor> s_dictionaryHorizontalAlignmentProcessors
+            = new Dictionary<HorizontalStringAlignment, HorizontalAlignmentProcessor>()
+            {
+                { HorizontalStringAlignment.Near, new HorizontalLeftAlignmentProcessor() },
+                { HorizontalStringAlignment.Center, new HorizontalCenterAlignmentProcessor() },
+                { HorizontalStringAlignment.Far, new HorizontalRightAlignmentProcessor() },
+                { HorizontalStringAlignment.Justified, new HorizontalJustifiedAlignmentProcessor() },
+            };
+
+        private static readonly Dictionary<StringAlignment, VerticalAlignmentProcessor> s_dictionaryVerticalAlignmentProcessors
+            = new Dictionary<StringAlignment, VerticalAlignmentProcessor>()
+            {
+                { StringAlignment.Near, new VerticalTopAlignmentProcessor() },
+                { StringAlignment.Center, new VerticalMiddleAlignmentProcessor() },
+                { StringAlignment.Far, new VerticalBottomAlignmentProcessor() }
+            };
+
+        /// <summary>
+        /// Updates the alignment of all alignable markups
+        /// </summary>
+        /// <param name="zElement"></param>
+        /// <param name="listAllMarkups"></param>
+        public static void UpdateAlignment(ProjectLayoutElement zElement, IEnumerable<MarkupBase> listAllMarkups)
+        {
+            var listAlignedMarkups = listAllMarkups.Where(x => x.Aligns).ToList();
+
+            if (0 == listAlignedMarkups.Count)
+            {
+                return;
+            }
+
+            var fVertAlignOffset = s_dictionaryVerticalAlignmentProcessors[zElement.GetVerticalAlignment()]
+                .GetVerticalAlignOffset(zElement, listAlignedMarkups);
+
+            // if the vertical alignment is so far negative that it is outside the bounds adjust it to chop off at the bottom
+            if (0 > listAlignedMarkups[0].TargetRect.Y + fVertAlignOffset)
+            {
+                fVertAlignOffset = -listAlignedMarkups[0].TargetRect.Y;
+            }
+
+            // process horizontal alignment (and add the offset for the vertical alignment)
+            var currentLineNumber = listAlignedMarkups[0].LineNumber;
+            var nFirstMarkup = 0;
+            int nLastMarkup;
+#warning this is a really confusing way to iterate through for lines
+            for (var nIdx = 1; nIdx < listAlignedMarkups.Count; nIdx++)
+            {
+                if (listAlignedMarkups[nIdx].LineNumber != currentLineNumber)
+                {
+                    nLastMarkup = nIdx - 1;
+                    UpdateLineAlignment(nFirstMarkup, nLastMarkup, false, zElement, listAlignedMarkups, fVertAlignOffset, listAllMarkups);
+                    currentLineNumber = listAlignedMarkups[nIdx].LineNumber;
+                    nFirstMarkup = nIdx;
+                }
+            }
+            nLastMarkup = listAlignedMarkups.Count - 1;
+            UpdateLineAlignment(nFirstMarkup, nLastMarkup, true, zElement, listAlignedMarkups, fVertAlignOffset, listAllMarkups);
+        }
+
+        /// <summary>
+        /// Updates the horizontal alignment of a line of markups
+        /// </summary>
+        /// <param name="nFirst"></param>
+        /// <param name="nLast"></param>
+        /// <param name="zElement"></param>
+        /// <param name="listMarkups">List of Markups (all must have Aligns set to true)</param>
+        /// <param name="fVerticalOffset"></param>
+        private static void UpdateLineAlignment(int nFirst, int nLast, bool isLastLine, ProjectLayoutElement zElement, List<MarkupBase> listMarkups, float fVerticalOffset, IEnumerable<MarkupBase> listAllMarkups)
+        {
+            // figure out which processor to use
+            HorizontalStringAlignment eAlignment =
+                zElement.justifiedtext
+                    ? HorizontalStringAlignment.Justified
+                    : (HorizontalStringAlignment) zElement.GetHorizontalAlignment();
+
+            var horizontalAlignmentProcessor = s_dictionaryHorizontalAlignmentProcessors[eAlignment];
+
+            // update the alignment of the markups in the line
+            horizontalAlignmentProcessor.UpdateLineAlignment(nFirst, nLast, isLastLine, zElement, listMarkups, fVerticalOffset, listAllMarkups);
+        }
+    }
+}

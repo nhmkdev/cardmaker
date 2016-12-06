@@ -22,20 +22,17 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Collections.Generic;
-using CardMaker.Card.FormattedText.Markup;
 
-namespace CardMaker.Card.FormattedText
+namespace CardMaker.Card.FormattedText.Markup
 {
-    public class FormattedTextData
+    public abstract class MarkupValueBase : MarkupBase
     {
-        public Dictionary<MarkupBase, int> DictionaryTagCloseIndex { get; private set; }
-        public List<MarkupBase> AllMarkups { get; private set; }
+        protected string m_sVariable;
 
-        public FormattedTextData(List<MarkupBase> listMarkups)
+        protected MarkupValueBase() { }
+        protected MarkupValueBase(string sVariable)
         {
-            AllMarkups = listMarkups;
-            DictionaryTagCloseIndex = new Dictionary<MarkupBase, int>();
+            m_sVariable = sVariable;
         }
     }
 }

@@ -1,7 +1,8 @@
 ﻿using CardMaker.Card;
-using CardMaker.Card.FormattedText;
+using CardMaker.Card.FormattedText.Markup;
 using NUnit.Framework;
 using System;
+using CardMaker.Card.FormattedText;
 
 namespace UnitTest.DeckObject
 {
@@ -36,7 +37,7 @@ namespace UnitTest.DeckObject
         [TestCase("<b></i>", new Type[] { typeof(FontStyleBoldMarkup) })]
         public void ValidateMarkupTranslation(string input, Type[] expectedTypes)
         {
-            var markups = DrawItem.GetMarkups(input);
+            var markups = FormattedTextParser.GetMarkups(input);
             Assert.AreEqual(expectedTypes.Length, markups.Count);
             for (var i = 0; i < expectedTypes.Length; i++)
             {

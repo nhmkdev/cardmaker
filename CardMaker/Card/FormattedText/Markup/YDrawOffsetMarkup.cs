@@ -25,31 +25,28 @@
 using System.Drawing;
 using CardMaker.XML;
 
-namespace CardMaker.Card.FormattedText
+namespace CardMaker.Card.FormattedText.Markup
 {
-    public class FontSizeMarkup : MarkupValueBase
+    public class YDrawOffsetMarkup : MarkupValueBase
     {
-        public FontSizeMarkup(string sVariable) : base(sVariable) { }
+        private float m_fPreviousOffset;
 
-        private Font m_zPreviousFont;
+        public YDrawOffsetMarkup(string sVariable) : base(sVariable) { }
 
         public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
-            float fNewSize;
-            if (float.TryParse(m_sVariable, out fNewSize) && fNewSize > 0)
+            float fYOffset;
+            if (float.TryParse(m_sVariable, out fYOffset))
             {
-                m_zPreviousFont = zProcessData.Font;
-                zProcessData.SetFont(new Font(zProcessData.Font.FontFamily, fNewSize, zProcessData.Font.Style), zGraphics);
+                m_fPreviousOffset = zProcessData.CurrentYOffset;
+                zProcessData.CurrentYOffset = fYOffset;
             }
             return false;
         }
 
         public override void CloseMarkup(FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
-            if (null != m_zPreviousFont)
-            {
-                zProcessData.SetFont(m_zPreviousFont, zGraphics);
-            }
+            zProcessData.CurrentYOffset = m_fPreviousOffset;
         }
     }
 }

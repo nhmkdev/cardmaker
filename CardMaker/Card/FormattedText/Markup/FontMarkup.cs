@@ -22,39 +22,35 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
 using System.Drawing;
 using CardMaker.XML;
 
-namespace CardMaker.Card.FormattedText
+namespace CardMaker.Card.FormattedText.Markup
 {
-    public class CloseTagMarkup : MarkupBase
+    public class FontMarkup : MarkupValueBase
     {
-        public MarkupBase MarkupToClose { get; }
+        public FontMarkup(string sVariable) : base(sVariable) { }
 
-        private static readonly Dictionary<Type, int> s_dictionaryKeepTypesOnProcess = new Dictionary<Type, int>
-        {
-            { typeof(BackgroundColorMarkup), 0 },
-        };
-
-        public CloseTagMarkup(MarkupBase zMarkupToClose)
-        {
-            MarkupToClose = zMarkupToClose;
-        }
+        private Font m_zPreviousFont;
 
         public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
-            MarkupToClose.CloseMarkup(zData, zProcessData, zGraphics);
-
-            // keep only the necessary markups
-            return s_dictionaryKeepTypesOnProcess.ContainsKey(MarkupToClose.GetType());
+            var zNewFont = ProjectLayoutElement.TranslateFontString(m_sVariable);
+            if (zNewFont != null)
+            {
+                m_zPreviousFont = zProcessData.Font;
+                zProcessData.SetFont(zNewFont, zGraphics);
+                return true;
+            }
+            return false;
         }
 
-        public override bool PostProcessMarkupRectangle(ProjectLayoutElement zElement, List<MarkupBase> listAllMarkups, int nMarkup)
+        public override void CloseMarkup(FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
-            // remove once hit during text size processing (this would always be after something used the information for the close tag)
-            return false;
+            if (null != m_zPreviousFont)
+            {
+                zProcessData.SetFont(m_zPreviousFont, zGraphics);
+            }
         }
     }
 }

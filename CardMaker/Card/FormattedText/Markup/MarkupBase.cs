@@ -27,7 +27,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using CardMaker.XML;
 
-namespace CardMaker.Card.FormattedText
+namespace CardMaker.Card.FormattedText.Markup
 {
     public abstract class MarkupBase
     {

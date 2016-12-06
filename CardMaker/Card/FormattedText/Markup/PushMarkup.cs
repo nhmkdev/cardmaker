@@ -25,28 +25,49 @@
 using System.Drawing;
 using CardMaker.XML;
 
-namespace CardMaker.Card.FormattedText
+namespace CardMaker.Card.FormattedText.Markup
 {
-    public class YDrawOffsetMarkup : MarkupValueBase
+    public class PushMarkup : MarkupValueBase
     {
-        private float m_fPreviousOffset;
+        private PushMarkup()
+        {
+        }
 
-        public YDrawOffsetMarkup(string sVariable) : base(sVariable) { }
+        public PushMarkup(string sVariable) : base(sVariable)
+        {
+        }
 
         public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
-            float fYOffset;
-            if (float.TryParse(m_sVariable, out fYOffset))
+            var arrayComponents = m_sVariable.Split(new char[] { ';' });
+            if (1 > arrayComponents.Length)
             {
-                m_fPreviousOffset = zProcessData.CurrentYOffset;
-                zProcessData.CurrentYOffset = fYOffset;
+                return false;
             }
-            return false;
-        }
 
-        public override void CloseMarkup(FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
-        {
-            zProcessData.CurrentYOffset = m_fPreviousOffset;
+            int nXPush;
+            if (!int.TryParse(arrayComponents[0], out nXPush))
+            {
+                return false;
+            }
+
+            var nYPush = 0;
+            if (2 <= arrayComponents.Length)
+            {
+                if (!int.TryParse(arrayComponents[1], out nYPush))
+                {
+                    return false;
+                }
+            }
+
+            zProcessData.CurrentX += nXPush;
+            zProcessData.CurrentY += nYPush;
+            if (zProcessData.CurrentX > zElement.width)
+            {
+                zProcessData.MoveToNextLine(zElement);
+            }
+
+            return false;
         }
     }
 }

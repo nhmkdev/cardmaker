@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System.Drawing;
+using CardMaker.Card.FormattedText.Markup;
 using CardMaker.XML;
 
 namespace CardMaker.Card.FormattedText

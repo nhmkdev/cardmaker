@@ -1,7 +1,7 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2015 Tim Stair
+// Copyright (c) 2016 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,20 +22,46 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using CardMaker.Card.FormattedText.Markup;
+using CardMaker.XML;
 
-namespace CardMaker.Card.FormattedText
+namespace CardMaker.Card.FormattedText.Alignment
 {
-    public class FormattedTextData
+    public abstract class VerticalAlignmentProcessor
     {
-        public Dictionary<MarkupBase, int> DictionaryTagCloseIndex { get; private set; }
-        public List<MarkupBase> AllMarkups { get; private set; }
-
-        public FormattedTextData(List<MarkupBase> listMarkups)
+        public virtual float GetVerticalAlignOffset(ProjectLayoutElement zElement, List<MarkupBase> listMarkups)
         {
-            AllMarkups = listMarkups;
-            DictionaryTagCloseIndex = new Dictionary<MarkupBase, int>();
+            return 0f;
+        }
+
+        protected float GetLargestMarkupHeight(ProjectLayoutElement zElement, List<MarkupBase> listMarkups)
+        {
+            if (0 == listMarkups.Count)
+            {
+                return 0;
+            }
+
+            var zLastMarkup = listMarkups[listMarkups.Count - 1];
+            var nLineNumber = zLastMarkup.LineNumber;
+            // find the largest total height on the last row (inclusive of the Y position)
+            var fLargestTotal = zLastMarkup.TargetRect.Y + zLastMarkup.TargetRect.Height;
+            var nIdx = listMarkups.Count - 2;
+            while (nIdx > -1)
+            {
+                var zMarkup = listMarkups[nIdx];
+                if (nLineNumber == zMarkup.LineNumber)
+                {
+                    fLargestTotal = Math.Max(fLargestTotal, zMarkup.TargetRect.Y + zMarkup.TargetRect.Height);
+                }
+                else
+                {
+                    break;
+                }
+                nIdx--;
+            }
+            return fLargestTotal;
         }
     }
 }

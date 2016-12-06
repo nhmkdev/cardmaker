@@ -31,7 +31,7 @@ using CardMaker.XML;
 using Support.IO;
 using Support.UI;
 
-namespace CardMaker.Card.FormattedText
+namespace CardMaker.Card.FormattedText.Markup
 {
     public class TextMarkup : MarkupValueBase
     {
