@@ -32,7 +32,7 @@ namespace CardMaker.Card.FormattedText.Alignment
 {
     public class AlignmentController
     {
-        enum HorizontalStringAlignment
+        private enum HorizontalStringAlignment
         {
             Near = StringAlignment.Near,
             Center = StringAlignment.Center,
@@ -81,26 +81,35 @@ namespace CardMaker.Card.FormattedText.Alignment
             }
 
             // process horizontal alignment (and add the offset for the vertical alignment)
-            var currentLineNumber = listAlignedMarkups[0].LineNumber;
-            var nFirstMarkup = 0;
-            int nLastMarkup;
-#warning this is a really confusing way to iterate through for lines
-            for (var nIdx = 1; nIdx < listAlignedMarkups.Count; nIdx++)
+            // build a list of the index of the first markup of each line
+            var listFirstMarkupIndexOfLine = new List<int>();
+            var nCurrentLineNumber = -1;
+            for (var nMarkupIdx = 0; nMarkupIdx < listAlignedMarkups.Count; nMarkupIdx++)
             {
-                if (listAlignedMarkups[nIdx].LineNumber != currentLineNumber)
+                if (nCurrentLineNumber != listAlignedMarkups[nMarkupIdx].LineNumber)
                 {
-                    nLastMarkup = nIdx - 1;
-                    UpdateLineAlignment(nFirstMarkup, nLastMarkup, false, zElement, listAlignedMarkups, fVertAlignOffset, listAllMarkups);
-                    currentLineNumber = listAlignedMarkups[nIdx].LineNumber;
-                    nFirstMarkup = nIdx;
+                    listFirstMarkupIndexOfLine.Add(nMarkupIdx);
+                    nCurrentLineNumber = listAlignedMarkups[nMarkupIdx].LineNumber;
                 }
             }
-            nLastMarkup = listAlignedMarkups.Count - 1;
-            UpdateLineAlignment(nFirstMarkup, nLastMarkup, true, zElement, listAlignedMarkups, fVertAlignOffset, listAllMarkups);
+
+            // iterate over the list of indices of the first markup of each line and align the entire line
+            for (var nIdx = 0; nIdx < listFirstMarkupIndexOfLine.Count; nIdx++)
+            {
+                var bLastLine = nIdx + 1 >= listFirstMarkupIndexOfLine.Count;
+                UpdateLineAlignment(
+                    listFirstMarkupIndexOfLine[nIdx],
+                    bLastLine ? listFirstMarkupIndexOfLine.Count - 1 : listFirstMarkupIndexOfLine[nIdx + 1] - 1,
+                    bLastLine, 
+                    zElement, 
+                    listAlignedMarkups, 
+                    fVertAlignOffset, 
+                    listAllMarkups);
+            }
         }
 
         /// <summary>
-        /// Updates the horizontal alignment of a line of markups
+        /// Updates the horizontal alignment and the vertical position of a line of markups 
         /// </summary>
         /// <param name="nFirst"></param>
         /// <param name="nLast"></param>
