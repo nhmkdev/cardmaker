@@ -99,7 +99,7 @@ namespace CardMaker.Card.FormattedText.Alignment
                 var bLastLine = nIdx + 1 >= listFirstMarkupIndexOfLine.Count;
                 UpdateLineAlignment(
                     listFirstMarkupIndexOfLine[nIdx],
-                    bLastLine ? listFirstMarkupIndexOfLine.Count - 1 : listFirstMarkupIndexOfLine[nIdx + 1] - 1,
+                    bLastLine ? listAlignedMarkups.Count - 1 : listFirstMarkupIndexOfLine[nIdx + 1] - 1,
                     bLastLine, 
                     zElement, 
                     listAlignedMarkups, 
