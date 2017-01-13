@@ -815,10 +815,11 @@ namespace CardMaker.Forms
                 numericElementY.Value = zElement.y;
                 numericElementW.Value = zElement.width;
                 numericElementH.Value = zElement.height;
+                numericElementRotation.Value = (decimal)zElement.rotation;
                 m_bFireElementChangeEvents = true;
 
-                // TODO: if the value does not actually change this applies an update for no specific reason...
-                PerformControlChangeActions(numericElementX, numericElementY, numericElementW, numericElementH);
+                // TODO: if the value does not actually change this applies an update for no specific reason... (tbd)
+                PerformControlChangeActions(numericElementX, numericElementY, numericElementW, numericElementH, numericElementRotation);
             }
             LayoutManager.Instance.FireLayoutUpdatedEvent(true);
         }

@@ -103,6 +103,16 @@ namespace CardMaker.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
+        internal static System.Drawing.Icon RotateCursor {
+            get {
+                object obj = ResourceManager.GetObject("RotateCursor", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
         internal static System.Drawing.Icon VerticalAlign {
             get {
                 object obj = ResourceManager.GetObject("VerticalAlign", resourceCulture);

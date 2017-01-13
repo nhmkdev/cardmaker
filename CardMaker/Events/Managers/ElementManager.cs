@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using CardMaker.Data;
 using CardMaker.Events.Args;
 using CardMaker.XML;
 using Support.UI;
@@ -134,7 +135,7 @@ namespace CardMaker.Events.Managers
             }
 
             // construct a before and after dictionary
-            Dictionary<ProjectLayoutElement, Rectangle> dictionarySelectedUndo = GetUndoRedoPoints();
+            Dictionary<ProjectLayoutElement, ElementPosition> dictionarySelectedUndo = GetUndoRedoPoints();
 
             if (dScaleWidth != 1 || dScaleHeight != 1)
             {
@@ -164,14 +165,14 @@ namespace CardMaker.Events.Managers
         /// Creates a collection of rectangles based on the selected list of elements
         /// </summary>
         /// <returns>The rectangle collection</returns>
-        public Dictionary<ProjectLayoutElement, Rectangle> GetUndoRedoPoints()
+        public Dictionary<ProjectLayoutElement, ElementPosition> GetUndoRedoPoints()
         {
             if (null != m_listSelectedElements)
             {
-                var dictionarySelectedUndo = new Dictionary<ProjectLayoutElement, Rectangle>();
+                var dictionarySelectedUndo = new Dictionary<ProjectLayoutElement, ElementPosition>();
                 foreach (var zElement in m_listSelectedElements)
                 {
-                    dictionarySelectedUndo.Add(zElement, new Rectangle(zElement.x, zElement.y, zElement.width, zElement.height));
+                    dictionarySelectedUndo.Add(zElement, new ElementPosition(zElement));
                 }
                 return dictionarySelectedUndo;
             }
@@ -183,8 +184,8 @@ namespace CardMaker.Events.Managers
         /// </summary>
         /// <param name="dictionarySelectedUndo">The undo collection of rectangles</param>
         /// <param name="dictionarySelectedRedo">The redo collection of rectangles</param>
-        public void ConfigureUserAction(Dictionary<ProjectLayoutElement, Rectangle> dictionarySelectedUndo,
-            Dictionary<ProjectLayoutElement, Rectangle> dictionarySelectedRedo)
+        public void ConfigureUserAction(Dictionary<ProjectLayoutElement, ElementPosition> dictionarySelectedUndo,
+            Dictionary<ProjectLayoutElement, ElementPosition> dictionarySelectedRedo)
         {
             // configure the variables used for undo/redo
             var dictionaryUndoElements = dictionarySelectedUndo;
@@ -192,17 +193,18 @@ namespace CardMaker.Events.Managers
 
             UserAction.PushAction(bRedo =>
             {
-                Dictionary<ProjectLayoutElement, Rectangle> dictionaryElementsChange = bRedo
+                Dictionary<ProjectLayoutElement, ElementPosition> dictionaryElementsChange = bRedo
                     ? dictionaryRedoElements
                     : dictionaryUndoElements;
                 foreach (var kvp in dictionaryElementsChange)
                 {
-                    Rectangle rectChange = kvp.Value;
-                    ProjectLayoutElement zElement = kvp.Key;
+                    var rectChange = kvp.Value.BoundsRectangle;
+                    var zElement = kvp.Key;
                     zElement.x = rectChange.X;
                     zElement.y = rectChange.Y;
                     zElement.width = rectChange.Width;
                     zElement.height = rectChange.Height;
+                    zElement.rotation = kvp.Value.Rotation;
                 }
                 FireElementBoundsUpdateEvent();
             });

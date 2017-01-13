@@ -42,13 +42,13 @@ namespace CardMaker.Forms
         private const int SELECTION_BUFFER = 3;
         private const int SELECTION_BUFFER_SPACE = SELECTION_BUFFER*2;
         private bool m_bElementSelected;
-        private MouseMode m_eMouseMode = MouseMode.MoveResize;
+        private MouseMode m_eMouseMode = MouseMode.Unknown;
         private ResizeDirection m_eResizeDirection = ResizeDirection.Up;
         private ProjectLayoutElement m_zSelectedElement;
-        // TODO: this list should be populated by an event from the Layout window on selection
         private List<ProjectLayoutElement> m_listSelectedElements;
-        private List<Point> m_listSelectedOffsets;
-        private Dictionary<ProjectLayoutElement, Rectangle> m_dictionarySelectedUndo;
+        private List<Point> m_listSelectedOriginalPosition;
+        private List<float> m_listSelectedOriginalRotation;
+        private Dictionary<ProjectLayoutElement, ElementPosition> m_dictionarySelectedUndo;
         private Point m_pointOriginalMouseDown = Point.Empty;
         private TranslationLock m_eTranslationLock = TranslationLock.Unset;
         private readonly ContextMenuStrip m_zContextMenu = new ContextMenuStrip();
@@ -61,8 +61,10 @@ namespace CardMaker.Forms
 
         private enum MouseMode
         {
+            Unknown,
             MoveResize,
-            Move
+            Move,
+            Rotate,
         }
 
         private enum TranslationLock
@@ -108,12 +110,12 @@ namespace CardMaker.Forms
             zGraphics.FillRectangle(zWhite, 0, 16, 16, 16);
             panelCardCanvas.BackgroundImage = zBitmap;
             CardMakerInstance.CanvasUserAction = false;
-            UpdateText();
             // m_zCardCanvas is a panel within the panelCardCanvas
             m_zCardCanvas = new CardCanvas
             {
                 Location = new Point(0, 0),
             };
+            ChangeMouseMode(MouseMode.MoveResize);
             m_zCardCanvas.MouseMove += cardCanvas_MouseMove;
             m_zCardCanvas.MouseDown += cardCanvas_MouseDown;
             m_zCardCanvas.MouseUp += cardCanvas_MouseUp;
@@ -201,15 +203,15 @@ namespace CardMaker.Forms
                         m_zCardCanvas.Focus();
                         break;
                     case Keys.M:
-                        m_eMouseMode = MouseMode.Move == m_eMouseMode
+                        ChangeMouseMode(MouseMode.Move == m_eMouseMode
                             ? MouseMode.MoveResize
-                            : MouseMode.Move;
-                        UpdateText();
-                        // get the position of the mouse to trigger a standard mouse move (updates the cursor/mode)
-                        var pLocation = panelCardCanvas.PointToClient(Cursor.Position);
-                        cardCanvas_MouseMove(null, new MouseEventArgs(MouseButtons.None, 0, pLocation.X, pLocation.Y, 0));
+                            : MouseMode.Move);
                         break;
-
+                    case Keys.R:
+                        ChangeMouseMode(MouseMode.Rotate == m_eMouseMode
+                            ? MouseMode.MoveResize
+                            : MouseMode.Rotate);
+                        break;
                 }
                 ElementManager.Instance.ProcessSelectedElementsChange(nHChange, nVChange, 0, 0);
             }
@@ -311,6 +313,49 @@ namespace CardMaker.Forms
 
         private void cardCanvas_MouseMove(object sender, MouseEventArgs e)
         {
+#warning this would be better with event handler subscribing/unsubscribing (didn't work so well with the 60 seconds I invested in trying it)
+            switch (m_eMouseMode)
+            {
+                case MouseMode.Rotate:
+                    cardCanvas_MouseMoveRotateMode(sender, e);
+                    break;
+                case MouseMode.Move:
+                case MouseMode.MoveResize:
+                    cardCanvas_MouseMoveGeneralMode(sender, e);
+                    break;
+            }
+        }
+
+        private void cardCanvas_MouseMoveRotateMode(object sender, MouseEventArgs e)
+        {
+#warning this is a really bad place for this... maybe switch the mouse handler if in rotate only mode
+            if (m_eMouseMode == MouseMode.Rotate)
+            {
+                if (MouseButtons.Left == e.Button)
+                {
+                    int nYDiff = e.Y - m_pointOriginalMouseDown.Y;
+                    var nNewRotation = (int) ((float) nYDiff/m_fZoom);
+                    if (null != m_listSelectedElements)
+                    {
+                        int nIdx = 0;
+                        foreach (var selectedElement in m_listSelectedElements)
+                        {
+                            selectedElement.rotation = nNewRotation + m_listSelectedOriginalRotation[nIdx];
+                            nIdx++;
+                        }
+                    }
+
+                    if (nNewRotation != 0)
+                    {
+                        ElementManager.Instance.FireElementBoundsUpdateEvent();
+                    }
+
+                }
+            }
+        }
+
+        private void cardCanvas_MouseMoveGeneralMode(object sender, MouseEventArgs e)
+        {
             if (MouseButtons.Left == e.Button)
             {
                 if (m_bElementSelected)
@@ -351,8 +396,8 @@ namespace CardMaker.Forms
                             int idx = 0;
                             foreach (var selectedElement in m_listSelectedElements)
                             {
-                                selectedElement.x = nXUnzoomed - m_listSelectedOffsets[idx].X;
-                                selectedElement.y = nYUnzoomed - m_listSelectedOffsets[idx].Y;
+                                selectedElement.x = nXUnzoomed - m_listSelectedOriginalPosition[idx].X;
+                                selectedElement.y = nYUnzoomed - m_listSelectedOriginalPosition[idx].Y;
                                 idx++;
                             }
                         }
@@ -485,7 +530,6 @@ namespace CardMaker.Forms
                                 Cursor = Cursors.SizeAll;
                                 m_eResizeDirection = ResizeDirection.Move;
                                 break;
-
                         }
                     }
                     else
@@ -531,7 +575,8 @@ namespace CardMaker.Forms
                     if ((nX >= (int) (zElement.x*m_fZoom - SELECTION_BUFFER) &&
                          nX <= (int) (zElement.x*m_fZoom + zElement.width*m_fZoom + SELECTION_BUFFER)) &&
                         (nY >= (int) (zElement.y*m_fZoom - SELECTION_BUFFER) &&
-                         nY <= (int) (zElement.y*m_fZoom + zElement.height*m_fZoom + SELECTION_BUFFER)))
+                         nY <= (int) (zElement.y*m_fZoom + zElement.height*m_fZoom + SELECTION_BUFFER)) 
+                         || m_eMouseMode == MouseMode.Rotate)
                     {
                         // Setup the start position and allow movement
                         var nXUnzoomed = (int) ((float) nX*m_fZoomRatio);
@@ -543,12 +588,14 @@ namespace CardMaker.Forms
                         m_listSelectedElements = ElementManager.Instance.SelectedElements;
                         if (null != m_listSelectedElements)
                         {
-                            m_listSelectedOffsets = new List<Point>();
+                            m_listSelectedOriginalPosition = new List<Point>();
+                            m_listSelectedOriginalRotation = new List<float>();
                             foreach (var zSelectedElement in m_listSelectedElements)
                             {
-                                m_listSelectedOffsets.Add(new Point(
+                                m_listSelectedOriginalPosition.Add(new Point(
                                     nXUnzoomed - zSelectedElement.x,
                                     nYUnzoomed - zSelectedElement.y));
+                                m_listSelectedOriginalRotation.Add(zSelectedElement.rotation);
                             }
                             // setup the undo dictionary (covers all types of changes allowed with canvas mouse movement)
                             m_dictionarySelectedUndo = ElementManager.Instance.GetUndoRedoPoints();
@@ -630,9 +677,35 @@ namespace CardMaker.Forms
             return false;
         }
 
-        private void UpdateText()
+        private void TriggerMouseMoveAtMouseLocation()
         {
-            Text = MouseMode.MoveResize == m_eMouseMode ? "Canvas [Mode: Normal]" : "Canvas [Mode: Move-only]";
+            var pLocation = panelCardCanvas.PointToClient(Cursor.Position);
+            cardCanvas_MouseMoveGeneralMode(null, new MouseEventArgs(MouseButtons.None, 0, pLocation.X, pLocation.Y, 0));
+        }
+
+        private void ChangeMouseMode(MouseMode eDestinationMode)
+        {
+            if (eDestinationMode == m_eMouseMode)
+            {
+                return;
+            }
+            m_eMouseMode = eDestinationMode;
+
+            switch (m_eMouseMode)
+            {
+                case MouseMode.Move:
+                    Text = "Canvas [Mode: Move-only]";
+                    TriggerMouseMoveAtMouseLocation();
+                    break;
+                case MouseMode.MoveResize:
+                    Text = "Canvas [Mode: Normal]";
+                    TriggerMouseMoveAtMouseLocation();
+                    break;
+                case MouseMode.Rotate:
+                    Text = "Canvas [Mode: Rotate-only]";
+                    Cursor = new Cursor(Properties.Resources.RotateCursor.Handle);
+                    break;
+            }
         }
 
         private void verticalCenterButton_Click(object sender, EventArgs e)

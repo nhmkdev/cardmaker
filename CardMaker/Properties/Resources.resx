@@ -130,6 +130,9 @@
   <data name="HorizontalCustomAlign" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\HorizontalCustomAlign.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="RotateCursor" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RotateCursor.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="VerticalAlign" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\VerticalAlign.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
