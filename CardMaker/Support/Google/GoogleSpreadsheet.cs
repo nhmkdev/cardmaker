@@ -149,7 +149,28 @@ namespace Support.UI
                 Logger.AddLogLine("Google: Failed to find spreadsheet: " + sSpreadsheetName);
             }
 
+            processNewLines(listLines);
             return listLines;
+        }
+
+        /// <summary>
+        /// Converts newline characters to newline escape characters
+        /// </summary>
+        /// <param name="listLines">The list of data representing the sheet of strings</param>
+        private static void processNewLines(List<List<string>> listLines)
+        {
+            foreach (var listLine in listLines)
+            {
+                for (var nIdx = 0; nIdx < listLine.Count; nIdx++)
+                {
+                    if (listLine[nIdx] == null)
+                    {
+                        // however unlikely
+                        continue;
+                    }
+                    listLine[nIdx] = listLine[nIdx].Replace("\n", "\\n");
+                }
+            }
         }
 
         public static AtomEntryCollection GetSpreadsheetList(SpreadsheetsService zSpreadsheetService)

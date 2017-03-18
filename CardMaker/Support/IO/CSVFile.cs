@@ -55,15 +55,23 @@ namespace Support.IO
             m_sSourceFile = Path.GetFullPath(sFile);
             Filename = Path.GetFileName(sFile);
             string[] arrayLines = File.ReadAllLines(m_sSourceFile, eEncoding);
+            var bQuote = false;
+            var zBuilder = new StringBuilder();
+            var listColumns = new List<string>();
             foreach (string sLine in arrayLines)
             {
                 if (0 == sLine.Trim().Length && !bReadEmptyLines)
+                {
+                    if (bQuote)
+                    {
+#warning this assumes a basic newline is desired
+                        zBuilder.Append("\n");
+                        m_listRawText.Add(sLine);
+                    }
                     continue;
+                }
                 m_listRawText.Add(sLine);
 
-                var listColumns = new List<string>();
-                var bQuote = false;
-                var zBuilder = new StringBuilder();
                 var nIdx = 0;
                 while(nIdx < sLine.Length)
                 {
@@ -119,11 +127,18 @@ namespace Support.IO
                     }
                     nIdx++;
                 }
-                if (null != zBuilder)
+                // support multiline quoted strings
+#warning what about poorly formatted files (ie. no closing quote)
+                if (!bQuote)
                 {
-                    listColumns.Add(zBuilder.ToString()); // any end of line item should be added
+                    if (null != zBuilder)
+                    {
+                        listColumns.Add(zBuilder.ToString()); // any end of line item should be added
+                    }
+                    m_listRows.Add(listColumns);
+                    zBuilder = new StringBuilder();
+                    listColumns = new List<string>();
                 }
-                m_listRows.Add(listColumns);
             }
         }
 
