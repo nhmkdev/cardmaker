@@ -172,6 +172,7 @@ namespace UnitTest.DeckObject
             return result.String;
         }
 
+#if false // this is no longer true
         [Test]
         public void ValidateNewlineSpecialCharacterNonTranslation()
         {
@@ -181,6 +182,7 @@ namespace UnitTest.DeckObject
             var result = _testDeck.TranslateString(slashN, _testLine, _testElement, false);
             Assert.AreEqual(slashN, result.String);
         }
+#endif
 
         [TestCase("a","1","b","2","c","3")]
         public void ValidateDefines(params string[] args)
