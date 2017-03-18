@@ -1,6 +1,8 @@
 Card Maker Version History
 --------------------------
 0.99.4.0
+- Adjusted handling of newlines from Google Spreadsheets and CSVs (converted to \n)
+- Added middle-mouse panning functionality for the canvas
 - Added ability to resize layouts (keeping the relative location of the elements centered)
 - Added Triangle shape
 - Added ability to translate primitives (quotes/commas) in the definitions dialog

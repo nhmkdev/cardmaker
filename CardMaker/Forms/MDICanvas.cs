@@ -50,7 +50,7 @@ namespace CardMaker.Forms
         private List<float> m_listSelectedOriginalRotation;
         private Dictionary<ProjectLayoutElement, ElementPosition> m_dictionarySelectedUndo;
         private Point m_pointOriginalMouseDown = Point.Empty;
-        private TranslationLock m_eTranslationLock = TranslationLock.Unset;
+        private TranslationLock m_eTranslationLockState = TranslationLock.Unset;
         private readonly ContextMenuStrip m_zContextMenu = new ContextMenuStrip();
 
         private readonly CardCanvas m_zCardCanvas;
@@ -80,6 +80,16 @@ namespace CardMaker.Forms
             None,
             Layout,
             FirstElement
+        }
+
+        private TranslationLock TranslationLockState
+        {
+            get { return m_eTranslationLockState; }
+            set
+            {
+                // Logger.AddLogLine(m_eTranslationLockState + "=>" + value);
+                m_eTranslationLockState = value;
+            }
         }
 
         [Flags]
@@ -162,28 +172,28 @@ namespace CardMaker.Forms
                     // focus is taken by the MDICanvas, reset it after each change below & reset the translation lock
                     case Keys.Shift | Keys.Up:
                         LayoutManager.Instance.FireElementOrderAdjustRequest(-1);
-                        m_eTranslationLock = TranslationLock.Unset;
+                        TranslationLockState = TranslationLock.Unset;
                         m_zCardCanvas.Focus();
                         break;
                     case Keys.Shift | Keys.Down:
                         LayoutManager.Instance.FireElementOrderAdjustRequest(1);
-                        m_eTranslationLock = TranslationLock.Unset;
+                        TranslationLockState = TranslationLock.Unset;
                         m_zCardCanvas.Focus();
                         break;
                     case Keys.Control | Keys.Up:
                         LayoutManager.Instance.FireElementSelectAdjustRequest(-1);
-                        m_eTranslationLock = TranslationLock.Unset;
+                        TranslationLockState = TranslationLock.Unset;
                         m_zCardCanvas.Focus();
                         break;
                     case Keys.Control | Keys.Down:
                         LayoutManager.Instance.FireElementSelectAdjustRequest(1);
-                        m_eTranslationLock = TranslationLock.Unset;
+                        TranslationLockState = TranslationLock.Unset;
                         m_zCardCanvas.Focus();
                         break;
                     case Keys.ShiftKey | Keys.Shift:
-                        if (TranslationLock.Unset == m_eTranslationLock)
+                        if (TranslationLock.Unset == TranslationLockState)
                         {
-                            m_eTranslationLock = TranslationLock.WaitingToSet;
+                            TranslationLockState = TranslationLock.WaitingToSet;
                         }
                         break;
                     case Keys.Up:
@@ -365,20 +375,20 @@ namespace CardMaker.Forms
                     var bElementBoundsChanged = false;
                     if (Cursor == Cursors.SizeAll)
                     {
-                        if (TranslationLock.WaitingToSet == m_eTranslationLock)
+                        if (TranslationLock.WaitingToSet == TranslationLockState)
                         {
                             // setup the lock (if outside the dead zone)
                             int nXDiff = Math.Abs(nX - m_pointOriginalMouseDown.X);
                             int nYDiff = Math.Abs(nY - m_pointOriginalMouseDown.Y);
                             if (nXDiff > TRANSLATION_LOCK_DEAD_ZONE || nYDiff > TRANSLATION_LOCK_DEAD_ZONE)
                             {
-                                m_eTranslationLock = nXDiff > nYDiff
+                                TranslationLockState = nXDiff > nYDiff
                                     ? TranslationLock.Horizontal
                                     : TranslationLock.Vertical;
                             }
                         }
 
-                        switch (m_eTranslationLock)
+                        switch (TranslationLockState)
                         {
                             case TranslationLock.Horizontal:
                                 nY = m_pointOriginalMouseDown.Y;
@@ -401,7 +411,7 @@ namespace CardMaker.Forms
                                 idx++;
                             }
                         }
-                        
+
                         bElementBoundsChanged = true;
                     }
                     else if (Cursor == Cursors.SizeNS)
@@ -538,6 +548,16 @@ namespace CardMaker.Forms
                     }
                 }
             }
+            if (MouseButtons.Middle == e.Button)
+            {
+                var nXDiff = m_pointOriginalMouseDown.X - e.X;
+                var nYDiff = m_pointOriginalMouseDown.Y - e.Y;
+                panelCardCanvas.ScrollToXY(
+                    panelCardCanvas.AutoScrollPosition.X - nXDiff,
+                    panelCardCanvas.AutoScrollPosition.Y - nYDiff);
+                // after the panel adjust the original mouse down has to be adjusted! Get its position based on the canvas itself
+                m_pointOriginalMouseDown = m_zCardCanvas.PointToClient(Cursor.Position);
+            }
         }
 
         private void cardCanvas_MouseUp(object sender, MouseEventArgs e)
@@ -552,6 +572,7 @@ namespace CardMaker.Forms
             m_listSelectedElements = null;
             m_zSelectedElement = null;
             m_bElementSelected = false;
+            TranslationLockState = TranslationLock.Unset;
         }
 
         private void cardCanvas_MouseDown(object sender, MouseEventArgs e)
@@ -564,9 +585,9 @@ namespace CardMaker.Forms
                     CardMakerInstance.CanvasUserAction = true;
 
                     m_pointOriginalMouseDown = e.Location;
-                    if (TranslationLock.WaitingToSet != m_eTranslationLock)
+                    if (TranslationLock.WaitingToSet != TranslationLockState)
                     {
-                        m_eTranslationLock = TranslationLock.Unset;
+                        TranslationLockState = TranslationLock.Unset;
                     }
 
                     int nX = e.X;
@@ -575,8 +596,8 @@ namespace CardMaker.Forms
                     if ((nX >= (int) (zElement.x*m_fZoom - SELECTION_BUFFER) &&
                          nX <= (int) (zElement.x*m_fZoom + zElement.width*m_fZoom + SELECTION_BUFFER)) &&
                         (nY >= (int) (zElement.y*m_fZoom - SELECTION_BUFFER) &&
-                         nY <= (int) (zElement.y*m_fZoom + zElement.height*m_fZoom + SELECTION_BUFFER)) 
-                         || m_eMouseMode == MouseMode.Rotate)
+                         nY <= (int) (zElement.y*m_fZoom + zElement.height*m_fZoom + SELECTION_BUFFER))
+                        || m_eMouseMode == MouseMode.Rotate)
                     {
                         // Setup the start position and allow movement
                         var nXUnzoomed = (int) ((float) nX*m_fZoomRatio);
@@ -603,6 +624,11 @@ namespace CardMaker.Forms
                     }
                 }
             }
+            if (MouseButtons.Middle == e.Button)
+            {
+                //initiate panning
+                m_pointOriginalMouseDown = e.Location;
+            }
         }
 
         private void numericUpDownZoom_ValueChanged(object sender, EventArgs e)
@@ -613,14 +639,14 @@ namespace CardMaker.Forms
             }
             m_fZoom = (float)numericUpDownZoom.Value;
             m_fZoomRatio = 1.0f / m_fZoom;
-            m_eTranslationLock = TranslationLock.Unset;
+            TranslationLockState = TranslationLock.Unset;
             m_zCardCanvas.CardRenderer.ZoomLevel = m_fZoom;
             LayoutManager.Instance.ActiveDeck.ResetDeckCache();
             m_zCardCanvas.UpdateSize();
             m_zCardCanvas.Invalidate();
         }
 
-        #endregion
+#endregion
 
         /// <summary>
         /// Invalidates the panel and card canvas
