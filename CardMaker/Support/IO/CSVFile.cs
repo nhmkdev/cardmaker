@@ -64,12 +64,19 @@ namespace Support.IO
                 {
                     if (bQuote)
                     {
-#warning this assumes a basic newline is desired
-                        zBuilder.Append("\n");
+                        // add a newline for the empty line
+                        zBuilder.Append("\\n");
                         m_listRawText.Add(sLine);
                     }
                     continue;
                 }
+
+                // if this line starts already quoted add a newline
+                if (bQuote)
+                {
+                    zBuilder.Append("\\n");
+                }
+
                 m_listRawText.Add(sLine);
 
                 var nIdx = 0;

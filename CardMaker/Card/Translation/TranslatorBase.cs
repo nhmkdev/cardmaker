@@ -78,8 +78,7 @@ namespace CardMaker.Card.Translation
                     zElementString.String = zElementString.String.Replace("&lt;", "<");
                     break;
                 case ElementType.FormattedText:
-#warning making some assumptions here!
-                    zElementString.String = zElementString.String.Replace("\\n", "<br>");
+                    // NOTE: never convert \n => <br> here. This will affect file paths that include '\n' (ie. c:\newfile.png)
                     zElementString.String = zElementString.String.Replace("<c>", ",");
                     zElementString.String = zElementString.String.Replace("<q>", "\"");
                     zElementString.String = zElementString.String.Replace("&gt;", ">");

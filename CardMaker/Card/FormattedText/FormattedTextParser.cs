@@ -25,6 +25,7 @@
 using System.Collections.Generic;
 using System.Text;
 using CardMaker.Card.FormattedText.Markup;
+using Support.IO;
 
 namespace CardMaker.Card.FormattedText
 {
@@ -51,6 +52,7 @@ namespace CardMaker.Card.FormattedText
             {
                 if (bEscapeNext)
                 {
+                    // NOTE: this also is gated by !bInTag (when bEscapeNext is set)
                     bEscapeNext = false;
                     switch (sInput[nIdx])
                     {
@@ -58,6 +60,16 @@ namespace CardMaker.Card.FormattedText
                         case '>':
                         case '\\':
                             sBuilder.Append(sInput[nIdx]);
+                            nIdx++;
+                            continue;
+                        case 'n':
+                            if (sBuilder.Length > 0)
+                            {
+                                // add any existing text to a text markup
+                                listMarkups.Add(new TextMarkup(sBuilder.ToString()));
+                                sBuilder = new StringBuilder();
+                            }
+                            listMarkups.Add(new NewlineMarkup());
                             nIdx++;
                             continue;
                         default:
@@ -72,6 +84,10 @@ namespace CardMaker.Card.FormattedText
 
                 switch (cCurrent)
                 {
+// no newline should ever make it from a reference to here without conversion
+                    case '\n':
+                        Logger.AddLogLine("Newline found in formatted text input. This is a bug! Report it!");
+                        break;
                     case '\\':
                         if (!bInTag)
                         {

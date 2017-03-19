@@ -1,5 +1,4 @@
-﻿using CardMaker.Card;
-using CardMaker.Card.FormattedText.Markup;
+﻿using CardMaker.Card.FormattedText.Markup;
 using NUnit.Framework;
 using System;
 using CardMaker.Card.FormattedText;
@@ -26,6 +25,8 @@ namespace UnitTest.DeckObject
         [TestCase("<bgi=c:\\img.png></bgi>", new Type[] { typeof(BackgroundImageMarkup), typeof(CloseTagMarkup) })]
         [TestCase("<bgi=c:\\img.png;1;2;3;4></bgi>", new Type[] { typeof(BackgroundImageMarkup), typeof(CloseTagMarkup) })]
         [TestCase("<fc=0xaabbcc></fc>", new Type[] { typeof(FontColorMarkup), typeof(CloseTagMarkup) })]
+        [TestCase("<img=c:\\newimage\\me.png>", new Type[] { typeof(ImageMarkup) })]
+        [TestCase("Hi\\nthere!", new Type[] { typeof(TextMarkup), typeof(NewlineMarkup), typeof(TextMarkup) })]
         [TestCase("<img=me.png>", new Type[] { typeof(ImageMarkup) })]
         [TestCase("<push=15>", new Type[] { typeof(PushMarkup) })]
         [TestCase("<push=15;18>", new Type[] { typeof(PushMarkup) })]
