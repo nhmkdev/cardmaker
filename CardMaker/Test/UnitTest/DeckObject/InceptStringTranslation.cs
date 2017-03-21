@@ -230,6 +230,7 @@ namespace UnitTest.DeckObject
         }
 
         [TestCase("@[action,aa,bb]", Result = "aa::bb")]
+        [TestCase("@[action,Aa,bB]", Result = "Aa::bB")]
         [TestCase("@[action,@[L4],bb]", Result = "bbb::bb")]
         [TestCase("@[actionCaller,@[L1]]", Result = "a::zork")]
         [TestCase("@[smallImgTag,@[theCoin]]", Result = @"<img=\images\coin.png;.90;0;3>")]

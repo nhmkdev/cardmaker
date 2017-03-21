@@ -120,7 +120,7 @@ namespace CardMaker.Card.Translation
                 zMatch = s_regexColumnVariable.Match(sOutput);
                 int nIndex;
                 string sDefineValue;
-                var sKey = zMatch.Groups[3].ToString().ToLower();
+                var sKey = zMatch.Groups[3].ToString();
 
                 // check the key for untranslated components
                 var arrayParams = sKey.Split(new char[] { ',' });
@@ -128,6 +128,8 @@ namespace CardMaker.Card.Translation
                 {
                     sKey = arrayParams[0];
                 }
+
+                sKey = sKey.ToLower();
 
                 if (DictionaryDefines.TryGetValue(sKey, out sDefineValue))
                 {
