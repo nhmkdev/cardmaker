@@ -44,6 +44,15 @@ namespace UnitTest.DeckObject
             return result.String;
         }
 
+        [TestCase("#(if a == a then word else word2)#", Result = "word")]
+        [TestCase("#(if a == b then word else word2)#", Result = "word2")]
+        public string ValidateLogic(string input)
+        {
+            _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
+            var result = _testDeck.TranslateString(input, _testLine, _testElement, false);
+            return result.String;
+        }
+
         [TestCase("#(switch;goodkey;badkey;1;goodkey;#nodraw)#", false, Result = "#nodraw")]
         [TestCase("Test: #(switch;goodkey;badkey;1;goodkey;#nodraw)#", false, Result = "Test: #nodraw")]
         [TestCase("Test: #(switch;goodkey;badkey;1;goodkey;#nodraw)#", false, Result = "Test: #nodraw")]

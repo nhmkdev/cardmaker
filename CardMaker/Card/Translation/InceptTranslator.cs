@@ -53,7 +53,7 @@ namespace CardMaker.Card.Translation
         private static readonly Regex s_regexIfLogic = new Regex(@"(.*)(#\()(if.+)(\)#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexSwitchLogic = new Regex(@"(.*)(#\()(switch.+)(\)#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexIfThenStatement = new Regex(@"(if)(.*?)\s([!=><]=|<|>)\s(.*?)(then )(.*)", RegexOptions.Compiled);
-        private static readonly Regex s_regexIfThenElseStatement = new Regex(@"(if)(.*?)\s([!=><]=|<|>)\s(.*?)(then )(.*?)(else )(.*)", RegexOptions.Compiled);
+        private static readonly Regex s_regexIfThenElseStatement = new Regex(@"(if)(.*?)\s([!=><]=|<|>)\s(.*?)(then )(.*?)( else )(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexIfSet = new Regex(@"(\[)(.*?)(\])", RegexOptions.Compiled);
         private static readonly Regex s_regexSwitchStatement = new Regex(@"(switch)(;)(.*?)(;)(.*)", RegexOptions.Compiled);
 
@@ -227,7 +227,7 @@ namespace CardMaker.Card.Translation
             //@"(if)(.*?)([!=><]=|<|>)(.*?)(then )(.*)");
             //Groups                                   
             //    1    2  3            4    5      6    7      8
-            //@"(if)(.*?)([!=><]=|<|>)(.*?)(then )(.*?)(else )(.*)");
+            //@"(if)(.*?)([!=><]=|<|>)(.*?)(then )(.*?)( else )(.*)");
             Match zIfMatch = null;
             string sOutput = string.Empty;
             bool bHasElse = false;
