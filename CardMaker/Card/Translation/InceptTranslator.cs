@@ -50,7 +50,7 @@ namespace CardMaker.Card.Translation
         private static readonly Regex s_regexCardVariable = new Regex(@"(.*)(\!\[)(.+?)(\])(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexCardCounter = new Regex(@"(.*)(##)(\d+)(;)(\d+)(;)(\d+)(#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexSubCardCounter = new Regex(@"(.*)(#sc;)(\d+)(;)(\d+)(;)(\d+)(#)(.*)", RegexOptions.Compiled);
-        private static readonly Regex s_regexIfLogic = new Regex(@"(.*)(#\()(if.+)(\)#)(.*)", RegexOptions.Compiled);
+        private static readonly Regex s_regexIfLogic = new Regex(@"(.*)(#\()(if.*?)(\)#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexSwitchLogic = new Regex(@"(.*)(#\()(switch.+)(\)#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexIfThenStatement = new Regex(@"(if)(.*?)\s([!=><]=|<|>)\s(.*?)(then )(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexIfThenElseStatement = new Regex(@"(if)(.*?)\s([!=><]=|<|>)\s(.*?)(then )(.*?)( else )(.*)", RegexOptions.Compiled);

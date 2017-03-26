@@ -186,10 +186,12 @@ namespace CardMaker.Card.Import
         private string GetDefinesReference()
         {
             return CardMakerConstants.GOOGLE_REFERENCE
-                + CardMakerConstants.GOOGLE_REFERENCE_SPLIT_CHAR
-                + Path.GetFileNameWithoutExtension(ProjectManager.Instance.ProjectFilePath)
-                + CardMakerConstants.GOOGLE_REFERENCE_SPLIT_CHAR
-                + "defines";
+                    + CardMakerConstants.GOOGLE_REFERENCE_SPLIT_CHAR
+                    + (string.IsNullOrEmpty(ProjectManager.Instance.LoadedProject.overrideDefineReferenceName) ?
+                        Path.GetFileNameWithoutExtension(ProjectManager.Instance.ProjectFilePath) :
+                        ProjectManager.Instance.LoadedProject.overrideDefineReferenceName)
+                    + CardMakerConstants.GOOGLE_REFERENCE_SPLIT_CHAR
+                    + "defines";
         }
 
         private string GetCacheKey(string sReference, string sNameAppend = "")

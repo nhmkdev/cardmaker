@@ -42,6 +42,8 @@ namespace CardMaker.XML
 
         public string defaultDefineReferenceType { get; set; }
 
+        public string overrideDefineReferenceName { get; set; }
+
         #endregion
 
         /// <summary>

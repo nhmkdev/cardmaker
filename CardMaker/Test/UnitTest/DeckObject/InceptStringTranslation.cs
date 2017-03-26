@@ -46,6 +46,8 @@ namespace UnitTest.DeckObject
 
         [TestCase("#(if a == a then word else word2)#", Result = "word")]
         [TestCase("#(if a == b then word else word2)#", Result = "word2")]
+        [TestCase("#(if a == b then word else word2)# midword #(if c == d then chowder)#", Result = "word2 midword ")]
+        [TestCase("#(if 2 > 0 then Deploy Roll: +2)# Deploy Success: +1pt#(switch;+1;+1;;-1;;#default;s)##(if DBA == then #nodraw)#", Result= "Deploy Roll: +2 Deploy Success: +1pt")]
         public string ValidateLogic(string input)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
