@@ -29,6 +29,7 @@ using System.Reflection;
 using System.Xml.Serialization;
 using CardMaker.Data;
 using Support.IO;
+using System.Globalization;
 
 namespace CardMaker.XML
 {
@@ -326,7 +327,7 @@ namespace CardMaker.XML
         {
             var arraySplit = fontString.Split(new char[] { ';' });
             float fFontSize;
-            if (6 != arraySplit.Length || !float.TryParse(arraySplit[1], out fFontSize))
+            if (6 != arraySplit.Length || !float.TryParse(arraySplit[1].Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out fFontSize))
             {
                 return null;
             }

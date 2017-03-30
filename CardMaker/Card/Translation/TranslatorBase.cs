@@ -28,6 +28,7 @@ using System.Reflection;
 using CardMaker.Card.FormattedText;
 using CardMaker.Data;
 using CardMaker.XML;
+using System.Globalization;
 
 namespace CardMaker.Card.Translation
 {
@@ -134,7 +135,7 @@ namespace CardMaker.Card.Translation
                         else if (zProperty.PropertyType == typeof(float))
                         {
                             float fValue;
-                            if (float.TryParse(sValue, out fValue))
+                            if (float.TryParse(sValue.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out fValue))
                             {
                                 zMethod.Invoke(zOverrideElement, new object[] { fValue });
                             }
