@@ -48,6 +48,19 @@ namespace UnitTest.DeckObject
         [TestCase("#(if a == b then word else word2)#", Result = "word2")]
         [TestCase("#(if a == b then word else word2)# midword #(if c == d then chowder)#", Result = "word2 midword ")]
         [TestCase("#(if 2 > 0 then Deploy Roll: +2)# Deploy Success: +1pt#(switch;+1;+1;;-1;;#default;s)##(if DBA == then #nodraw)#", Result= "Deploy Roll: +2 Deploy Success: +1pt")]
+        [TestCase("#(if 1.000 > 1 then A else B)#", Result = "B")]
+        [TestCase("#(if 1,000 > 1 then A else B)#", Result = "B")]
+        [TestCase("#(if 1.100 > 1 then A else B)#", Result = "A")]
+        [TestCase("#(if 1,100 > 1 then A else B)#", Result = "A")]
+        [TestCase("#(if 1.100 > 1.05 then A else B)#", Result = "A")]
+        [TestCase("#(if 1,100 > 1,05 then A else B)#", Result = "A")]
+        [TestCase("#(if 1.100 > 1,05 then A else B)#", Result = "A")]
+        [TestCase("#(if 1.100 < 1,05 then A else B)#", Result = "B")]
+        [TestCase("#(if 24 < 24 then A else B)#", Result = "B")]
+        [TestCase("#(if 24 >= 24 then A else B)#", Result = "A")]
+        [TestCase("#(if 24 <= 24 then A else B)#", Result = "A")]
+        [TestCase("#(if 26 >= 24 then A else B)#", Result = "A")]
+        [TestCase("#(if 26 <= 24 then A else B)#", Result = "B")]
         public string ValidateLogic(string input)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");

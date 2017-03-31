@@ -28,6 +28,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
+using Support.Util;
 
 namespace CardMaker.Card.Translation
 {
@@ -288,8 +289,8 @@ namespace CardMaker.Card.Translation
                 {
                     decimal nValue1;
                     decimal nValue2;
-                    bool bSuccess = Decimal.TryParse(zIfMatch.Groups[2].ToString(), out nValue1);
-                    bSuccess &= Decimal.TryParse(zIfMatch.Groups[4].ToString(), out nValue2);
+                    bool bSuccess = ParseUtil.ParseDecimal(zIfMatch.Groups[2].ToString(), out nValue1);
+                    bSuccess &= ParseUtil.ParseDecimal(zIfMatch.Groups[4].ToString(), out nValue2);
                     if (!bSuccess)
                     {
                         return string.Empty; // a mess!
