@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using CardMaker.Data;
 using CardMaker.XML;
+using System.Globalization;
 
 namespace CardMaker.Card.FormattedText.Markup
 {
@@ -66,18 +67,18 @@ namespace CardMaker.Card.FormattedText.Markup
                     TargetRect = new RectangleF(zProcessData.CurrentX, zProcessData.CurrentY, zBmp.Width, zBmp.Height);
                     break;
                 case 2:
-                    float.TryParse(arrayComponents[1], out fLineHeightPercent);
+                    float.TryParse(arrayComponents[1].Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out fLineHeightPercent);
                     TargetRect = new RectangleF(zProcessData.CurrentX, zProcessData.CurrentY, zBmp.Width, zBmp.Height);
                     break;
                 case 3:
-                    if (float.TryParse(arrayComponents[1], out m_fXOffset) &&
-                        float.TryParse(arrayComponents[2], out m_fYOffset))
+                    if (float.TryParse(arrayComponents[1].Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out m_fXOffset) &&
+                        float.TryParse(arrayComponents[2].Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out m_fYOffset))
                     {
                         TargetRect = new RectangleF(zProcessData.CurrentX, zProcessData.CurrentY, zBmp.Width, zBmp.Height);
                     }
                     break;
                 case 4:
-                    float.TryParse(arrayComponents[1], out fLineHeightPercent);
+                    float.TryParse(arrayComponents[1].Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out fLineHeightPercent);
                     if (float.TryParse(arrayComponents[2], out m_fXOffset) &&
                         float.TryParse(arrayComponents[3], out m_fYOffset))
                     {
@@ -88,8 +89,8 @@ namespace CardMaker.Card.FormattedText.Markup
                     {
                         int nWidth;
                         int nHeight;
-                        if (float.TryParse(arrayComponents[1], out m_fXOffset) &&
-                            float.TryParse(arrayComponents[2], out m_fYOffset) &&
+                        if (float.TryParse(arrayComponents[1].Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out m_fXOffset) &&
+                            float.TryParse(arrayComponents[2].Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out m_fYOffset) &&
                             int.TryParse(arrayComponents[3], out nWidth) &&
                             int.TryParse(arrayComponents[4], out nHeight))
                         {

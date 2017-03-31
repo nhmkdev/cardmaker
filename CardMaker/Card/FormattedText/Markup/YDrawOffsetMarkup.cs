@@ -24,6 +24,7 @@
 
 using System.Drawing;
 using CardMaker.XML;
+using System.Globalization;
 
 namespace CardMaker.Card.FormattedText.Markup
 {
@@ -36,7 +37,7 @@ namespace CardMaker.Card.FormattedText.Markup
         public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
             float fYOffset;
-            if (float.TryParse(m_sVariable, out fYOffset))
+            if (float.TryParse(m_sVariable.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out fYOffset))
             {
                 m_fPreviousOffset = zProcessData.CurrentYOffset;
                 zProcessData.CurrentYOffset = fYOffset;
