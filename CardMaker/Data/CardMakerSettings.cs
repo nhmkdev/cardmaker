@@ -25,6 +25,7 @@
 using System.Globalization;
 using CardMaker.Events.Managers;
 using Support.IO;
+using Support.Util;
 
 namespace CardMaker.Data
 {
@@ -59,7 +60,7 @@ namespace CardMaker.Data
             get
             {
                 decimal dVal;
-                if (decimal.TryParse(s_zIniManager.GetValue(IniSettings.PrintPageWidth, "8.5"), out dVal))
+                if (ParseUtil.ParseDecimal(s_zIniManager.GetValue(IniSettings.PrintPageWidth, "8.5"), out dVal))
                 {
                     return dVal;
                 }
@@ -73,7 +74,7 @@ namespace CardMaker.Data
             get
             {
                 decimal dVal;
-                if (decimal.TryParse(s_zIniManager.GetValue(IniSettings.PrintPageHeight, "11"), out dVal))
+                if (ParseUtil.ParseDecimal(s_zIniManager.GetValue(IniSettings.PrintPageHeight, "11"), out dVal))
                 {
                     return dVal;
                 }
@@ -87,7 +88,7 @@ namespace CardMaker.Data
             get
             {
                 decimal dVal;
-                if (decimal.TryParse(s_zIniManager.GetValue(IniSettings.PrintPageHorizontalMargin, "0.5"), out dVal))
+                if (ParseUtil.ParseDecimal(s_zIniManager.GetValue(IniSettings.PrintPageHorizontalMargin, "0.5"), out dVal))
                 {
                     return dVal;
                 }
@@ -101,7 +102,7 @@ namespace CardMaker.Data
             get
             {
                 decimal dVal;
-                if (decimal.TryParse(s_zIniManager.GetValue(IniSettings.PrintPageVerticalMargin, "0.25"), out dVal))
+                if (ParseUtil.ParseDecimal(s_zIniManager.GetValue(IniSettings.PrintPageVerticalMargin, "0.25"), out dVal))
                 {
                     return dVal;
                 }

@@ -279,6 +279,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Support\UI\Win32.cs" />
+    <Compile Include="Support\Util\ParseUtil.cs" />
     <Compile Include="Support\Util\TimeMeasure.cs" />
     <Compile Include="Events\Managers\ElementManager.cs" />
     <Compile Include="Events\Managers\LayoutManager.cs" />

@@ -255,7 +255,8 @@ namespace Support.UI
                 // note the trackbar value is set below using the numeric change event
                 if (0 <= nZeroDecimalPlaces)
                 {
-                    zNumeric.Increment = new Decimal(float.Parse("0." + "1".PadLeft(1 + nZeroDecimalPlaces, '0')));
+                    zNumeric.Increment = new Decimal(
+                        float.Parse("0." + "1".PadLeft(1 + nZeroDecimalPlaces, '0'), NumberStyles.Any, CultureInfo.InvariantCulture));
                     zNumeric.DecimalPlaces = nZeroDecimalPlaces + 1;
                 }
                 else

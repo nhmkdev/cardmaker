@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using CardMaker.Data;
 using CardMaker.XML;
+using Support.Util;
 
 namespace CardMaker.Card.FormattedText.Markup
 {
@@ -62,34 +63,34 @@ namespace CardMaker.Card.FormattedText.Markup
             // SOOOOO much duplication
             switch (arrayComponents.Length)
             {
-                case 1:
+                case 1: // <img=[filename]>
                     TargetRect = new RectangleF(zProcessData.CurrentX, zProcessData.CurrentY, zBmp.Width, zBmp.Height);
                     break;
-                case 2:
-                    float.TryParse(arrayComponents[1], out fLineHeightPercent);
+                case 2: // <img=[filename];[percent]>
+                    ParseUtil.ParseFloat(arrayComponents[1], out fLineHeightPercent);
                     TargetRect = new RectangleF(zProcessData.CurrentX, zProcessData.CurrentY, zBmp.Width, zBmp.Height);
                     break;
-                case 3:
-                    if (float.TryParse(arrayComponents[1], out m_fXOffset) &&
-                        float.TryParse(arrayComponents[2], out m_fYOffset))
+                case 3: // <img=[filename];[xoffset];[yoffset]>
+                    if (ParseUtil.ParseFloat(arrayComponents[1], out m_fXOffset) &&
+                        ParseUtil.ParseFloat(arrayComponents[2], out m_fYOffset))
                     {
                         TargetRect = new RectangleF(zProcessData.CurrentX, zProcessData.CurrentY, zBmp.Width, zBmp.Height);
                     }
                     break;
-                case 4:
-                    float.TryParse(arrayComponents[1], out fLineHeightPercent);
-                    if (float.TryParse(arrayComponents[2], out m_fXOffset) &&
-                        float.TryParse(arrayComponents[3], out m_fYOffset))
+                case 4: // <img=[filename];[percent];[xoffset];[yoffset]>
+                    ParseUtil.ParseFloat(arrayComponents[1], out fLineHeightPercent);
+                    if (ParseUtil.ParseFloat(arrayComponents[2], out m_fXOffset) &&
+                        ParseUtil.ParseFloat(arrayComponents[3], out m_fYOffset))
                     {
                         TargetRect = new RectangleF(zProcessData.CurrentX, zProcessData.CurrentY, zBmp.Width, zBmp.Height);
                     }
                     break;
-                case 5: // width and height are absolute (even overlapping drawing)
+                case 5: // <img=[filename];[xoffset];[yoffset];[width];[height]>
                     {
                         int nWidth;
                         int nHeight;
-                        if (float.TryParse(arrayComponents[1], out m_fXOffset) &&
-                            float.TryParse(arrayComponents[2], out m_fYOffset) &&
+                        if (ParseUtil.ParseFloat(arrayComponents[1], out m_fXOffset) &&
+                            ParseUtil.ParseFloat(arrayComponents[2], out m_fYOffset) &&
                             int.TryParse(arrayComponents[3], out nWidth) &&
                             int.TryParse(arrayComponents[4], out nHeight))
                         {

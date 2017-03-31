@@ -24,6 +24,7 @@
 
 using System.Drawing;
 using CardMaker.XML;
+using Support.Util;
 
 namespace CardMaker.Card.FormattedText.Markup
 {
@@ -36,7 +37,7 @@ namespace CardMaker.Card.FormattedText.Markup
         public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
             float fNewSize;
-            if (float.TryParse(m_sVariable, out fNewSize) && fNewSize > 0)
+            if (ParseUtil.ParseFloat(m_sVariable, out fNewSize) && fNewSize > 0)
             {
                 m_zPreviousFont = zProcessData.Font;
                 zProcessData.SetFont(new Font(zProcessData.Font.FontFamily, fNewSize, zProcessData.Font.Style), zGraphics);

@@ -68,6 +68,7 @@
     <Compile Include="DeckObject\JavaScriptTranslatorFactory.cs" />
     <Compile Include="DeckObject\TestDeck.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Support\Util\ParseUtilTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

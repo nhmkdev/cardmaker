@@ -1,6 +1,7 @@
 Card Maker Version History
 --------------------------
 0.99.4.0
+- Add override for the Google project wide defines (project level setting)
 - Adjusted handling of newlines from Google Spreadsheets and CSVs (converted to \n)
 - Added middle-mouse panning functionality for the canvas
 - Added on canvas rotation mode (can be toggled with 'r')
