@@ -376,6 +376,8 @@ namespace CardMaker.Forms
             zQuery.AddCheckBox("Print/Export Layout Border", CardMakerSettings.PrintLayoutBorder, IniSettings.PrintLayoutBorder);
             zQuery.AddPullDownBox("Default Translator Type",
                 new string[] { TranslatorType.Incept.ToString(), TranslatorType.JavaScript.ToString() }, (int)CardMakerSettings.DefaultTranslatorType, IniSettings.DefaultTranslator);
+            zQuery.AddCheckBox("Log Incept Translation", CardMakerSettings.LogInceptTranslation,
+                IniSettings.LogInceptTranslation);
 
 #if !MONO_BUILD
             zQuery.AddTab("PDF Export");
@@ -401,6 +403,7 @@ namespace CardMaker.Forms
                 CardMakerSettings.PrintLayoutBorder = zQuery.GetBool(IniSettings.PrintLayoutBorder);
                 CardMakerSettings.PrintLayoutsOnNewPage = zQuery.GetBool(IniSettings.PrintLayoutsOnNewPage);
                 CardMakerSettings.DefaultTranslatorType = (TranslatorType)zQuery.GetIndex(IniSettings.DefaultTranslator);
+                CardMakerSettings.LogInceptTranslation = zQuery.GetBool(IniSettings.LogInceptTranslation);
 
                 var bWasGoogleCacheEnabled = CardMakerSettings.EnableGoogleCache;
                 CardMakerSettings.EnableGoogleCache = zQuery.GetBool(IniSettings.EnableGoogleCache);

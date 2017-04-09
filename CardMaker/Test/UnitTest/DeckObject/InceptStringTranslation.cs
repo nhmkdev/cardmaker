@@ -44,6 +44,15 @@ namespace UnitTest.DeckObject
             return result.String;
         }
 
+        [TestCase("![cardIndex]", Result = "0")]
+        [TestCase("![deckIndex]", Result = "1")]
+        public string ValidateCardVariable(string input)
+        {
+            _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
+            var result = _testDeck.TranslateString(input, _testLine, _testElement, false);
+            return result.String;
+        }
+
         [TestCase("#(if a == a then word else word2)#", Result = "word")]
         [TestCase("#(if a == b then word else word2)#", Result = "word2")]
         [TestCase("#(if a == b then word else word2)# midword #(if c == d then chowder)#", Result = "word2 midword ")]
@@ -61,6 +70,11 @@ namespace UnitTest.DeckObject
         [TestCase("#(if 24 <= 24 then A else B)#", Result = "A")]
         [TestCase("#(if 26 >= 24 then A else B)#", Result = "A")]
         [TestCase("#(if 26 <= 24 then A else B)#", Result = "B")]
+        [TestCase("#(if aaa#(switch;45;35;A;45;b)#a == aaaba then GOOD)#", Result = "GOOD")]
+        [TestCase("#(if #(if x == x then a)##(switch;45;35;A;45;b)##(if z == z then a)# == aba then GOOD)#", Result = "GOOD")]
+        [TestCase("#(if #(if x == x then a)##(if y == y then b)##(if z == z then a)# == aba then GOOD)#", Result = "GOOD")]
+        [TestCase("#(if #(if #(if y == #(switch;45;35;A;45;y)# then x)# == x then a)#ba == #(switch;45;35;A;45;aba)# then GOOD)#", Result = "GOOD")]
+#warning todo: need some heavily nested logic switches within switches within ifs etc
         public string ValidateLogic(string input)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");

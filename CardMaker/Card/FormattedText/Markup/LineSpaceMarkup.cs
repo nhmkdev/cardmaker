@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////////////////////
+﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
 // Copyright (c) 2015 Tim Stair
@@ -22,53 +22,32 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+using System.Drawing;
+using CardMaker.XML;
+using Support.Util;
 
-namespace CardMaker.Data
+namespace CardMaker.Card.FormattedText.Markup
 {
-    public enum ElementType
+    public class LineSpaceMarkup : MarkupValueBase
     {
-        Text,
-        FormattedText,
-        Graphic,
-        Shape,
-        End
-    }
+        private float m_fPreviousLineHeight;
 
-    public enum IniSettings
-    {
-        PreviousProjects,
-        ReplacementChars,
-        ProjectManagerRoot,
-        PrintPageWidth,
-        PrintPageHeight,
-        PrintPageVerticalMargin,
-        PrintPageHorizontalMargin,
-        PrintAutoCenterLayout,
-        PrintLayoutBorder,
-        LastImageExportFormat,
-        PrintLayoutsOnNewPage,
-        EnableGoogleCache,
-        DefaultTranslator,
-        ExportSkipStitchIndex,
-        DefineTranslatePrimitiveCharacters,
-        LogInceptTranslation
-    }
+        public LineSpaceMarkup(string sVariable) : base(sVariable) { }
 
-    public enum ExportType
-    {
-        PDFSharp,
-        Image
-    }
+        public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
+        {
+            float fLineHeight;
+            if (ParseUtil.ParseFloat(m_sVariable, out fLineHeight))
+            {
+                m_fPreviousLineHeight = zProcessData.CurrentLineHeight;
+                zProcessData.CurrentLineHeight = fLineHeight;
+            }
+            return false;
+        }
 
-    public enum TranslatorType
-    {
-        Incept = 0,
-        JavaScript
-    }
-
-    public enum ReferenceType
-    {
-        CSV = 0,
-        Google = 1
+        public override void CloseMarkup(FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
+        {
+            zProcessData.CurrentLineHeight = m_fPreviousLineHeight;
+        }
     }
 }

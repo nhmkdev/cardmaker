@@ -1,6 +1,11 @@
 Card Maker Version History
 --------------------------
 0.99.4.0
+- Added line spacing tag (ls) for FormattedText. This with store and override the existing line spacing.
+- Significant changes to order and general translation  functionality with if/switch (Incept specific)
+- Changed the issues window to indicate the layout, not the layout index
+- Added option to log steps when performing an Incept translation (see settings)
+- Overhaul of float/decimal parsing to allow for cross region support (well hopefully). Both ',' and '.' should be usable as a decimal separator. Thanks to kek444!
 - Add override for the Google project wide defines (project level setting)
 - Adjusted handling of newlines from Google Spreadsheets and CSVs (converted to \n)
 - Added middle-mouse panning functionality for the canvas

@@ -164,5 +164,11 @@ namespace CardMaker.Data
             get { return s_zIniManager.GetValue(IniSettings.DefineTranslatePrimitiveCharacters, bool.FalseString).Equals(bool.TrueString); }
             set { s_zIniManager.SetValue(IniSettings.DefineTranslatePrimitiveCharacters, value.ToString()); }
         }
+
+        public static bool LogInceptTranslation
+        {
+            get { return s_zIniManager.GetValue(IniSettings.LogInceptTranslation, bool.FalseString).Equals(bool.TrueString); }
+            set { s_zIniManager.SetValue(IniSettings.LogInceptTranslation, value.ToString()); }
+        }
     }
 }

@@ -42,6 +42,8 @@ namespace CardMaker.Card.FormattedText
         public float CurrentYOffset { get; set; }
         public float CurrentXOffset { get; set; }
 
+        public float CurrentLineHeight { get; set; }
+
         public int CurrentLine { get; private set; }
 
         const string FontStringToTest = "]";
@@ -80,7 +82,7 @@ namespace CardMaker.Card.FormattedText
         {
             CurrentLine++;
             CurrentX = 0;
-            CurrentY += zElement.lineheight;            
+            CurrentY += CurrentLineHeight;
         }
     }
 }

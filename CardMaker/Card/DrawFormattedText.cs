@@ -54,7 +54,11 @@ namespace CardMaker.Card
 
                 zDataFormattedCache = new FormattedTextDataCache();
                 var zFormattedData = new FormattedTextData(FormattedTextParser.GetMarkups(sInput));
-                var zProcessData = new FormattedTextProcessData {FontBrush = zBrush};
+                var zProcessData = new FormattedTextProcessData
+                {
+                    FontBrush = zBrush,
+                    CurrentLineHeight = zElement.lineheight
+                };
 
                 // set the initial font
                 zProcessData.SetFont(zFont, zGraphics);

@@ -94,6 +94,7 @@ namespace CardMaker.Card.FormattedText.Markup
             {"spc", typeof (SpaceMarkup)},
             {"push", typeof (PushMarkup)},
             {"img", typeof (ImageMarkup)},
+            {"ls", typeof(LineSpaceMarkup) },
         };
 
         public static Type GetMarkupType(string sInput)

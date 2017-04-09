@@ -21,6 +21,7 @@ namespace UnitTest.DeckObject
         [TestCase("<spc>", new Type[] { typeof(SpaceMarkup) })]
         [TestCase("<spc=1>", new Type[] { typeof(SpaceMarkup) })]
         [TestCase("<spc=100>", new Type[] { typeof(SpaceMarkup) })]
+        [TestCase("<ls=15></ls>", new Type[] {typeof(LineSpaceMarkup), typeof(CloseTagMarkup) })]
         [TestCase("<bgc=0xffeeaa></bgc>", new Type[] { typeof(BackgroundColorMarkup), typeof(CloseTagMarkup) })]
         [TestCase("<bgi=c:\\img.png></bgi>", new Type[] { typeof(BackgroundImageMarkup), typeof(CloseTagMarkup) })]
         [TestCase("<bgi=c:\\img.png;1;2;3;4></bgi>", new Type[] { typeof(BackgroundImageMarkup), typeof(CloseTagMarkup) })]

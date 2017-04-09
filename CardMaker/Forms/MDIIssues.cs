@@ -36,7 +36,7 @@ namespace CardMaker.Forms
     public partial class MDIIssues : Form
     {
         private Point m_zLocation;
-        private string m_sCurrentLayoutIndex = string.Empty;
+        private int m_nCurrentLayoutIndex = 0;
         private string m_sCurrentCardIndex = string.Empty;
         private string m_sCurrentElementName = string.Empty;
         private bool m_bTrackIssues;
@@ -76,7 +76,7 @@ namespace CardMaker.Forms
 
         void CardInfo_Changed(object sender, IssueCardInfoEventArgs args)
         {
-            m_sCurrentLayoutIndex = args.LayoutIndex.ToString(CultureInfo.InvariantCulture);
+            m_nCurrentLayoutIndex = args.LayoutIndex;
             m_sCurrentCardIndex = args.CardIndex.ToString(CultureInfo.InvariantCulture);
         }
 
@@ -137,7 +137,7 @@ namespace CardMaker.Forms
             if (listViewIssues.InvokeActionIfRequired(() => AddIssue(sIssue)))
             {
                 var zItem = new ListViewItem(new string[] {
-                    m_sCurrentLayoutIndex,
+                    ProjectManager.Instance.LoadedProject.Layout[m_nCurrentLayoutIndex].Name,
                     m_sCurrentCardIndex,
                     m_sCurrentElementName,
                     sIssue
