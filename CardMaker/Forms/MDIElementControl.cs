@@ -206,6 +206,10 @@ namespace CardMaker.Forms
 
                 listActions.Add(bRedo =>
                     {
+                        if (null != LayoutManager.Instance.ActiveDeck)
+                        {
+                            LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElementToChange.name);
+                        }
                         SetColorValue(btnClicked, bRedo ? colorRedo : colorUndo, zElementToChange);
                         UpdatePanelColors(zElementToChange);
                     });
