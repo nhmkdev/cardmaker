@@ -365,6 +365,7 @@ namespace CardMaker.Forms
                 if (bNewDefault)
                 {
                     tnReference.Parent.Expand();
+                    LayoutManager.Instance.RefreshActiveLayout();
                     LayoutManager.Instance.FireLayoutUpdatedEvent(true);
                 }
                 ProjectManager.Instance.FireProjectUpdated(true);            
