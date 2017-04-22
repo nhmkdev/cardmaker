@@ -1,7 +1,7 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2015 Tim Stair
+// Copyright (c) 2017 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using CardMaker.Data;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
 using Support.IO;
@@ -49,6 +48,8 @@ namespace CardMaker.Card.Translation
             GreaterThanOrEqualTo,
             LessThanOrEqualTo,
         }
+
+        private const int MAX_TRANSLATION_LOOP_COUNT = 100;
 
         private static readonly Regex s_regexColumnVariable = new Regex(@"(.*)(@\[)(.+?)(\])(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexCardVariable = new Regex(@"(.*)(\!\[)(.+?)(\])(.*)", RegexOptions.Compiled);
@@ -219,16 +220,23 @@ namespace CardMaker.Card.Translation
             //    1    2         3    4   5 
             //@"(.*)(#\()(switch.+)(\)#)(.*)");
             Func<Match, string> funcSwitchProcessor =
-            (match =>
+            match =>
             {
                 var sLogicResult = TranslateSwitchLogic(match.Groups[3].ToString());
                 return match.Groups[1] +
                           sLogicResult +
                           match.Groups[5];
-            });
+            };
 
+            var nTranslationLoopCount = 0;
             while (true)
             {
+                if (nTranslationLoopCount > MAX_TRANSLATION_LOOP_COUNT)
+                {
+                    Logger.AddLogLine("Distrupting traslation loop. It appears to be an endless loop.");
+                    break;
+                }
+
                 var zIfMatch = s_regexIfLogic.Match(sOutput);
                 var zSwitchMatch = s_regexSwitchLogic.Match(sOutput);
 
@@ -269,6 +277,7 @@ namespace CardMaker.Card.Translation
                 }
 
                 sOutput = TranslateMatch(zMatchToTranslate, zElement, funcProcessor);
+                nTranslationLoopCount++;
             }
 
             zElementString.String = sOutput;
@@ -280,10 +289,19 @@ namespace CardMaker.Card.Translation
         {
             var sOut = input;
             var zMatch = regex.Match(sOut);
+            var nTranslationLoopCount = 0;
             while (zMatch.Success)
             {
+                if (nTranslationLoopCount > MAX_TRANSLATION_LOOP_COUNT)
+                {
+                    Logger.AddLogLine("Distrupting traslation loop. It appears to be an endless loop.");
+                    break;
+                }
+
                 sOut = TranslateMatch(zMatch, zElement, processFunc);
                 zMatch = regex.Match(sOut);
+
+                nTranslationLoopCount++;
             }
             return sOut;
         }

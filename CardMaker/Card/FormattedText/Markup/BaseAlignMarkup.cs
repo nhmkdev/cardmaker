@@ -23,11 +23,26 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System.Drawing;
+using CardMaker.XML;
 
 namespace CardMaker.Card.FormattedText.Markup
 {
-    public class AlignLeftMarkup : BaseAlignMarkup
+    public abstract class BaseAlignMarkup : MarkupBase
     {
-        protected override StringAlignment MarkupAlignment => StringAlignment.Near;
+        StringAlignment m_ePreviousStringAlignment;
+
+        protected abstract StringAlignment MarkupAlignment { get; }
+
+        public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
+        {
+            m_ePreviousStringAlignment = zProcessData.CurrentStringAlignment;
+            zProcessData.CurrentStringAlignment = MarkupAlignment;
+            return false;
+        }
+
+        public override void CloseMarkup(FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
+        {
+            zProcessData.CurrentStringAlignment = m_ePreviousStringAlignment;
+        }
     }
 }

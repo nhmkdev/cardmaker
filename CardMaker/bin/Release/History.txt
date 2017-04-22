@@ -1,6 +1,7 @@
 Card Maker Version History
 --------------------------
 0.99.4.0
+- Added limit to the number of loops of translation within Incept (should protect against typos)
 - Added pixel (px) tag to allow exact pixel location to be specified for drawing with FormattedText
 - Added alignment tags to override the horizontal alignment of FormattedText (useful in some situations)
 - Added line spacing tag (ls) for FormattedText. This with store and override the existing line spacing.

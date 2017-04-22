@@ -246,7 +246,7 @@ namespace UnitTest.DeckObject
         [TestCase("@[4]@[2]@[1]", Result = "bbbba")]
         [TestCase("@[5]", Result = "bbb")]
         [TestCase("@[5] at the @[1] end test @[5]", Result = "bbb at the a end test bbb")]
-        public String ValidateNestedDefines(string line)
+        public string ValidateNestedDefines(string line)
         {
             var listLines = new List<List<string>>();
             var listDefines = new List<List<string>>()
@@ -265,6 +265,28 @@ namespace UnitTest.DeckObject
                 null);
             var result = _testDeck.TranslateString(line, _testLine, _testElement, false);
             return result.String;
+        }
+
+        [TestCase("@[loopA]")]
+        [TestCase("@[loopB]")]
+        [TestCase("@[loopC]")]
+        [TestCase("@[loopD]")]
+        public void ValidateLoopingDefines(string line)
+        {
+            var listLines = new List<List<string>>();
+            var listDefines = new List<List<string>>()
+            {
+                new List<string>() { "define", "value" },
+                new List<string>() { "loopA", "@[loopB]" },
+                new List<string>() { "loopB", "@[loopA]" },
+                new List<string>() { "loopC", "@[loopC]" },
+                new List<string>() { "loopD", "#(if a == a then @[loopD])#" },
+            };
+            _testDeck.ProcessLinesPublic(
+                listLines,
+                listDefines,
+                null);
+            _testDeck.TranslateString(line, _testLine, _testElement, false);
         }
 
         [TestCase("@[action,aa,bb]", Result = "aa::bb")]
