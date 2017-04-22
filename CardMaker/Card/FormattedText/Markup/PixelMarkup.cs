@@ -22,78 +22,56 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Collections.Generic;
+using System;
 using System.Drawing;
-using CardMaker.Data;
 using CardMaker.XML;
 
 namespace CardMaker.Card.FormattedText.Markup
 {
-    public class SpaceMarkup : MarkupValueBase
+    public class PixelMarkup : MarkupValueBase
     {
-        public bool Optional { get; }
-
-        public override bool Aligns => true;
-
-        public SpaceMarkup() : base("1")
+        private PixelMarkup()
         {
         }
 
-        public SpaceMarkup(string sVariable) : base(sVariable)
+        public PixelMarkup(string sVariable) : base(sVariable)
         {
-        }
-
-        public SpaceMarkup(bool bOptional) : base("1")
-        {
-            Optional = bOptional;
         }
 
         public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
-            int nSpaces;
-            if (!int.TryParse(m_sVariable, out nSpaces))
+            var arrayComponents = m_sVariable.Split(new char[] { ';' });
+            if (1 > arrayComponents.Length)
             {
                 return false;
             }
 
-            StringAlignment = zProcessData.CurrentStringAlignment;
-            LineNumber = zProcessData.CurrentLine;
-
-            float fWidth = (float)nSpaces * ((float)zProcessData.FontSpaceWidth + (float)zElement.wordspace);
-
-            if (0 == fWidth)
+            int nX;
+            if (!int.TryParse(arrayComponents[0], out nX))
             {
                 return false;
             }
-
-            if (zProcessData.CurrentX + fWidth >= zElement.width)
+            else if (-1 == nX)
             {
-                if (Optional)
+                nX = (int)zProcessData.CurrentX;
+            }
+
+            int nY = (int)zProcessData.CurrentY;
+            if (2 <= arrayComponents.Length)
+            {
+                if (!int.TryParse(arrayComponents[1], out nY))
                 {
                     return false;
                 }
-                zProcessData.MoveToNextLine(zElement);
+                else if (-1 == nY)
+                {
+                    nY = (int)zProcessData.CurrentY;
+                }
             }
 
-            TargetRect = new RectangleF(zProcessData.CurrentX, zProcessData.CurrentY, fWidth, zProcessData.FontSpaceHeight);
-
-            zProcessData.CurrentX += fWidth;
-            return true;
-        }
-
-        public override bool PostProcessMarkupRectangle(ProjectLayoutElement zElement, List<MarkupBase> listAllMarkups, int nMarkup)
-        {
-            return true;
-        }
-
-        public override bool Render(ProjectLayoutElement zElement, Graphics zGraphics)
-        {
-            // draw border (debugging)
-            if (CardMakerInstance.DrawFormattedTextBorder)
-            {
-                zGraphics.FillRectangle(Optional ? Brushes.DarkBlue : Brushes.DeepSkyBlue, TargetRect.X, TargetRect.Y, TargetRect.Width, TargetRect.Height);
-            }
-            return true;
+            zProcessData.CurrentX = Math.Max(0, Math.Min(nX, zElement.width));
+            zProcessData.CurrentY = Math.Max(0, Math.Min(nY, zElement.height));
+            return false;
         }
     }
 }

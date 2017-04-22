@@ -1,7 +1,7 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2016 Tim Stair
+// Copyright (c) 2017 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -34,13 +34,13 @@ namespace CardMaker.Card.FormattedText.Alignment
         /// <summary>
         /// Updates the position of the markups based on horizontal alignment
         /// </summary>
-        /// <param name="nFirst"></param>
-        /// <param name="nLast"></param>
-        /// <param name="bLastLine"></param>
-        /// <param name="zElement"></param>
+        /// <param name="nFirst">First index of the listMarkups in the line (start of line)</param>
+        /// <param name="nLast">Last index of the listMarkups in the line (end of line) -- inclusive</param>
+        /// <param name="bLastLine">Indicates this is the last line (specific to justified)</param>
+        /// <param name="zElement">The element being rendered</param>
         /// <param name="listMarkups">List of Markups (all must have Aligns set to true)</param>
         /// <param name="fVerticalOffset">Any vertical offset to apply</param>
-        /// <param name="listAllMarkups"></param>
+        /// <param name="listAllMarkups">List of all markups (even those with Aligns set to false)  (specific to justified)</param>
         public virtual void UpdateLineAlignment(int nFirst, int nLast, bool bLastLine, ProjectLayoutElement zElement,
             List<MarkupBase> listMarkups, float fVerticalOffset, IEnumerable<MarkupBase> listAllMarkups)
         {

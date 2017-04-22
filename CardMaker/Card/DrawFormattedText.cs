@@ -57,7 +57,8 @@ namespace CardMaker.Card
                 var zProcessData = new FormattedTextProcessData
                 {
                     FontBrush = zBrush,
-                    CurrentLineHeight = zElement.lineheight
+                    CurrentLineHeight = zElement.lineheight,
+                    CurrentStringAlignment = zElement.GetHorizontalAlignment()
                 };
 
                 // set the initial font

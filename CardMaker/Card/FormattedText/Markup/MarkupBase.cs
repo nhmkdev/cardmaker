@@ -1,7 +1,7 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2015 Tim Stair
+// Copyright (c) 2017 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -43,6 +43,9 @@ namespace CardMaker.Card.FormattedText.Markup
         /// </summary>
         public virtual bool Aligns => false;
 
+#warning Consider something that sets this based on Aligns instead of in each markup
+        public StringAlignment StringAlignment { get; set; }
+
         public RectangleF TargetRect { get; set; }
 
         /// <summary>
@@ -64,7 +67,7 @@ namespace CardMaker.Card.FormattedText.Markup
         /// <param name="zElement"></param>
         /// <param name="listAllMarkups"></param>
         /// <param name="nMarkup"></param>
-        /// <returns>true if this markup is to be further processed</returns>
+        /// <returns>true if this markup is to be cached</returns>
         public virtual bool PostProcessMarkupRectangle(ProjectLayoutElement zElement, List<MarkupBase> listAllMarkups, int nMarkup)
         {
             return false;
@@ -77,7 +80,9 @@ namespace CardMaker.Card.FormattedText.Markup
             return true;
         }
 
-        private static readonly Dictionary<String, Type> s_dictionaryMarkupTypes = new Dictionary<string, Type>()
+#warning move all this to another file?
+
+        private static readonly Dictionary<string, Type> s_dictionaryMarkupTypes = new Dictionary<string, Type>()
         {
             {"b", typeof (FontStyleBoldMarkup)},
             {"i", typeof (FontStyleItalicMarkup)},
@@ -93,8 +98,12 @@ namespace CardMaker.Card.FormattedText.Markup
             {"bgi", typeof (BackgroundImageMarkup)},
             {"spc", typeof (SpaceMarkup)},
             {"push", typeof (PushMarkup)},
+            {"px", typeof (PixelMarkup)},
             {"img", typeof (ImageMarkup)},
             {"ls", typeof(LineSpaceMarkup) },
+            {"ac", typeof(AlignCenterMarkup) },
+            {"ar", typeof(AlignRightMarkup) },
+            {"al", typeof(AlignLeftMarkup) },
         };
 
         public static Type GetMarkupType(string sInput)

@@ -1,7 +1,7 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2016 Tim Stair
+// Copyright (c) 2017 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -114,20 +114,73 @@ namespace CardMaker.Card.FormattedText.Alignment
         /// <param name="nFirst"></param>
         /// <param name="nLast"></param>
         /// <param name="zElement"></param>
-        /// <param name="listMarkups">List of Markups (all must have Aligns set to true)</param>
+        /// <param name="listAlignedMarkups">List of Markups (all must have Aligns set to true)</param>
         /// <param name="fVerticalOffset"></param>
-        private static void UpdateLineAlignment(int nFirst, int nLast, bool isLastLine, ProjectLayoutElement zElement, List<MarkupBase> listMarkups, float fVerticalOffset, IEnumerable<MarkupBase> listAllMarkups)
+        private static void UpdateLineAlignment(int nFirst, int nLast, bool isLastLine, ProjectLayoutElement zElement, List<MarkupBase> listAlignedMarkups, float fVerticalOffset, IEnumerable<MarkupBase> listAllMarkups)
         {
-            // figure out which processor to use
-            HorizontalStringAlignment eAlignment =
-                zElement.justifiedtext
-                    ? HorizontalStringAlignment.Justified
-                    : (HorizontalStringAlignment) zElement.GetHorizontalAlignment();
+            HorizontalAlignmentProcessor horizontalAlignmentProcessor;
+            if (zElement.justifiedtext)
+            {
+                horizontalAlignmentProcessor =
+                    s_dictionaryHorizontalAlignmentProcessors[HorizontalStringAlignment.Justified];
+                horizontalAlignmentProcessor.UpdateLineAlignment(nFirst, nLast, isLastLine, zElement, listAlignedMarkups, fVerticalOffset, listAllMarkups);
+                return;
+            }
 
-            var horizontalAlignmentProcessor = s_dictionaryHorizontalAlignmentProcessors[eAlignment];
+            if (nFirst > nLast)
+            {
+                return;
+            }
 
-            // update the alignment of the markups in the line
-            horizontalAlignmentProcessor.UpdateLineAlignment(nFirst, nLast, isLastLine, zElement, listMarkups, fVerticalOffset, listAllMarkups);
+            // divide the line up based on sets of like alignment
+            var alignSetList = new List<SubLineAlignmentSet>();
+            var zCurrentAlignmentSet = new SubLineAlignmentSet(
+                (HorizontalStringAlignment)listAlignedMarkups[nFirst].StringAlignment,
+                nFirst);
+            alignSetList.Add(zCurrentAlignmentSet);
+            for (var nIdx = nFirst+1; nIdx <= nLast; nIdx++)
+            {
+                if ((HorizontalStringAlignment) listAlignedMarkups[nIdx].StringAlignment ==
+                    zCurrentAlignmentSet.HorizontalStringAlignment)
+                {
+                    zCurrentAlignmentSet.LastIndex = nIdx;
+                }
+                else
+                {
+                    zCurrentAlignmentSet = new SubLineAlignmentSet(
+                                    (HorizontalStringAlignment)listAlignedMarkups[nIdx].StringAlignment,
+                                    nIdx);
+                    alignSetList.Add(zCurrentAlignmentSet);
+                }
+            }
+
+            // update the alignment of the markups in the line (based on the type of alignment)
+            foreach (var zSubLineAlignmentSet in alignSetList)
+            {
+                horizontalAlignmentProcessor = s_dictionaryHorizontalAlignmentProcessors[zSubLineAlignmentSet.HorizontalStringAlignment];
+                horizontalAlignmentProcessor.UpdateLineAlignment(
+                    zSubLineAlignmentSet.FirstIndex, 
+                    zSubLineAlignmentSet.LastIndex, 
+                    isLastLine, 
+                    zElement, 
+                    listAlignedMarkups, 
+                    fVerticalOffset, 
+                    listAllMarkups);
+            }
+        }
+
+        class SubLineAlignmentSet
+        {
+            public HorizontalStringAlignment HorizontalStringAlignment { get; }
+            public int FirstIndex { get; }
+            public int LastIndex { get; set; }
+
+            public SubLineAlignmentSet(HorizontalStringAlignment eHorizontalStringAlignment, int nFirstIndex)
+            {
+                HorizontalStringAlignment = eHorizontalStringAlignment;
+                FirstIndex = nFirstIndex;
+                LastIndex = nFirstIndex;
+            }
         }
     }
 }

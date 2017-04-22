@@ -1,6 +1,8 @@
 Card Maker Version History
 --------------------------
 0.99.4.0
+- Added pixel (px) tag to allow exact pixel location to be specified for drawing with FormattedText
+- Added alignment tags to override the horizontal alignment of FormattedText (useful in some situations)
 - Added line spacing tag (ls) for FormattedText. This with store and override the existing line spacing.
 - Significant changes to order and general translation  functionality with if/switch (Incept specific)
 - Changed the issues window to indicate the layout, not the layout index

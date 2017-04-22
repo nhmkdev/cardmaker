@@ -1,7 +1,7 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2015 Tim Stair
+// Copyright (c) 2017 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -43,6 +43,7 @@ namespace CardMaker.Card.FormattedText
         public float CurrentXOffset { get; set; }
 
         public float CurrentLineHeight { get; set; }
+        public StringAlignment CurrentStringAlignment { get; set; }
 
         public int CurrentLine { get; private set; }
 
