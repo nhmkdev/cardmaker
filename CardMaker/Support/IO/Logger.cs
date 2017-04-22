@@ -37,18 +37,12 @@ namespace Support.IO
     public static class Logger
     {
         private static LoggerI s_iLogger;
-        private readonly static string s_sLogFile = Application.StartupPath + Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(Application.ExecutablePath) + ".log";
+        private static readonly string s_sLogFile = Application.StartupPath + Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(Application.ExecutablePath) + ".log";
         private static bool m_bLogToFile;
 
         private static StreamWriter s_zStreamWriter;
 
-        public static string LogFile
-        {
-            get
-            {
-                return s_sLogFile;
-            }
-        }
+        public static string LogFile => s_sLogFile;
 
         /// <summary>
         /// The logger must be initialized through this method.
@@ -93,6 +87,10 @@ namespace Support.IO
         /// <param name="arrayLines">Strings to log</param>
         public static void AddLogLines(string[] arrayLines)
         {
+            if (null == s_iLogger)
+            {
+                return;
+            }
             s_iLogger.AddLogLines(arrayLines);
             if (m_bLogToFile && (null != s_zStreamWriter))
             {

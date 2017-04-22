@@ -1,7 +1,7 @@
-﻿using CardMaker.Card;
-using CardMaker.Card.FormattedText;
+﻿using CardMaker.Card.FormattedText.Markup;
 using NUnit.Framework;
 using System;
+using CardMaker.Card.FormattedText;
 
 namespace UnitTest.DeckObject
 {
@@ -21,10 +21,13 @@ namespace UnitTest.DeckObject
         [TestCase("<spc>", new Type[] { typeof(SpaceMarkup) })]
         [TestCase("<spc=1>", new Type[] { typeof(SpaceMarkup) })]
         [TestCase("<spc=100>", new Type[] { typeof(SpaceMarkup) })]
+        [TestCase("<ls=15></ls>", new Type[] {typeof(LineSpaceMarkup), typeof(CloseTagMarkup) })]
         [TestCase("<bgc=0xffeeaa></bgc>", new Type[] { typeof(BackgroundColorMarkup), typeof(CloseTagMarkup) })]
         [TestCase("<bgi=c:\\img.png></bgi>", new Type[] { typeof(BackgroundImageMarkup), typeof(CloseTagMarkup) })]
         [TestCase("<bgi=c:\\img.png;1;2;3;4></bgi>", new Type[] { typeof(BackgroundImageMarkup), typeof(CloseTagMarkup) })]
         [TestCase("<fc=0xaabbcc></fc>", new Type[] { typeof(FontColorMarkup), typeof(CloseTagMarkup) })]
+        [TestCase("<img=c:\\newimage\\me.png>", new Type[] { typeof(ImageMarkup) })]
+        [TestCase("Hi\\nthere!", new Type[] { typeof(TextMarkup), typeof(NewlineMarkup), typeof(TextMarkup) })]
         [TestCase("<img=me.png>", new Type[] { typeof(ImageMarkup) })]
         [TestCase("<push=15>", new Type[] { typeof(PushMarkup) })]
         [TestCase("<push=15;18>", new Type[] { typeof(PushMarkup) })]
@@ -36,7 +39,7 @@ namespace UnitTest.DeckObject
         [TestCase("<b></i>", new Type[] { typeof(FontStyleBoldMarkup) })]
         public void ValidateMarkupTranslation(string input, Type[] expectedTypes)
         {
-            var markups = DrawItem.GetMarkups(input);
+            var markups = FormattedTextParser.GetMarkups(input);
             Assert.AreEqual(expectedTypes.Length, markups.Count);
             for (var i = 0; i < expectedTypes.Length; i++)
             {

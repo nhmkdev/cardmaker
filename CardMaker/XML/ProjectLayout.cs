@@ -22,7 +22,6 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
@@ -30,14 +29,14 @@ namespace CardMaker.XML
 {
     public class ProjectLayout
     {
-        public static readonly string[] AllowedExportRotations = new string[] { "0", "90", "-90" };
+        public static readonly string[] AllowedExportRotations = { "0", "90", "-90" };
         
         #region Properties
 
-        [XmlElementAttribute("Element")]
+        [XmlElement("Element")]
         public ProjectLayoutElement[] Element { get; set; }
 
-        [XmlElementAttribute("Reference")]
+        [XmlElement("Reference")]
         public ProjectLayoutReference[] Reference { get; set; }
 
         public string exportNameFormat { get; set; }
@@ -46,32 +45,34 @@ namespace CardMaker.XML
 
         public bool exportTransparentBackground { get; set; }
 
+        public bool exportPDFAsPageBack { get; set; }
+
         public int exportWidth { get; set; }
         
         public int exportHeight { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public bool combineReferences { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public int width { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public int height { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public int buffer { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public string Name { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public int defaultCount { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public int dpi { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public bool drawBorder { get; set; }
 
         #endregion

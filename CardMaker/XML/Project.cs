@@ -22,13 +22,8 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using CardMaker.Forms;
-using Support.IO;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Windows.Forms;
 using System.Xml.Serialization;
+using CardMaker.Data;
 
 namespace CardMaker.XML
 {
@@ -36,27 +31,25 @@ namespace CardMaker.XML
     {
         #region Properties
 
-        [XmlElementAttribute("Layout")]
+        [XmlElement("Layout")]
         public ProjectLayout[] Layout { get; set; }
+
+        public string translatorName { get; set; }
 
         public string lastExportPath { get; set; }
 
         public string exportNameFormat { get; set; }
 
+        public string defaultDefineReferenceType { get; set; }
+
+        public string overrideDefineReferenceName { get; set; }
+
         #endregion
 
-        public void RemoveProjectLayout(TreeNode tnLayout)
-        {
-            var zLayout = (ProjectLayout) tnLayout.Tag;
-
-            // no need to null check, 1 layout must always exist
-            var listLayouts = new List<ProjectLayout>(Layout);
-            listLayouts.Remove(zLayout);
-            Layout = listLayouts.ToArray();
-
-            tnLayout.Parent.Nodes.Remove(tnLayout);
-        }
-
+        /// <summary>
+        /// Determines if there are any "external" references (really just google references)
+        /// </summary>
+        /// <returns>true if there is an external reference, false otherwise</returns>
         public bool HasExternalReference()
         {
             foreach (var zLayout in Layout)
@@ -65,42 +58,13 @@ namespace CardMaker.XML
                     continue;
                 foreach (var zReference in zLayout.Reference)
                 {
-                    if (zReference.RelativePath.StartsWith(CardMakerMDI.GOOGLE_REFERENCE))
+                    if (zReference.RelativePath.StartsWith(CardMakerConstants.GOOGLE_REFERENCE))
                     {
                         return true;
                     }
                 }
             }
             return false;
-        }
-
-        public bool Save(string sFile, string sOldFile)
-        {
-            string sProjectPath = Path.GetDirectoryName(sFile);
-            string sOldProjectPath = Path.GetDirectoryName(sOldFile);
-
-            bool bOldPathValid = !string.IsNullOrEmpty(sOldProjectPath);
-
-            if (sProjectPath != null &&
-                !sProjectPath.Equals(sOldProjectPath, StringComparison.CurrentCultureIgnoreCase))
-            {
-                // change the relative paths for the references
-                foreach (var zLayout in Layout)
-                {
-                    if (null != zLayout.Reference)
-                    {
-                        foreach (ProjectLayoutReference zReference in zLayout.Reference)
-                        {
-                            zReference.RelativePath = bOldPathValid
-                                ? IOUtils.UpdateRelativePath(sOldProjectPath, zReference.RelativePath, sProjectPath)
-                                : zReference.RelativePath =
-                                    IOUtils.GetRelativePath(sProjectPath, zReference.RelativePath);
-                        }
-                    }
-                }
-            }
-
-            return SerializationUtils.SerializeToXmlFile(sFile, this, Core.XML_ENCODING);
         }
     }
 }

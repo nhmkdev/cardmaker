@@ -22,12 +22,15 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using CardMaker.Forms;
-using Support.UI;
 using System.Drawing;
+using CardMaker.Events.Managers;
+using Support.UI;
 
 namespace CardMaker.Card.Export
 {
+    /// <summary>
+    /// This is an exporter used to scan the project for errors
+    /// </summary>
     public class CompilerCardExporter : CardExportBase, ICardExporter
     {
         public CompilerCardExporter(int nLayoutStartIndex, int nLayoutEndIndex)
@@ -38,11 +41,11 @@ namespace CardMaker.Card.Export
         public void ExportThread()
         {
             WaitDialog zWait = WaitDialog.Instance;
-            for (int nIdx = m_nExportLayoutStartIndex; nIdx < m_nExportLayoutEndIndex; nIdx++)
+            for (int nIdx = ExportLayoutStartIndex; nIdx < ExportLayoutEndIndex; nIdx++)
             {
-                MDIIssues.Instance.SetCardInfo(nIdx, 1);
-                MDIIssues.Instance.SetElementName(string.Empty);
-                ChangePrintCardCanvas(nIdx);
+                IssueManager.Instance.FireChangeCardInfoEvent(nIdx, 1);
+                IssueManager.Instance.FireChangeElementEvent(string.Empty);
+                ChangeExportLayoutIndex(nIdx);
                 zWait.ProgressReset(1, 0, CurrentDeck.CardCount, 0);
 
                 UpdateBufferBitmap(CurrentDeck.CardLayout.width, CurrentDeck.CardLayout.height);
@@ -50,7 +53,7 @@ namespace CardMaker.Card.Export
 
                 for (var nCardIdx = 0; nCardIdx < CurrentDeck.CardCount; nCardIdx++)
                 {
-                    MDIIssues.Instance.SetCardInfo(nIdx, nCardIdx + 1);
+                    IssueManager.Instance.FireChangeCardInfoEvent(nIdx, nCardIdx + 1);
                     CurrentDeck.CardPrintIndex = nCardIdx;
                     CardRenderer.DrawPrintLineToGraphics(zGraphics);
                     zWait.ProgressStep(1);

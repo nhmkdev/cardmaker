@@ -36,16 +36,14 @@ namespace Support.UI
         private int m_nMaxDesiredHeight = -1;
         private string m_sButtonPressed = string.Empty;
 
-        public Form Form
-        {
-            get { return m_zForm; }
-        }
+        public Form Form => m_zForm;
 
-		/// <summary>
+	    /// <summary>
 		/// Constructor
 		/// </summary>
 		/// <param name="sTitle">Title of the dialog</param>
 		/// <param name="nWidth">Width of the dialog</param>
+		/// <param name="bTabbed">Whether the panel should be tabbed</param>
 		public QueryPanelDialog(string sTitle, int nWidth, bool bTabbed) 
             : base(null, bTabbed)
 		{
@@ -112,6 +110,8 @@ namespace Support.UI
 		/// </summary>
 		/// <param name="sTitle">Title of the dialog</param>
 		/// <param name="nWidth">Width of the dialog</param>
+		/// <param name="arrayButtons">The names of the buttons to put on the dialog</param>
+		/// <param name="arrayHandlers">event handlers for the buttons</param>
 		private void InitForm(string sTitle, int nWidth, string[] arrayButtons, EventHandler[] arrayHandlers)
 		{
 		    m_zForm = new Form
@@ -147,14 +147,11 @@ namespace Support.UI
                 for (int nIdx = arrayButtons.Length - 1; nIdx > -1; nIdx--)
                 {
                     btnDefault = new Button();
-                    bool bHandlerSet = false;
-                    if (null != arrayHandlers)
+                    var bHandlerSet = false;
+                    if (arrayHandlers?[nIdx] != null)
                     {
-                        if (null != arrayHandlers[nIdx])
-                        {
-                            btnDefault.Click += arrayHandlers[nIdx];
-                            bHandlerSet = true;
-                        }
+                        btnDefault.Click += arrayHandlers[nIdx];
+                        bHandlerSet = true;
                     }
                     if (!bHandlerSet)
                     {

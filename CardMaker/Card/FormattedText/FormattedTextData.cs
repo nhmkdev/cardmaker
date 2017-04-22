@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using CardMaker.Card.FormattedText.Markup;
 
 namespace CardMaker.Card.FormattedText
 {

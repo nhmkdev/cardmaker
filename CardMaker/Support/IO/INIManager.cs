@@ -61,8 +61,6 @@ namespace Support.IO
         /// </summary>
         public string Filename { get; private set; }
 
-        private IniManager(){}
-
         /// <summary>
         /// Creates a new IniManager 
         /// </summary>
@@ -187,14 +185,21 @@ namespace Support.IO
                 Directory.CreateDirectory(sDirectory);
             }
 
-#warning TODO exception handling
-            var zWriter = new StreamWriter(Filename, false);
-            
-            foreach (var sKey in m_dictionaryItems.Keys)
+            try
             {
-                zWriter.WriteLine(sKey + CHAR_SPLITTER + m_dictionaryItems[sKey]);
+                var zWriter = new StreamWriter(Filename, false);
+
+                foreach (var sKey in m_dictionaryItems.Keys)
+                {
+                    zWriter.WriteLine(sKey + CHAR_SPLITTER + m_dictionaryItems[sKey]);
+                }
+                zWriter.Close();
             }
-            zWriter.Close();
+#warning do nothing?
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         /// <summary>
@@ -236,6 +241,7 @@ namespace Support.IO
                     }
                 }
             }
+#warning do nothing??
             catch (Exception)
             {
             }
@@ -309,7 +315,6 @@ namespace Support.IO
             foreach (Control zControl in zForm.Controls)
             {
                 string sKeyName = string.Format(CONTROL_FORMAT, zForm.Name, zControl.Name);
-#warning -- Is there a better solution for control value restoration / storage
                 if (zControl is TextBox)
                 {
                     ((TextBox) zControl).Text = GetValue(sKeyName, string.Empty);

@@ -34,5 +34,10 @@ namespace CardMaker.Card.Import
         void GetReferenceData(ProjectLayoutReference zReference, List<List<string>> listReferenceData);
         void GetProjectDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData);
         void GetDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData);
+
+        /// <summary>
+        /// Called to signify that all references have been loaded
+        /// </summary>
+        void FinalizeReferenceLoad();
     }
 }

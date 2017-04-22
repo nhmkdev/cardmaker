@@ -30,13 +30,18 @@ namespace CardMaker.XML
     {
         #region Properties
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public string RelativePath { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public bool Default { get; set; }
 
         #endregion
+
+        public ProjectLayoutReference()
+        {
+            
+        }
 
         public void DeepCopy(ProjectLayoutReference zReference)
         {

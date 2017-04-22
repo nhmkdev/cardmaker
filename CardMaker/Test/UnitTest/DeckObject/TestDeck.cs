@@ -1,6 +1,7 @@
 ﻿using CardMaker.Card;
 using CardMaker.XML;
 using System.Collections.Generic;
+using CardMaker.Card.Translation;
 
 namespace UnitTest.DeckObject
 {
@@ -8,10 +9,19 @@ namespace UnitTest.DeckObject
     {
         public TestDeck()
         {
-            m_zCardLayout = new ProjectLayout()
+            CardLayout = new ProjectLayout()
             {
                 defaultCount = 10
             };
+        }
+
+        public TestDeck(ITranslatorFactory zTranslatorFactory)
+        {
+            CardLayout = new ProjectLayout()
+            {
+                defaultCount = 10
+            };
+            TranslatorFactory = zTranslatorFactory;
         }
 
         public void SetCardIndex(int idx)
@@ -29,16 +39,12 @@ namespace UnitTest.DeckObject
         public string GetDefine(string key)
         {
             string value;
-            if (!m_dictionaryDefines.TryGetValue(key, out value))
-            {
-                value = null;
-            }
-            return value;
+            return m_zTranslator.DictionaryDefines.TryGetValue(key, out value) ? value : null;
         }
 
         public void SetDisallowedCharReplacement(char c, string replacement)
         {
-            s_dictionaryCharReplacement[c] = replacement;
+            FilenameTranslator.CharReplacement[c] = replacement;
         }
     }
 }

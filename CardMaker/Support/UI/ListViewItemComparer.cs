@@ -23,8 +23,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Windows.Forms;
 using System.Collections;
+using System.Windows.Forms;
 
 namespace Support.UI
 {
@@ -42,9 +42,9 @@ namespace Support.UI
 
         */
 
-        private int m_nColumn;
-		private SortOrder m_sOrder;
-		private bool m_bNumber = false;
+        private readonly int m_nColumn;
+		private readonly SortOrder m_sOrder;
+		private readonly bool m_bNumber;
 		
 		public ListViewItemComparer(SortOrder sOrder)
 		{
@@ -101,7 +101,7 @@ namespace Support.UI
 		/// <returns></returns>
 		private int StringCompare(object x, object y)
 		{
-			int nValue = String.Compare(((ListViewItem)x).SubItems[m_nColumn].Text, ((ListViewItem)y).SubItems[m_nColumn].Text);
+			int nValue = String.Compare(((ListViewItem)x).SubItems[m_nColumn].Text, ((ListViewItem)y).SubItems[m_nColumn].Text, StringComparison.CurrentCulture);
 			switch(m_sOrder)
 			{
 				case SortOrder.Ascending:
@@ -121,13 +121,11 @@ namespace Support.UI
 		/// <returns></returns>
 		private int NumCompare(object x, object y)
 		{
-			long xValue = 0;
-			long yValue = 0;
-			int nValue = 0;
+			var nValue = 0;
 			try
 			{
-				xValue = long.Parse(((ListViewItem)x).SubItems[m_nColumn].Text.Replace(",", string.Empty));
-                yValue = long.Parse(((ListViewItem)y).SubItems[m_nColumn].Text.Replace(",", string.Empty));
+				var xValue = long.Parse(((ListViewItem)x).SubItems[m_nColumn].Text.Replace(",", string.Empty));
+                var yValue = long.Parse(((ListViewItem)y).SubItems[m_nColumn].Text.Replace(",", string.Empty));
 				if(xValue == yValue)
 				{
 					nValue = 0;

@@ -22,30 +22,32 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using CardMaker.Forms;
-using CardMaker.XML;
-using Support.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using CardMaker.Events.Managers;
+using CardMaker.XML;
+using Support.IO;
 
 namespace CardMaker.Card.Import
 {
     public class CSVReferenceReader : ReferenceReader
     {
-        public string ReferencePath { get; private set; }
+        public string ReferencePath { get; }
+
+        public CSVReferenceReader() { }
 
         public CSVReferenceReader(ProjectLayoutReference zReference)
         {
             var previousCurrentDirectory = Directory.GetCurrentDirectory();
 
-            if (null != CardMakerMDI.ProjectPath && Directory.Exists(CardMakerMDI.ProjectPath))
+            if (null != ProjectManager.Instance.ProjectPath && Directory.Exists(ProjectManager.Instance.ProjectPath))
             {
-                Directory.SetCurrentDirectory(CardMakerMDI.ProjectPath);
+                Directory.SetCurrentDirectory(ProjectManager.Instance.ProjectPath);
                 ReferencePath = (File.Exists(zReference.RelativePath)
                                 ? Path.GetFullPath(zReference.RelativePath)
-                                : CardMakerMDI.ProjectPath + zReference.RelativePath);
+                                : ProjectManager.Instance.ProjectPath + zReference.RelativePath);
             }
             else
             {
@@ -66,7 +68,7 @@ namespace CardMaker.Card.Import
                 {
                     var sMsg = "CSV File not found: " + sCombinedPath;
                     Logger.AddLogLine(sMsg);
-                    MDIIssues.Instance.AddIssue(sMsg);
+                    IssueManager.Instance.FireAddIssueEvent(sMsg);
                 }
                 return;
             }
@@ -101,10 +103,15 @@ namespace CardMaker.Card.Import
 
         public void GetProjectDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData)
         {
+            if (null == ProjectManager.Instance.ProjectFilePath)
+            {
+                return;
+            }
+
             var sReferencePath =
-                Path.GetDirectoryName(CardMakerMDI.Instance.LoadedFile)
+                Path.GetDirectoryName(ProjectManager.Instance.ProjectFilePath)
                 + Path.DirectorySeparatorChar
-                + Path.GetFileNameWithoutExtension(CardMakerMDI.Instance.LoadedFile)
+                + Path.GetFileNameWithoutExtension(ProjectManager.Instance.ProjectFilePath)
                 + ".csv";
 
             GetData(sReferencePath, listDefineData, false, 1, Deck.DEFINES_DATA_POSTFIX);
@@ -113,6 +120,11 @@ namespace CardMaker.Card.Import
         public void GetDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData)
         {
             GetData(ReferencePath, listDefineData, false, 1, Deck.DEFINES_DATA_POSTFIX);
+        }
+
+        public void FinalizeReferenceLoad()
+        {
+
         }
     }
 }

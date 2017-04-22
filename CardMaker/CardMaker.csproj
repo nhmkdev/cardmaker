@@ -16,7 +16,7 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <OldToolsVersion>3.5</OldToolsVersion>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <ApplicationIcon>Resources\CardMakerIcon.ico</ApplicationIcon>
     <PublishUrl>publish\</PublishUrl>
@@ -33,12 +33,13 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>bin\debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -57,6 +58,9 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ClearScript">
+      <HintPath>..\3rdParty\ClearScript\ClearScript.dll</HintPath>
+    </Reference>
     <Reference Include="Google.GData.Client, Version=2.2.0.0, Culture=neutral, PublicKeyToken=04a59ca9b0273830, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\3rdParty\GoogleDataAPI\Google.GData.Client.dll</HintPath>
@@ -95,52 +99,96 @@
     <Compile Include="Card\DrawFormattedText.cs" />
     <Compile Include="Card\DrawGraphic.cs" />
     <Compile Include="Card\DrawItem.cs" />
-    <Compile Include="Card\DrawText.cs" />
+    <Compile Include="Card\DrawTextGraphics.cs" />
+    <Compile Include="Card\DrawTextRenderer.cs" />
+    <Compile Include="Card\Export\FileCardExporterFactory.cs" />
+    <Compile Include="Card\FormattedText\Alignment\AlignmentController.cs" />
+    <Compile Include="Card\FormattedText\Alignment\HorizontalLeftAlignmentProcessor.cs" />
+    <Compile Include="Card\FormattedText\Alignment\HorizontalRightAlignmentProcessor.cs" />
+    <Compile Include="Card\FormattedText\Alignment\HorizontalCenterAlignmentProcessor.cs" />
+    <Compile Include="Card\FormattedText\Alignment\HorizontalJustifiedAlignmentProcessor.cs" />
+    <Compile Include="Card\FormattedText\Alignment\HorizontalAlignmentProcessor.cs" />
+    <Compile Include="Card\FormattedText\Alignment\VerticalAlignmentProcessor.cs" />
+    <Compile Include="Card\FormattedText\Alignment\VerticalTopAlignmentProcessor.cs" />
+    <Compile Include="Card\FormattedText\Alignment\VerticalBottomAlignmentProcessor.cs" />
+    <Compile Include="Card\FormattedText\Alignment\VerticalMiddleAlignmentProcessor.cs" />
+    <Compile Include="Card\FormattedText\FormattedTextParser.cs" />
+    <Compile Include="Card\FormattedText\Markup\AlignCenterMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\AlignLeftMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\AlignRightMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\BaseAlignMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\LineSpaceMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\PixelMarkup.cs" />
+    <Compile Include="Card\IDrawText.cs" />
     <Compile Include="Card\ElementString.cs" />
     <Compile Include="Card\Export\CardExportBase.cs" />
     <Compile Include="Card\Export\ICardExporter.cs" />
     <Compile Include="Card\Export\PdfSharpExporter.cs" />
-    <Compile Include="Card\FormattedText\BackgroundColorMarkup.cs" />
-    <Compile Include="Card\FormattedText\BackgroundImageMarkup.cs" />
-    <Compile Include="Card\FormattedText\FontMarkup.cs" />
-    <Compile Include="Card\FormattedText\PushMarkup.cs" />
-    <Compile Include="Card\FormattedText\CloseTagMarkup.cs" />
-    <Compile Include="Card\FormattedText\ImageMarkup.cs" />
-    <Compile Include="Card\FormattedText\XDrawOffsetMarkup.cs" />
-    <Compile Include="Card\FormattedText\SpaceMarkup.cs" />
-    <Compile Include="Card\FormattedText\FontColorMarkup.cs" />
-    <Compile Include="Card\FormattedText\FontSizeMarkup.cs" />
-    <Compile Include="Card\FormattedText\FontStyleMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\BackgroundColorMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\BackgroundImageMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\FontMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\PushMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\CloseTagMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\ImageMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\XDrawOffsetMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\SpaceMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\FontColorMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\FontSizeMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\FontStyleMarkup.cs" />
     <Compile Include="Card\FormattedText\FormattedTextData.cs" />
     <Compile Include="Card\FormattedText\FormattedTextDataCache.cs" />
     <Compile Include="Card\FormattedText\FormattedTextProcessData.cs" />
-    <Compile Include="Card\FormattedText\MarkupBase.cs" />
-    <Compile Include="Card\FormattedText\MarkupValueBase.cs" />
-    <Compile Include="Card\FormattedText\NewlineMarkup.cs" />
-    <Compile Include="Card\FormattedText\TextMarkup.cs" />
-    <Compile Include="Card\FormattedText\YDrawOffsetMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\MarkupBase.cs" />
+    <Compile Include="Card\FormattedText\Markup\MarkupValueBase.cs" />
+    <Compile Include="Card\FormattedText\Markup\NewlineMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\TextMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\YDrawOffsetMarkup.cs" />
     <Compile Include="Card\Export\CompilerCardExporter.cs" />
     <Compile Include="Card\Export\FileCardExporter.cs" />
     <Compile Include="Card\Import\CSVReferenceReader.cs" />
     <Compile Include="Card\Import\GoogleReferenceReader.cs" />
     <Compile Include="Card\Import\ReferenceReader.cs" />
     <Compile Include="Card\Import\ReferenceReaderFactory.cs" />
-    <Compile Include="Enumerations.cs" />
+    <Compile Include="Card\Shapes\Definitions\TriangleShape.cs" />
+    <Compile Include="Card\Translation\FilenameTranslator.cs" />
+    <Compile Include="Card\Translation\InceptTranslator.cs" />
+    <Compile Include="Card\Translation\JavaScriptTranslator.cs" />
+    <Compile Include="Card\Translation\TranslatorBase.cs" />
+    <Compile Include="Card\Translation\TranslatorFactory.cs" />
+    <Compile Include="Card\Translation\ITranslatorFactory.cs" />
+    <Compile Include="Data\CardMakerConstants.cs" />
+    <Compile Include="Data\CardMakerInstance.cs" />
+    <Compile Include="Data\CardMakerSettings.cs" />
+    <Compile Include="Data\ElementPosition.cs" />
+    <Compile Include="Data\Enumerations.cs" />
+    <Compile Include="Data\LayoutTemplateManager.cs" />
+    <Compile Include="Events\Args\DeckChangeEventArgs.cs" />
+    <Compile Include="Events\Args\ElementEventArgs.cs" />
+    <Compile Include="Events\Args\ExportEventArgs.cs" />
+    <Compile Include="Events\Args\GoogleAuthEventArgs.cs" />
+    <Compile Include="Events\Args\IssueCardInfoEventArgs.cs" />
+    <Compile Include="Events\Args\IssueElementEventArgs.cs" />
+    <Compile Include="Events\Args\IssueMessageEventArgs.cs" />
+    <Compile Include="Events\Args\IssueRefreshEventArgs.cs" />
+    <Compile Include="Events\Args\LayoutElementNumericAdjustEventArgs.cs" />
+    <Compile Include="Events\Args\LayoutEventArgs.cs" />
+    <Compile Include="Events\Args\ProjectEventArgs.cs" />
+    <Compile Include="Events\Managers\ExportManager.cs" />
+    <Compile Include="Events\Managers\GoogleAuthManager.cs" />
     <Compile Include="Forms\CardMakerMDI.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\CardMakerMDI.Designer.cs">
       <DependentUpon>CardMakerMDI.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\CardMakerMDI_Settings.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Forms\FormUtils.cs" />
     <Compile Include="Forms\GoogleCredentialsDialog.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\GoogleCredentialsDialog.Designer.cs">
       <DependentUpon>GoogleCredentialsDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Events\Managers\IssueManager.cs" />
     <Compile Include="Forms\MDIDefines.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -237,10 +285,11 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Support\UI\Win32.cs" />
+    <Compile Include="Support\Util\ParseUtil.cs" />
     <Compile Include="Support\Util\TimeMeasure.cs" />
-    <Compile Include="XML\Core.cs" />
-    <Compile Include="XML\Managers\BaseXmlManager.cs" />
-    <Compile Include="XML\Managers\LayoutTemplateManager.cs" />
+    <Compile Include="Events\Managers\ElementManager.cs" />
+    <Compile Include="Events\Managers\LayoutManager.cs" />
+    <Compile Include="Events\Managers\ProjectManager.cs" />
     <Compile Include="XML\Project.cs" />
     <Compile Include="XML\ProjectLayout.cs" />
     <Compile Include="XML\ProjectLayoutElement.cs" />
@@ -300,6 +349,7 @@
     <EmbeddedResource Include="Support\UI\RGBColorSelectDialog.resx">
       <DependentUpon>RGBColorSelectDialog.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -349,6 +399,14 @@
   <ItemGroup>
     <None Include="Resources\CardMakerIcon.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\CustomAlign.ico" />
+    <Content Include="Resources\HorizontalAlign.ico" />
+    <Content Include="Resources\HorizontalCustomAlign.ico" />
+    <Content Include="Resources\RotateCursor.ico" />
+    <Content Include="Resources\VerticalAlign.ico" />
+    <Content Include="Resources\VerticalCustomAlign.ico" />
+  </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -364,6 +422,9 @@
     <PostBuildEvent>DEL "$(SolutionDir)$(OutDir)*.zip"
 COPY /Y $(SolutionDir)\3rdParty\GoogleDataAPI\GData-LICENSE-2.0.txt $(TargetDir)\Licenses
 COPY /Y $(SolutionDir)\3rdParty\PDFSharp\PDFSharp-License.txt $(TargetDir)\Licenses
-"C:\Program Files\7-Zip\7z" a "$(TargetDir)CardMaker_X.X.X.X.zip" "$(TargetDir)CardMaker.exe" "$(TargetDir)CardMaker_Mono.exe" "$(TargetDir)*.dll" "$(TargetDir)*.pdf" "$(TargetDir)Sample" "$(TargetDir)Readme.txt" "$(TargetDir)History.txt" "$(TargetDir)Licenses" "$(TargetDir)images" -tzip -mx5</PostBuildEvent>
+COPY /Y $(SolutionDir)\3rdParty\ClearScript\*.license $(TargetDir)\Licenses
+COPY /Y $(SolutionDir)\3rdParty\ClearScript\ClearScriptV8* $(TargetDir)
+COPY /Y $(SolutionDir)\3rdParty\ClearScript\v8* $(TargetDir)
+"C:\Program Files\7-Zip\7z" a "$(TargetDir)CardMaker_X.X.X.X.zip" "$(TargetDir)CardMaker.exe" "$(TargetDir)CardMaker_Mono.exe" "$(TargetDir)*.dll" "$(TargetDir)Card_Maker.pdf" "$(TargetDir)Card_Maker_Basic_Project.pdf"  "$(TargetDir)Card_Maker_JavaScript.pdf" "$(TargetDir)Sample" "$(TargetDir)Readme.txt" "$(TargetDir)History.txt" "$(TargetDir)Licenses" "$(TargetDir)images" -tzip -mx5</PostBuildEvent>
   </PropertyGroup>
 </Project>

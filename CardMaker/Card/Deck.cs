@@ -22,74 +22,40 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
 using CardMaker.Card.FormattedText;
 using CardMaker.Card.Import;
-using CardMaker.Forms;
+using CardMaker.Card.Translation;
+using CardMaker.Data;
+using CardMaker.Events.Managers;
 using CardMaker.XML;
 using Support.IO;
 using Support.UI;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
+
 #if MONO_BUILD
 using System.Threading;
 #endif
-using System.Windows.Forms;
 
 namespace CardMaker.Card
 {
     public class Deck
     {
-        public static readonly char[] DISALLOWED_FILE_CHARS_ARRAY = { '\\', '/', ':', '*', '?', '\"', '>', '<', '|' };
-
-        protected static readonly Dictionary<char, string> s_dictionaryCharReplacement = new Dictionary<char, string>();
-
         public const string DEFINES_DATA_POSTFIX = "_defines";
-
-        private static readonly Regex s_regexColumnVariable = new Regex(@"(.*)(@\[)(.+?)(\])(.*)", RegexOptions.Compiled);
-        private static readonly Regex s_regexCardCounter = new Regex(@"(.*)(##)(\d+)(;)(\d+)(;)(\d+)(#)(.*)", RegexOptions.Compiled);
-        private static readonly Regex s_regexSubCardCounter = new Regex(@"(.*)(#sc;)(\d+)(;)(\d+)(;)(\d+)(#)(.*)", RegexOptions.Compiled);
-        private static readonly Regex s_regexIfLogic = new Regex(@"(.*)(#\()(if.+)(\)#)(.*)", RegexOptions.Compiled);
-        private static readonly Regex s_regexSwitchLogic = new Regex(@"(.*)(#\()(switch.+)(\)#)(.*)", RegexOptions.Compiled);
-        private static readonly Regex s_regexIfThenStatement = new Regex(@"(if)(.*?)\s([!=><]=|<|>)\s(.*?)(then )(.*)", RegexOptions.Compiled);
-        private static readonly Regex s_regexIfThenElseStatement = new Regex(@"(if)(.*?)\s([!=><]=|<|>)\s(.*?)(then )(.*?)(else )(.*)", RegexOptions.Compiled);
-        private static readonly Regex s_regexIfSet = new Regex(@"(\[)(.*?)(\])", RegexOptions.Compiled);
-        private static readonly Regex s_regexSwitchStatement = new Regex(@"(switch)(;)(.*?)(;)(.*)", RegexOptions.Compiled);
-
-        private Dictionary<string, int> m_dictionaryColumnNames = new Dictionary<string, int>();
-        protected Dictionary<string, string> m_dictionaryDefines = new Dictionary<string, string>();
-        private Dictionary<string, Dictionary<string, int>> m_dictionaryElementOverrides = new Dictionary<string, Dictionary<string, int>>();
-        private List<string> m_listColumnNames = new List<string>(); // used for populating the list view in the element control window
-
-        private readonly Dictionary<string, ElementString> m_dictionaryElementStringCache = new Dictionary<string, ElementString>();
-        private readonly Dictionary<string, FormattedTextDataCache> m_dictionaryMarkupCache = new Dictionary<string, FormattedTextDataCache>();
 
         protected int m_nCardIndex = -1;
         protected int m_nCardPrintIndex;
 
-        protected ProjectLayout m_zCardLayout;
+        public ProjectLayout CardLayout { get; protected set; }
 
-        public List<DeckLine> ValidLines { get; private set; }
+        protected  ITranslatorFactory TranslatorFactory { get; set; }
 
-        public Dictionary<string, string> Defines
-        {
-            get { return m_dictionaryDefines; }
-        }
+        protected TranslatorBase m_zTranslator;
 
-        public ProjectLayout CardLayout 
-        {
-            get
-            {
-                return m_zCardLayout;
-            }
-            private set
-            {
-                m_zCardLayout = value;
-            }
-        }
+        public List<DeckLine> ValidLines { get; }
+
+        public Dictionary<string, string> Defines => m_zTranslator.DictionaryDefines;
 
         public int CardIndex
         {
@@ -126,53 +92,21 @@ namespace CardMaker.Card
             }
         }
 
-        public DeckLine CurrentPrintLine
-        {
-            get
-            {
-                return ValidLines[m_nCardPrintIndex];
-            }
-        }
+        public DeckLine CurrentPrintLine => ValidLines[m_nCardPrintIndex];
 
-        public DeckLine CurrentLine
-        {
-            get
-            {
-                return ValidLines[m_nCardIndex];
-            }
-        }
+        public DeckLine CurrentLine => ValidLines[m_nCardIndex];
 
-        public int CardCount
-        {
-            get
-            {
-                return ValidLines.Count;
-            }
-        }
+        public int CardCount => ValidLines.Count;
 
         protected void ResetPrintCardIndex()
         {
             m_nCardPrintIndex = 0;
         }
 
-        public static string[] IllegalCharReplacementArray
-        {
-            set
-            {
-                if (value.Length == DISALLOWED_FILE_CHARS_ARRAY.Length)
-                {
-                    s_dictionaryCharReplacement.Clear();
-                    for (int nIdx = 0; nIdx < value.Length; nIdx++)
-                    {
-                        s_dictionaryCharReplacement.Add(DISALLOWED_FILE_CHARS_ARRAY[nIdx], value[nIdx]);
-                    }
-                }
-            }
-        }
-
         public Deck()
         {
             ValidLines = new List<DeckLine>();
+            TranslatorFactory = new TranslatorFactory();
         }
 
         protected void ReadData(object zRefData)
@@ -183,7 +117,7 @@ namespace CardMaker.Card
             }
             catch (Exception ex)
             {
-                Logger.AddLogLine("Failed to read data file(s). " + ex.ToString());
+                Logger.AddLogLine("Failed to read data file(s). " + ex.Message);
                 WaitDialog.Instance.ThreadSuccess = false;
                 WaitDialog.Instance.CloseWaitDialog();
             }
@@ -198,9 +132,13 @@ namespace CardMaker.Card
 
             ReferenceReader zRefReader = null;
 
-            if (null != zReferenceData)
+            if (null == zReferenceData || zReferenceData.Length == 0)
             {
-                WaitDialog.Instance.ProgressReset(0, 0, zReferenceData.Length * 2 + 1, 0);             
+                ReadDefaultProjectDefinitions(listDefineLines);
+            }
+            else
+            {
+                WaitDialog.Instance.ProgressReset(0, 0, zReferenceData.Length * 2 + 1, 0);
 
                 for(int nIdx = 0; nIdx < zReferenceData.Length; nIdx++)
                 {
@@ -211,20 +149,20 @@ namespace CardMaker.Card
                     if (zRefReader == null)
                     {
                         listLines.Clear();
-                        Logger.AddLogLine(string.Format("Failed to load reference: {0}", zReference.RelativePath));
+                        Logger.AddLogLine($"Failed to load reference: {zReference.RelativePath}");
                         break;
                     }
                     // 0 index is always the default reference in the case of multi load
                     if (nIdx == 0)
                     {
-                        if (!string.IsNullOrEmpty(CardMakerMDI.Instance.LoadedFile))
+                        if (!string.IsNullOrEmpty(ProjectManager.Instance.ProjectFilePath))
                         {
                             zRefReader.GetProjectDefineData(zReference, listDefineLines);
                             if (listDefineLines.Count == 0)
                             {
                                 Logger.AddLogLine(
                                     "No defines found for project file: {0}".FormatString(
-                                        CardMakerMDI.Instance.LoadedFile));
+                                        ProjectManager.Instance.ProjectFilePath));
                             }
                         }
                         else
@@ -250,11 +188,13 @@ namespace CardMaker.Card
                         Logger.AddLogLine(
                             "No defines found for reference: {0}".FormatString(zReference.RelativePath));
                     }
+
+                    zRefReader.FinalizeReferenceLoad();
                     WaitDialog.Instance.ProgressStep(0);                       
                 }
             }
 
-            ProcessLines(listLines, listDefineLines, null == zRefReader ? null : zRefReader.ReferencePath);
+            ProcessLines(listLines, listDefineLines, zRefReader?.ReferencePath);
         }
 
         protected void ProcessLines(List<List<string>> listLines, 
@@ -266,42 +206,41 @@ namespace CardMaker.Card
             const string ALLOWED_LAYOUT = "allowed_layout";
             const string OVERRIDE = "override:";
 
-            var nDefaultCount = m_zCardLayout.defaultCount;
-            m_dictionaryColumnNames = new Dictionary<string, int>();
-            m_listColumnNames = new List<string>();
-            m_dictionaryElementOverrides = new Dictionary<string, Dictionary<string, int>>();
-            m_dictionaryDefines = new Dictionary<string, string>();
-
-
+            var nDefaultCount = CardLayout.defaultCount;
+            var listColumnNames = new List<string>();
+            var dictionaryColumnNames = new Dictionary<string, int>();
+            var dictionaryElementOverrides = new Dictionary<string, Dictionary<string, int>>();
+            var dictionaryDefines = new Dictionary<string, string>();
+            
             // Line Processing
             if (0 < listLines.Count)
             {
                 // Read the column names
-                List<string> listColumnNames = listLines[0];
-                for (int nIdx = 0; nIdx < listColumnNames.Count; nIdx++)
+                var listAllColumnNames = listLines[0];
+                for (int nIdx = 0; nIdx < listAllColumnNames.Count; nIdx++)
                 {
-                    string sKey = listColumnNames[nIdx].ToLower().Trim();
-                    m_listColumnNames.Add(sKey);
-                    if (!m_dictionaryColumnNames.ContainsKey(sKey))
+                    string sKey = listAllColumnNames[nIdx].ToLower().Trim();
+                    listColumnNames.Add(sKey);
+                    if (!dictionaryColumnNames.ContainsKey(sKey))
                     {
-                        m_dictionaryColumnNames.Add(sKey, nIdx);
+                        dictionaryColumnNames.Add(sKey, nIdx);
                     }
                     else
                     {
-                        MDIIssues.Instance.AddIssue("Duplicate column found in: " + sReferencePath + "::" + "Column [" + nIdx + "]: " + sKey);
+                        IssueManager.Instance.FireAddIssueEvent("Duplicate column found in: " + sReferencePath + "::" + "Column [" + nIdx + "]: " + sKey);
                         Logger.AddLogLine("Duplicate column found in: " + sReferencePath + "::" + "Column [" + nIdx + "]: " + sKey);
                     }
                 }
 
                 // determine the allowed layout column index
                 int nAllowedLayoutColumn;
-                if (!m_dictionaryColumnNames.TryGetValue(ALLOWED_LAYOUT, out nAllowedLayoutColumn))
+                if (!dictionaryColumnNames.TryGetValue(ALLOWED_LAYOUT, out nAllowedLayoutColumn))
                 {
                     nAllowedLayoutColumn = -1;
                 }
 
                 // construct the override dictionary
-                foreach (string sKey in m_listColumnNames)
+                foreach (string sKey in listColumnNames)
                 {
                     if (sKey.StartsWith(OVERRIDE))
                     {
@@ -310,13 +249,16 @@ namespace CardMaker.Card
                         {
                             string sElementName = arraySplit[1].Trim();
                             string sElementItemOverride = arraySplit[2].Trim();
-                            if (!m_dictionaryElementOverrides.ContainsKey(sElementName))
+                            if (!dictionaryElementOverrides.ContainsKey(sElementName))
                             {
-                                m_dictionaryElementOverrides.Add(sElementName, new Dictionary<string, int>());
+                                dictionaryElementOverrides.Add(sElementName, new Dictionary<string, int>());
                             }
-                            Dictionary<string, int> dictionaryOverrides = m_dictionaryElementOverrides[sElementName];
-#warning -- check for duplicates in the dictionary!
-                            dictionaryOverrides[sElementItemOverride] = m_dictionaryColumnNames[sKey];
+                            Dictionary<string, int> dictionaryOverrides = dictionaryElementOverrides[sElementName];
+                            if (dictionaryOverrides.ContainsKey(sElementItemOverride))
+                            {
+                                Logger.AddLogLine("Duplicate override found: {0}".FormatString(sElementItemOverride));
+                            }
+                            dictionaryOverrides[sElementItemOverride] = dictionaryColumnNames[sKey];
                         }
                     }
                 }
@@ -369,7 +311,7 @@ namespace CardMaker.Card
                 // indicate if no lines remain!
                 if (0 == listLines.Count)
                 {
-                    MDIIssues.Instance.AddIssue("No lines found?! allowed_layout may be cutting them!");
+                    IssueManager.Instance.FireAddIssueEvent("No lines found?! allowed_layout may be cutting them!");
                 }
 
             }
@@ -384,7 +326,7 @@ namespace CardMaker.Card
                     int nNumber;
                     if (!int.TryParse(listItems[0].Trim(), out nNumber))
                     {
-                        MDIIssues.Instance.AddIssue("Invalid card count found: [" + listItems[0] + "] The first column should always have a number value.");
+                        IssueManager.Instance.FireAddIssueEvent("Invalid card count found: [" + listItems[0] + "] The first column should always have a number value.");
                         nNumber = 1;
                     }
                     for (var nCount = 0; nCount < nNumber; nCount++)
@@ -399,7 +341,7 @@ namespace CardMaker.Card
                 // create the default number of lines.
                 for (int nIdx = 0; nIdx < nDefaultCount; nIdx++)
                 {
-                    if (0 < m_listColumnNames.Count)// create each line and the correct number of columns
+                    if (0 < listColumnNames.Count)// create each line and the correct number of columns
                     {
                         var arrayDefaultLine = new List<string>();
                         for (int nCol = 0; nCol < arrayDefaultLine.Count; nCol++)
@@ -415,7 +357,7 @@ namespace CardMaker.Card
                 }
                 if (!string.IsNullOrEmpty(sReferencePath))
                 {
-                    MDIIssues.Instance.AddIssue("No lines found for this layout! Generated " + nDefaultCount);
+                    IssueManager.Instance.FireAddIssueEvent("No lines found for this layout! Generated " + nDefaultCount);
                 }
             }
 
@@ -432,25 +374,27 @@ namespace CardMaker.Card
                         string sKey = row[0];
                         int nIdx;
                         string sVal;
-                        if (m_dictionaryDefines.TryGetValue(sKey.ToLower(), out sVal))
+                        if (dictionaryDefines.TryGetValue(sKey.ToLower(), out sVal))
                         {
                             string sMsg = "Duplicate define found: " + sKey;
-                            MDIIssues.Instance.AddIssue(sMsg);
+                            IssueManager.Instance.FireAddIssueEvent(sMsg);
                             Logger.AddLogLine(sMsg);
                         }
-                        else if (m_dictionaryColumnNames.TryGetValue(sKey.ToLower(), out nIdx))
+                        else if (dictionaryColumnNames.TryGetValue(sKey.ToLower(), out nIdx))
                         {
                             string sMsg = "Overlapping column name and define found in: " + sReferencePath + "::" + "Column [" + nIdx + "]: " + sKey;
-                            MDIIssues.Instance.AddIssue(sMsg);
+                            IssueManager.Instance.FireAddIssueEvent(sMsg);
                             Logger.AddLogLine(sMsg);
                         }
                         else
                         {
-                            m_dictionaryDefines.Add(sKey.ToLower(), row[1]);
+                            dictionaryDefines.Add(sKey.ToLower(), row[1]);
                         }
                     }
                 }
             }
+
+            m_zTranslator = TranslatorFactory.GetTranslator(dictionaryColumnNames, dictionaryDefines, dictionaryElementOverrides, listColumnNames);
 
 #if MONO_BUILD
             Thread.Sleep(100);
@@ -460,485 +404,67 @@ namespace CardMaker.Card
         }
 
         /// <summary>
-        /// Translates a file export string for naming a file
+        /// Populates the project defines based on the default reference type. If nothing is found on Google then attempt the local CSV.
         /// </summary>
-        /// <param name="sRawString"></param>
-        /// <param name="nCardNumber"></param>
-        /// <param name="nLeftPad"></param>
-        /// <returns></returns>
-        public string TranslateFileNameString(string sRawString, int nCardNumber, int nLeftPad)
+        /// <param name="listDefineLines"></param>
+        private void ReadDefaultProjectDefinitions(List<List<string>> listDefineLines)
         {
-            string sOutput = sRawString;
-            var zDeckLine = CurrentPrintLine;
-            var listLine = zDeckLine.LineColumns;
-
-            // Translate named items (column names / defines)
-            //Groups
-            //    1    2    3   4   5
-            //@"(.*)(@\[)(.+?)(\])(.*)"
-            while (s_regexColumnVariable.IsMatch(sOutput))
+            WaitDialog.Instance.ProgressReset(0, 0, 2, 0);
+            ReferenceReader zRefReader;
+            if (ReferenceType.Google == ProjectManager.Instance.LoadedProjectDefaultDefineReferenceType)
             {
-                var zMatch = s_regexColumnVariable.Match(sOutput);
-                int nIndex;
-                string sDefineValue;
-                string sKey = zMatch.Groups[3].ToString().ToLower();
-                if (m_dictionaryDefines.TryGetValue(sKey, out sDefineValue))
-                {
-                    sOutput = zMatch.Groups[1] + sDefineValue.Trim() + zMatch.Groups[5];
-                }
-                else if (m_dictionaryColumnNames.TryGetValue(sKey, out nIndex))
-                {
-                    sOutput = zMatch.Groups[1] + listLine[nIndex].Trim() + zMatch.Groups[5];
-                }
-                else
-                {
-                    sOutput = zMatch.Groups[1] + "[UNKNOWN]" + zMatch.Groups[5];
-                }
+                zRefReader = ReferenceReaderFactory.GetDefineReader(ReferenceType.Google);
+                zRefReader?.GetProjectDefineData(null, listDefineLines);
             }
-            // replace ##, #L, Newlines
-            sOutput = sOutput.Replace("##", nCardNumber.ToString(CultureInfo.InvariantCulture).PadLeft(nLeftPad, '0')).Replace("#L", CardLayout.Name).Replace(Environment.NewLine, string.Empty);
-
-            // last chance: replace unsupported characters (for file name)
-            var zBuilder = new StringBuilder();
-            foreach (char c in sOutput)
+            WaitDialog.Instance.ProgressStep(0);
+            // always attempt to load the local if nothing was pulled from google
+            if (0 == listDefineLines.Count)
             {
-                string sReplace;
-                if (s_dictionaryCharReplacement.TryGetValue(c, out sReplace))
-                {
-                    // quadruple check against bad chars!
-                    if (-1 == sReplace.IndexOfAny(DISALLOWED_FILE_CHARS_ARRAY, 0))
-                    {
-                        zBuilder.Append(sReplace);
-                    }
-                }
-                else
-                {
-                    if (-1 == c.ToString().IndexOfAny(DISALLOWED_FILE_CHARS_ARRAY))
-                    {
-                        zBuilder.Append(c);
-                    }
-                }
+                zRefReader = ReferenceReaderFactory.GetDefineReader(ReferenceType.CSV);
+                zRefReader?.GetProjectDefineData(null, listDefineLines);
             }
-            return zBuilder.ToString();
+            WaitDialog.Instance.ProgressStep(0);
+        }
+
+        public ElementString TranslateString(string sRawString, DeckLine zDeckLine,
+            ProjectLayoutElement zElement, bool bPrint, string sCacheSuffix = "")
+        {
+            return m_zTranslator.TranslateString(sRawString, bPrint ? m_nCardPrintIndex : m_nCardIndex, zDeckLine, zElement, sCacheSuffix);
+        }
+
+        public ElementString GetStringFromTranslationCache(string sKey)
+        {
+            return m_zTranslator.GetStringFromTranslationCache(sKey);
+        }
+
+        public void ResetTranslationCache(ProjectLayoutElement zElement)
+        {
+            m_zTranslator.ResetTranslationCache(zElement);
+        }
+
+        #region Cache
+
+        public FormattedTextDataCache GetCachedMarkup(string sElementName)
+        {
+            return m_zTranslator.GetCachedMarkup(sElementName);
+        }
+
+        #endregion
+
+        public ProjectLayoutElement GetOverrideElement(ProjectLayoutElement zElement, List<string> arrayLine, DeckLine zDeckLine, bool bExport)
+        {
+            return m_zTranslator.GetOverrideElement(zElement, bExport ? m_nCardPrintIndex : m_nCardIndex, arrayLine, zDeckLine);
         }
 
         /// <summary>
-        /// Translates the string representing the element. (also handles any nodraw text input)
+        /// Populates the specified ListView with the columns and data associated with this Deck
         /// </summary>
-        /// <param name="sRawString"></param>
-        /// <param name="listLine"></param>
-        /// <param name="zElement"></param>
-        /// <param name="bPrint"></param>
-        /// <returns></returns>
-        public ElementString TranslateString(string sRawString, DeckLine zDeckLine, ProjectLayoutElement zElement, bool bPrint)
-        {
-            List<string> listLine = zDeckLine.LineColumns;
-
-            ElementString zCached;
-            if (m_dictionaryElementStringCache.TryGetValue(zElement.name, out zCached))
-            {
-                return zCached;
-            } 
-            
-            string sOutput = sRawString;
-
-            sOutput = sOutput.Replace("#empty", string.Empty);
-
-            var zElementString = new ElementString();
-
-            // Translate named items (column names / defines)
-            //Groups
-            //    1    2    3   4   5
-            //@"(.*)(@\[)(.+?)(\])(.*)"
-            Match zMatch;
-            while (s_regexColumnVariable.IsMatch(sOutput))
-            {
-                zMatch = s_regexColumnVariable.Match(sOutput);
-                int nIndex;
-                string sDefineValue;
-                var sKey = zMatch.Groups[3].ToString().ToLower();
-
-                // check the key for untranslated components
-                var arrayParams = sKey.Split(new char[] {','});
-                if (arrayParams.Length > 1)
-                {
-                    sKey = arrayParams[0];
-                }
-
-                if (m_dictionaryDefines.TryGetValue(sKey, out sDefineValue))
-                {
-                }
-                else if (m_dictionaryColumnNames.TryGetValue(sKey, out nIndex))
-                {
-                    sDefineValue = (nIndex >= listLine.Count ? string.Empty : listLine[nIndex].Trim());
-                }
-                else
-                {
-                    MDIIssues.Instance.AddIssue("Bad reference key: " + sKey);
-                    sDefineValue = "[BAD NAME: " + sKey + "]";
-                }
-                if (arrayParams.Length > 1)
-                {
-                    for (int nIdx = 1; nIdx < arrayParams.Length; nIdx++)
-                    {
-                        sDefineValue = sDefineValue.Replace("{" + nIdx + "}", arrayParams[nIdx]);
-                    }
-                }
-                sOutput = zMatch.Groups[1] + sDefineValue + zMatch.Groups[5];
-            }
-            
-            // Translate card counter/index
-            // Groups                 
-            //     1   2    3  4    5  6    7  8   9
-            //(@"(.*)(##)(\d+)(;)(\d+)(;)(\d+)(#)(.*)");
-            while (s_regexCardCounter.IsMatch(sOutput))
-            {
-                zMatch = s_regexCardCounter.Match(sOutput);
-                var nStart = Int32.Parse(zMatch.Groups[3].ToString());
-                var nChange = Int32.Parse(zMatch.Groups[5].ToString());
-                var nLeftPad = Int32.Parse(zMatch.Groups[7].ToString());
-
-                var nIndex = bPrint ? m_nCardPrintIndex : m_nCardIndex;
-
-                sOutput = zMatch.Groups[1] +
-                    // nIndex is left as is (not adding 1)
-                    (nStart + (nIndex * nChange)).ToString(CultureInfo.InvariantCulture).PadLeft(nLeftPad, '0') +
-                    zMatch.Groups[9];
-            }
-
-            // Translate sub card counter/index
-            // Groups                 
-            //     1   2    3  4    5  6    7  8   9
-            //(@"(.*)(#sc;)(\d+)(;)(\d+)(;)(\d+)(#)(.*)");
-            while (s_regexSubCardCounter.IsMatch(sOutput))
-            {
-                zMatch = s_regexSubCardCounter.Match(sOutput);
-                var nStart = Int32.Parse(zMatch.Groups[3].ToString());
-                var nChange = Int32.Parse(zMatch.Groups[5].ToString());
-                var nLeftPad = Int32.Parse(zMatch.Groups[7].ToString());
-
-                var nIndex = zDeckLine.RowSubIndex;
-
-                sOutput = zMatch.Groups[1] +
-                    // nIndex is left as is (not adding 1)
-                    (nStart + (nIndex * nChange)).ToString(CultureInfo.InvariantCulture).PadLeft(nLeftPad, '0') +
-                    zMatch.Groups[9];
-            }
-
-            // Translate If Logic
-            //Groups
-            //    1     2    3    4   5 
-            //@"(.*)(#\()(if.+)(\)#)(.*)");
-            while (s_regexIfLogic.IsMatch(sOutput))
-            {
-                zMatch = s_regexIfLogic.Match(sOutput);
-                string sLogicResult = TranslateIfLogic(zMatch.Groups[3].ToString());
-                if (sLogicResult.Trim().Equals("#nodraw", StringComparison.CurrentCultureIgnoreCase))
-                    zElementString.DrawElement = false;
-                sOutput = zMatch.Groups[1] +
-                    sLogicResult +
-                    zMatch.Groups[5];
-            }
-
-            // Translate Switch Logic
-            //Groups                  
-            //    1     2        3    4   5 
-            //@"(.*)(#\()(switch.+)(\)#)(.*)");
-            while (s_regexSwitchLogic.IsMatch(sOutput))
-            {
-                zMatch = s_regexSwitchLogic.Match(sOutput);
-                string sLogicResult = TranslateSwitchLogic(zMatch.Groups[3].ToString());
-                if (sLogicResult.Trim().Equals("#nodraw", StringComparison.CurrentCultureIgnoreCase))
-                    zElementString.DrawElement = false;
-                
-                sOutput = zMatch.Groups[1] +
-                    sLogicResult +
-                    zMatch.Groups[5];
-            }
-
-            switch ((ElementType)Enum.Parse(typeof(ElementType), zElement.type))
-            {
-                case ElementType.Text:
-                    sOutput = sOutput.Replace("\\n", Environment.NewLine);
-                    sOutput = sOutput.Replace("\\q", "\"");
-                    sOutput = sOutput.Replace("\\c", ",");
-                    sOutput = sOutput.Replace("&gt;", ">");
-                    sOutput = sOutput.Replace("&lt;", "<");
-                    break;
-                case ElementType.FormattedText:
-                    sOutput = sOutput.Replace("<c>", ",");
-                    sOutput = sOutput.Replace("<q>", "\"");
-                    sOutput = sOutput.Replace("&gt;", ">");
-                    sOutput = sOutput.Replace("&lt;", "<");
-                    break;
-            }
-
-            zElementString.String = sOutput;
-
-            AddStringToTranslationCache(zElement.name, zElementString);
-
-            return zElementString;
-        }
-
-        public ProjectLayoutElement GetOverrideElement(ProjectLayoutElement zElement, List<string> arrayLine)
-        {
-            Dictionary<string, int> dictionaryOverrideColumns;
-            string sNameLower = zElement.name.ToLower();
-            m_dictionaryElementOverrides.TryGetValue(sNameLower, out dictionaryOverrideColumns);
-            if (null == dictionaryOverrideColumns)
-            {
-                return zElement;
-            }
-
-            var zOverrideElement = new ProjectLayoutElement();
-            zOverrideElement.DeepCopy(zElement, false);
-            zOverrideElement.name = zElement.name;
-
-
-            foreach (string sKey in dictionaryOverrideColumns.Keys)
-            {
-                Type zType = typeof(ProjectLayoutElement);
-                PropertyInfo zProperty = zType.GetProperty(sKey);
-                if (null != zProperty && zProperty.CanWrite)
-                {
-                    MethodInfo zMethod = zProperty.GetSetMethod();
-                    int nOverrideValueColumnIdx = dictionaryOverrideColumns[sKey];
-                    if (arrayLine.Count <= nOverrideValueColumnIdx)
-                        continue;
-                    string sValue = arrayLine[nOverrideValueColumnIdx].Trim();
-                    if (!string.IsNullOrEmpty(sValue))
-                    {
-                        if (zProperty.PropertyType == typeof(string))
-                        {
-                            zMethod.Invoke(zOverrideElement, new object[] { sValue });
-                        }
-                        else if (zProperty.PropertyType == typeof(float))
-                        {
-                            float fValue;
-                            if (float.TryParse(sValue, out fValue))
-                            {
-                                zMethod.Invoke(zOverrideElement, new object[] { fValue });
-                            }
-                        }
-                        else if (zProperty.PropertyType == typeof(bool))
-                        {
-                            bool bValue;
-                            if (bool.TryParse(sValue, out bValue))
-                            {
-                                zMethod.Invoke(zOverrideElement, new object[] { bValue });
-                            }
-                        }
-                        else if (zProperty.PropertyType == typeof(Int32))
-                        {
-                            int nValue;
-                            if (int.TryParse(sValue, out nValue))
-                            {
-                                zMethod.Invoke(zOverrideElement, new object[] { nValue });
-                            }
-                        }
-                    }
-                }
-            }
-            zOverrideElement.InitializeCache(); // any cached items must be recached
-            return zOverrideElement;
-        }
-
-        private enum LogicCheck
-        {
-            Equals,
-            NotEquals,
-            GreaterThan,
-            LessThan,
-            GreaterThanOrEqualTo,
-            LessThanOrEqualTo,
-        }
-
-        private string TranslateIfLogic(string sInput)
-        {
-            //Groups
-            //    1    2  3            4    5   6
-            //@"(if)(.*?)([!=><]=|<|>)(.*?)(then )(.*)");
-            //Groups                                   
-            //    1    2  3            4    5      6    7      8
-            //@"(if)(.*?)([!=><]=|<|>)(.*?)(then )(.*?)(else )(.*)");
-            Match zIfMatch = null;
-            string sOutput = string.Empty;
-            bool bHasElse = false;
-            if (s_regexIfThenElseStatement.IsMatch(sInput))
-            {
-                zIfMatch = s_regexIfThenElseStatement.Match(sInput);
-                bHasElse = true;
-            }
-            else if (s_regexIfThenStatement.IsMatch(sInput))
-            {
-                zIfMatch = s_regexIfThenStatement.Match(sInput);
-            }
-            if (null != zIfMatch)
-            {
-                string sCompareType = zIfMatch.Groups[3].ToString();
-                var eCheck = LogicCheck.Equals;
-                switch (sCompareType)
-                {
-                    case "!=":
-                        eCheck = LogicCheck.NotEquals;
-                        break;
-                    case "==":
-                        eCheck = LogicCheck.Equals;
-                        break;
-                    case ">":
-                        eCheck = LogicCheck.GreaterThan;
-                        break;
-                    case "<":
-                        eCheck = LogicCheck.LessThan;
-                        break;
-                    case ">=":
-                        eCheck = LogicCheck.GreaterThanOrEqualTo;
-                        break;
-                    case "<=":
-                        eCheck = LogicCheck.LessThanOrEqualTo;
-                        break;
-                }
-                if (eCheck == LogicCheck.Equals || eCheck == LogicCheck.NotEquals)
-                {
-                    bool bCompare = CompareIfSet(zIfMatch.Groups[2].ToString(), zIfMatch.Groups[4].ToString());
-                    if (eCheck == LogicCheck.NotEquals)
-                    {
-                        bCompare = !bCompare;
-                    }
-                    if (bCompare)
-                    {
-                        sOutput = zIfMatch.Groups[6].ToString();
-                    }
-                    else
-                    {
-                        if (bHasElse)
-                        {
-                            sOutput = zIfMatch.Groups[8].ToString();
-                        }
-                    }
-                }
-                else // numeric check
-                {
-                    decimal nValue1;
-                    decimal nValue2;
-                    bool bSuccess = decimal.TryParse(zIfMatch.Groups[2].ToString(), out nValue1);
-                    bSuccess &= decimal.TryParse(zIfMatch.Groups[4].ToString(), out nValue2);
-                    if (!bSuccess)
-                    {
-                        return string.Empty; // a mess!
-                    }
-                    bool bCompare = false;
-                    switch (eCheck)
-                    {
-                        case LogicCheck.GreaterThan:
-                            bCompare = nValue1 > nValue2;
-                            break;
-                        case LogicCheck.GreaterThanOrEqualTo:
-                            bCompare = nValue1 >= nValue2;
-                            break;
-                        case LogicCheck.LessThan:
-                            bCompare = nValue1 < nValue2;
-                            break;
-                        case LogicCheck.LessThanOrEqualTo:
-                            bCompare = nValue1 <= nValue2;
-                            break;
-                    }
-                    if (bCompare)
-                    {
-                        sOutput = zIfMatch.Groups[6].ToString();
-                    }
-                    else
-                    {
-                        if (bHasElse)
-                        {
-                            sOutput = zIfMatch.Groups[8].ToString();
-                        }
-                    }
-                }
-            }
-            return sOutput;
-        }
-
-        private bool CompareIfSet(string sSet1, string sSet2)
-        {
-            var hSet1 = GetIfSet(sSet1);
-            var hSet2 = GetIfSet(sSet2);
-            foreach (string sKey in hSet1)
-            {
-                if (hSet2.Contains(sKey))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private HashSet<string> GetIfSet(string sSet)
-        {
-            var hSet = new HashSet<string>();
-            // Groups                    
-            //    1    2   3
-            //@"(\[)(.*?)(\])");
-            if (s_regexIfSet.IsMatch(sSet))
-            {
-                var zMatch = s_regexIfSet.Match(sSet);
-                var arraySplit = zMatch.Groups[2].ToString().Split(new char[] { ';' });
-                for (var nIdx = 0; nIdx < arraySplit.Length; nIdx++)
-                {
-                    var sItem = arraySplit[nIdx].Trim().ToLower();
-                    if (!hSet.Contains(sItem))
-                    {
-                        hSet.Add(sItem);
-                    }
-                }
-            }
-            else
-            {
-                hSet.Add(sSet.ToLower().Trim());
-            }
-            return hSet;
-
-        }
-
-        private string TranslateSwitchLogic(string sInput)
-        {
-            //Groups                                   
-            //        1  2    3  4   5
-            //@"(switch)(;)(.*?)(;)(.*)");
-            var nDefaultIndex = -1;
-            if (s_regexSwitchStatement.IsMatch(sInput))
-            {
-                var zMatch = s_regexSwitchStatement.Match(sInput);
-                var sKey = zMatch.Groups[3].ToString();
-                var arrayCases = zMatch.Groups[5].ToString().Split(new char[] { ';' });
-                if (0 == (arrayCases.Length % 2))
-                {
-                    var nIdx = 0;
-                    while (nIdx < arrayCases.Length)
-                    {
-                        if (arrayCases[nIdx].Equals("#default", StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            nDefaultIndex = nIdx;
-                        }
-                        if (arrayCases[nIdx].Equals(sKey, StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            return arrayCases[nIdx + 1];
-                        }
-                        nIdx += 2;
-                    }
-                    if (-1 < nDefaultIndex)
-                    {
-                        return arrayCases[nDefaultIndex + 1];
-                    }
-                }
-            }
-            return sInput;
-        }
-#warning MOVE THIS OUT OF HERE (look for other stray things...) -- much of the content of this method is internal to this class ... ugh
+        /// <param name="listView">The ListView to operate on</param>
         public void PopulateListViewWithElementColumns(ListView listView)
         {
-            var arrayColumnSizes = new int[m_listColumnNames.Count];
-            for (var nCol = 0; nCol < m_listColumnNames.Count; nCol++)
+            var listColumnNames = m_zTranslator.ListColumnNames;
+            var arrayColumnSizes = new int[listColumnNames.Count];
+            for (var nCol = 0; nCol < listColumnNames.Count; nCol++)
             {
                 arrayColumnSizes[nCol] = 100;
             }
@@ -949,114 +475,71 @@ namespace CardMaker.Card
 
             listView.Columns.Clear();
             listView.Items.Clear();
-            for (var nIdx = 1; nIdx < m_listColumnNames.Count; nIdx++)
-            {
-                ListViewAssist.AddColumn(m_listColumnNames[nIdx], arrayColumnSizes[nIdx], listView);
-            }
-            var listLines = CurrentLine.LineColumns;
 
-            if (-1 != m_nCardIndex && listLines.Count > 0)
+            for (var nIdx = 1; nIdx < listColumnNames.Count; nIdx++)
             {
-                listView.Items.Add(new ListViewItem(listLines.GetRange(1, listLines.Count - 1).ToArray()));
+                ListViewAssist.AddColumn(listColumnNames[nIdx], arrayColumnSizes[nIdx], listView);
+            }
+
+            if (-1 != m_nCardIndex)
+            {
+                var listLines = CurrentLine.LineColumns;
+                if (listLines.Count > 0)
+                {
+                    listView.Items.Add(new ListViewItem(listLines.GetRange(1, listLines.Count - 1).ToArray()));
+                }
             }
         }
 
-        #region Cache General
+#region Cache General
 
         public void ResetDeckCache()
         {
-            ResetTranslationCache();
-            ResetMarkupCache();
-        }
-
-        #endregion
-
-        #region Translation Cache
-
-        public void ResetTranslationCache(ProjectLayoutElement zElement)
-        {
-            if (m_dictionaryElementStringCache.ContainsKey(zElement.name))
+            if (m_zTranslator == null)
             {
-                m_dictionaryElementStringCache.Remove(zElement.name);
+                Logger.AddLogLine("Warn: code attempted to clear cache on non-existent translator (this is a mostly harmless bug)");
+                return;
             }
-        }
-
-        private void ResetTranslationCache()
-        {
-            m_dictionaryElementStringCache.Clear();
-        }
-
-        private void AddStringToTranslationCache(string sKey, ElementString zElementString)
-        {
-            if (m_dictionaryElementStringCache.ContainsKey(sKey))
-            {
-                m_dictionaryElementStringCache.Remove(sKey);
-                //Logger.AddLogLine("String Cache: Replace?!");
-            }
-            m_dictionaryElementStringCache.Add(sKey, zElementString);
-        }
-
-        public ElementString GetStringFromTranslationCache(string sKey)
-        {
-            if (m_dictionaryElementStringCache.ContainsKey(sKey))
-                return m_dictionaryElementStringCache[sKey];
-            return null;
+            m_zTranslator.ResetTranslationCache();
+            m_zTranslator.ResetMarkupCache();
         }
 
         #endregion
 
         #region Markup Cache
 
-        public FormattedTextDataCache GetCachedMarkup(string sElementName)
-        {
-            FormattedTextDataCache zCached;
-            if (m_dictionaryMarkupCache.TryGetValue(sElementName, out zCached))
-            {
-                return zCached;
-            }
-            return null;
-        }
-
         public void AddCachedMarkup(string sElementName, FormattedTextDataCache zFormattedData)
         {
-            m_dictionaryMarkupCache.Add(sElementName, zFormattedData);
+            m_zTranslator.AddCachedMarkup(sElementName, zFormattedData);
         }
 
         public void ResetMarkupCache(string sElementName)
         {
-            if (m_dictionaryMarkupCache.ContainsKey(sElementName))
-            {
-                m_dictionaryMarkupCache.Remove(sElementName);
-            }
+            m_zTranslator.ResetMarkupCache(sElementName);
         }
-
-        private void ResetMarkupCache()
-        {
-            m_dictionaryMarkupCache.Clear();
-        }
-
         #endregion
 
-        #region Layout Set
 
-        public bool SetAndLoadLayout(ProjectLayout zLayout, bool bExporting)
+        #region Layout Set
+#warning todo: make a deck loader interface so this can be handled from the command line
+
+        public void SetAndLoadLayout(ProjectLayout zLayout, bool bExporting)
         {
             CardLayout = zLayout;
 
             ResetPrintCardIndex();
-            ResetDeckCache();
 
             var bReferenceFound = false;
 
-            if (null != m_zCardLayout.Reference)
+            if (null != CardLayout.Reference)
             {
                 ProjectLayoutReference[] zReferenceData = null;
 
-                if (m_zCardLayout.combineReferences)
+                if (CardLayout.combineReferences)
                 {
                     var listReferences = new List<ProjectLayoutReference>();
                     ProjectLayoutReference zDefaultReference = null;
-                    foreach (var zReference in m_zCardLayout.Reference)
+                    foreach (var zReference in CardLayout.Reference)
                     {
                         if (zReference.Default)
                         {
@@ -1076,7 +559,7 @@ namespace CardMaker.Card
                 }
                 else
                 {
-                    foreach (var zReference in m_zCardLayout.Reference)
+                    foreach (var zReference in CardLayout.Reference)
                     {
                         if (zReference.Default)
                         {
@@ -1092,12 +575,15 @@ namespace CardMaker.Card
                     "Loading Data",
                     null,
                     400);
-                CardMakerMDI.Instance.InvokeAction(() => zWait.ShowDialog(CardMakerMDI.Instance));
+#warning this needs to be pulled into a deck loader
+                CardMakerInstance.ApplicationForm.InvokeAction(() => zWait.ShowDialog(CardMakerInstance.ApplicationForm));
                 if (!bExporting)
                 {
-                    if (CardMakerMDI.Instance.InvokeFunc(() => CardMakerMDI.Instance.HandleInvalidGoogleCredentials()))
+                    if (CardMakerInstance.GoogleCredentialsInvalid)
                     {
-                        return true;
+                        CardMakerInstance.GoogleCredentialsInvalid = false;
+                        GoogleAuthManager.Instance.FireGoogleAuthCredentialsErrorEvent(
+                            () => LayoutManager.Instance.InitializeActiveLayout());
                     }
                 }
                 bReferenceFound = zWait.ThreadSuccess;
@@ -1116,12 +602,17 @@ namespace CardMaker.Card
                 {
                     CancelButtonVisibile = false
                 };
-                CardMakerMDI.Instance.InvokeAction(() => zWait.ShowDialog(CardMakerMDI.Instance));
+                CardMakerInstance.ApplicationForm.InvokeAction(() => zWait.ShowDialog(CardMakerInstance.ApplicationForm));
             }
-            return false;
         }
 
-        #endregion
+        public string TranslateFileNameString(string sRawString, int nCardNumber, int nLeftPad)
+        {
+            return FilenameTranslator.TranslateFileNameString(sRawString, nCardNumber, nLeftPad, CurrentPrintLine,
+                m_zTranslator.DictionaryDefines, m_zTranslator.DictionaryColumnNameToIndex,
+                CardLayout);
+        }
 
+#endregion
     }
 }

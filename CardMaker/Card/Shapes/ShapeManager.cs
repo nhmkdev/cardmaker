@@ -22,13 +22,13 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using CardMaker.XML;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using CardMaker.XML;
 
 namespace CardMaker.Card.Shapes
 {
@@ -41,10 +41,7 @@ namespace CardMaker.Card.Shapes
 
         private ShapeManager(){}
 
-        public static Dictionary<string, AbstractShape> ShapeDictionary
-        {
-            get { return s_dictionaryShapeByName; }
-        }
+        public static Dictionary<string, AbstractShape> ShapeDictionary => s_dictionaryShapeByName;
 
         public static void Init()
         {
@@ -72,6 +69,9 @@ namespace CardMaker.Card.Shapes
                 AbstractShape zShape;
                 if (s_dictionaryShapeByName.TryGetValue(sShapeName, out zShape))
                 {
+                    // allow any shapes with extended settings to read in the values (ShapeInformationIndex extension)
+                    zShape.InitializeItem(sShapeInfo);
+
                     if ((int)AbstractShape.ShapeInformationIndex.BasicShapeInformation < arraySplit.Length)
                     {
                         int nThickness;
@@ -151,9 +151,9 @@ namespace CardMaker.Card.Shapes
 
     public class ShapeInfo
     {
-        public int Thickness { get; private set; }
-        public int OverrideWidth { get; private set; }
-        public int OverrideHeight { get; private set; }
+        public int Thickness { get; }
+        public int OverrideWidth { get; }
+        public int OverrideHeight { get; }
         public string[] Arguments { get; private set; }
 
         private ShapeInfo() { }

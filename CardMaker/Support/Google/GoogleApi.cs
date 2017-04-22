@@ -23,11 +23,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using Support.IO;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using Support.IO;
 
 namespace Support.UI
 {
@@ -48,11 +48,11 @@ namespace Support.UI
                 var root = (IDictionary<string, object>)zObject;
                 if (root.ContainsKey(EXPIRES_IN))
                 {
-                    var nExpiresInSeconds = -1;
+                    int nExpiresInSeconds;
                     if (int.TryParse(root[EXPIRES_IN].ToString(), out nExpiresInSeconds))
                     {
                         var dtExpiry = DateTime.Now.AddSeconds(nExpiresInSeconds);
-                        Logger.AddLogLine(string.Format("Token expires in {0} seconds ({1})", nExpiresInSeconds, dtExpiry.ToString()));
+                        Logger.AddLogLine($"Token expires in {nExpiresInSeconds} seconds ({dtExpiry.ToString()})");
                     }
                     else
                     {

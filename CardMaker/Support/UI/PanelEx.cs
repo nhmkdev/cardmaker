@@ -62,6 +62,12 @@ namespace Support.UI
             return base.ScrollToControl(activeControl);
         }
 
+        public void ScrollToXY(int nX, int nY)
+        {
+            SetDisplayRectLocation(nX, nY);
+            AdjustFormScrollbars(true);
+        }
+
         /// <summary>
         /// Configures a ScrollableControl to allow full drag and draw.
         /// </summary>

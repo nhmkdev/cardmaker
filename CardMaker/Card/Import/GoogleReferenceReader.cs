@@ -25,7 +25,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using CardMaker.Forms;
+using CardMaker.Data;
+using CardMaker.Events.Managers;
 using CardMaker.XML;
 using Google.GData.Client;
 using Google.GData.Spreadsheets;
@@ -38,21 +39,68 @@ namespace CardMaker.Card.Import
     {
         public const string APP_NAME = "CardMaker";
         public const string CLIENT_ID = "455195524701-cmdvv6fl5ru9uftin99kjmhojt36mnm9.apps.googleusercontent.com";
-        private SpreadsheetsService m_zSpreadsheetsService;
+        private readonly SpreadsheetsService m_zSpreadsheetsService;
 
-        public string ReferencePath { get; private set; }
-
-        public GoogleReferenceReader(ProjectLayoutReference zReference)
+        public class GoogleCacheItem
         {
-            ReferencePath = (File.Exists(zReference.RelativePath)
-                            ? Path.GetFullPath(zReference.RelativePath)
-                            : CardMakerMDI.ProjectPath + zReference.RelativePath);
-            m_zSpreadsheetsService = GoogleSpreadsheet.GetSpreadsheetsService(APP_NAME, CLIENT_ID,
-                CardMakerMDI.GoogleAccessToken);
-
+            public string Reference { get; set; }
+            public List<List<string>> Data { get; set; } 
         }
 
-        public void GetData(string sGoogleReference, List<List<string>> listData, bool removeFirstRow, string nameAppend = "")
+        private readonly Dictionary<string, List<List<string>>> m_dictionaryDataCache = new Dictionary<string, List<List<string>>>();
+
+        private bool m_bCacheUpdated;
+
+        public string ReferencePath { get; }
+
+        public GoogleReferenceReader()
+        {
+            m_zSpreadsheetsService = GoogleSpreadsheet.GetSpreadsheetsService(APP_NAME, CLIENT_ID,
+                CardMakerInstance.GoogleAccessToken);
+
+            LoadCache();
+
+            if (!IsAllDataCached() || CardMakerInstance.ForceDataCacheRefresh)
+            {
+                // local cache is not enough to load this reference, check token access
+                if (!GoogleApi.VerifyAccessToken(CardMakerInstance.GoogleAccessToken))
+                {
+                    CardMakerInstance.GoogleCredentialsInvalid = true;
+                }
+            }
+        }
+
+        public GoogleReferenceReader(ProjectLayoutReference zReference) : this()
+        {
+            ReferencePath = zReference.RelativePath;
+        }
+
+        private void LoadCache()
+        {
+            if (!CardMakerSettings.EnableGoogleCache)
+            {
+                return;
+            }
+
+            List<GoogleCacheItem> listCacheItems = null;
+            if (SerializationUtils.DeserializeFromXmlFile(Path.Combine(CardMakerInstance.StartupPath, CardMakerConstants.GOOGLE_CACHE_FILE), CardMakerConstants.XML_ENCODING,
+                ref listCacheItems))
+            {
+                foreach (var zCacheItem in listCacheItems)
+                {
+                    m_dictionaryDataCache.Add(zCacheItem.Reference, zCacheItem.Data);
+                }
+            }            
+        }
+
+        private bool IsAllDataCached()
+        {
+            return m_dictionaryDataCache.ContainsKey(GetCacheKey(ReferencePath)) &&
+                   m_dictionaryDataCache.ContainsKey(GetCacheKey(GetDefinesReference())) &&
+                   m_dictionaryDataCache.ContainsKey(GetCacheKey(ReferencePath, Deck.DEFINES_DATA_POSTFIX));
+        }
+
+        public void GetData(string sGoogleReference, List<List<string>> listData, bool bRemoveFirstRow, string sNameAppend = "")
         {
             var arraySettings = sGoogleReference.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -61,12 +109,21 @@ namespace CardMaker.Card.Import
                 return;
             }
 
+            string sCacheKey = GetCacheKey(sGoogleReference, sNameAppend);
+            List<List<string>> listCacheData;
+            if (!CardMakerInstance.ForceDataCacheRefresh && m_dictionaryDataCache.TryGetValue(sCacheKey, out listCacheData))
+            {
+                Logger.AddLogLine("Loading {0} from local cache".FormatString(sCacheKey));
+                listData.AddRange(listCacheData);
+                return;
+            }
+
             var sSpreadsheetName = arraySettings[1];
-            var sSheetName = arraySettings[2] + nameAppend;
+            var sSheetName = arraySettings[2] + sNameAppend;
 
             var bCredentialsError = false;
 
-            List<List<String>> listGoogleData;
+            List<List<string>> listGoogleData;
             try
             {
                 listGoogleData = GoogleSpreadsheet.GetSpreadsheet(m_zSpreadsheetsService, sSpreadsheetName, sSheetName);
@@ -89,12 +146,18 @@ namespace CardMaker.Card.Import
             }
             else
             {
-                if (removeFirstRow && listGoogleData.Count > 0)
+                if (bRemoveFirstRow && listGoogleData.Count > 0)
                 {
                     listGoogleData.RemoveAt(0);
                 }
 
                 listData.AddRange(listGoogleData);
+                if (m_dictionaryDataCache.ContainsKey(sCacheKey))
+                {
+                    m_dictionaryDataCache.Remove(sCacheKey);
+                }
+                m_dictionaryDataCache.Add(sCacheKey, listGoogleData);
+                m_bCacheUpdated = true;
             }
         }
 
@@ -105,12 +168,12 @@ namespace CardMaker.Card.Import
 
         public void GetProjectDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData)
         {
-            var sProjectDefineSheetReference =
-                CardMakerMDI.GOOGLE_REFERENCE
-                + CardMakerMDI.GOOGLE_REFERENCE_SPLIT_CHAR
-                + Path.GetFileNameWithoutExtension(CardMakerMDI.Instance.LoadedFile)
-                + CardMakerMDI.GOOGLE_REFERENCE_SPLIT_CHAR
-                + "defines";
+            if (null == ProjectManager.Instance.ProjectFilePath)
+            {
+                return;
+            }
+
+            var sProjectDefineSheetReference = GetDefinesReference();
 
             GetData(sProjectDefineSheetReference, listDefineData, true);
         }
@@ -118,6 +181,42 @@ namespace CardMaker.Card.Import
         public void GetDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData)
         {
             GetData(ReferencePath, listDefineData, true, Deck.DEFINES_DATA_POSTFIX);
+        }
+
+        private string GetDefinesReference()
+        {
+            return CardMakerConstants.GOOGLE_REFERENCE
+                    + CardMakerConstants.GOOGLE_REFERENCE_SPLIT_CHAR
+                    + (string.IsNullOrEmpty(ProjectManager.Instance.LoadedProject.overrideDefineReferenceName) ?
+                        Path.GetFileNameWithoutExtension(ProjectManager.Instance.ProjectFilePath) :
+                        ProjectManager.Instance.LoadedProject.overrideDefineReferenceName)
+                    + CardMakerConstants.GOOGLE_REFERENCE_SPLIT_CHAR
+                    + "defines";
+        }
+
+        private string GetCacheKey(string sReference, string sNameAppend = "")
+        {
+            return sReference + "::" + sNameAppend;
+        }
+
+        public void FinalizeReferenceLoad()
+        {
+            if (!m_bCacheUpdated || !CardMakerSettings.EnableGoogleCache)
+            {
+                return;
+            }
+
+            List<GoogleCacheItem> listCacheItems = new List<GoogleCacheItem>();
+            foreach (var zPair in m_dictionaryDataCache)
+            {
+                listCacheItems.Add(new GoogleCacheItem()
+                {
+                    Reference = zPair.Key,
+                    Data = zPair.Value
+                });
+            }
+            SerializationUtils.SerializeToXmlFile(CardMakerConstants.GOOGLE_CACHE_FILE, listCacheItems,
+                CardMakerConstants.XML_ENCODING);            
         }
     }
 }

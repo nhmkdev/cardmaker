@@ -22,9 +22,8 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using CardMaker.Forms;
+using CardMaker.Data;
 using CardMaker.XML;
-using Support.UI;
 
 namespace CardMaker.Card.Import
 {
@@ -36,19 +35,28 @@ namespace CardMaker.Card.Import
             {
                 return null;
             }
-            if (zReference.RelativePath.StartsWith(CardMakerMDI.GOOGLE_REFERENCE +
-                                                           CardMakerMDI.GOOGLE_REFERENCE_SPLIT_CHAR))
+            if (zReference.RelativePath.StartsWith(CardMakerConstants.GOOGLE_REFERENCE +
+                                                           CardMakerConstants.GOOGLE_REFERENCE_SPLIT_CHAR))
             {
-                if (GoogleApi.VerifyAccessToken(CardMakerMDI.GoogleAccessToken))
+                var zReader = new GoogleReferenceReader(zReference);
+                if (!CardMakerInstance.GoogleCredentialsInvalid)
                 {
-                    return new GoogleReferenceReader(zReference);
-                }
-                else
-                {
-                    CardMakerMDI.GoogleCredentialsInvalid = true;
+                    return zReader;
                 }
             }
             return new CSVReferenceReader(zReference);
         }
+
+        public static ReferenceReader GetDefineReader(ReferenceType eReferenceType)
+        {
+            switch (eReferenceType)
+            {
+                case ReferenceType.CSV:
+                    return new CSVReferenceReader();
+                case ReferenceType.Google:
+                    return new GoogleReferenceReader();
+            }
+            return null;
+        }            
     }
 }

@@ -22,11 +22,11 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
 using System.Linq;
 using Google.GData.Client;
 using Google.GData.Spreadsheets;
 using Support.IO;
-using System.Collections.Generic;
 
 namespace Support.UI
 {
@@ -46,8 +46,10 @@ namespace Support.UI
                 AccessToken = sGoogleAccessToken
             };
 
-            var spreadsheetsService = new SpreadsheetsService(sAppName);
-            spreadsheetsService.RequestFactory = new GOAuth2RequestFactory(null, sAppName, zAuthParameters);
+            var spreadsheetsService = new SpreadsheetsService(sAppName)
+            {
+                RequestFactory = new GOAuth2RequestFactory(null, sAppName, zAuthParameters)
+            };
 
             return spreadsheetsService;
         }
@@ -69,90 +71,112 @@ namespace Support.UI
             var bFoundSpreadsheet = false;
             foreach (var entry in feed.Entries)
             {
-                if (entry.Title.Text == sSpreadsheetName)
+                if (entry.Title.Text != sSpreadsheetName)
                 {
-                    bFoundSpreadsheet = true;
-                    Logger.AddLogLine("Google: Found spreadsheet: " + sSpreadsheetName);
+                    continue;
+                }
 
-                    var link = entry.Links.FindService(GDataSpreadsheetsNameTable.WorksheetRel, null);
+                bFoundSpreadsheet = true;
+                Logger.AddLogLine("Google: Found spreadsheet: " + sSpreadsheetName);
 
-                    var wsquery = new WorksheetQuery(link.HRef.ToString())
+                var link = entry.Links.FindService(GDataSpreadsheetsNameTable.WorksheetRel, null);
+
+                var wsquery = new WorksheetQuery(link.HRef.ToString())
+                {
+                    Title = sSheetName
+                };
+                var wsfeed = zSpreadsheetService.Query(wsquery);
+
+                var bFoundSheet = false;
+
+                foreach (var worksheet in wsfeed.Entries)
+                {
+                    //System.Diagnostics.Trace.WriteLine(worksheet.Title.Text);
+
+                    if (worksheet.Title.Text != sSheetName)
                     {
-                        Title = sSheetName
-                    };
-                    var wsfeed = zSpreadsheetService.Query(wsquery);
+                        continue;
+                    }
+                    bFoundSheet = true;
+                    Logger.AddLogLine("Google: Found sheet: " + sSheetName);
 
-                    var bFoundSheet = false;
+                    var cellFeedLink = worksheet.Links.FindService(GDataSpreadsheetsNameTable.CellRel, null);
 
-                    foreach (var worksheet in wsfeed.Entries)
+                    var cquery = new CellQuery(cellFeedLink.HRef.ToString());
+                    var cfeed = zSpreadsheetService.Query(cquery);
+
+                    //System.Diagnostics.Trace.WriteLine("Cells in this worksheet:");
+                    uint uRow = 1;
+                    uint uCol = 1;
+                    var listRow = new List<string>();
+                    foreach (var curCell in cfeed.Entries.OfType<CellEntry>())
                     {
-                        //System.Diagnostics.Trace.WriteLine(worksheet.Title.Text);
-
-                        if (worksheet.Title.Text == sSheetName)
+                        // NOTE: This completely ignores blank lines in the spreadsheet
+                        if (uRow != curCell.Cell.Row)
                         {
-                            bFoundSheet = true;
-                            Logger.AddLogLine("Google: Found sheet: " + sSheetName);
+                            // new row, flush the previous
+                            listLines.Add(listRow);
+                            listRow = new List<string>();
+                            uRow = curCell.Cell.Row;
+                            uCol = 1;
+                        }
 
-                            var cellFeedLink = worksheet.Links.FindService(GDataSpreadsheetsNameTable.CellRel, null);
-
-                            var cquery = new CellQuery(cellFeedLink.HRef.ToString());
-                            var cfeed = zSpreadsheetService.Query(cquery);
-
-                            //System.Diagnostics.Trace.WriteLine("Cells in this worksheet:");
-                            uint uRow = 1;
-                            uint uCol = 1;
-                            var listRow = new List<string>();
-                            foreach (var curCell in cfeed.Entries.OfType<CellEntry>())
+                        // fill in any missing columns with empty strings
+                        if (uCol != curCell.Cell.Column)
+                        {
+                            while (uCol < curCell.Cell.Column)
                             {
-                                // NOTE: This completely ignores blank lines in the spreadsheet
-                                if (uRow != curCell.Cell.Row)
-                                {
-                                    // new row, flush the previous
-                                    listLines.Add(listRow);
-                                    listRow = new List<string>();
-                                    uRow = curCell.Cell.Row;
-                                    uCol = 1;
-                                }
-
-                                // fill in any missing columns with empty strings
-                                if (uCol != curCell.Cell.Column)
-                                {
-                                    while (uCol < curCell.Cell.Column)
-                                    {
-                                        listRow.Add(string.Empty);
-                                        uCol++;
-                                    }
-                                }
-
-                                listRow.Add(curCell.Cell.Value);
+                                listRow.Add(string.Empty);
                                 uCol++;
                             }
-                            // always flush the last line
-                            listLines.Add(listRow);
                         }
-                        if (bFoundSheet)
-                            break;
-                    }
-                    if (!bFoundSheet)
-                        Logger.AddLogLine("Google: Failed to find sheet: " + sSheetName);
 
+                        listRow.Add(curCell.Cell.Value ?? string.Empty);
+                        uCol++;
+                    }
+                    // always flush the last line
+                    listLines.Add(listRow);
                 }
-                if (bFoundSpreadsheet)
+                if (bFoundSheet)
+                {
                     break;
+                }
+                Logger.AddLogLine("Google: Failed to find sheet: " + sSheetName);
             }
 
             if (!bFoundSpreadsheet)
+            {
                 Logger.AddLogLine("Google: Failed to find spreadsheet: " + sSpreadsheetName);
+            }
 
+            processNewLines(listLines);
             return listLines;
+        }
+
+        /// <summary>
+        /// Converts newline characters to newline escape characters
+        /// </summary>
+        /// <param name="listLines">The list of data representing the sheet of strings</param>
+        private static void processNewLines(List<List<string>> listLines)
+        {
+            foreach (var listLine in listLines)
+            {
+                for (var nIdx = 0; nIdx < listLine.Count; nIdx++)
+                {
+                    if (listLine[nIdx] == null)
+                    {
+                        // however unlikely
+                        continue;
+                    }
+                    listLine[nIdx] = listLine[nIdx].Replace("\n", "\\n");
+                }
+            }
         }
 
         public static AtomEntryCollection GetSpreadsheetList(SpreadsheetsService zSpreadsheetService)
         {
             // get all spreadsheet names
-            var query = new SpreadsheetQuery
-            {
-            };
+            var query = new SpreadsheetQuery();
             var feed = zSpreadsheetService.Query(query);
             return feed.Entries;
         }
@@ -161,9 +185,7 @@ namespace Support.UI
         {
             var link = zSheetEntry.Links.FindService(GDataSpreadsheetsNameTable.WorksheetRel, null);
 
-            var wsquery = new WorksheetQuery(link.HRef.ToString())
-            {
-            };
+            var wsquery = new WorksheetQuery(link.HRef.ToString());
             var wsfeed = zSpreadsheetService.Query(wsquery);
             return wsfeed.Entries;
         }

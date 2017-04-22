@@ -37,14 +37,28 @@ namespace Support.UI
 
         public static Action OnClearUserActions { get; set; }
 
-        public static void PushAction(Action<bool> zAction)
+        /// <summary>
+        /// Pushes an action onto the action stack
+        /// </summary>
+        /// <param name="zAction">The action to push</param>
+        /// <param name="bPerformAction">Flag indicating whether to execute the action after pushing it</param>
+        public static void PushAction(Action<bool> zAction, bool bPerformAction = false)
         {
             m_stackUndo.Push(zAction);
+            if (bPerformAction)
+            {
+                zAction(true);
+            }
+
             // An external change must erase the entire redo stack, 
             // since the redo operations will no longer be consistent with the current state!
             m_stackRedo.Clear();
         }
 
+        /// <summary>
+        /// Pops the undo action and pushes it to the redo stack. The action is not executed.
+        /// </summary>
+        /// <returns></returns>
         public static Action<bool> GetUndoAction()
         {
             // pop the undo stack and push into the redo
@@ -57,6 +71,10 @@ namespace Support.UI
             return zAction;
         }
 
+        /// <summary>
+        /// Pops the redo action and pushes it to the redo stack. The action is not executed.
+        /// </summary>
+        /// <returns></returns>
         public static Action<bool> GetRedoAction()
         {
             // pop the redo stack and push into the undo
@@ -78,12 +96,11 @@ namespace Support.UI
         {
             m_stackRedo.Clear();
             m_stackUndo.Clear();
-            if (null != OnClearUserActions)
-                OnClearUserActions();
+            OnClearUserActions?.Invoke();
         }
 
-        public static int UndoCount { get { return m_stackUndo.Count; } }
-        public static int RedoCount { get { return m_stackRedo.Count; } }
+        public static int UndoCount => m_stackUndo.Count;
+        public static int RedoCount => m_stackRedo.Count;
     }
 
 }

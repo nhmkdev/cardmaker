@@ -23,77 +23,84 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System.Drawing;
-using CardMaker.Forms;
+using CardMaker.Events.Managers;
 using CardMaker.XML;
 
 namespace CardMaker.Card.Export
 {
     public abstract class CardExportBase
     {
-        protected int m_nExportLayoutStartIndex;
-        protected int m_nExportLayoutEndIndex;
-        protected Bitmap m_zExportCardBuffer = null;
+        protected Bitmap m_zExportCardBuffer;
         protected ProjectLayout m_zLastLayout = null;
+
+        protected int ExportLayoutStartIndex { get; private set; }
+        protected int ExportLayoutEndIndex { get; private set; }
         
-        public CardRenderer CardRenderer
-        {
-            get;
-            private set;
-        }
+        protected CardRenderer CardRenderer { get; }
 
         protected CardExportBase(int nLayoutStartIndex, int nLayoutEndIndex)
         {
-            m_nExportLayoutStartIndex = nLayoutStartIndex;
-            m_nExportLayoutEndIndex = nLayoutEndIndex;
+            ExportLayoutStartIndex = nLayoutStartIndex;
+            ExportLayoutEndIndex = nLayoutEndIndex;
             CardRenderer = new CardRenderer
             {
                 CurrentDeck = new Deck()
             };
         }
 
-        protected void ChangePrintCardCanvas(int nIdx)
+        /// <summary>
+        /// Changes the layout to the specified index in the project
+        /// </summary>
+        /// <param name="nIdx"></param>
+        protected void ChangeExportLayoutIndex(int nIdx)
         {
             // based on the currently loaded project get the layout based on the index
-            ProjectLayout zLayout = MDIProject.Instance.GetProjectLayoutFromNode(nIdx);
-            SetCardLayout(zLayout);
+            var zLayout = ProjectManager.Instance.LoadedProject.Layout[nIdx];
+            CurrentDeck.SetAndLoadLayout(zLayout ?? CurrentDeck.CardLayout, true);
         }
 
-#warning consider removing this extra step...
-        public Deck CurrentDeck 
-        {
-            get
-            {
-                return CardRenderer.CurrentDeck;
-            }
-        }
+        protected Deck CurrentDeck => CardRenderer.CurrentDeck;
 
         ~CardExportBase()
         {
-            if (m_zExportCardBuffer != null)
-            {
-                m_zExportCardBuffer.Dispose();
-            }
+            m_zExportCardBuffer?.Dispose();
         }
 
-        public bool SetCardLayout(ProjectLayout zCardLayout)
-        {
-            // the setter does more than set
-            return CurrentDeck.SetAndLoadLayout(zCardLayout ?? CurrentDeck.CardLayout, true);
-        }
-
-        public virtual void UpdateBufferBitmap(int nWidth, int nHeight, Graphics zGraphics = null)
+        /// <summary>
+        /// Updates the existing buffer image if necessary
+        /// </summary>
+        /// <param name="nWidth"></param>
+        /// <param name="nHeight"></param>
+        /// <param name="zGraphics"></param>
+        protected virtual void UpdateBufferBitmap(int nWidth, int nHeight, Graphics zGraphics = null)
         {
             if (null == m_zExportCardBuffer ||
                 nWidth != m_zExportCardBuffer.Width ||
                 nHeight != m_zExportCardBuffer.Height)
             {
-                if (null != m_zExportCardBuffer)
-                {
-                    m_zExportCardBuffer.Dispose();
-                }
+                m_zExportCardBuffer?.Dispose();
                 m_zExportCardBuffer = null == zGraphics
                     ? new Bitmap(nWidth, nHeight)
                     : new Bitmap(nWidth, nHeight, zGraphics);
+            }
+        }
+
+        /// <summary>
+        /// Rotates the export buffer based on the Layout exportRotation setting
+        /// </summary>
+        /// <param name="zBuffer"></param>
+        /// <param name="zLayout"></param>
+        /// <param name="postTransition"></param>
+        protected void ProcessRotateExport(Bitmap zBuffer, ProjectLayout zLayout, bool postTransition)
+        {
+            switch (zLayout.exportRotation)
+            {
+                case 90:
+                    zBuffer.RotateFlip(postTransition ? RotateFlipType.Rotate270FlipNone : RotateFlipType.Rotate90FlipNone);
+                    break;
+                case -90:
+                    zBuffer.RotateFlip(postTransition ? RotateFlipType.Rotate90FlipNone : RotateFlipType.Rotate270FlipNone);
+                    break;
             }
         }
     }

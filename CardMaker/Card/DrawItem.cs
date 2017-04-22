@@ -28,17 +28,19 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
-using CardMaker.Forms;
 using CardMaker.Card.Shapes;
+using CardMaker.Data;
+using CardMaker.Events.Managers;
 using CardMaker.XML;
 
 namespace CardMaker.Card
 {
-    static public partial class DrawItem
+    public static partial class DrawItem
     {
         private const int IMAGE_CACHE_MAX = 50;
 
         private static readonly Pen s_zPenDebugBorder = new Pen(Color.FromArgb(196, Color.Red), 1);
+        private static readonly Pen s_zPenDebugGuides = new Pen(Color.FromArgb(196, Color.LightPink), 1);
         private static readonly Font s_zDefaultFont = new Font("Arial", 12);
         private static readonly Pen m_zPenElementSelect = Pens.ForestGreen;
 
@@ -48,6 +50,13 @@ namespace CardMaker.Card
 
         public const float OutlineFontScale = 395f / 300f;
 
+        private static readonly IDrawText s_zDrawText =
+#if false
+            new DrawTextRenderer();
+#else
+            new DrawTextGraphics();
+#endif
+
         static DrawItem()
         {
             for (int nIdx = 0; nIdx < (int)ElementType.End; nIdx++)
@@ -56,13 +65,7 @@ namespace CardMaker.Card
             }
         }
 
-        public static Font DefaultFont
-        {
-            get
-            {
-                return s_zDefaultFont;
-            }
-        }
+        public static Font DefaultFont => s_zDefaultFont;
 
         public static ElementType GetElementType(string sType)
         {
@@ -78,6 +81,15 @@ namespace CardMaker.Card
         {
             // note that the border is inclusive in the width/height consuming 2 pixels (0 to total-1)
             zGraphics.TranslateTransform(nX, nY);
+            if (bSelected && CardMakerInstance.DrawSelectedElementGuides)
+            {
+                zGraphics.DrawLine(s_zPenDebugGuides, new PointF(0, zElement.y), new PointF(zGraphics.ClipBounds.Width, zElement.y));
+                zGraphics.DrawLine(s_zPenDebugGuides, new PointF(0, zElement.y + zElement.height - 1),
+                    new PointF(zGraphics.ClipBounds.Width, zElement.y + zElement.height));
+                zGraphics.DrawLine(s_zPenDebugGuides, new PointF(zElement.x, 0), new PointF(zElement.x, zGraphics.ClipBounds.Height));
+                zGraphics.DrawLine(s_zPenDebugGuides, new PointF(zElement.x + zElement.width - 1, 0),
+                    new PointF(zElement.x + zElement.width, zGraphics.ClipBounds.Height));
+            }
             zGraphics.DrawRectangle(s_zPenDebugBorder, zElement.x, zElement.y, zElement.width - 1, zElement.height - 1);
             if (bSelected)
             {
@@ -85,7 +97,7 @@ namespace CardMaker.Card
             }
         }
 
-        public static void DrawElement(Graphics zGraphics, Deck zDeck, ProjectLayoutElement zElement, ElementType eType, int nX, int nY, string sInput)
+        public static void DrawElement(Graphics zGraphics, Deck zDeck, ProjectLayoutElement zElement, ElementType eType, int nX, int nY, string sInput, bool bExport)
         {
             switch (eType)
             {
@@ -131,6 +143,10 @@ namespace CardMaker.Card
                 zGraphics.TranslateTransform(zElement.x + nX + (zElement.width >> 1), zElement.y + nY + (zElement.height >> 1));
                 zGraphics.RotateTransform(zElement.rotation);
                 zGraphics.TranslateTransform(-(zElement.width >> 1), -(zElement.height >> 1));
+                if (CardMakerInstance.DrawElementBorder && CardMakerInstance.DrawSelectedElementRotationBounds && !bExport)
+                {
+                    zGraphics.DrawRectangle(Pens.LightGreen, 0, 0, zElement.width - 1, zElement.height - 1);
+                }
             }
             else
             {
@@ -138,11 +154,12 @@ namespace CardMaker.Card
             }
             // TODO: an interface for all these would be more appropriate
 
+
             // Draw
             switch (eType)
             {   
                 case ElementType.Text:
-                    DrawText(zGraphics, zElement, sInput, zBrush, zFont, colorFont);
+                    s_zDrawText.DrawText(zGraphics, zElement, sInput, zBrush, zFont, colorFont);
                     break;
                 case ElementType.FormattedText:
                     DrawFormattedText(zGraphics, zDeck, zElement, sInput, zBrush, zFont, colorFont);
@@ -207,9 +224,11 @@ namespace CardMaker.Card
                 }
                 if (!File.Exists(sFile))
                 {
-                    sFile = CardMakerMDI.ProjectPath + sFile;
+                    sFile = ProjectManager.Instance.ProjectPath + sFile;
                     if (!File.Exists(sFile))
+                    {
                         return null;
+                    }
                 }
 
                 Bitmap zSourceImage;
@@ -275,7 +294,12 @@ namespace CardMaker.Card
             // draw the outline
             if (0 < zElement.outlinethickness)
             {
-                var outlinePen = new Pen(Color.FromArgb(zElement.opacity, zElement.GetElementOutlineColor()), zElement.outlinethickness);
+                var outlinePen = new Pen(Color.FromArgb(zElement.opacity, zElement.GetElementOutlineColor()),
+                    zElement.outlinethickness)
+                {
+                    LineJoin = LineJoin.Round
+                };
+#warning This outline pen linejoin should be customizable (as it rounds the corners but corrects other issues!)
                 zGraphics.DrawPath(outlinePen, zPath);
             }
         }

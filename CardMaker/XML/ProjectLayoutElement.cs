@@ -23,85 +23,93 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Reflection;
 using System.Xml.Serialization;
+using CardMaker.Data;
 using Support.IO;
+using Support.Util;
 
 namespace CardMaker.XML
 {
     public class ProjectLayoutElement
     {
         private const string COLOR_HEX_STR = "0x";
+        private static readonly List<PropertyInfo> s_listPropertyInfos;
 
         #region Properties
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public string name { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public string type { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public int x { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public int y { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public int width { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public int height { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public string variable { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public string font { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public string elementcolor { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public string bordercolor { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public int borderthickness { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public float rotation { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public int horizontalalign { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public int verticalalign { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public int lineheight { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public int wordspace { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public int opacity { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public bool enabled { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public string outlinecolor { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public int outlinethickness { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
+        public bool justifiedtext { get; set; }
+
+        [XmlAttribute]
         public bool autoscalefont { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public bool lockaspect { get; set; }
 
-        [XmlAttributeAttribute]
+        [XmlAttribute]
         public bool keeporiginalsize { get; set; }
 
         #endregion
@@ -123,8 +131,8 @@ namespace CardMaker.XML
         public ProjectLayoutElement(string sName)
         {
             // actual values
-            verticalalign = 0;
-            horizontalalign = 0;
+            verticalalign = (int)StringAlignment.Near;
+            horizontalalign = (int)StringAlignment.Near;
             x = 0;
             y = 0;
             width = 40;
@@ -148,6 +156,36 @@ namespace CardMaker.XML
             enabled = true;
 
             InitializeCache();
+        }
+
+        public Color GetElementBorderColor()
+        {
+            return m_colorBorder;
+        }
+
+        public Color GetElementColor()
+        {
+            return m_colorElement;
+        }
+
+        public Color GetElementOutlineColor()
+        {
+            return m_colorOutline;
+        }
+
+        public Font GetElementFont()
+        {
+            return m_fontText;
+        }
+
+        public StringAlignment GetHorizontalAlignment()
+        {
+            return (StringAlignment) horizontalalign;
+        }
+
+        public StringAlignment GetVerticalAlignment()
+        {
+            return (StringAlignment)verticalalign;
         }
 
         /// <summary>
@@ -206,6 +244,8 @@ namespace CardMaker.XML
         /// <returns>The color, or Color.Black by default</returns>
         public static Color TranslateColorString(string sColor)
         {
+            sColor = sColor.Trim();
+
             if (null != sColor)
             {
                 if (sColor.StartsWith(COLOR_HEX_STR, StringComparison.CurrentCultureIgnoreCase))
@@ -224,7 +264,7 @@ namespace CardMaker.XML
                 {
                     switch (sColor.Length)
                     {
-                        case 6: //0xRGB
+                        case 6: //0xRGB (hex RGB)
                             return Color.FromArgb(
                                 Math.Min(255,
                                     Int32.Parse(sColor.Substring(0, 2), System.Globalization.NumberStyles.HexNumber)),
@@ -232,7 +272,7 @@ namespace CardMaker.XML
                                     Int32.Parse(sColor.Substring(2, 2), System.Globalization.NumberStyles.HexNumber)),
                                 Math.Min(255,
                                     Int32.Parse(sColor.Substring(4, 2), System.Globalization.NumberStyles.HexNumber)));
-                        case 8: //0xRGBA
+                        case 8: //0xRGBA (hex RGBA)
                             return Color.FromArgb(
                                 Math.Min(255,
                                     Int32.Parse(sColor.Substring(6, 2), System.Globalization.NumberStyles.HexNumber)),
@@ -242,12 +282,12 @@ namespace CardMaker.XML
                                     Int32.Parse(sColor.Substring(2, 2), System.Globalization.NumberStyles.HexNumber)),
                                 Math.Min(255,
                                     Int32.Parse(sColor.Substring(4, 2), System.Globalization.NumberStyles.HexNumber)));
-                        case 9: //RGB
+                        case 9: //RGB (int RGB)
                             return Color.FromArgb(
                                 Math.Min(255, Int32.Parse(sColor.Substring(0, 3))),
                                 Math.Min(255, Int32.Parse(sColor.Substring(3, 3))),
                                 Math.Min(255, Int32.Parse(sColor.Substring(6, 3))));
-                        case 12: //RGBA
+                        case 12: //RGBA (int RGBA)
                             return Color.FromArgb(
                                 Math.Min(255, Int32.Parse(sColor.Substring(9, 3))),
                                 Math.Min(255, Int32.Parse(sColor.Substring(0, 3))),
@@ -264,6 +304,11 @@ namespace CardMaker.XML
             return Color.Black;
         }
 
+        /// <summary>
+        /// Converts a color to the a color formatted string for serialization across the app (0x hex form)
+        /// </summary>
+        /// <param name="zColor"></param>
+        /// <returns></returns>
         public static string GetElementColorString(Color zColor)
         {
             return COLOR_HEX_STR +
@@ -282,35 +327,17 @@ namespace CardMaker.XML
         {
             var arraySplit = fontString.Split(new char[] { ';' });
             float fFontSize;
-            if (6 != arraySplit.Length || !float.TryParse(arraySplit[1], out fFontSize))
+            if (6 != arraySplit.Length || !ParseUtil.ParseFloat(arraySplit[1], out fFontSize))
             {
                 return null;
             }
-            return new Font(arraySplit[0], float.Parse(arraySplit[1]),
+            return new Font(
+                arraySplit[0], 
+                fFontSize,
                 (arraySplit[2].Equals("1") ? FontStyle.Bold : FontStyle.Regular) |
                 (arraySplit[3].Equals("1") ? FontStyle.Underline : FontStyle.Regular) |
                 (arraySplit[4].Equals("1") ? FontStyle.Italic : FontStyle.Regular) |
                 (arraySplit[5].Equals("1") ? FontStyle.Strikeout : FontStyle.Regular));
-        }
-
-        public Color GetElementBorderColor()
-        {
-            return m_colorBorder;
-        }
-
-        public Color GetElementColor()
-        {
-            return m_colorElement;
-        }
-
-        public Color GetElementOutlineColor()
-        {
-            return m_colorOutline;
-        }
-
-        public Font GetElementFont()
-        {
-            return m_fontText;
         }
 
         /// <summary>
@@ -355,6 +382,21 @@ namespace CardMaker.XML
                    (zFont.Italic ? "1" : "0") + ";" +
                    (zFont.Strikeout ? "1" : "0");
             m_fontText = zFont;
+        }
+
+        /// <summary>
+        /// Gets the set of PropertyInfo objects associated with this type (sorted by name)
+        /// </summary>
+        public static PropertyInfo[] SortedPropertyInfos => s_listPropertyInfos.ToArray();
+
+        static ProjectLayoutElement()
+        {
+            s_listPropertyInfos = new List<PropertyInfo>(typeof(ProjectLayoutElement).GetProperties(
+                BindingFlags.Public |
+                BindingFlags.NonPublic |
+                BindingFlags.Instance |
+                BindingFlags.DeclaredOnly));
+            s_listPropertyInfos.Sort((zPropA, zPropB) => zPropA.Name.CompareTo(zPropB.Name));
         }
 
     }

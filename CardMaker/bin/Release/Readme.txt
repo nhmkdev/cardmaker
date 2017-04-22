@@ -22,13 +22,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-Current Known Issues
---------------------
-- Printing is not perfect.
-- Color selection dialog not exactly perfect...
-- FormattedText
-+ Mixing background color and font size probably won't do what you want.
-
 Current Known Mono Issues (Lightly tested in Ubuntu 12.04 LTS)
 -------------------------
 I installed mono using this: "sudo apt-get install mono-complete"

@@ -25,12 +25,12 @@
 using System;
 using System.Drawing;
 using System.IO;
-using CardMaker.Forms;
+using CardMaker.Events.Managers;
 using CardMaker.XML;
 
 namespace CardMaker.Card
 {
-    static public partial class DrawItem
+    public static partial class DrawItem
     {
         private static void DrawGraphic(Graphics zGraphics, string sFile, ProjectLayoutElement zElement)
         {
@@ -41,7 +41,7 @@ namespace CardMaker.Card
             }
             if (!File.Exists(sPath))
             {
-                sPath = CardMakerMDI.ProjectPath + sFile;
+                sPath = ProjectManager.Instance.ProjectPath + sFile;
             }
             if (File.Exists(sPath))
             {
@@ -77,15 +77,15 @@ namespace CardMaker.Card
                 int nY = 0;
 
                 // standard alignment adjustment
-                UpdateAlignmentValue(zElement.horizontalalign, ref nX, zElement.width, nWidth);
-                UpdateAlignmentValue(zElement.verticalalign, ref nY, zElement.height, nHeight);
+                UpdateAlignmentValue(zElement.GetHorizontalAlignment(), ref nX, zElement.width, nWidth);
+                UpdateAlignmentValue(zElement.GetVerticalAlignment(), ref nY, zElement.height, nHeight);
 
                 zGraphics.DrawImage(zBmp, nX, nY, nWidth, nHeight);
 
             }
             else
             {
-                MDIIssues.Instance.AddIssue("Image file not found: " + sFile);
+                IssueManager.Instance.FireAddIssueEvent("Image file not found: " + sFile);
             }
             // draw nothing
         }
@@ -107,27 +107,27 @@ namespace CardMaker.Card
             // determine if the update is needed for drawing source X or target X
             if (zBmp.Width > zElement.width)
             {
-                UpdateAlignmentValue(zElement.horizontalalign, ref nSourceX, zBmp.Width, zElement.width);
+                UpdateAlignmentValue(zElement.GetHorizontalAlignment(), ref nSourceX, zBmp.Width, zElement.width);
             }
             else
             {
-                UpdateAlignmentValue(zElement.horizontalalign, ref nX, zElement.width, zBmp.Width);
+                UpdateAlignmentValue(zElement.GetHorizontalAlignment(), ref nX, zElement.width, zBmp.Width);
             }
             // determine if the update is needed for drawing source Y or target Y
             if (zBmp.Height > zElement.height)
             {
-                UpdateAlignmentValue(zElement.verticalalign, ref nSourceY, zBmp.Height, zElement.height);
+                UpdateAlignmentValue(zElement.GetVerticalAlignment(), ref nSourceY, zBmp.Height, zElement.height);
             }
             else
             {
-                UpdateAlignmentValue(zElement.verticalalign, ref nY, zElement.height, zBmp.Height);
+                UpdateAlignmentValue(zElement.GetVerticalAlignment(), ref nY, zElement.height, zBmp.Height);
             }
             zGraphics.DrawImage(zBmp, nX, nY, new Rectangle(nSourceX, nSourceY, zElement.width, zElement.height), GraphicsUnit.Pixel);
         }
 
-        private static void UpdateAlignmentValue(int nAlignment, ref int nResult, int nLarge, int nSmall)
+        private static void UpdateAlignmentValue(StringAlignment eAlignment, ref int nResult, int nLarge, int nSmall)
         {
-            switch ((StringAlignment)nAlignment)
+            switch (eAlignment)
             {
                 case StringAlignment.Center:
                     nResult = (nLarge - nSmall) >> 1;

@@ -22,11 +22,11 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using Google.GData.Client;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
+using Google.GData.Client;
 using Google.GData.Spreadsheets;
 using Support.IO;
 
@@ -36,17 +36,11 @@ namespace Support.UI
     {
         private readonly bool m_bRequireSheetSelect;
         private AtomEntryCollection m_zAllEntries;
-        private SpreadsheetsService m_zSpreadsheetsService;
+        private readonly SpreadsheetsService m_zSpreadsheetsService;
 
-        public AtomEntry SelectedSpreadsheet
-        {
-            get { return listViewSpreadsheets.SelectedItems.Count == 0 ? null : (AtomEntry)listViewSpreadsheets.SelectedItems[0].Tag; }
-        }
+        public AtomEntry SelectedSpreadsheet => listViewSpreadsheets.SelectedItems.Count == 0 ? null : (AtomEntry)listViewSpreadsheets.SelectedItems[0].Tag;
 
-        public AtomEntry SelectedSheet
-        {
-            get { return listViewSheets.SelectedItems.Count == 0 ? null : (AtomEntry)listViewSheets.SelectedItems[0].Tag; }
-        }
+        public AtomEntry SelectedSheet => listViewSheets.SelectedItems.Count == 0 ? null : (AtomEntry)listViewSheets.SelectedItems[0].Tag;
 
         public GoogleSpreadsheetBrowser(string sAppName, string sClientId, string sGoogleAccessToken, bool bRequireSheetSelect)
         {
@@ -88,7 +82,7 @@ namespace Support.UI
                     {
                         this.InvokeAction(
                             () => MessageBox.Show(this, "Failed to access Google Spreadsheets", "Access Failed", MessageBoxButtons.OK, MessageBoxIcon.Error));
-                        this.InvokeAction(() => Close());
+                        this.InvokeAction(Close);
                         WaitDialog.Instance.CloseWaitDialog();
                         return;
                     }
@@ -197,10 +191,7 @@ namespace Support.UI
             {
                 Logger.AddLogLine("General exception: " + ex.Message);
             }
-            if (null != actionOnException)
-            {
-                actionOnException();
-            }
+            actionOnException?.Invoke();
             return null;
         }
 

@@ -54,8 +54,13 @@ namespace CardMaker.Forms
         {
             this.components = new System.ComponentModel.Container();
             this.groupBoxCardSet = new System.Windows.Forms.GroupBox();
+            this.checkLoadAllReferences = new System.Windows.Forms.CheckBox();
             this.btnScale = new System.Windows.Forms.Button();
             this.resizeBtn = new System.Windows.Forms.Button();
+            this.listViewElements = new Support.UI.ListViewDoubleBuffered();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.contextMenuElements = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -81,11 +86,7 @@ namespace CardMaker.Forms
             this.label2 = new System.Windows.Forms.Label();
             this.numericRowIndex = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
-            this.checkLoadAllReferences = new System.Windows.Forms.CheckBox();
-            this.listViewElements = new Support.UI.ListViewDoubleBuffered();
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.pasteSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBoxCardSet.SuspendLayout();
             this.contextMenuElements.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericCardSetDPI)).BeginInit();
@@ -127,6 +128,17 @@ namespace CardMaker.Forms
             this.groupBoxCardSet.TabStop = false;
             this.groupBoxCardSet.Text = "Card Layout";
             // 
+            // checkLoadAllReferences
+            // 
+            this.checkLoadAllReferences.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.checkLoadAllReferences.Location = new System.Drawing.Point(152, 67);
+            this.checkLoadAllReferences.Name = "checkLoadAllReferences";
+            this.checkLoadAllReferences.Size = new System.Drawing.Size(138, 16);
+            this.checkLoadAllReferences.TabIndex = 33;
+            this.checkLoadAllReferences.Text = "Load All References";
+            this.checkLoadAllReferences.UseVisualStyleBackColor = true;
+            this.checkLoadAllReferences.CheckedChanged += new System.EventHandler(this.HandleCardSetValueChange);
+            // 
             // btnScale
             // 
             this.btnScale.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -149,27 +161,69 @@ namespace CardMaker.Forms
             this.resizeBtn.UseVisualStyleBackColor = true;
             this.resizeBtn.Click += new System.EventHandler(this.resize_Click);
             // 
+            // listViewElements
+            // 
+            this.listViewElements.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.listViewElements.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.listViewElements.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2,
+            this.columnHeader3});
+            this.listViewElements.ContextMenuStrip = this.contextMenuElements;
+            this.listViewElements.FullRowSelect = true;
+            this.listViewElements.GridLines = true;
+            this.listViewElements.HideSelection = false;
+            this.listViewElements.Location = new System.Drawing.Point(6, 89);
+            this.listViewElements.Name = "listViewElements";
+            this.listViewElements.Size = new System.Drawing.Size(310, 136);
+            this.listViewElements.TabIndex = 30;
+            this.listViewElements.UseCompatibleStateImageBehavior = false;
+            this.listViewElements.View = System.Windows.Forms.View.Details;
+            this.listViewElements.SelectedIndexChanged += new System.EventHandler(this.listViewElements_SelectedIndexChanged);
+            this.listViewElements.DoubleClick += new System.EventHandler(this.listViewElements_DoubleClick);
+            this.listViewElements.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listViewElements_KeyDown);
+            this.listViewElements.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.listViewElements_KeyPress);
+            this.listViewElements.Resize += new System.EventHandler(this.listViewElements_Resize);
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "Enabled";
+            this.columnHeader1.Width = 55;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "Element";
+            this.columnHeader2.Width = 161;
+            // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Text = "Type";
+            this.columnHeader3.Width = 92;
+            // 
             // contextMenuElements
             // 
             this.contextMenuElements.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.copyToolStripMenuItem,
-            this.pasteToolStripMenuItem});
+            this.pasteToolStripMenuItem,
+            this.pasteSettingsToolStripMenuItem});
             this.contextMenuElements.Name = "contextMenuElements";
             this.contextMenuElements.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.contextMenuElements.Size = new System.Drawing.Size(102, 48);
+            this.contextMenuElements.Size = new System.Drawing.Size(156, 92);
             this.contextMenuElements.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuElements_Opening);
             // 
             // copyToolStripMenuItem
             // 
             this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-            this.copyToolStripMenuItem.Size = new System.Drawing.Size(101, 22);
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.copyToolStripMenuItem.Text = "Copy";
             this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
             // 
             // pasteToolStripMenuItem
             // 
             this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
-            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(101, 22);
+            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.pasteToolStripMenuItem.Text = "Paste";
             this.pasteToolStripMenuItem.Click += new System.EventHandler(this.pasteToolStripMenuItem_Click);
             // 
@@ -448,57 +502,12 @@ namespace CardMaker.Forms
             this.label1.Text = "Card:";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // checkLoadAllReferences
+            // pasteSettingsToolStripMenuItem
             // 
-            this.checkLoadAllReferences.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.checkLoadAllReferences.Location = new System.Drawing.Point(152, 67);
-            this.checkLoadAllReferences.Name = "checkLoadAllReferences";
-            this.checkLoadAllReferences.Size = new System.Drawing.Size(138, 16);
-            this.checkLoadAllReferences.TabIndex = 33;
-            this.checkLoadAllReferences.Text = "Load All References";
-            this.checkLoadAllReferences.UseVisualStyleBackColor = true;
-            this.checkLoadAllReferences.CheckedChanged += new System.EventHandler(this.HandleCardSetValueChange);
-            // 
-            // listViewElements
-            // 
-            this.listViewElements.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.listViewElements.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.listViewElements.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader1,
-            this.columnHeader2,
-            this.columnHeader3});
-            this.listViewElements.ContextMenuStrip = this.contextMenuElements;
-            this.listViewElements.FullRowSelect = true;
-            this.listViewElements.GridLines = true;
-            this.listViewElements.HideSelection = false;
-            this.listViewElements.Location = new System.Drawing.Point(6, 89);
-            this.listViewElements.Name = "listViewElements";
-            this.listViewElements.Size = new System.Drawing.Size(310, 136);
-            this.listViewElements.TabIndex = 30;
-            this.listViewElements.UseCompatibleStateImageBehavior = false;
-            this.listViewElements.View = System.Windows.Forms.View.Details;
-            this.listViewElements.SelectedIndexChanged += new System.EventHandler(this.listViewElements_SelectedIndexChanged);
-            this.listViewElements.DoubleClick += new System.EventHandler(this.listViewElements_DoubleClick);
-            this.listViewElements.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listViewElements_KeyDown);
-            this.listViewElements.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.listViewElements_KeyPress);
-            this.listViewElements.Resize += new System.EventHandler(this.listViewElements_Resize);
-            // 
-            // columnHeader1
-            // 
-            this.columnHeader1.Text = "Enabled";
-            this.columnHeader1.Width = 55;
-            // 
-            // columnHeader2
-            // 
-            this.columnHeader2.Text = "Element";
-            this.columnHeader2.Width = 161;
-            // 
-            // columnHeader3
-            // 
-            this.columnHeader3.Text = "Type";
-            this.columnHeader3.Width = 92;
+            this.pasteSettingsToolStripMenuItem.Name = "pasteSettingsToolStripMenuItem";
+            this.pasteSettingsToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.pasteSettingsToolStripMenuItem.Text = "Paste Settings...";
+            this.pasteSettingsToolStripMenuItem.Click += new System.EventHandler(this.pasteSettingsToolStripMenuItem_Click);
             // 
             // MDILayoutControl
             // 
@@ -560,5 +569,6 @@ namespace CardMaker.Forms
         private System.Windows.Forms.Button resizeBtn;
         private System.Windows.Forms.Button btnScale;
         private System.Windows.Forms.CheckBox checkLoadAllReferences;
+        private System.Windows.Forms.ToolStripMenuItem pasteSettingsToolStripMenuItem;
     }
 }

@@ -24,8 +24,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
+using System.Text;
 
 namespace Support.IO
 {
@@ -36,7 +36,7 @@ namespace Support.IO
         private readonly List<List<string>> m_listRows = new List<List<string>>();
         private readonly List<string> m_listRawText = new List<string>();
 
-        public string Filename { get; private set; }
+        public string Filename { get; }
         public bool DisplayFullPath { get; set; }
 
         private CSVFile() { }
@@ -55,15 +55,30 @@ namespace Support.IO
             m_sSourceFile = Path.GetFullPath(sFile);
             Filename = Path.GetFileName(sFile);
             string[] arrayLines = File.ReadAllLines(m_sSourceFile, eEncoding);
+            var bQuote = false;
+            var zBuilder = new StringBuilder();
+            var listColumns = new List<string>();
             foreach (string sLine in arrayLines)
             {
                 if (0 == sLine.Trim().Length && !bReadEmptyLines)
+                {
+                    if (bQuote)
+                    {
+                        // add a newline for the empty line
+                        zBuilder.Append("\\n");
+                        m_listRawText.Add(sLine);
+                    }
                     continue;
+                }
+
+                // if this line starts already quoted add a newline
+                if (bQuote)
+                {
+                    zBuilder.Append("\\n");
+                }
+
                 m_listRawText.Add(sLine);
 
-                var listColumns = new List<string>();
-                var bQuote = false;
-                var zBuilder = new StringBuilder();
                 var nIdx = 0;
                 while(nIdx < sLine.Length)
                 {
@@ -73,7 +88,9 @@ namespace Support.IO
                             if (bQuote)
                             {
                                 if (bKeepQuotes)
+                                {
                                     zBuilder.Append("\"");
+                                }
 
                                 listColumns.Add(zBuilder.ToString());
                                 // no further characters should be added so the builder is null'd
@@ -102,7 +119,9 @@ namespace Support.IO
                             break;
                         case ',':
                             if (bQuote)
+                            {
                                 zBuilder.Append(sLine[nIdx]);
+                            }
                             else
                             {
                                 listColumns.Add(zBuilder.ToString());
@@ -115,11 +134,18 @@ namespace Support.IO
                     }
                     nIdx++;
                 }
-                if (null != zBuilder)
+                // support multiline quoted strings
+#warning what about poorly formatted files (ie. no closing quote)
+                if (!bQuote)
                 {
-                    listColumns.Add(zBuilder.ToString()); // any end of line item should be added
+                    if (null != zBuilder)
+                    {
+                        listColumns.Add(zBuilder.ToString()); // any end of line item should be added
+                    }
+                    m_listRows.Add(listColumns);
+                    zBuilder = new StringBuilder();
+                    listColumns = new List<string>();
                 }
-                m_listRows.Add(listColumns);
             }
         }
 
@@ -211,13 +237,7 @@ namespace Support.IO
             m_listRows[nRow].Add(sItem);
         }
 
-        public int Rows
-        {
-            get
-            {
-                return m_listRows.Count;
-            }
-        }
+        public int Rows => m_listRows.Count;
 
         public override string ToString()
         {

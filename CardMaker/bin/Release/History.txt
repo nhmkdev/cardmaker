@@ -1,10 +1,51 @@
 Card Maker Version History
 --------------------------
+0.99.4.0
+- Added limit to the number of loops of translation within Incept (should protect against typos)
+- Added pixel (px) tag to allow exact pixel location to be specified for drawing with FormattedText
+- Added alignment tags to override the horizontal alignment of FormattedText (useful in some situations)
+- Added line spacing tag (ls) for FormattedText. This with store and override the existing line spacing.
+- Significant changes to order and general translation  functionality with if/switch (Incept specific)
+- Changed the issues window to indicate the layout, not the layout index
+- Added option to log steps when performing an Incept translation (see settings)
+- Overhaul of float/decimal parsing to allow for cross region support (well hopefully). Both ',' and '.' should be usable as a decimal separator. Thanks to kek444!
+- Add override for the Google project wide defines (project level setting)
+- Adjusted handling of newlines from Google Spreadsheets and CSVs (converted to \n)
+- Added middle-mouse panning functionality for the canvas
+- Added on canvas rotation mode (can be toggled with 'r')
+- Added ability to resize layouts (keeping the relative location of the elements centered)
+- Added Triangle shape
+- Added ability to translate primitives (quotes/commas) in the definitions dialog
+- Added ability to duplicate a layout to a new size and resize layouts (includes options for maintaining relative element positions)
+- Added element edge guides (optional)
+- Added ability to copy element settings (customizable so you can copy only the settings you need)
+- Added bounds drawing for rotated elements (optional)
+- Switched line drawing to fix the long standing issue with font spikes (fallout is fonts may be slightly rounded when drawn)
+- Overhaul of the export code (primarily to fix an issue with layout file name overrides)
+- Mono specific hack for the settings dialog
+- Mono fixes related to PDF export
+- Fix for Element dialog state on project load
+- Various fixes (thanks to shdwcat on github for a null reference fix)
+
+0.99.3.0
+- Added JavaScript Translation functionality (this is optional/experimental)
+- Added ![cardindex] and ![deckindex] as card values (usable in the element definition)
+- Resolved issue with FormattedText bottom aligned containing images in the last row (quite specific!)
+- Added basic alignment tools to the Canvas
+- Added export card columns/rows functionality to export dialog (configures the export width/height)
+- Added skip index when stitching (for use with tools like Tabletop Simulator)
+
 0.99.2.0
+- First open source release (and a massive code refactor)
 - Removed Printing
 - Removed Preview Dialog
 - Added rendered message if no layout is selected in the Project window
-- Fixed Layout Template loading/saving
+- Changed Layout Template storage to create individual files (easy sharing/backup)
+- Added translate functionality to overrides (should match definition translation functionality)
+- Critical -- Fixed the issue with the font size not matching when an outline is specifed (previously it was much smaller)
+-- This means your previous projects that used outline+text may need to be revisited for font size if you used outline
+- Fixed Bottom aligned FormattedText elements (they were being cut off in most cases)
+- Added option/ability to cache Google Spreadsheet data locally
 
 0.99.1.10
 - Fix for Text elements using the line spacing value (only supposed to apply to FormattedText)

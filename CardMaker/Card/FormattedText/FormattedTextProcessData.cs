@@ -1,7 +1,7 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2015 Tim Stair
+// Copyright (c) 2017 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System.Drawing;
+using CardMaker.Card.FormattedText.Markup;
 using CardMaker.XML;
 
 namespace CardMaker.Card.FormattedText
@@ -40,6 +41,9 @@ namespace CardMaker.Card.FormattedText
         public float CurrentY { get; set; }
         public float CurrentYOffset { get; set; }
         public float CurrentXOffset { get; set; }
+
+        public float CurrentLineHeight { get; set; }
+        public StringAlignment CurrentStringAlignment { get; set; }
 
         public int CurrentLine { get; private set; }
 
@@ -79,7 +83,7 @@ namespace CardMaker.Card.FormattedText
         {
             CurrentLine++;
             CurrentX = 0;
-            CurrentY += zElement.lineheight;            
+            CurrentY += CurrentLineHeight;
         }
     }
 }

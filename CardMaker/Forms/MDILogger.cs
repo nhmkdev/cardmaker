@@ -22,64 +22,38 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using Support.IO;
-using Support.UI;
 using System;
 using System.Text;
 using System.Windows.Forms;
+using Support.IO;
+using Support.UI;
 
 namespace CardMaker.Forms
 {
     public partial class MDILogger : Form, LoggerI
     {
-        private static MDILogger s_zInstance;
-
-        private MDILogger()
+        public MDILogger()
         {
             InitializeComponent();
             Logger.InitLogger(this, false);
         }
 
-        public static MDILogger Instance
-        {
-            get
-            {
-                if (null == s_zInstance)
-                    s_zInstance = new MDILogger();
-                return s_zInstance;
-            }
-        }
+        #region overrides
 
         protected override CreateParams CreateParams
         {
             get
             {
                 const int CP_NOCLOSE_BUTTON = 0x200;
-                CreateParams mdiCp = base.CreateParams;
-                mdiCp.ClassStyle = mdiCp.ClassStyle | CP_NOCLOSE_BUTTON;
-                return mdiCp;
+                CreateParams zParams = base.CreateParams;
+                zParams.ClassStyle = zParams.ClassStyle | CP_NOCLOSE_BUTTON;
+                return zParams;
             }
         }
 
-        public void AddLogLines(string[] arrayLines)
-        {
-            if (listBoxLog.InvokeActionIfRequired(() => AddLogLines(arrayLines)))
-            {
-                listBoxLog.BeginUpdate();
-                foreach (string sLine in arrayLines)
-                {
-                    listBoxLog.SelectedIndex = listBoxLog.Items.Add(DateTime.Now.ToString("HH:mm:ss.ff") + "::" + sLine);
-                }
-                listBoxLog.SelectedIndex = -1;
-                listBoxLog.EndUpdate();
-            }
-        }
-        public void SetStatusText(string sStatus) { }
+        #endregion
 
-        public void ClearLog()
-        {
-            listBoxLog.InvokeAction(() => listBoxLog.Items.Clear());
-        }
+        #region form events
 
         private void copyLineToClipboardToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -98,5 +72,35 @@ namespace CardMaker.Forms
             }
             Clipboard.SetText(zBuilder.ToString());
         }
+
+        private void clearToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            listBoxLog.Items.Clear();
+        }
+
+        #endregion
+
+        #region LoggerI
+
+        public void AddLogLines(string[] arrayLines)
+        {
+            if (listBoxLog.InvokeActionIfRequired(() => AddLogLines(arrayLines)))
+            {
+                listBoxLog.BeginUpdate();
+                foreach (string sLine in arrayLines)
+                {
+                    listBoxLog.SelectedIndex = listBoxLog.Items.Add(DateTime.Now.ToString("HH:mm:ss.ff") + "::" + sLine);
+                }
+                listBoxLog.SelectedIndex = -1;
+                listBoxLog.EndUpdate();
+            }
+        }
+
+        public void ClearLog()
+        {
+            listBoxLog.InvokeAction(() => listBoxLog.Items.Clear());
+        }
+
+        #endregion
     }
 }

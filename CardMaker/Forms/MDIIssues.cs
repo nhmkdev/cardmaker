@@ -22,84 +22,86 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Globalization;
-using Support.UI;
 using System;
 using System.Drawing;
+using System.Globalization;
 using System.Windows.Forms;
+using CardMaker.Card.Export;
+using CardMaker.Events.Args;
+using CardMaker.Events.Managers;
+using Support.UI;
 
 namespace CardMaker.Forms
 {
     public partial class MDIIssues : Form
     {
-        private static MDIIssues s_zInstance;
-
         private Point m_zLocation;
-        private string m_sCurrentLayoutIndex = string.Empty;
+        private int m_nCurrentLayoutIndex = 0;
         private string m_sCurrentCardIndex = string.Empty;
         private string m_sCurrentElementName = string.Empty;
         private bool m_bTrackIssues;
 
-        private MDIIssues()
+        public MDIIssues()
         {
             InitializeComponent();
+            IssueManager.Instance.IssueAdded += Issue_Added;
+            IssueManager.Instance.CardInfoChanged += CardInfo_Changed;
+            IssueManager.Instance.ElementChanged += Element_Changed;
+            IssueManager.Instance.RefreshRequested += Refresh_Requested;
         }
 
-        public static MDIIssues Instance
+        #region manager events
+
+        void Refresh_Requested(object sender, IssueRefreshEventArgs args)
         {
-            get 
-            {
-                if (null == s_zInstance)
-                    s_zInstance = new MDIIssues();
-                return s_zInstance; 
-            }
+            ClearIssues();
+            m_bTrackIssues = true;
+
+            var zWait = new WaitDialog(
+                2,
+                new CompilerCardExporter(0, ProjectManager.Instance.LoadedProject.Layout.Length).ExportThread,
+                "Compile",
+                new string[] { "Layout", "Card" },
+                450);
+            zWait.ShowDialog(ParentForm);
+
+            m_bTrackIssues = false;
+            Show();
         }
 
-        public bool TrackIssues
+        void Element_Changed(object sender, IssueElementEventArgs args)
         {
-            set { m_bTrackIssues = value; }
+            m_sCurrentElementName = args.Name;
         }
 
-        public void SetCardInfo(int nLayout, int nCard)
+        void CardInfo_Changed(object sender, IssueCardInfoEventArgs args)
         {
-            m_sCurrentLayoutIndex = nLayout.ToString(CultureInfo.InvariantCulture);
-            m_sCurrentCardIndex = nCard.ToString(CultureInfo.InvariantCulture);
+            m_nCurrentLayoutIndex = args.LayoutIndex;
+            m_sCurrentCardIndex = args.CardIndex.ToString(CultureInfo.InvariantCulture);
         }
 
-        public void SetElementName(string sElement)
+        void Issue_Added(object sender, IssueMessageEventArgs args)
         {
-            m_sCurrentElementName = sElement;
+            AddIssue(args.Message);
         }
 
-        public void AddIssue(string sIssue)
-        {
-            if (!m_bTrackIssues) return;
+        #endregion
 
-            if (listViewIssues.InvokeActionIfRequired(() => AddIssue(sIssue)))
-            {
-                var zItem = new ListViewItem(new string[] {
-                    m_sCurrentLayoutIndex,
-                    m_sCurrentCardIndex,
-                    m_sCurrentElementName,
-                    sIssue
-                });
-                listViewIssues.Items.Add(zItem);
-            }
-        }
-
-        public void ClearIssues()
-        {
-            listViewIssues.Items.Clear();
-        }
+        #region form events
 
         private void listViewIssues_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if(1 == listViewIssues.SelectedItems.Count)
+            if (1 == listViewIssues.SelectedItems.Count)
             {
                 ListViewItem zItem = listViewIssues.SelectedItems[0];
                 int nLayout = int.Parse(zItem.SubItems[0].Text);
                 int nCard = int.Parse(zItem.SubItems[1].Text);
-                CardMakerMDI.Instance.SelectLayoutCardElement(nLayout, nCard, zItem.SubItems[2].Text);
+                // Select the Layout
+                LayoutManager.Instance.FireLayoutSelectRequested(ProjectManager.Instance.LoadedProject.Layout[nLayout]);
+                // Select the Element
+                ElementManager.Instance.FireElementSelectRequestedEvent(LayoutManager.Instance.GetElement(zItem.SubItems[2].Text));
+                // Select the Card Index
+                LayoutManager.Instance.FireDeckIndexChangeRequested(nCard - 1);
             }
         }
 
@@ -124,6 +126,29 @@ namespace CardMaker.Forms
             {
                 Location = m_zLocation;
             }
+        }
+
+        #endregion
+
+        private void AddIssue(string sIssue)
+        {
+            if (!m_bTrackIssues) return;
+
+            if (listViewIssues.InvokeActionIfRequired(() => AddIssue(sIssue)))
+            {
+                var zItem = new ListViewItem(new string[] {
+                    ProjectManager.Instance.LoadedProject.Layout[m_nCurrentLayoutIndex].Name,
+                    m_sCurrentCardIndex,
+                    m_sCurrentElementName,
+                    sIssue
+                });
+                listViewIssues.Items.Add(zItem);
+            }
+        }
+
+        private void ClearIssues()
+        {
+            listViewIssues.Items.Clear();
         }
     }
 }

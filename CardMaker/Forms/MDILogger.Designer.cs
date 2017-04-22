@@ -57,6 +57,7 @@ namespace CardMaker.Forms
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyLineToClipboardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyAllTextToClipboardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -77,10 +78,11 @@ namespace CardMaker.Forms
             // 
             this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.copyLineToClipboardToolStripMenuItem,
-            this.copyAllTextToClipboardToolStripMenuItem});
+            this.copyAllTextToClipboardToolStripMenuItem,
+            this.clearToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip";
             this.contextMenuStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.contextMenuStrip.Size = new System.Drawing.Size(198, 48);
+            this.contextMenuStrip.Size = new System.Drawing.Size(198, 92);
             // 
             // copyLineToClipboardToolStripMenuItem
             // 
@@ -95,6 +97,13 @@ namespace CardMaker.Forms
             this.copyAllTextToClipboardToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
             this.copyAllTextToClipboardToolStripMenuItem.Text = "Copy All text to Clipboard";
             this.copyAllTextToClipboardToolStripMenuItem.Click += new System.EventHandler(this.copyAllTextToClipboardToolStripMenuItem_Click);
+            // 
+            // clearToolStripMenuItem
+            // 
+            this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
+            this.clearToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.clearToolStripMenuItem.Text = "Clear";
+            this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
             // 
             // MDILogger
             // 
@@ -116,6 +125,6 @@ namespace CardMaker.Forms
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem copyLineToClipboardToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyAllTextToClipboardToolStripMenuItem;
-
+        private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
     }
 }

@@ -22,14 +22,16 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using CardMaker.XML;
-using Support.IO;
-using Support.UI;
 using System;
 using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using CardMaker.Data;
+using CardMaker.Events.Managers;
+using CardMaker.XML;
+using Support.IO;
+using Support.UI;
 
 namespace CardMaker.Forms
 {
@@ -38,9 +40,11 @@ namespace CardMaker.Forms
         public ProjectManagerUI()
         {
             InitializeComponent();
-            txtFolder.Text = CardMakerMDI.Instance.ProjectManagerRoot;
+            txtFolder.Text = CardMakerSettings.ProjectManagerRoot;
             UpdateProjects();
         }
+
+        #region form events
 
         private void btnBrowse_Click(object sender, EventArgs e)
         {
@@ -52,12 +56,31 @@ namespace CardMaker.Forms
             if (DialogResult.OK == fbd.ShowDialog(this))
             {
                 txtFolder.Text = fbd.SelectedPath;
-                CardMakerMDI.Instance.ProjectManagerRoot = fbd.SelectedPath;
+                CardMakerSettings.ProjectManagerRoot = fbd.SelectedPath;
                 UpdateProjects();
             }
         }
 
-        public void UpdateProjects()
+        private void listViewProjects_Resize(object sender, EventArgs e)
+        {
+            ListViewAssist.ResizeColumnHeaders(listViewProjects);
+        }
+
+        private void listViewProjects_DoubleClick(object sender, EventArgs e)
+        {
+            if (1 == listViewProjects.SelectedItems.Count)
+            {
+                ProjectManager.Instance.OpenProject((string)listViewProjects.SelectedItems[0].Tag);
+                Close();
+            }
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Updates the list of available projects
+        /// </summary>
+        private void UpdateProjects()
         {
             if (Directory.Exists(txtFolder.Text))
             {
@@ -66,6 +89,9 @@ namespace CardMaker.Forms
             }
         }
 
+        /// <summary>
+        /// Thread used to load the various project files in the project folder
+        /// </summary>
         private void UpdateThread()
         {
             WaitDialog.Instance.SetStatusText("Scanning for Projects...");
@@ -90,20 +116,6 @@ namespace CardMaker.Forms
             }
             WaitDialog.Instance.ThreadSuccess = true;
             WaitDialog.Instance.CloseWaitDialog();
-        }
-
-        private void listViewProjects_Resize(object sender, EventArgs e)
-        {
-            ListViewAssist.ResizeColumnHeaders(listViewProjects);
-        }
-
-        private void listViewProjects_DoubleClick(object sender, EventArgs e)
-        {
-            if (1 == listViewProjects.SelectedItems.Count)
-            {
-                CardMakerMDI.Instance.OpenProjectFile((string)listViewProjects.SelectedItems[0].Tag);
-                Close();
-            }
         }
     }
 }

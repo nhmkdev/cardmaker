@@ -26,42 +26,67 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using CardMaker.Data;
+using CardMaker.Events.Managers;
 using Support.UI;
+using LayoutEventArgs = CardMaker.Events.Args.LayoutEventArgs;
 
 namespace CardMaker.Forms
 {
     public partial class MDIDefines : Form
     {
         private Point m_zLocation;
-        private static MDIDefines s_zInstance;
 
         public MDIDefines()
         {
             InitializeComponent();
+            LayoutManager.Instance.LayoutLoaded += Layout_Loaded;
         }
 
-        public static MDIDefines Instance
+        #region overrides
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
-            get
+            switch (keyData)
             {
-                if (null == s_zInstance)
-                {
-                    s_zInstance = new MDIDefines();
-                }
-                return s_zInstance;
+                case Keys.Control | Keys.C:
+                    copyDefineAsReferenceToolStripMenuItem_Click(null, null);
+                    break;
             }
+            return base.ProcessCmdKey(ref msg, keyData);
         }
 
-        public void UpdateDefines()
+        #endregion
+
+        #region manager events
+
+        void Layout_Loaded(object sender, LayoutEventArgs args)
         {
             listViewDefines.Items.Clear();
-            var listItems = new List<ListViewItem>();
-            foreach(var zDefine in CardMakerMDI.Instance.DrawCardCanvas.ActiveDeck.Defines)
+
+            if (null == args.Deck)
             {
-                listItems.Add(new ListViewItem(new string[] {zDefine.Key, zDefine.Value}));
+                return;
+            }
+
+            var listItems = new List<ListViewItem>();
+            foreach (var zDefine in args.Deck.Defines)
+            {
+                var zLvi = new ListViewItem(new string[] {zDefine.Key, zDefine.Value})
+                {
+                    Tag = zDefine.Value
+                };
+                // the tag stores the original define value
+                listItems.Add(zLvi);
             }
             listViewDefines.Items.AddRange(listItems.ToArray());
+
+            updateDefineValues();
         }
+
+        #endregion
+
+        #region form events
 
         private void listViewDefines_ColumnClick(object sender, ColumnClickEventArgs e)
         {
@@ -111,19 +136,33 @@ namespace CardMaker.Forms
         {
             if (1 == listViewDefines.SelectedItems.Count)
             {
-                Clipboard.SetText(string.Format("@[{0}]", listViewDefines.SelectedItems[0].SubItems[0].Text));
+                Clipboard.SetText($"@[{listViewDefines.SelectedItems[0].SubItems[0].Text}]");
             }
         }
 
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        private void checkTranslatePrimitiveCharacters_CheckedChanged(object sender, EventArgs e)
         {
-            switch (keyData)
+            CardMakerSettings.DefineTranslatePrimitiveCharacters = checkTranslatePrimitiveCharacters.Checked;
+            updateDefineValues();
+        }
+
+        #endregion
+
+        private void updateDefineValues()
+        {
+            ListView.ListViewItemCollection zCollection = listViewDefines.Items;
+            for (int nIdx = 0; nIdx < zCollection.Count; nIdx++)
             {
-                case Keys.Control | Keys.C:
-                    copyDefineAsReferenceToolStripMenuItem_Click(null, null);
-                    break;
+                var zItem = zCollection[nIdx];
+                if (CardMakerSettings.DefineTranslatePrimitiveCharacters)
+                {
+                    zItem.SubItems[1].Text = ((string)zItem.Tag).Replace("<c>", ",").Replace("<q>", "\"").Replace("\\c", ",").Replace("\\q", "\"");
+                }
+                else
+                {
+                    zItem.SubItems[1].Text = (string) zItem.Tag;
+                }
             }
-            return base.ProcessCmdKey(ref msg, keyData);
         }
     }
 }

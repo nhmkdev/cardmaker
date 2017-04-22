@@ -70,12 +70,15 @@ namespace CardMaker.Forms
             this.redoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.drawElementBordersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.drawSelectedElementGuidesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.drawFormattedTextWordOutlinesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.projectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearCacheToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.updateIssuesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.refreshLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importLayoutsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearGoogleCacheToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.layoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.reloadReferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.projectManagerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.colorPickerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -88,6 +91,7 @@ namespace CardMaker.Forms
             this.pDFToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.samplePDFToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.drawSelectedElementRotationBoundsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStripMain.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -98,6 +102,7 @@ namespace CardMaker.Forms
             this.editToolStripMenuItem,
             this.viewToolStripMenuItem,
             this.projectToolStripMenuItem,
+            this.layoutToolStripMenuItem,
             this.toolsToolStripMenuItem,
             this.windowToolStripMenuItem,
             this.helpToolStripMenuItem});
@@ -231,6 +236,8 @@ namespace CardMaker.Forms
             // 
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.drawElementBordersToolStripMenuItem,
+            this.drawSelectedElementGuidesToolStripMenuItem,
+            this.drawSelectedElementRotationBoundsToolStripMenuItem,
             this.drawFormattedTextWordOutlinesToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
@@ -246,6 +253,15 @@ namespace CardMaker.Forms
             this.drawElementBordersToolStripMenuItem.Text = "&Draw Element Borders";
             this.drawElementBordersToolStripMenuItem.Click += new System.EventHandler(this.drawElementBordersToolStripMenuItem_Click);
             // 
+            // drawSelectedElementGuidesToolStripMenuItem
+            // 
+            this.drawSelectedElementGuidesToolStripMenuItem.Checked = true;
+            this.drawSelectedElementGuidesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.drawSelectedElementGuidesToolStripMenuItem.Name = "drawSelectedElementGuidesToolStripMenuItem";
+            this.drawSelectedElementGuidesToolStripMenuItem.Size = new System.Drawing.Size(290, 22);
+            this.drawSelectedElementGuidesToolStripMenuItem.Text = "Draw Selected Element Guides";
+            this.drawSelectedElementGuidesToolStripMenuItem.Click += new System.EventHandler(this.drawSelectedElementGuidesToolStripMenuItem_Click);
+            // 
             // drawFormattedTextWordOutlinesToolStripMenuItem
             // 
             this.drawFormattedTextWordOutlinesToolStripMenuItem.Name = "drawFormattedTextWordOutlinesToolStripMenuItem";
@@ -259,8 +275,8 @@ namespace CardMaker.Forms
             this.projectToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.clearCacheToolStripMenuItem,
             this.updateIssuesToolStripMenuItem,
-            this.refreshLayoutToolStripMenuItem,
-            this.importLayoutsToolStripMenuItem});
+            this.importLayoutsToolStripMenuItem,
+            this.clearGoogleCacheToolStripMenuItem});
             this.projectToolStripMenuItem.Name = "projectToolStripMenuItem";
             this.projectToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
             this.projectToolStripMenuItem.Text = "&Project";
@@ -281,20 +297,35 @@ namespace CardMaker.Forms
             this.updateIssuesToolStripMenuItem.Text = "&Update Known Issues...";
             this.updateIssuesToolStripMenuItem.Click += new System.EventHandler(this.updateIssuesToolStripMenuItem_Click);
             // 
-            // refreshLayoutToolStripMenuItem
-            // 
-            this.refreshLayoutToolStripMenuItem.Name = "refreshLayoutToolStripMenuItem";
-            this.refreshLayoutToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F9;
-            this.refreshLayoutToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
-            this.refreshLayoutToolStripMenuItem.Text = "Refresh Layout";
-            this.refreshLayoutToolStripMenuItem.Click += new System.EventHandler(this.refreshLayoutToolStripMenuItem_Click);
-            // 
             // importLayoutsToolStripMenuItem
             // 
             this.importLayoutsToolStripMenuItem.Name = "importLayoutsToolStripMenuItem";
             this.importLayoutsToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
             this.importLayoutsToolStripMenuItem.Text = "Import Layouts from Project...";
             this.importLayoutsToolStripMenuItem.Click += new System.EventHandler(this.importLayoutsToolStripMenuItem_Click);
+            // 
+            // clearGoogleCacheToolStripMenuItem
+            // 
+            this.clearGoogleCacheToolStripMenuItem.Name = "clearGoogleCacheToolStripMenuItem";
+            this.clearGoogleCacheToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
+            this.clearGoogleCacheToolStripMenuItem.Text = "Clear All Google Cache Entries";
+            this.clearGoogleCacheToolStripMenuItem.Click += new System.EventHandler(this.clearGoogleCacheToolStripMenuItem_Click);
+            // 
+            // layoutToolStripMenuItem
+            // 
+            this.layoutToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.reloadReferencesToolStripMenuItem});
+            this.layoutToolStripMenuItem.Name = "layoutToolStripMenuItem";
+            this.layoutToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
+            this.layoutToolStripMenuItem.Text = "Layout";
+            // 
+            // reloadReferencesToolStripMenuItem
+            // 
+            this.reloadReferencesToolStripMenuItem.Name = "reloadReferencesToolStripMenuItem";
+            this.reloadReferencesToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F9;
+            this.reloadReferencesToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.reloadReferencesToolStripMenuItem.Text = "Reload References";
+            this.reloadReferencesToolStripMenuItem.Click += new System.EventHandler(this.reloadReferencesToolStripMenuItem_Click);
             // 
             // toolsToolStripMenuItem
             // 
@@ -391,6 +422,15 @@ namespace CardMaker.Forms
             this.aboutToolStripMenuItem.Text = "&About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
+            // drawSelectedElementRotationBoundsToolStripMenuItem
+            // 
+            this.drawSelectedElementRotationBoundsToolStripMenuItem.Checked = true;
+            this.drawSelectedElementRotationBoundsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.drawSelectedElementRotationBoundsToolStripMenuItem.Name = "drawSelectedElementRotationBoundsToolStripMenuItem";
+            this.drawSelectedElementRotationBoundsToolStripMenuItem.Size = new System.Drawing.Size(290, 22);
+            this.drawSelectedElementRotationBoundsToolStripMenuItem.Text = "Draw Selected Element Rotation Bounds";
+            this.drawSelectedElementRotationBoundsToolStripMenuItem.Click += new System.EventHandler(this.drawSelectedElementRotationBoundsToolStripMenuItem_Click);
+            // 
             // CardMakerMDI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -437,7 +477,6 @@ namespace CardMaker.Forms
         private System.Windows.Forms.ToolStripMenuItem projectManagerToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem windowToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem drawFormattedTextWordOutlinesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem refreshLayoutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem updateGoogleCredentialsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem redoToolStripMenuItem;
@@ -447,6 +486,11 @@ namespace CardMaker.Forms
         private System.Windows.Forms.ToolStripMenuItem colorPickerToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportProjectThroughPDFSharpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem importLayoutsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem clearGoogleCacheToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem layoutToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem reloadReferencesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem drawSelectedElementGuidesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem drawSelectedElementRotationBoundsToolStripMenuItem;
     }
 }
 

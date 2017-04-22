@@ -25,17 +25,22 @@
 using System;
 using System.Diagnostics;
 using System.Windows.Forms;
+using CardMaker.Data;
 
 namespace CardMaker.Forms
 {
     public partial class GoogleCredentialsDialog : Form
     {
+        public const string GOOGLE_AUTH_URL = "https://www.nhmk.com/cardmaker_oauth2_v2_request.php";
+
         public GoogleCredentialsDialog()
         {
             InitializeComponent();
-            txtAuthURL.Text = CardMakerMDI.GOOGLE_AUTH_URL;
-            txtAccessToken.Text = CardMakerMDI.GoogleAccessToken;
+            txtAuthURL.Text = GOOGLE_AUTH_URL;
+            txtAccessToken.Text = CardMakerInstance.GoogleAccessToken;
         }
+
+        #region form events
 
         private void btnOK_Click(object sender, EventArgs e)
         {
@@ -44,7 +49,7 @@ namespace CardMaker.Forms
 
         private void btnBrowse_Click(object sender, EventArgs e)
         {
-            Process.Start(CardMakerMDI.GOOGLE_AUTH_URL);
+            Process.Start(GOOGLE_AUTH_URL);
         }
 
         private void btnPaste_Click(object sender, EventArgs e)
@@ -56,9 +61,8 @@ namespace CardMaker.Forms
             DialogResult = DialogResult.OK;
         }
 
-        public string GoogleAccessToken
-        {
-            get { return txtAccessToken.Text; }
-        }
+        #endregion 
+
+        public string GoogleAccessToken => txtAccessToken.Text;
     }
 }
