@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using CardMaker.Data;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
 using Support.IO;
