@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using CardMaker.XML;
+using Support.Util;
 
 namespace CardMaker.Card.FormattedText.Markup
 {
@@ -34,10 +35,21 @@ namespace CardMaker.Card.FormattedText.Markup
     {
         private List<RectangleF> m_listRectangles;
         private readonly Brush m_zBrush = Brushes.Black;
+        private readonly float m_fAdditionalPixels;
 
         public BackgroundColorMarkup(string sVariable)
         {
-            m_zBrush = new SolidBrush(ProjectLayoutElement.TranslateColorString(sVariable));
+            var arrayComponents = sVariable.Split(new char[] { ';' });
+
+            if (arrayComponents.Length > 0)
+            {
+                m_zBrush = new SolidBrush(ProjectLayoutElement.TranslateColorString(arrayComponents[0]));
+
+                if (arrayComponents.Length > 1)
+                {
+                    ParseUtil.ParseFloat(arrayComponents[1], out m_fAdditionalPixels);
+                }
+            }
         }
 
         public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData,
@@ -73,8 +85,10 @@ namespace CardMaker.Card.FormattedText.Markup
             foreach (var rect in m_listRectangles)
             {
                 var rectAdjusted = rect;
+                rectAdjusted.Height += m_fAdditionalPixels;
+
                 // do not draw any rectangles outside of the element
-                rectAdjusted.Height = Math.Min(rect.Bottom - rect.Top, zElement.y + zElement.height);
+                rectAdjusted.Height = Math.Min(rectAdjusted.Bottom - rectAdjusted.Top, zElement.y + zElement.height);
                 zGraphics.FillRectangle(m_zBrush, rectAdjusted);
             }
             zGraphics.SmoothingMode = ePreviousSmoothingMode;

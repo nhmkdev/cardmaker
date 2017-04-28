@@ -22,6 +22,7 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Drawing;
 using CardMaker.Card.FormattedText.Markup;
 using CardMaker.XML;
@@ -65,7 +66,7 @@ namespace CardMaker.Card.FormattedText
 
             // NOTE the element word space is ignored! (is that a problem?)
             FontSpaceWidth = rectWithSpace.Width - rectWithoutSpace.Width;
-            FontSpaceHeight = rectWithSpace.Height;
+            FontSpaceHeight = Math.Max(rectWithSpace.Height, FontHeight);
         }
 
         public void AddFontStyle(FontStyle eStyle, Graphics zGraphics)
