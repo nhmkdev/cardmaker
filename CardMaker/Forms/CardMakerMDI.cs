@@ -64,7 +64,7 @@ namespace CardMaker.Forms
 
             UserAction.OnClearUserActions = () => Logger.AddLogLine("Cleared Undo/Redo.");
 
-            m_sBaseTitle = "Card Maker Beta " + Application.ProductVersion;
+            m_sBaseTitle = "Card Maker " + Application.ProductVersion;
 #if UNSTABLE
             m_sBaseTitle += "[UNSTABLE] V.A21";
 #endif
@@ -484,7 +484,7 @@ namespace CardMaker.Forms
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(this, "Card Maker Beta" +
+            MessageBox.Show(this, "Card Maker " +
                 Environment.NewLine + Environment.NewLine +
                 Application.ProductVersion +
 #if MONO_BUILD
