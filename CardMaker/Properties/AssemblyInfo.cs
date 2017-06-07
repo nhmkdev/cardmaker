@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("NHMK")]
 [assembly: AssemblyProduct("Card Maker")]
-[assembly: AssemblyCopyright("Copyright © NHMK 2016")]
+[assembly: AssemblyCopyright("Copyright © NHMK 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -28,5 +28,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("0.99.4.0")]
-[assembly: AssemblyFileVersion("0.99.4.0")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]
