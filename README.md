@@ -59,6 +59,8 @@ You will need to modify this code to correctly use your application.
 
 2015 - CardMaker goes open source
 
+2017 - CardMaker is finally marked as 1.0.0.0 for no specific reason.
+
 ### The Name
 
 "CardMaker" and "Card Maker" are both references to the same application. I just never standardized the name.
