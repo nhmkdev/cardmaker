@@ -13,6 +13,8 @@ The same attitude should apply to all contributors.
 
 I am more than happy to review your work but I cannot promise it will be added to the project or immediately reviewed.
 
+Your changes must compile at a minimum. It is unacceptable to submit code that does not compile to any project. If you cannot compile and test your code but would like a change, please add a feature request instead.
+
 ## Software Goals 
 
 ### Compatibility
