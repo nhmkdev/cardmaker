@@ -328,13 +328,21 @@ namespace UnitTest.DeckObject
         [TestCase("@[a] ##", 123456, 4, Result = "1 123456")]
         [TestCase("@[aa] ##", 123456, 4, Result = "2 123456")]
         [TestCase("@[bb] ##?", 123456, 8, Result = "[UNKNOWN] 00123456bb")]
+        [TestCase("@[a] ## #SC", 0, 8, Result = "1 00000000 00000001")]
+        [TestCase("@[a] ## #SC", 1, 8, Result = "1 00000001 00000001")]
+        [TestCase("@[a] ## #SC", 2, 8, Result = "1 00000002 00000002")]
+        [TestCase("@[a] ## #SC", 3, 8, Result = "1 00000003 00000003")]
+        [TestCase("@[a] ## #SC", 4, 8, Result = "1 00000004 00000004")]
+        [TestCase("@[a] ## #SC", 5, 8, Result = "1 00000005 00000001")]
         public string TestFileNameExport(string input, int cardNumber, int leftPad)
         {
             _testDeck.ProcessLinesPublic(
                 new List<List<string>>()
                 {
-                    new List<string>(){"a"},
-                    new List<string>() {"1"}
+                    new List<string>(){"count", "a", "b"},
+                    new List<string>() {"1", "1", "3"},
+                    new List<string>(){"4", "1", "2"},
+                    new List<string>(){"1", "1", "2"}
                 },
                 new List<List<string>>()
                 {
@@ -343,6 +351,7 @@ namespace UnitTest.DeckObject
                 },
                 null);
             _testDeck.SetDisallowedCharReplacement('?', "bb");
+            _testDeck.CardPrintIndex = cardNumber;
             return _testDeck.TranslateFileNameString(input, cardNumber, leftPad);
         }
 

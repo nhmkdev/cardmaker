@@ -94,13 +94,12 @@ namespace CardMaker.Card.Export
                     do
                     {
                         CurrentDeck.ResetDeckCache();
-                        CurrentDeck.CardPrintIndex = nCardIdx;
+                        CurrentDeck.CardPrintIndex = nCardIdx++;
                         nCardsExportedInImage++;
                         CardRenderer.DrawPrintLineToGraphics(zGraphics, nX, nY, !CurrentDeck.CardLayout.exportTransparentBackground);
                         m_zExportCardBuffer.SetResolution(CurrentDeck.CardLayout.dpi, CurrentDeck.CardLayout.dpi);
 
                         zWait.ProgressStep(1);
-                        nCardIdx++;
 
                         int nMoveCount = 1;
                         if (m_nSkipStitchIndex > 0)
@@ -137,6 +136,8 @@ namespace CardMaker.Card.Export
                     } while (nCardIdx < CurrentDeck.CardCount);
 
                     string sFileName;
+
+                    // NOTE: nCardIdx at this point is 1 more than the actual index ... how convenient for export file names...
 
                     if (!string.IsNullOrEmpty(m_sOverrideStringFormat))
                     {

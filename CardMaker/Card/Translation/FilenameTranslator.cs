@@ -99,8 +99,7 @@ namespace CardMaker.Card.Translation
             // replace ##, #L, Newlines
             sOutput = 
                 sOutput.Replace("##", nCardNumber.ToString(CultureInfo.InvariantCulture).PadLeft(nLeftPad, '0'))
-                // TODO: this is not ready for use yet (needs unit testing and validation)
-                //.Replace("#SI", (zCurrentPrintLine.RowSubIndex/* + 1*/).ToString(CultureInfo.InvariantCulture).PadLeft(nLeftPad, '0'))
+                .Replace("#SC", (zCurrentPrintLine.RowSubIndex + 1).ToString(CultureInfo.InvariantCulture).PadLeft(nLeftPad, '0'))
                 .Replace("#L", zLayout.Name)
                 .Replace(Environment.NewLine, string.Empty);
 
