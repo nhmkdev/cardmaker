@@ -1,5 +1,9 @@
 Card Maker Version History
 --------------------------
+1.0.0.1
+- Added ability to configure PDF exports in cm, mm, and inches
+- Added ability to configure Layout size based on cm, mm, and inch values
+
 1.0.0.0
 - Added limit to the number of loops of translation within Incept (should protect against typos)
 - Added pixel (px) tag to allow exact pixel location to be specified for drawing with FormattedText
