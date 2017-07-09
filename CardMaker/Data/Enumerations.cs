@@ -34,11 +34,19 @@ namespace CardMaker.Data
         End
     }
 
+    public enum MeasurementUnit
+    {
+        Inch,
+        Millimeter,
+        Centimeter
+    }
+
     public enum IniSettings
     {
         PreviousProjects,
         ReplacementChars,
         ProjectManagerRoot,
+        PrintPageMeasurementUnit,
         PrintPageWidth,
         PrintPageHeight,
         PrintPageVerticalMargin,

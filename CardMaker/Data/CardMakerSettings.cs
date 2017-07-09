@@ -55,6 +55,19 @@ namespace CardMaker.Data
             }
         }
 
+        public static MeasurementUnit PrintPageMeasurementUnit
+        {
+            get
+            {
+                MeasurementUnit eMeasurementUnit;
+                MeasurementUnit.TryParse(
+                    s_zIniManager.GetValue(IniSettings.PrintPageMeasurementUnit,
+                        ((int) MeasurementUnit.Inch).ToString()), out eMeasurementUnit);
+                return eMeasurementUnit;
+            }
+            set { s_zIniManager.SetValue(IniSettings.PrintPageMeasurementUnit, ((int)value).ToString()); }
+        }
+
         public static decimal PrintPageWidth
         {
             get
