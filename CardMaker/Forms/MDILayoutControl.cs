@@ -523,7 +523,7 @@ namespace CardMaker.Forms
             zQuery.SetMaxHeight(600);
             zQuery.AddPullDownBox("Unit of Measure", Enum.GetNames(typeof(MeasurementUnit)), (int)CardMakerSettings.PrintPageMeasurementUnit, IniSettings.PrintPageMeasurementUnit);
             zQuery.AddNumericBox("Width", 10, 0, int.MaxValue, 1, 2, CARD_WIDTH);
-            zQuery.AddNumericBox("Height", 10, 0, int.MaxValue, 1, 2, IniSettings.PrintPageHeight);
+            zQuery.AddNumericBox("Height", 10, 0, int.MaxValue, 1, 2, CARD_HEIGHT);
             if (DialogResult.OK == zQuery.ShowDialog(this))
             {
                 switch ((MeasurementUnit) zQuery.GetIndex(IniSettings.PrintPageMeasurementUnit))
