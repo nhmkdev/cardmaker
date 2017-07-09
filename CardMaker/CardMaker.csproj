@@ -90,6 +90,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CardMakerBuild.cs" />
     <Compile Include="Card\CardCanvas.cs">
       <SubType>UserControl</SubType>
     </Compile>

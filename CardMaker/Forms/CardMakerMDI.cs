@@ -22,8 +22,6 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-//#define UNSTABLE
-
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -64,10 +62,8 @@ namespace CardMaker.Forms
 
             UserAction.OnClearUserActions = () => Logger.AddLogLine("Cleared Undo/Redo.");
 
-            m_sBaseTitle = "Card Maker " + Application.ProductVersion;
-#if UNSTABLE
-            m_sBaseTitle += "[UNSTABLE] V.A21";
-#endif
+            m_sBaseTitle = "Card Maker " + Application.ProductVersion + CardMakerBuild.GetBuildSuffix();
+
             m_sFileOpenFilter = "CMP files (*.cmp)|*.cmp|All files (*.*)|*.*";
 
             Icon = Properties.Resources.CardMakerIcon;
@@ -222,9 +218,12 @@ namespace CardMaker.Forms
             if (!string.IsNullOrEmpty(CardMakerInstance.CommandLineProjectFile))
                 InitOpen(CardMakerInstance.CommandLineProjectFile);
 
-#if UNSTABLE && !DEBUG
-            MessageBox.Show(
-                "This is an UNSTABLE build of CardMaker. Please make backups of any projects before opening them with this version.");
+#if !DEBUG
+            if(CardMakerBuild.IsUnstable())
+            {
+                MessageBox.Show(
+                    "This is an UNSTABLE build of CardMaker. Please make backups of any projects before opening them with this version.");
+            }
 #endif
         }
 
