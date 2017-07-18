@@ -36,6 +36,8 @@ namespace CardMaker.Card.FormattedText.Markup
         private List<RectangleF> m_listRectangles;
         private readonly Brush m_zBrush = Brushes.Black;
         private readonly float m_fAdditionalPixels;
+        private float m_fXOffset;
+        private float m_fYOffset;
 
         public BackgroundColorMarkup(string sVariable)
         {
@@ -55,6 +57,8 @@ namespace CardMaker.Card.FormattedText.Markup
         public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData,
             Graphics zGraphics)
         {
+            m_fXOffset = zProcessData.CurrentXOffset;
+            m_fYOffset = zProcessData.CurrentYOffset;
             return true;
         }
 
@@ -84,8 +88,7 @@ namespace CardMaker.Card.FormattedText.Markup
             zGraphics.SmoothingMode = SmoothingMode.None;
             foreach (var rect in m_listRectangles)
             {
-                var rectAdjusted = rect;
-                rectAdjusted.Height += m_fAdditionalPixels;
+                var rectAdjusted = new RectangleF(rect.X + m_fXOffset, rect.Y + m_fYOffset, rect.Width, rect.Height + m_fAdditionalPixels);
 
                 // do not draw any rectangles outside of the element
                 rectAdjusted.Height = Math.Min(rectAdjusted.Bottom - rectAdjusted.Top, zElement.y + zElement.height);

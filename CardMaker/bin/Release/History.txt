@@ -3,6 +3,8 @@ Card Maker Version History
 1.0.0.1
 - Added ability to configure PDF exports in cm, mm, and inches
 - Added ability to configure Layout size based on cm, mm, and inch values
+- Added sub counter functionality to file name (Thanks Feynt)
+- Fixed issue with BGC FormattedText tag not respecting the x/y offset values
 
 1.0.0.0
 - Added limit to the number of loops of translation within Incept (should protect against typos)
