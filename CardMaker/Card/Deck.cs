@@ -426,8 +426,7 @@ namespace CardMaker.Card
             WaitDialog.Instance.ProgressStep(0);
         }
 
-        public ElementString TranslateString(string sRawString, DeckLine zDeckLine,
-            ProjectLayoutElement zElement, bool bPrint, string sCacheSuffix = "")
+        public ElementString TranslateString(string sRawString, DeckLine zDeckLine, ProjectLayoutElement zElement, bool bPrint, string sCacheSuffix = "")
         {
             return m_zTranslator.TranslateString(sRawString, bPrint ? m_nCardPrintIndex : m_nCardIndex, zDeckLine, zElement, sCacheSuffix);
         }
@@ -454,6 +453,11 @@ namespace CardMaker.Card
         public ProjectLayoutElement GetOverrideElement(ProjectLayoutElement zElement, List<string> arrayLine, DeckLine zDeckLine, bool bExport)
         {
             return m_zTranslator.GetOverrideElement(zElement, bExport ? m_nCardPrintIndex : m_nCardIndex, arrayLine, zDeckLine);
+        }
+
+        public ProjectLayoutElement GetVariableOverrideElement(ProjectLayoutElement zElement, Dictionary<string, string> dictionaryOverrideFieldToValue)
+        {
+            return m_zTranslator.GetVariableOverrideElement(zElement, dictionaryOverrideFieldToValue);
         }
 
         /// <summary>

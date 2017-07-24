@@ -183,7 +183,7 @@ namespace CardMaker.Events.Managers
             if (null == zLayout.Element) return;
             foreach (var zElement in zLayout.Element)
             {
-                zElement.InitializeCache();
+                zElement.InitializeTranslatedFields();
             }
         }
 

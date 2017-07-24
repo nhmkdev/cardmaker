@@ -155,7 +155,7 @@ namespace CardMaker.XML
             opacity = 255;
             enabled = true;
 
-            InitializeCache();
+            InitializeTranslatedFields();
         }
 
         public Color GetElementBorderColor()
@@ -191,7 +191,7 @@ namespace CardMaker.XML
         /// <summary>
         /// Initializes the cache variables for color and font translation
         /// </summary>
-        public void InitializeCache()
+        public void InitializeTranslatedFields()
         {
             SetElementBorderColor(TranslateColorString(bordercolor));
             SetElementColor(TranslateColorString(elementcolor));
@@ -205,8 +205,8 @@ namespace CardMaker.XML
         /// Performs a partial deepy copy based on the input element, the name field is left unchanged
         /// </summary>
         /// <param name="zElement">The source element to copy from</param>
-        /// <param name="bInitializeCache">flag indicating whether to reinitialize the cache</param>
-        public void DeepCopy(ProjectLayoutElement zElement, bool bInitializeCache)
+        /// <param name="bInitializeTranslatedFields">flag indicating whether to reinitialize the translated fields</param>
+        public void DeepCopy(ProjectLayoutElement zElement, bool bInitializeTranslatedFields)
         {
             verticalalign = zElement.verticalalign;
             horizontalalign = zElement.horizontalalign;
@@ -231,9 +231,9 @@ namespace CardMaker.XML
             lineheight = zElement.lineheight;
             wordspace = zElement.wordspace;
 
-            if (bInitializeCache)
+            if (bInitializeTranslatedFields)
             {
-                InitializeCache();
+                InitializeTranslatedFields();
             }
         }
 

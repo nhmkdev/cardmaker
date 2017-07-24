@@ -4,14 +4,16 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using CardMaker.Data;
+using Support.UI;
 
 namespace UnitTest.DeckObject
 {
     // TODO: "bad name" test!
-
     [TestFixture]
     internal class InceptStringTranslation
     {
+        private const string TEST_ELEMENT_NAME = "testElement";
+
         private TestDeck _testDeck;
         private DeckLine _testLine;
         private ProjectLayoutElement _testElement;
@@ -21,7 +23,7 @@ namespace UnitTest.DeckObject
         {
             _testDeck = new TestDeck();
             _testLine = new DeckLine(new List<string>());
-            _testElement = new ProjectLayoutElement("testElement");
+            _testElement = new ProjectLayoutElement(TEST_ELEMENT_NAME);
         }
 
         [Test]
@@ -322,6 +324,115 @@ namespace UnitTest.DeckObject
             _testElement.type = ElementType.FormattedText.ToString();
             var result = _testDeck.TranslateString(line, _testLine, _testElement, false);
             return result.String;
+        }
+
+        [Test]
+        public void ValidateDefinitionBasedOverrides()
+        {
+            _testDeck.ProcessLinesPublic(
+                new List<List<string>>(),
+                new List<List<string>>(),
+                null);
+            const string PREFIX = "PREFIX";
+            const string SUFFIX = "SUFFIX";
+            const int X = 45;
+            const int Y = 55;
+            const int WIDTH = 65;
+            const int HEIGHT = 75;
+            const int BORDERTHICKNESS = 85;
+            const int OPACITY = 95;
+            const int OUTLINETHICKNESS = 105;
+            const int LINEHEIGHT = 110;
+            const int WORDSPACE = 115;
+            const bool AUTOSCALEFONT = true;
+            const bool ENABLED = false;
+            const bool LOCKASPECT = true;
+            const bool KEEPORIGINALSIZE = true;
+            const bool JUSTIFIEDTEXT = true;
+            const float ROTATION = 55;
+            const string BORDERCOLOR = "0xFF0000FF";
+            const string ELEMENTCOLOR = "0x00FF00FF";
+            const string OUTLINECOLOR = "0x0000FFFF";
+            const string FONT = "font";
+            const int VERTICALALIGN = 120;
+            const int HORIZONTALALIGN = 125;
+            const string TYPE = "theType";
+
+            // these can't be overriden
+            const string VARIABLE = "theVariable";
+            const string NAME = "newName";
+
+            const string BASE_VARIABLE = "theVariable";
+
+            _testElement.variable = BASE_VARIABLE;
+
+            var zElementString = _testDeck.TranslateString(
+                PREFIX +
+                " " +
+                getOverride("x", X) +
+                getOverride("y", Y) +
+                getOverride("width", WIDTH) +
+                getOverride("height", HEIGHT) +
+                getOverride("borderthickness", BORDERTHICKNESS) +
+                getOverride("opacity", OPACITY) +
+                getOverride("outlinethickness", OUTLINETHICKNESS) +
+                getOverride("lineheight", LINEHEIGHT) +
+                getOverride("wordspace", WORDSPACE) +
+                getOverride("autoscalefont", AUTOSCALEFONT) +
+                getOverride("enabled", ENABLED) +
+                getOverride("lockaspect", LOCKASPECT) +
+                getOverride("keeporiginalsize", KEEPORIGINALSIZE) +
+                getOverride("justifiedtext", JUSTIFIEDTEXT) +
+                getOverride("rotation", ROTATION) +
+                getOverride("bordercolor", BORDERCOLOR) +
+                getOverride("elementcolor", ELEMENTCOLOR) +
+                getOverride("outlinecolor", OUTLINECOLOR) +
+                getOverride("font", FONT) +
+                getOverride("verticalalign", VERTICALALIGN) +
+                getOverride("horizontalalign", HORIZONTALALIGN) +
+                getOverride("type", TYPE) +
+                // un-overrid-able
+                getOverride("name", NAME) +
+                getOverride("variable", VARIABLE) +
+                " " + 
+                SUFFIX
+                , _testLine, _testElement, false);
+            Assert.NotNull(zElementString.OverrideFieldToValueDictionary);
+            _testDeck.GetVariableOverrideElement(_testElement, zElementString.OverrideFieldToValueDictionary);
+
+            Assert.AreEqual(X, _testElement.x);
+            Assert.AreEqual(Y, _testElement.y);
+            Assert.AreEqual(WIDTH, _testElement.width);
+            Assert.AreEqual(HEIGHT, _testElement.height);
+            Assert.AreEqual(BORDERTHICKNESS, _testElement.borderthickness);
+            Assert.AreEqual(OPACITY, _testElement.opacity);
+            Assert.AreEqual(OUTLINETHICKNESS, _testElement.outlinethickness);
+            Assert.AreEqual(LINEHEIGHT, _testElement.lineheight);
+            Assert.AreEqual(WORDSPACE, _testElement.wordspace);
+            Assert.AreEqual(AUTOSCALEFONT, _testElement.autoscalefont);
+            Assert.AreEqual(ENABLED, _testElement.enabled);
+            Assert.AreEqual(LOCKASPECT, _testElement.lockaspect);
+            Assert.AreEqual(KEEPORIGINALSIZE, _testElement.keeporiginalsize);
+            Assert.AreEqual(JUSTIFIEDTEXT, _testElement.justifiedtext);
+            Assert.AreEqual(ROTATION, _testElement.rotation);
+            Assert.AreEqual(BORDERCOLOR, _testElement.bordercolor);
+            Assert.AreEqual(ELEMENTCOLOR, _testElement.elementcolor);
+            Assert.AreEqual(OUTLINECOLOR, _testElement.outlinecolor);
+            Assert.AreEqual(FONT, _testElement.font);
+            Assert.AreEqual(VERTICALALIGN, _testElement.verticalalign);
+            Assert.AreEqual(HORIZONTALALIGN, _testElement.horizontalalign);
+            Assert.AreEqual(TYPE, _testElement.type);
+
+            // these should be unchanged
+            Assert.AreEqual(BASE_VARIABLE, _testElement.variable);
+            Assert.AreEqual(TEST_ELEMENT_NAME, _testElement.name);
+
+            Assert.AreEqual(PREFIX + "  " + SUFFIX, zElementString.String);
+        }
+
+        private string getOverride(string sOverrideField, object zOverrideValue)
+        {
+            return "$[{0}:{1}]".FormatString(sOverrideField, zOverrideValue);
         }
 
         [TestCase("##?", 15, 8, Result = "00000015bb")]

@@ -54,6 +54,7 @@ namespace CardMaker.Card.Translation
 
         private static readonly Regex s_regexColumnVariable = new Regex(@"(.*)(@\[)(.+?)(\])(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexCardVariable = new Regex(@"(.*)(\!\[)(.+?)(\])(.*)", RegexOptions.Compiled);
+        private static readonly Regex s_regexElementOverride = new Regex(@"(.*)(\$\[)(.+?):(.+?)(\])(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexCardCounter = new Regex(@"(.*)(##)(\d+)(;)(\d+)(;)(\d+)(#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexSubCardCounter = new Regex(@"(.*)(#sc;)(\d+)(;)(\d+)(;)(\d+)(#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexIfLogic = new Regex(@"(.*)(#\()(if.*?)(\)#)(.*)", RegexOptions.Compiled);
@@ -62,10 +63,15 @@ namespace CardMaker.Card.Translation
         private static readonly Regex s_regexIfThenElseStatement = new Regex(@"(if)(.*?)\s([!=><]=|<|>)\s(.*?)(then )(.*?)( else )(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexIfSet = new Regex(@"(\[)(.*?)(\])", RegexOptions.Compiled);
         private static readonly Regex s_regexSwitchStatement = new Regex(@"(switch)(;)(.*?)(;)(.*)", RegexOptions.Compiled);
+        private static readonly HashSet<string> s_setDisallowedOverrideFields = new HashSet<string>()
+        {
+            "name",
+            "variable"
+        };
 
         public InceptTranslator(Dictionary<string, int> dictionaryColumnNameToIndex, Dictionary<string, string> dictionaryDefines,
-            Dictionary<string, Dictionary<string, int>> dictionaryElementOverrides, List<string> listColumnNames)
-            : base(dictionaryColumnNameToIndex, dictionaryDefines, dictionaryElementOverrides, listColumnNames)
+            Dictionary<string, Dictionary<string, int>> dictionaryElementToFieldColumnOverrides, List<string> listColumnNames)
+            : base(dictionaryColumnNameToIndex, dictionaryDefines, dictionaryElementToFieldColumnOverrides, listColumnNames)
         {
             
         }
@@ -281,8 +287,36 @@ namespace CardMaker.Card.Translation
                 nTranslationLoopCount++;
             }
 
-            zElementString.String = sOutput;
 
+            var dictionaryOverrideFieldToValue = new Dictionary<string, string>();
+            // Override evaluation:
+            // Translate card variables (non-reference information
+            // Groups
+            //     1     2    3    4    5   6
+            // @"(.*)(\$\[)(.+?):(.+?)(\])(.*)
+            sOutput = LoopTranslateRegex(s_regexElementOverride, sOutput, zElement,
+                    (zMatch =>
+                        {
+                            var sField = zMatch.Groups[3].ToString().ToLower();
+                            var sValue = zMatch.Groups[4].ToString();
+
+                            if (!s_setDisallowedOverrideFields.Contains(sField))
+                            {
+                                dictionaryOverrideFieldToValue[sField] = sValue;
+                            }
+                            else
+                            {
+                                Logger.AddLogLine("[{1}] override not allowed on element: [{0}]".FormatString(zElement.name, sField));
+                            }
+
+                            return zMatch.Groups[1].Value + zMatch.Groups[6].Value;
+                        }
+                    ));
+
+            zElementString.String = sOutput;
+            zElementString.OverrideFieldToValueDictionary = dictionaryOverrideFieldToValue == null
+                ? null
+                : dictionaryOverrideFieldToValue;
             return zElementString;
         }
 

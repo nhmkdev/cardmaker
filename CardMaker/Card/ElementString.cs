@@ -23,17 +23,24 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
+using System.Collections.Generic;
+
 namespace CardMaker.Card
 {
+    /// <summary>
+    /// Contains all the information gathered from processing the element variable
+    /// </summary>
     public class ElementString
     {
         public ElementString()
         {
             String = null;
             DrawElement = true;
+            OverrideFieldToValueDictionary = null;
         }
 
         public string String { get; set; }
         public bool DrawElement { get; set; }
+        public Dictionary<string, string> OverrideFieldToValueDictionary { get; set; }
     }
 }

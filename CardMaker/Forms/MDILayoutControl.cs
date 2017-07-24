@@ -458,7 +458,7 @@ namespace CardMaker.Forms
                         }
                         // re-init any translated string values (colors/fonts) 
                         // TODO: consider using an event for this kind of thing...
-                        zElementToValue.Key.InitializeCache();
+                        zElementToValue.Key.InitializeTranslatedFields();
                     }
 
                     CardMakerInstance.ProcessingUserAction = false;

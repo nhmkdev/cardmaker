@@ -23,11 +23,13 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using CardMaker.Data;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
+using Support.IO;
 
 namespace CardMaker.Card
 {
@@ -94,12 +96,16 @@ namespace CardMaker.Card
                     {
                         IssueManager.Instance.FireChangeElementEvent(zElement.name);
 
-                        // get override Element
-                        ProjectLayoutElement zOverrideElement = CurrentDeck.GetOverrideElement(zElement, listLine, zDeckLine, bExport);
+                        // get override Element (overrides based on data source) (this is a copy!)
+                        // This takes place before translation to cover the odd case where the variable field is override in the data source
+                        var zOverrideElement = CurrentDeck.GetOverrideElement(zElement, listLine, zDeckLine, bExport);
                         var zDrawElement = zOverrideElement;
 
                         // translate any index values in the csv
                         var zElementString = CurrentDeck.TranslateString(zDrawElement.variable, zDeckLine, zDrawElement, bExport);
+
+                        // get override Element (based on any overrides in the element variable string)
+                        zDrawElement = CurrentDeck.GetVariableOverrideElement(zDrawElement, zElementString.OverrideFieldToValueDictionary);
 
                         // enabled is re-checked due to possible override of the enabled value
                         if (!zElementString.DrawElement || !zDrawElement.enabled)
@@ -108,6 +114,9 @@ namespace CardMaker.Card
                         }
 
                         var eType = DrawItem.GetElementType(zDrawElement.type);
+
+                        // initialize the translated fields on the element to draw
+                        zDrawElement.InitializeTranslatedFields();
 
                         //NOTE: removed transform backup (draw element resets it anyway...)
                         //if (!bExport) // backup is only necessary for zoomed canvas

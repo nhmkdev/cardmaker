@@ -1,6 +1,7 @@
 Card Maker Version History
 --------------------------
 1.0.0.1
+- Added ability to override element fields in the define/variable field with $[fieldname:value] (same override formatting as data source)
 - Added ability to configure PDF exports in cm, mm, and inches
 - Added ability to configure Layout size based on cm, mm, and inch values
 - Added sub counter functionality to file name (Thanks Feynt)
