@@ -117,6 +117,10 @@ namespace CardMaker.Card.Translation
                     {
                         sDefineValue = (zDeckLine.RowSubIndex + 1).ToString();
                     }
+                    else if (sKey.Equals("cardcount"))
+                    {
+                        sDefineValue = LayoutManager.Instance.ActiveDeck.CardCount.ToString();
+                    }
                     else
                     {
                         IssueManager.Instance.FireAddIssueEvent("Bad card variable: " + sKey);
