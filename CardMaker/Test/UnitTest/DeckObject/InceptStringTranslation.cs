@@ -430,6 +430,34 @@ namespace UnitTest.DeckObject
             Assert.AreEqual(PREFIX + "  " + SUFFIX, zElementString.String);
         }
 
+        [Test]
+        public void ValidateDefinitionBasedEmptyOverride()
+        {
+            _testDeck.ProcessLinesPublic(
+                new List<List<string>>(),
+                new List<List<string>>(),
+                null);
+
+            const string PREFIX = "PREFIX";
+            const string SUFFIX = "SUFFIX";
+
+            const string BASE_VARIABLE = "theVariable";
+
+            _testElement.variable = BASE_VARIABLE;
+
+            var zElementString = _testDeck.TranslateString(
+                PREFIX +
+                " " +
+                getOverride("x", string.Empty) +
+                " " +
+                SUFFIX
+                , _testLine, _testElement, false);
+            Assert.True(0 == zElementString.OverrideFieldToValueDictionary.Count);
+            _testDeck.GetVariableOverrideElement(_testElement, zElementString.OverrideFieldToValueDictionary);
+
+            Assert.AreEqual(PREFIX + "  " + SUFFIX, zElementString.String);
+        }
+
         private string getOverride(string sOverrideField, object zOverrideValue)
         {
             return "$[{0}:{1}]".FormatString(sOverrideField, zOverrideValue);

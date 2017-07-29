@@ -54,7 +54,7 @@ namespace CardMaker.Card.Translation
 
         private static readonly Regex s_regexColumnVariable = new Regex(@"(.*)(@\[)(.+?)(\])(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexCardVariable = new Regex(@"(.*)(\!\[)(.+?)(\])(.*)", RegexOptions.Compiled);
-        private static readonly Regex s_regexElementOverride = new Regex(@"(.*)(\$\[)(.+?):(.+?)(\])(.*)", RegexOptions.Compiled);
+        private static readonly Regex s_regexElementOverride = new Regex(@"(.*)(\$\[)(.+?):(.*?)(\])(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexCardCounter = new Regex(@"(.*)(##)(\d+)(;)(\d+)(;)(\d+)(#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexSubCardCounter = new Regex(@"(.*)(#sc;)(\d+)(;)(\d+)(;)(\d+)(#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexIfLogic = new Regex(@"(.*)(#\()(if.*?)(\)#)(.*)", RegexOptions.Compiled);
@@ -306,7 +306,11 @@ namespace CardMaker.Card.Translation
 
                             if (!s_setDisallowedOverrideFields.Contains(sField))
                             {
-                                dictionaryOverrideFieldToValue[sField] = sValue;
+                                // empty override values are discarded (matches reference overrides)
+                                if (!string.IsNullOrWhiteSpace(sValue))
+                                {
+                                    dictionaryOverrideFieldToValue[sField] = sValue;
+                                }
                             }
                             else
                             {
