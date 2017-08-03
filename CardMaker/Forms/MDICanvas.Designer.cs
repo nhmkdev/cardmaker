@@ -58,10 +58,16 @@ namespace CardMaker.Forms
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.verticalCenterButton = new System.Windows.Forms.ToolStripButton();
-            this.horizontalCenterButton = new System.Windows.Forms.ToolStripButton();
-            this.customAlignButton = new System.Windows.Forms.ToolStripButton();
             this.customVerticalAlignButton = new System.Windows.Forms.ToolStripButton();
+            this.horizontalCenterButton = new System.Windows.Forms.ToolStripButton();
             this.customHoritonalAlignButton = new System.Windows.Forms.ToolStripButton();
+            this.customAlignButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.lblHorizontalDividers = new System.Windows.Forms.ToolStripLabel();
+            this.txtHorizontalDividers = new System.Windows.Forms.ToolStripTextBox();
+            this.lblVerticalDividers = new System.Windows.Forms.ToolStripLabel();
+            this.txtVerticalDividers = new System.Windows.Forms.ToolStripTextBox();
+            this.btnToggleDividers = new System.Windows.Forms.ToolStripButton();
             this.panelCardCanvas = new Support.UI.PanelEx();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownZoom)).BeginInit();
             this.toolStrip.SuspendLayout();
@@ -107,11 +113,17 @@ namespace CardMaker.Forms
             this.customVerticalAlignButton,
             this.horizontalCenterButton,
             this.customHoritonalAlignButton,
-            this.customAlignButton});
+            this.customAlignButton,
+            this.toolStripSeparator2,
+            this.lblHorizontalDividers,
+            this.txtHorizontalDividers,
+            this.lblVerticalDividers,
+            this.txtVerticalDividers,
+            this.btnToggleDividers});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
             this.toolStrip.Name = "toolStrip";
             this.toolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.toolStrip.Size = new System.Drawing.Size(292, 25);
+            this.toolStrip.Size = new System.Drawing.Size(852, 25);
             this.toolStrip.TabIndex = 2;
             // 
             // toolStripLabel1
@@ -136,28 +148,6 @@ namespace CardMaker.Forms
             this.verticalCenterButton.ToolTipText = "Center Elements Vertically";
             this.verticalCenterButton.Click += new System.EventHandler(this.verticalCenterButton_Click);
             // 
-            // horizontalCenterButton
-            // 
-            this.horizontalCenterButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.horizontalCenterButton.Image = ((System.Drawing.Image)(resources.GetObject("horizontalCenterButton.Image")));
-            this.horizontalCenterButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.horizontalCenterButton.Name = "horizontalCenterButton";
-            this.horizontalCenterButton.Size = new System.Drawing.Size(23, 22);
-            this.horizontalCenterButton.Text = "toolStripButton1";
-            this.horizontalCenterButton.ToolTipText = "Center Elements Horizontally";
-            this.horizontalCenterButton.Click += new System.EventHandler(this.horizontalCenterButton_Click);
-            // 
-            // customAlignButton
-            // 
-            this.customAlignButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.customAlignButton.Image = ((System.Drawing.Image)(resources.GetObject("customAlignButton.Image")));
-            this.customAlignButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.customAlignButton.Name = "customAlignButton";
-            this.customAlignButton.Size = new System.Drawing.Size(23, 22);
-            this.customAlignButton.Text = "toolStripButton1";
-            this.customAlignButton.ToolTipText = "Custom Align Elements";
-            this.customAlignButton.Click += new System.EventHandler(this.customAlignElementButton_Click);
-            // 
             // customVerticalAlignButton
             // 
             this.customVerticalAlignButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -168,6 +158,17 @@ namespace CardMaker.Forms
             this.customVerticalAlignButton.Text = "toolStripButton1";
             this.customVerticalAlignButton.ToolTipText = "Custom Align Elements Vertically";
             this.customVerticalAlignButton.Click += new System.EventHandler(this.customVerticalAlignButton_Click);
+            // 
+            // horizontalCenterButton
+            // 
+            this.horizontalCenterButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.horizontalCenterButton.Image = ((System.Drawing.Image)(resources.GetObject("horizontalCenterButton.Image")));
+            this.horizontalCenterButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.horizontalCenterButton.Name = "horizontalCenterButton";
+            this.horizontalCenterButton.Size = new System.Drawing.Size(23, 22);
+            this.horizontalCenterButton.Text = "toolStripButton1";
+            this.horizontalCenterButton.ToolTipText = "Center Elements Horizontally";
+            this.horizontalCenterButton.Click += new System.EventHandler(this.horizontalCenterButton_Click);
             // 
             // customHoritonalAlignButton
             // 
@@ -180,6 +181,56 @@ namespace CardMaker.Forms
             this.customHoritonalAlignButton.ToolTipText = "Custom Align Elements Horizontally";
             this.customHoritonalAlignButton.Click += new System.EventHandler(this.customHoritonalAlignButton_Click);
             // 
+            // customAlignButton
+            // 
+            this.customAlignButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.customAlignButton.Image = ((System.Drawing.Image)(resources.GetObject("customAlignButton.Image")));
+            this.customAlignButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.customAlignButton.Name = "customAlignButton";
+            this.customAlignButton.Size = new System.Drawing.Size(23, 22);
+            this.customAlignButton.Text = "toolStripButton1";
+            this.customAlignButton.ToolTipText = "Custom Align Elements";
+            this.customAlignButton.Click += new System.EventHandler(this.customAlignElementButton_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            // 
+            // lblHorizontalDividers
+            // 
+            this.lblHorizontalDividers.Name = "lblHorizontalDividers";
+            this.lblHorizontalDividers.Size = new System.Drawing.Size(55, 22);
+            this.lblHorizontalDividers.Text = "Horizontal";
+            // 
+            // txtHorizontalDividers
+            // 
+            this.txtHorizontalDividers.Name = "txtHorizontalDividers";
+            this.txtHorizontalDividers.Size = new System.Drawing.Size(35, 25);
+            this.txtHorizontalDividers.TextChanged += new System.EventHandler(this.txtHorizontalDividers_TextChanged);
+            // 
+            // lblVerticalDividers
+            // 
+            this.lblVerticalDividers.Name = "lblVerticalDividers";
+            this.lblVerticalDividers.Size = new System.Drawing.Size(42, 22);
+            this.lblVerticalDividers.Text = "Vertical";
+            // 
+            // txtVerticalDividers
+            // 
+            this.txtVerticalDividers.Name = "txtVerticalDividers";
+            this.txtVerticalDividers.Size = new System.Drawing.Size(35, 25);
+            this.txtVerticalDividers.TextChanged += new System.EventHandler(this.txtVerticalDividers_TextChanged);
+            // 
+            // btnToggleDividers
+            // 
+            this.btnToggleDividers.CheckOnClick = true;
+            this.btnToggleDividers.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnToggleDividers.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnToggleDividers.Name = "btnToggleDividers";
+            this.btnToggleDividers.Size = new System.Drawing.Size(84, 22);
+            this.btnToggleDividers.Text = "Toggle Dividers";
+            this.btnToggleDividers.CheckStateChanged += new System.EventHandler(this.btnToggleGuides_CheckStateChanged);
+            // 
             // panelCardCanvas
             // 
             this.panelCardCanvas.AutoScroll = true;
@@ -187,14 +238,14 @@ namespace CardMaker.Forms
             this.panelCardCanvas.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelCardCanvas.Location = new System.Drawing.Point(0, 25);
             this.panelCardCanvas.Name = "panelCardCanvas";
-            this.panelCardCanvas.Size = new System.Drawing.Size(292, 248);
+            this.panelCardCanvas.Size = new System.Drawing.Size(852, 524);
             this.panelCardCanvas.TabIndex = 1;
             // 
             // MDICanvas
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(292, 273);
+            this.ClientSize = new System.Drawing.Size(852, 549);
             this.Controls.Add(this.numericUpDownZoom);
             this.Controls.Add(this.panelCardCanvas);
             this.Controls.Add(this.toolStrip);
@@ -221,5 +272,11 @@ namespace CardMaker.Forms
         private System.Windows.Forms.ToolStripButton customAlignButton;
         private System.Windows.Forms.ToolStripButton customVerticalAlignButton;
         private System.Windows.Forms.ToolStripButton customHoritonalAlignButton;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripLabel lblHorizontalDividers;
+        private System.Windows.Forms.ToolStripLabel lblVerticalDividers;
+        private System.Windows.Forms.ToolStripTextBox txtHorizontalDividers;
+        private System.Windows.Forms.ToolStripTextBox txtVerticalDividers;
+        private System.Windows.Forms.ToolStripButton btnToggleDividers;
     }
 }

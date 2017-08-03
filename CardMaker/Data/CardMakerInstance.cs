@@ -54,6 +54,21 @@ namespace CardMaker.Data
         public static bool DrawSelectedElementGuides { get; set; }
 
         /// <summary>
+        /// Flag indicating whether to attempt to draw the layout dividers
+        /// </summary>
+        public static bool DrawLayoutDividers { get; set; }
+
+        /// <summary>
+        /// The number of dividers to render horizontally
+        /// </summary>
+        public static int LayoutDividerHorizontalCount { get; set; }
+
+        /// <summary>
+        /// The number of dividers to render vertically
+        /// </summary>
+        public static int LayoutDividerVerticalCount { get; set; }
+
+        /// <summary>
         /// Flag indicating whether to draw the selected element rotation bounds
         /// </summary>
         public static bool DrawSelectedElementRotationBounds { get; set; }

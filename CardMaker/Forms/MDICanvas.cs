@@ -961,5 +961,33 @@ namespace CardMaker.Forms
 
             ElementManager.Instance.FireElementBoundsUpdateEvent();
         }
+
+        private void btnToggleGuides_CheckStateChanged(object sender, EventArgs e)
+        {
+            CardMakerInstance.DrawLayoutDividers = btnToggleDividers.Checked;
+            LayoutManager.Instance.FireLayoutRenderUpdatedEvent();
+        }
+
+        private void txtHorizontalDividers_TextChanged(object sender, EventArgs e)
+        {
+            var nValue = 0;
+            int.TryParse(txtHorizontalDividers.Text, out nValue);
+            CardMakerInstance.LayoutDividerHorizontalCount = nValue;
+            if (CardMakerInstance.DrawLayoutDividers)
+            {
+                LayoutManager.Instance.FireLayoutRenderUpdatedEvent();
+            }
+        }
+
+        private void txtVerticalDividers_TextChanged(object sender, EventArgs e)
+        {
+            var nValue = 0;
+            int.TryParse(txtVerticalDividers.Text, out nValue);
+            CardMakerInstance.LayoutDividerVerticalCount = nValue;
+            if (CardMakerInstance.DrawLayoutDividers)
+            {
+                LayoutManager.Instance.FireLayoutRenderUpdatedEvent();
+            }
+        }
     }
 }

@@ -35,6 +35,8 @@ namespace CardMaker.Card
 {
     public class CardRenderer
     {
+        private readonly Pen penDivider = new Pen(Color.FromArgb(64, Color.Blue));
+
         public Deck CurrentDeck { get; set; }
         public float ZoomLevel { get; set; }
 
@@ -149,6 +151,30 @@ namespace CardMaker.Card
                                 zGraphics.Transform = matrixPrevious;
                             }
                         }
+                    }
+                }
+            }
+            if (!bExport && CardMakerInstance.DrawLayoutDividers)
+            {
+                if (CardMakerInstance.LayoutDividerHorizontalCount > 0)
+                {
+                    int nSectionWidth = CurrentDeck.CardLayout.width / (CardMakerInstance.LayoutDividerHorizontalCount + 1);
+                    var nHorizontalPos = 0;
+                    for (var nLine = 0; nLine < CardMakerInstance.LayoutDividerHorizontalCount; nLine++)
+                    {
+                        nHorizontalPos += nSectionWidth;
+                        
+                        zGraphics.DrawLine(penDivider, nHorizontalPos, 0, nHorizontalPos, CurrentDeck.CardLayout.height);
+                    }
+                }
+                if (CardMakerInstance.LayoutDividerVerticalCount > 0)
+                {
+                    int nSectionHeight = CurrentDeck.CardLayout.height / (CardMakerInstance.LayoutDividerVerticalCount + 1);
+                    var nVerticalPos = 0;
+                    for (var nLine = 0; nLine < CardMakerInstance.LayoutDividerVerticalCount; nLine++)
+                    {
+                        nVerticalPos += nSectionHeight;
+                        zGraphics.DrawLine(penDivider, 0, nVerticalPos, CurrentDeck.CardLayout.width, nVerticalPos);
                     }
                 }
             }
