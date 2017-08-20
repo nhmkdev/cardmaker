@@ -209,7 +209,7 @@ namespace CardMaker.Forms
             var listItems = new List<string>();
             LayoutTemplateManager.Instance.LayoutTemplates.ForEach(x => listItems.Add(x.ToString()));
 
-            var zQuery = new QueryPanelDialog("Select Layout Template", 450, false);
+            var zQuery = new QueryPanelDialog("Select Layout Template", 600, false);
             zQuery.SetIcon(Resources.CardMakerIcon);
             zQuery.AddTextBox("New Layout Name", "New Layout", false, NAME);
             zQuery.AddNumericBox("Number to create", 1, 1, 256, COUNT);

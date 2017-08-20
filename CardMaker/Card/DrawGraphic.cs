@@ -32,12 +32,19 @@ namespace CardMaker.Card
 {
     public static partial class DrawItem
     {
+        private const string APPLICATION_FOLDER_MARKER = "{appfolder}";
+
         private static void DrawGraphic(Graphics zGraphics, string sFile, ProjectLayoutElement zElement)
         {
             string sPath = sFile;
             if (sPath.Equals("none", StringComparison.CurrentCultureIgnoreCase))
             {
                 return;
+            }
+            if (sPath.StartsWith(APPLICATION_FOLDER_MARKER))
+            {
+                sPath = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location),
+                    sPath.Replace(APPLICATION_FOLDER_MARKER, string.Empty));
             }
             if (!File.Exists(sPath))
             {
