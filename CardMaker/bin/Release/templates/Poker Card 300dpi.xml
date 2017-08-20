@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<LayoutTemplate xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Layout combineReferences="false" width="750" height="1050" buffer="0" Name="PokerCard_300DPI" defaultCount="1" dpi="300" drawBorder="true">
+    <exportRotation>0</exportRotation>
+    <exportTransparentBackground>false</exportTransparentBackground>
+    <exportPDFAsPageBack>false</exportPDFAsPageBack>
+    <exportWidth>0</exportWidth>
+    <exportHeight>0</exportHeight>
+  </Layout>
+</LayoutTemplate>

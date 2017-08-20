@@ -20,7 +20,6 @@
 /CardMaker/bin/Release/*.dll
 /CardMaker/bin/Release/*.zip
 /CardMaker/bin/Release/*.config
-/CardMaker/bin/Release/templates
 /CardMaker/bin/Release/CardMaker.vshost.*
 /CardMaker/obj/
 /CardMaker/CardMaker.csproj.user
