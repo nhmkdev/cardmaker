@@ -35,7 +35,7 @@ namespace CardMaker.Card.FormattedText.Markup
         public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
             m_zPreviousBrush = zProcessData.FontBrush;
-            zProcessData.FontBrush = new SolidBrush(ProjectLayoutElement.TranslateColorString(m_sVariable));
+            zProcessData.FontBrush = new SolidBrush(ProjectLayoutElement.TranslateColorString(m_sVariable, zElement.opacity));
             return false;
         }
 

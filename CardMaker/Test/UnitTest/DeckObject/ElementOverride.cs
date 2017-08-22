@@ -63,6 +63,19 @@ namespace UnitTest.DeckObject
             Assert.AreEqual(overrideValue, result);
         }
 
+        [TestCase("opacity", "80", 80)]
+        [TestCase("opacity", "0x80", 128)]
+        [TestCase("opacity", "C4", 196)]
+        [TestCase("opacity", "0xC4", 196)]
+        [TestCase("opacity", "c4", 196)]
+        [TestCase("opacity", "0xc4", 196)]
+        public void TestOverrideIntStrings(string overrideName, string overrideValueString, int overrideValue)
+        {
+            var overridenElement = GetOverrideElement(overrideName, overrideValueString);
+            var result = (int)typeof(ProjectLayoutElement).GetProperty(overrideName).GetValue(overridenElement, null);
+            Assert.AreEqual(overrideValue, result);
+        }
+
         [TestCase("autoscalefont", true)]
         [TestCase("enabled", false)]
         [TestCase("lockaspect", true)]

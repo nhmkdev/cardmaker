@@ -8,6 +8,9 @@ Card Maker Version History
 - Added ability to configure Layout size based on cm, mm, and inch values
 - Added sub counter functionality to file name (Thanks Feynt)
 - Fixed issue with BGC FormattedText tag not respecting the x/y offset values
+- Default the alpha/opacity value for fc/bgc tags to that of the element (or whatever its state is as of tag evaluation) if the alpha value is not specified (for colors)
+- Apply the alpha/opacity of the element (at the time of evaluation) for bgi/img tags
+- Numeric (integer) overrides can now be specified in hex form (0x## or just ##) Example: 0xC4 (good idea) or C4 (not a good idea)
 
 1.0.0.0
 - Added limit to the number of loops of translation within Incept (should protect against typos)

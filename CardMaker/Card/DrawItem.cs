@@ -181,7 +181,7 @@ namespace CardMaker.Card
             zGraphics.ResetTransform();
         }
 
-        private static Bitmap LoadOpacityImageFromCache(string sFile, ProjectLayoutElement zElement)
+        public static Bitmap LoadOpacityImageFromCache(string sFile, ProjectLayoutElement zElement)
         {
             Bitmap zBitmap;
             string sKey = sFile.ToLower() + ":" + zElement.opacity;

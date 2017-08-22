@@ -31,32 +31,31 @@ using Support.Util;
 
 namespace CardMaker.Card.FormattedText.Markup
 {
-    public class BackgroundColorMarkup : MarkupBase
+    public class BackgroundColorMarkup : MarkupValueBase
     {
         private List<RectangleF> m_listRectangles;
-        private readonly Brush m_zBrush = Brushes.Black;
-        private readonly float m_fAdditionalPixels;
+        private Brush m_zBrush = Brushes.Black;
+        private float m_fAdditionalPixels;
         private float m_fXOffset;
         private float m_fYOffset;
 
-        public BackgroundColorMarkup(string sVariable)
+        public BackgroundColorMarkup(string sVariable) : base(sVariable) { }
+
+        public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData,
+            Graphics zGraphics)
         {
-            var arrayComponents = sVariable.Split(new char[] { ';' });
+            var arrayComponents = m_sVariable.Split(new char[] { ';' });
 
             if (arrayComponents.Length > 0)
             {
-                m_zBrush = new SolidBrush(ProjectLayoutElement.TranslateColorString(arrayComponents[0]));
+                m_zBrush = new SolidBrush(ProjectLayoutElement.TranslateColorString(arrayComponents[0], zElement.opacity));
 
                 if (arrayComponents.Length > 1)
                 {
                     ParseUtil.ParseFloat(arrayComponents[1], out m_fAdditionalPixels);
                 }
             }
-        }
 
-        public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData,
-            Graphics zGraphics)
-        {
             m_fXOffset = zProcessData.CurrentXOffset;
             m_fYOffset = zProcessData.CurrentYOffset;
             return true;

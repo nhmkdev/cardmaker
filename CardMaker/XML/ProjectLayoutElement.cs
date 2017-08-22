@@ -242,7 +242,7 @@ namespace CardMaker.XML
         /// </summary>
         /// <param name="sColor">The color string to translate</param>
         /// <returns>The color, or Color.Black by default</returns>
-        public static Color TranslateColorString(string sColor)
+        public static Color TranslateColorString(string sColor, int defaultAlpha = 255)
         {
             sColor = sColor.Trim();
 
@@ -266,6 +266,7 @@ namespace CardMaker.XML
                     {
                         case 6: //0xRGB (hex RGB)
                             return Color.FromArgb(
+                                defaultAlpha,
                                 Math.Min(255,
                                     Int32.Parse(sColor.Substring(0, 2), System.Globalization.NumberStyles.HexNumber)),
                                 Math.Min(255,
@@ -284,6 +285,7 @@ namespace CardMaker.XML
                                     Int32.Parse(sColor.Substring(4, 2), System.Globalization.NumberStyles.HexNumber)));
                         case 9: //RGB (int RGB)
                             return Color.FromArgb(
+                                defaultAlpha,
                                 Math.Min(255, Int32.Parse(sColor.Substring(0, 3))),
                                 Math.Min(255, Int32.Parse(sColor.Substring(3, 3))),
                                 Math.Min(255, Int32.Parse(sColor.Substring(6, 3))));

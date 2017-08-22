@@ -524,7 +524,7 @@ namespace CardMaker.Forms
             const string DEFAULT_DEFINE_REFERENCE_TYPE = "default_define_reference_type";
             const string OVERRIDE_DEFINE_REFRENCE_NAME = "override_define_reference_name";
 
-            var zQuery = new QueryPanelDialog("Project Settings", 450, 200, false);
+            var zQuery = new QueryPanelDialog("Project Settings", 550, 300, false);
             zQuery.SetIcon(Resources.CardMakerIcon);
 
             TranslatorType eTranslator = ProjectManager.Instance.LoadedProjectTranslatorType;
@@ -535,7 +535,7 @@ namespace CardMaker.Forms
 
             zQuery.AddPullDownBox("Default Define Reference Type", Enum.GetNames(typeof(ReferenceType)), (int)eDefaultDefineReferenceType, DEFAULT_DEFINE_REFERENCE_TYPE);
             zQuery.AddTextBox(
-                "Google Project Define Spreadsheet override", 
+                "Google Project define spreadsheet override", 
                 ProjectManager.Instance.LoadedProject.overrideDefineReferenceName, 
                 false,
                 OVERRIDE_DEFINE_REFRENCE_NAME);

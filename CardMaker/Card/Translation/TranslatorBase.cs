@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Reflection;
 using CardMaker.Card.FormattedText;
 using CardMaker.Data;
@@ -195,7 +196,8 @@ namespace CardMaker.Card.Translation
                 else if (zPropertyInfo.PropertyType == typeof(Int32))
                 {
                     int nValue;
-                    if (int.TryParse(sValue, out nValue))
+                    if (int.TryParse(sValue, out nValue) 
+                        || int.TryParse(sValue.Replace("0x", string.Empty), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out nValue))
                     {
                         zMethod.Invoke(zElement, new object[] { nValue });
                     }
