@@ -46,6 +46,8 @@ namespace Support.UI
         {
             m_bRequireSheetSelect = bRequireSheetSelect;
             InitializeComponent();
+            listViewSheets.Visible = m_bRequireSheetSelect;
+            lblSheets.Visible = m_bRequireSheetSelect;
             m_zSpreadsheetsService = GoogleSpreadsheet.GetSpreadsheetsService(sAppName, sClientId, sGoogleAccessToken);
         }
 
@@ -116,6 +118,11 @@ namespace Support.UI
 
         private void listViewSpreadsheets_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (!m_bRequireSheetSelect)
+            {
+                return;
+            }
+
             if (listViewSpreadsheets.SelectedItems.Count == 1)
             {
                 new Thread(() =>

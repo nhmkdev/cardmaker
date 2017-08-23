@@ -596,12 +596,67 @@ namespace Support.UI
             return zText;
 		}
 
-		/// <summary>
-		/// Created a label based on the current y position
-		/// </summary>
-		/// <param name="sLabel">The Label string</param>
-		/// <returns></returns>
-		private Label CreateLabel(string sLabel)
+        /// <summary>
+        /// Adds a browse component (button/textbox/label)
+        /// </summary>
+        /// <param name="sLabel">Label for the component</param>
+        /// <param name="sDefault">Default value</param>
+        /// <param name="actionBrowseClicked">Function that returns the form to show (or null if it should not)</param>
+        /// <param name="actionSelect">Action to take with the dialog and TextBox (if the result is OK)</param>
+        /// <param name="zQueryKey">The query key for requesting the value</param>
+        public TextBox AddSelectorBox<T>(string sLabel, string sDefault, Func<T> actionBrowseClicked, Action<T, TextBox> actionSelect, object zQueryKey) where T : Form
+	    {
+	        var zLabel = CreateLabel(sLabel);
+	        var zButton = new Button();
+	        var zTextLocation = new Point(GetLabelWidth(zLabel) + (X_CONTROL_BUFFER), GetYPosition());
+	        var zText = new TextBox
+	        {
+	            Text = sDefault,
+	            Location = zTextLocation,
+	            Size =
+	                new Size(
+	                    m_zCurrentLayoutControl.ClientSize.Width - (zTextLocation.X + X_BUTTON_WIDTH + (X_CONTROL_BUFFER * 2)),
+	                    Y_CONTROL_HEIGHT),
+	            Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top
+	        };
+
+            zLabel.Height = zText.Height; // adjust the height of the label to match the control to its right
+
+	        zButton.Text = "...";
+	        zButton.Size = new Size(X_BUTTON_WIDTH, Y_CONTROL_HEIGHT);
+	        zButton.Location = new Point(m_zCurrentLayoutControl.ClientSize.Width - (zButton.Size.Width + X_CONTROL_BUFFER), GetYPosition());
+	        zButton.Tag = zText; // the tag of the button is the textbox
+	        zButton.Anchor = AnchorStyles.Right | AnchorStyles.Top;
+	        zButton.Click += (sender, args) =>
+	        {
+	            var zDialog = actionBrowseClicked();
+
+                if (null == zDialog)
+	            {
+	                return;
+	            }
+
+                if (DialogResult.OK == zDialog.ShowDialog(this.m_zPanel))
+	            {
+	                actionSelect(zDialog, zText);
+	            }
+            };
+
+	        m_zCurrentLayoutControl.Controls.Add(zLabel);
+	        m_zCurrentLayoutControl.Controls.Add(zText);
+	        m_zCurrentLayoutControl.Controls.Add(zButton);
+	        AddToYPosition(zText.Size.Height + Y_CONTROL_BUFFER);
+	        var qItem = new QueryItem(ControlType.BrowseBox, zText, zButton, ref m_nTabIndex); // the tag of the QueryItem is the button (used when disabling the QueryItem)
+	        m_dictionaryItems.Add(zQueryKey, qItem);
+	        return zText;
+	    }
+
+        /// <summary>
+        /// Created a label based on the current y position
+        /// </summary>
+        /// <param name="sLabel">The Label string</param>
+        /// <returns></returns>
+        private Label CreateLabel(string sLabel)
 		{
             var zLabel = new Label();
 			if(null != sLabel)

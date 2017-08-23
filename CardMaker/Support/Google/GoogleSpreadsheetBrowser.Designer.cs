@@ -56,7 +56,7 @@ namespace Support.UI
             this.btnOK = new System.Windows.Forms.Button();
             this.txtFilter = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
+            this.lblSheets = new System.Windows.Forms.Label();
             this.listViewSpreadsheets = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.listViewSheets = new System.Windows.Forms.ListView();
@@ -104,14 +104,14 @@ namespace Support.UI
             this.label1.Text = "Filter:";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // label2
+            // lblSheets
             // 
-            this.label2.Location = new System.Drawing.Point(9, 319);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(63, 20);
-            this.label2.TabIndex = 6;
-            this.label2.Text = "Sheets:";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblSheets.Location = new System.Drawing.Point(9, 319);
+            this.lblSheets.Name = "lblSheets";
+            this.lblSheets.Size = new System.Drawing.Size(63, 20);
+            this.lblSheets.TabIndex = 6;
+            this.lblSheets.Text = "Sheets:";
+            this.lblSheets.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // listViewSpreadsheets
             // 
@@ -170,7 +170,7 @@ namespace Support.UI
             this.ClientSize = new System.Drawing.Size(504, 485);
             this.Controls.Add(this.listViewSheets);
             this.Controls.Add(this.listViewSpreadsheets);
-            this.Controls.Add(this.label2);
+            this.Controls.Add(this.lblSheets);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txtFilter);
             this.Controls.Add(this.btnOK);
@@ -192,7 +192,7 @@ namespace Support.UI
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.TextBox txtFilter;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label lblSheets;
         private System.Windows.Forms.ListView listViewSpreadsheets;
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ListView listViewSheets;

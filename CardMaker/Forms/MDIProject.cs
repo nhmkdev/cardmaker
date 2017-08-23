@@ -330,17 +330,8 @@ namespace CardMaker.Forms
 
         private void addGoogleSpreadsheetReferenceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (String.IsNullOrEmpty(CardMakerInstance.GoogleAccessToken))
+            if (!CheckGoogleCredentials())
             {
-                if(DialogResult.Cancel == MessageBox.Show(this,
-                    "You do not appear to have any Google credentials configured. Press OK to configure.",
-                    "Google Credentials Missing",
-                    MessageBoxButtons.OKCancel,
-                    MessageBoxIcon.Information))
-                {
-                    return;
-                }
-                GoogleAuthManager.Instance.FireGoogleAuthUpdateRequestedEvent();
                 return;
             }
 
@@ -534,10 +525,19 @@ namespace CardMaker.Forms
                 Enum.GetNames(typeof(TranslatorType)), (int)eTranslator, TRANSLATOR);
 
             zQuery.AddPullDownBox("Default Define Reference Type", Enum.GetNames(typeof(ReferenceType)), (int)eDefaultDefineReferenceType, DEFAULT_DEFINE_REFERENCE_TYPE);
-            zQuery.AddTextBox(
+            zQuery.AddSelectorBox(
                 "Google Project define spreadsheet override", 
-                ProjectManager.Instance.LoadedProject.overrideDefineReferenceName, 
-                false,
+                ProjectManager.Instance.LoadedProject.overrideDefineReferenceName,
+                () =>
+                {
+                    if(CheckGoogleCredentials())
+                    {
+                        return new GoogleSpreadsheetBrowser(GoogleReferenceReader.APP_NAME, GoogleReferenceReader.CLIENT_ID,
+                            CardMakerInstance.GoogleAccessToken, false);
+                    }
+                    return null;
+                },
+                (zGoogleSpreadsheetBrowser, txtOverride) => { txtOverride.Text = zGoogleSpreadsheetBrowser.SelectedSpreadsheet.Title.Text; },
                 OVERRIDE_DEFINE_REFRENCE_NAME);
 
             if (DialogResult.OK == zQuery.ShowDialog(this))
@@ -790,6 +790,28 @@ namespace CardMaker.Forms
                     LayoutManager.Instance.FireLayoutUpdatedEvent(true);
                 }
             }
+        }
+
+        /// <summary>
+        /// Checks if the google credentials are set.
+        /// </summary>
+        /// <returns>true if the credentials are set, false otherwise</returns>
+        private bool CheckGoogleCredentials()
+        {
+            if (string.IsNullOrEmpty(CardMakerInstance.GoogleAccessToken))
+            {
+                if (DialogResult.Cancel == MessageBox.Show(this,
+                        "You do not appear to have any Google credentials configured. Press OK to configure.",
+                        "Google Credentials Missing",
+                        MessageBoxButtons.OKCancel,
+                        MessageBoxIcon.Information))
+                {
+                    return false;
+                }
+                GoogleAuthManager.Instance.FireGoogleAuthUpdateRequestedEvent();
+                return false;
+            }
+            return true;
         }
     }
 }
