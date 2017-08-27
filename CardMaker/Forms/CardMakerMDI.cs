@@ -39,6 +39,7 @@ using CardMaker.Card.Translation;
 using CardMaker.Data;
 using CardMaker.Events.Args;
 using CardMaker.Events.Managers;
+using CardMaker.Forms.Dialogs;
 using CardMaker.XML;
 using PdfSharp;
 using Support.IO;
@@ -216,7 +217,9 @@ namespace CardMaker.Forms
 
             // load the specified project from the command line
             if (!string.IsNullOrEmpty(CardMakerInstance.CommandLineProjectFile))
+            {
                 InitOpen(CardMakerInstance.CommandLineProjectFile);
+            }
 
 #if !DEBUG
             if(CardMakerBuild.IsUnstable())
@@ -273,16 +276,16 @@ namespace CardMaker.Forms
         {
             CardMakerSettings.IniManager.AutoFlush = false;
             CardMakerSettings.IniManager.SetValue(Name, IniManager.GetFormSettings(this));
-            foreach (Form zForm in MdiChildren)
+            foreach (var zForm in MdiChildren)
             {
                 CardMakerSettings.IniManager.SetValue(zForm.Name, IniManager.GetFormSettings(zForm));
                 CardMakerSettings.IniManager.SetValue(zForm.Name + CardMakerConstants.VISIBLE_SETTING, zForm.Visible.ToString());
             }
             var zBuilder = new StringBuilder();
             var dictionaryFilenames = new Dictionary<string, object>();
-            foreach (string sFile in m_listRecentFiles)
+            foreach (var sFile in m_listRecentFiles)
             {
-                string sLowerFile = sFile.ToLower();
+                var sLowerFile = sFile.ToLower();
                 if (dictionaryFilenames.ContainsKey(sLowerFile))
                     continue;
                 dictionaryFilenames.Add(sLowerFile, null);
@@ -322,7 +325,7 @@ namespace CardMaker.Forms
         private void recentProject_Click(object sender, EventArgs e)
         {
             var zItem = (ToolStripItem)sender;
-            string sFile = zItem.Text;
+            var sFile = zItem.Text;
             InitOpen(sFile);
         }
 
@@ -471,6 +474,10 @@ namespace CardMaker.Forms
             ExportImages(true);
         }
 
+        private void projectSettingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ProjectSettingsDialog.ShowProjectSettings(this);
+        }
 
         private void updateIssuesToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -611,7 +618,7 @@ namespace CardMaker.Forms
 
         private void updateGoogleCredentialsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            UpdateGoogleAuth();
+            GoogleAuthManager.UpdateGoogleAuth(this);
         }
 
         private void clearGoogleCacheToolStripMenuItem_Click(object sender, EventArgs e)
@@ -641,7 +648,7 @@ namespace CardMaker.Forms
 
         private void GoogleAuthUpdate_Requested(object sender, GoogleAuthEventArgs args)
         {
-            UpdateGoogleAuth(args.SuccessAction, args.CancelAction);
+            GoogleAuthManager.UpdateGoogleAuth(this, args.SuccessAction, args.CancelAction);
         }
 
 
@@ -706,7 +713,7 @@ namespace CardMaker.Forms
 
                 if (bHasExternalReference)
                 {
-                    UpdateGoogleAuth(null, () =>
+                    GoogleAuthManager.UpdateGoogleAuth(this, null, () =>
                     {
                         MessageBox.Show(this, "You will be unable to view the layouts for any references that are Google Spreadsheets.", "Reference Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     });
@@ -810,25 +817,7 @@ namespace CardMaker.Forms
 #endif
         }
 
-        private void UpdateGoogleAuth(Action zSuccessAction = null, Action zCancelAction = null)
-        {
-            var zDialog = new GoogleCredentialsDialog()
-            {
-                Icon = Icon
-            };
-            DialogResult zResult = zDialog.ShowDialog(this);
-            switch (zResult)
-            {
-                case DialogResult.OK:
-                    CardMakerInstance.GoogleAccessToken = zDialog.GoogleAccessToken;
-                    Logger.AddLogLine("Updated Google Credentials");
-                    zSuccessAction?.Invoke();
-                    break;
-                default:
-                    zCancelAction?.Invoke();
-                    break;
-            }
-        }
+
 
         private void RestoreReplacementChars()
         {

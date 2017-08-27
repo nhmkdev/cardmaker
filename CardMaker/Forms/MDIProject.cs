@@ -33,6 +33,7 @@ using CardMaker.Card.Import;
 using CardMaker.Data;
 using CardMaker.Events.Args;
 using CardMaker.Events.Managers;
+using CardMaker.Forms.Dialogs;
 using CardMaker.Properties;
 using CardMaker.XML;
 using Support.IO;
@@ -330,7 +331,7 @@ namespace CardMaker.Forms
 
         private void addGoogleSpreadsheetReferenceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (!CheckGoogleCredentials())
+            if (!GoogleAuthManager.CheckGoogleCredentials(this))
             {
                 return;
             }
@@ -511,44 +512,7 @@ namespace CardMaker.Forms
 
         private void projectSettingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            const string TRANSLATOR = "translator";
-            const string DEFAULT_DEFINE_REFERENCE_TYPE = "default_define_reference_type";
-            const string OVERRIDE_DEFINE_REFRENCE_NAME = "override_define_reference_name";
-
-            var zQuery = new QueryPanelDialog("Project Settings", 550, 300, false);
-            zQuery.SetIcon(Resources.CardMakerIcon);
-
-            TranslatorType eTranslator = ProjectManager.Instance.LoadedProjectTranslatorType;
-            ReferenceType eDefaultDefineReferenceType = ProjectManager.Instance.LoadedProjectDefaultDefineReferenceType;
-
-            zQuery.AddPullDownBox("Translator",
-                Enum.GetNames(typeof(TranslatorType)), (int)eTranslator, TRANSLATOR);
-
-            zQuery.AddPullDownBox("Default Define Reference Type", Enum.GetNames(typeof(ReferenceType)), (int)eDefaultDefineReferenceType, DEFAULT_DEFINE_REFERENCE_TYPE);
-            zQuery.AddSelectorBox(
-                "Google Project define spreadsheet override", 
-                ProjectManager.Instance.LoadedProject.overrideDefineReferenceName,
-                () =>
-                {
-                    if(CheckGoogleCredentials())
-                    {
-                        return new GoogleSpreadsheetBrowser(GoogleReferenceReader.APP_NAME, GoogleReferenceReader.CLIENT_ID,
-                            CardMakerInstance.GoogleAccessToken, false);
-                    }
-                    return null;
-                },
-                (zGoogleSpreadsheetBrowser, txtOverride) => { txtOverride.Text = zGoogleSpreadsheetBrowser.SelectedSpreadsheet.Title.Text; },
-                OVERRIDE_DEFINE_REFRENCE_NAME);
-
-            if (DialogResult.OK == zQuery.ShowDialog(this))
-            {
-                ProjectManager.Instance.LoadedProject.translatorName = ((TranslatorType) zQuery.GetIndex(TRANSLATOR)).ToString();
-                ProjectManager.Instance.LoadedProject.defaultDefineReferenceType = ((ReferenceType)zQuery.GetIndex(DEFAULT_DEFINE_REFERENCE_TYPE)).ToString();
-                ProjectManager.Instance.LoadedProject.overrideDefineReferenceName =
-                    zQuery.GetString(OVERRIDE_DEFINE_REFRENCE_NAME).Trim();
-                ProjectManager.Instance.FireProjectUpdated(true);
-                LayoutManager.Instance.InitializeActiveLayout();
-            }
+            ProjectSettingsDialog.ShowProjectSettings(this);
         }
 
         private void treeView_ItemDrag(object sender, ItemDragEventArgs e)
@@ -595,7 +559,7 @@ namespace CardMaker.Forms
             }
         }
 
-        #endregion
+#endregion
 
         /// <summary>
         /// Updates the selected layout node color (if applicable)
@@ -790,28 +754,6 @@ namespace CardMaker.Forms
                     LayoutManager.Instance.FireLayoutUpdatedEvent(true);
                 }
             }
-        }
-
-        /// <summary>
-        /// Checks if the google credentials are set.
-        /// </summary>
-        /// <returns>true if the credentials are set, false otherwise</returns>
-        private bool CheckGoogleCredentials()
-        {
-            if (string.IsNullOrEmpty(CardMakerInstance.GoogleAccessToken))
-            {
-                if (DialogResult.Cancel == MessageBox.Show(this,
-                        "You do not appear to have any Google credentials configured. Press OK to configure.",
-                        "Google Credentials Missing",
-                        MessageBoxButtons.OKCancel,
-                        MessageBoxIcon.Information))
-                {
-                    return false;
-                }
-                GoogleAuthManager.Instance.FireGoogleAuthUpdateRequestedEvent();
-                return false;
-            }
-            return true;
         }
     }
 }

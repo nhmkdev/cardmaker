@@ -11,6 +11,8 @@ Card Maker Version History
 - Default the alpha/opacity value for fc/bgc tags to that of the element (or whatever its state is as of tag evaluation) if the alpha value is not specified (for colors)
 - Apply the alpha/opacity of the element (at the time of evaluation) for bgi/img tags
 - Numeric (integer) overrides can now be specified in hex form (0x## or just ##) Example: 0xC4 (good idea) or C4 (not a good idea)
+- Added Google spreadsheet browser to the Project Settings dialog.
+- Added Project Settings to project menu (shocking!)
 
 1.0.0.0
 - Added limit to the number of loops of translation within Incept (should protect against typos)

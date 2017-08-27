@@ -181,6 +181,7 @@
     <Compile Include="Forms\CardMakerMDI.Designer.cs">
       <DependentUpon>CardMakerMDI.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\Dialogs\ProjectSettingsDialog.cs" />
     <Compile Include="Forms\FormUtils.cs" />
     <Compile Include="Forms\GoogleCredentialsDialog.cs">
       <SubType>Form</SubType>
