@@ -526,9 +526,7 @@ namespace CardMaker.Forms
 
         private void clearCacheToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DrawItem.DumpImages();
-            DrawItem.DumpOpacityImages();
-            LayoutManager.Instance.FireLayoutRenderUpdatedEvent();
+            LayoutManager.Instance.ClearImageCache();
         }
 
         private void illegalFilenameCharacterReplacementToolStripMenuItem_Click(object sender, EventArgs e)

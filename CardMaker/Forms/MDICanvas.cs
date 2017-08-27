@@ -32,6 +32,7 @@ using CardMaker.Data;
 using CardMaker.Events.Args;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
+using Support.IO;
 using Support.UI;
 using LayoutEventArgs = CardMaker.Events.Args.LayoutEventArgs;
 
@@ -223,7 +224,14 @@ namespace CardMaker.Forms
                             : MouseMode.Rotate);
                         break;
                 }
-                ElementManager.Instance.ProcessSelectedElementsChange(nHChange, nVChange, 0, 0);
+                if (CheckAllSelectedElementsEnabled(false))
+                {
+                    ElementManager.Instance.ProcessSelectedElementsChange(nHChange, nVChange, 0, 0);
+                }
+                else
+                {
+                    Logger.AddLogLine("You cannot adjust disabled elements!");
+                }
             }
             return base.ProcessCmdKey(ref msg, keyData);
         }
@@ -579,6 +587,8 @@ namespace CardMaker.Forms
         {
             if (MouseButtons.Left == e.Button)
             {
+                if (!CheckAllSelectedElementsEnabled(true)) return;
+
                 ProjectLayoutElement zElement = ElementManager.Instance.GetSelectedElement();
                 if (null != zElement)
                 {
@@ -646,96 +656,10 @@ namespace CardMaker.Forms
             m_zCardCanvas.Invalidate();
         }
 
-#endregion
-
-        /// <summary>
-        /// Invalidates the panel and card canvas
-        /// </summary>
-        private void Redraw()
-        {
-            panelCardCanvas.Invalidate();
-            m_zCardCanvas.Invalidate();
-        }
-
-        private bool ResizeRight(int nX)
-        {
-            int nWidth = (int)((float)nX * m_fZoomRatio) - m_zSelectedElement.x;
-            if (1 <= nWidth)
-            {
-                m_zSelectedElement.width = nWidth;
-                return true;
-            }
-            return false;
-        }
-
-        private bool ResizeLeft(int nX)
-        {
-            int nWidth = m_zSelectedElement.width + (m_zSelectedElement.x - (int)((float)nX * m_fZoomRatio));
-            if ((0 <= nX) && (1 <= nWidth))
-            {
-                m_zSelectedElement.width = nWidth;
-                m_zSelectedElement.x = (int)((float)nX * m_fZoomRatio);
-                return true;
-            }
-            return false;
-        }
-
-        private bool ResizeUp(int nY)
-        {
-            int nHeight = m_zSelectedElement.height + (m_zSelectedElement.y - (int)((float)nY * m_fZoomRatio));
-            if ((0 <= nY) && (1 <= nHeight))
-            {
-                m_zSelectedElement.height = nHeight;
-                m_zSelectedElement.y = (int)((float)nY * m_fZoomRatio);
-                return true;
-            }
-            return false;
-        }
-
-        private bool ResizeDown(int nY)
-        {
-            int nHeight = (int)((float)nY * m_fZoomRatio) - m_zSelectedElement.y;
-            if (1 <= nHeight)
-            {
-                m_zSelectedElement.height = nHeight;
-                return true;
-            }
-            return false;
-        }
-
-        private void TriggerMouseMoveAtMouseLocation()
-        {
-            var pLocation = panelCardCanvas.PointToClient(Cursor.Position);
-            cardCanvas_MouseMoveGeneralMode(null, new MouseEventArgs(MouseButtons.None, 0, pLocation.X, pLocation.Y, 0));
-        }
-
-        private void ChangeMouseMode(MouseMode eDestinationMode)
-        {
-            if (eDestinationMode == m_eMouseMode)
-            {
-                return;
-            }
-            m_eMouseMode = eDestinationMode;
-
-            switch (m_eMouseMode)
-            {
-                case MouseMode.Move:
-                    Text = "Canvas [Mode: Move-only]";
-                    TriggerMouseMoveAtMouseLocation();
-                    break;
-                case MouseMode.MoveResize:
-                    Text = "Canvas [Mode: Normal]";
-                    TriggerMouseMoveAtMouseLocation();
-                    break;
-                case MouseMode.Rotate:
-                    Text = "Canvas [Mode: Rotate-only]";
-                    Cursor = new Cursor(Properties.Resources.RotateCursor.Handle);
-                    break;
-            }
-        }
-
         private void verticalCenterButton_Click(object sender, EventArgs e)
         {
+            if (!CheckAllSelectedElementsEnabled(true)) return;
+
             var listSelectedElements = ElementManager.Instance.SelectedElements;
             if (listSelectedElements == null || listSelectedElements.Count == 0)
             {
@@ -754,6 +678,8 @@ namespace CardMaker.Forms
 
         private void horizontalCenterButton_Click(object sender, EventArgs e)
         {
+            if (!CheckAllSelectedElementsEnabled(true)) return;
+
             var listSelectedElements = ElementManager.Instance.SelectedElements;
             if (listSelectedElements == null || listSelectedElements.Count == 0)
             {
@@ -773,6 +699,8 @@ namespace CardMaker.Forms
 
         private void customAlignElementButton_Click(object sender, EventArgs e)
         {
+            if (!CheckAllSelectedElementsEnabled(true)) return;
+
             var listSelectedElements = ElementManager.Instance.SelectedElements;
             if (listSelectedElements == null || listSelectedElements.Count == 0)
             {
@@ -824,6 +752,8 @@ namespace CardMaker.Forms
 
         private void customVerticalAlignButton_Click(object sender, EventArgs e)
         {
+            if (!CheckAllSelectedElementsEnabled(true)) return;
+
             var listSelectedElements = ElementManager.Instance.SelectedElements;
             if (listSelectedElements == null || listSelectedElements.Count == 0)
             {
@@ -839,7 +769,7 @@ namespace CardMaker.Forms
 
             zQuery.AddNumericBox("Vertical Pixel Spacing", 0, int.MinValue, int.MaxValue, VERTICAL_SPACING);
             zQuery.AddCheckBox("Include Element Heights", false, APPLY_ELEMENT_HEIGHTS);
-            zQuery.AddPullDownBox("Horizontal Centering", Enum.GetNames(typeof (ElementCenterAlign)), 0,
+            zQuery.AddPullDownBox("Horizontal Centering", Enum.GetNames(typeof(ElementCenterAlign)), 0,
                 ELEMENT_CENTERING);
 
             if (DialogResult.OK != zQuery.ShowDialog(CardMakerInstance.ApplicationForm))
@@ -849,14 +779,14 @@ namespace CardMaker.Forms
 
             var nVerticalSpace = (int)zQuery.GetDecimal(VERTICAL_SPACING);
             var bApplyElementHeights = zQuery.GetBool(APPLY_ELEMENT_HEIGHTS);
-            var eCenterAlignment = (ElementCenterAlign) zQuery.GetIndex(ELEMENT_CENTERING);
+            var eCenterAlignment = (ElementCenterAlign)zQuery.GetIndex(ELEMENT_CENTERING);
 
             // determine the centering
             var nCenterX = 0;
             switch (eCenterAlignment)
             {
                 case ElementCenterAlign.FirstElement:
-                    nCenterX = listSelectedElements[0].x + (listSelectedElements[0].width/2);
+                    nCenterX = listSelectedElements[0].x + (listSelectedElements[0].width / 2);
                     break;
                 case ElementCenterAlign.Layout:
                     nCenterX = LayoutManager.Instance.ActiveLayout.width / 2;
@@ -893,6 +823,8 @@ namespace CardMaker.Forms
 
         private void customHoritonalAlignButton_Click(object sender, EventArgs e)
         {
+            if (!CheckAllSelectedElementsEnabled(true)) return;
+
             var listSelectedElements = ElementManager.Instance.SelectedElements;
             if (listSelectedElements == null || listSelectedElements.Count == 0)
             {
@@ -988,6 +920,122 @@ namespace CardMaker.Forms
             {
                 LayoutManager.Instance.FireLayoutRenderUpdatedEvent();
             }
+        }
+
+        private void toolStripButtonReloadReferences_Click(object sender, EventArgs e)
+        {
+            LayoutManager.Instance.RefreshActiveLayout();
+        }
+
+        private void toolStripButtonClearImageCache_Click(object sender, EventArgs e)
+        {
+            LayoutManager.Instance.ClearImageCache();
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Invalidates the panel and card canvas
+        /// </summary>
+        private void Redraw()
+        {
+            panelCardCanvas.Invalidate();
+            m_zCardCanvas.Invalidate();
+        }
+
+        private bool ResizeRight(int nX)
+        {
+            int nWidth = (int)((float)nX * m_fZoomRatio) - m_zSelectedElement.x;
+            if (1 <= nWidth)
+            {
+                m_zSelectedElement.width = nWidth;
+                return true;
+            }
+            return false;
+        }
+
+        private bool ResizeLeft(int nX)
+        {
+            int nWidth = m_zSelectedElement.width + (m_zSelectedElement.x - (int)((float)nX * m_fZoomRatio));
+            if ((0 <= nX) && (1 <= nWidth))
+            {
+                m_zSelectedElement.width = nWidth;
+                m_zSelectedElement.x = (int)((float)nX * m_fZoomRatio);
+                return true;
+            }
+            return false;
+        }
+
+        private bool ResizeUp(int nY)
+        {
+            int nHeight = m_zSelectedElement.height + (m_zSelectedElement.y - (int)((float)nY * m_fZoomRatio));
+            if ((0 <= nY) && (1 <= nHeight))
+            {
+                m_zSelectedElement.height = nHeight;
+                m_zSelectedElement.y = (int)((float)nY * m_fZoomRatio);
+                return true;
+            }
+            return false;
+        }
+
+        private bool ResizeDown(int nY)
+        {
+            int nHeight = (int)((float)nY * m_fZoomRatio) - m_zSelectedElement.y;
+            if (1 <= nHeight)
+            {
+                m_zSelectedElement.height = nHeight;
+                return true;
+            }
+            return false;
+        }
+
+        private void TriggerMouseMoveAtMouseLocation()
+        {
+            var pLocation = panelCardCanvas.PointToClient(Cursor.Position);
+            cardCanvas_MouseMoveGeneralMode(null, new MouseEventArgs(MouseButtons.None, 0, pLocation.X, pLocation.Y, 0));
+        }
+
+        private void ChangeMouseMode(MouseMode eDestinationMode)
+        {
+            if (eDestinationMode == m_eMouseMode)
+            {
+                return;
+            }
+            m_eMouseMode = eDestinationMode;
+
+            switch (m_eMouseMode)
+            {
+                case MouseMode.Move:
+                    Text = "Canvas [Mode: Move-only]";
+                    TriggerMouseMoveAtMouseLocation();
+                    break;
+                case MouseMode.MoveResize:
+                    Text = "Canvas [Mode: Normal]";
+                    TriggerMouseMoveAtMouseLocation();
+                    break;
+                case MouseMode.Rotate:
+                    Text = "Canvas [Mode: Rotate-only]";
+                    Cursor = new Cursor(Properties.Resources.RotateCursor.Handle);
+                    break;
+            }
+        }
+
+        private bool CheckAllSelectedElementsEnabled(bool bShowWarning)
+        {
+            var listSelectedElements = ElementManager.Instance.SelectedElements;
+            if (null != listSelectedElements)
+            {
+                if (listSelectedElements.TrueForAll(x => x.enabled))
+                {
+                    return true;
+                }
+            }
+            if (bShowWarning)
+            {
+                MessageBox.Show(this, "All element(s) must be enabled.", "Enabled Elements Only", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
+            return false;
         }
     }
 }

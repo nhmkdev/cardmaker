@@ -90,6 +90,7 @@ namespace CardMaker.Forms
             LayoutManager.Instance.DeckIndexChanged += DeckIndex_Changed;
             ElementManager.Instance.ElementSelected += Element_Selected;
             ElementManager.Instance.ElementBoundsUpdated += ElementBounds_Updated;
+            LayoutManager.Instance.LayoutUpdated += (sender, args) => HandleEnableStates();
         }
 
         #region overrides
@@ -642,8 +643,8 @@ namespace CardMaker.Forms
 
         private void HandleEnableStates()
         {
-            // TODO: this is duplicated in UpdateElementValues
-            groupBoxElement.Enabled = (null != ElementManager.Instance.GetSelectedElement());
+            groupBoxElement.Enabled = null != ElementManager.Instance.GetSelectedElement() &&
+                                       ElementManager.Instance.SelectedElements.TrueForAll(e => e.enabled);
         }
 
         private void CreateControlFieldDictionary()
@@ -901,7 +902,6 @@ namespace CardMaker.Forms
                 // this fires a change event on the combo box... seems like it might be wrong?
                 comboElementType.SelectedIndex = (int)eType;
                 UpdatePanelColors(zElement);
-                groupBoxElement.Enabled = true;
                 Font zFont = zElement.GetElementFont();
                 zFont = zFont ?? DrawItem.DefaultFont;
                 for (int nFontIndex = 0; nFontIndex < comboFontName.Items.Count; nFontIndex++)
@@ -916,10 +916,7 @@ namespace CardMaker.Forms
                 SetupElementFont(zFont);
                 m_bFireElementChangeEvents = true;
             }
-            else
-            {
-                groupBoxElement.Enabled = false;
-            }
+            HandleEnableStates();
         }
 
         private void SetupElementFont(Font zElementFont)

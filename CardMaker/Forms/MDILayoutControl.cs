@@ -100,7 +100,7 @@ namespace CardMaker.Forms
 
         void Layout_Updated(object sender, LayoutEventArgs args)
         {
-            RefreshElementTypes();
+            RefreshElementInformation();
         }
 
         void Element_Selected(object sender, ElementEventArgs args)
@@ -552,7 +552,7 @@ namespace CardMaker.Forms
             {
                 Tag = zElement
             };
-            UpdateListViewItemState(zLvi, zElement);
+            UpdateListViewItemText(zLvi, zElement);
             m_dictionaryItems.Add(zElement.name, zLvi);
             return zLvi;
         }
@@ -782,7 +782,7 @@ namespace CardMaker.Forms
                     foreach (ProjectLayoutElement zElement in zLayout.Element)
                     {
                         ListViewItem zLvi = CreateListViewItem(zElement);
-                        UpdateListViewItemState(zLvi, zElement);
+                        UpdateListViewItemText(zLvi, zElement);
                         listViewElements.Items.Add(zLvi);
                     }
                     if (0 < listViewElements.Items.Count)
@@ -816,7 +816,7 @@ namespace CardMaker.Forms
             }
         }
 
-        private void UpdateListViewItemState(ListViewItem zLvi, ProjectLayoutElement zElement)
+        private void UpdateListViewItemText(ListViewItem zLvi, ProjectLayoutElement zElement)
         {
             //zLvi.BackColor = zElement.enabled ? Color.White : Color.Tomato;
             zLvi.SubItems[0].Text = zElement.enabled.ToString();
@@ -824,24 +824,16 @@ namespace CardMaker.Forms
 
         private void ToggleEnableState()
         {
-            if (0 < listViewElements.SelectedItems.Count)
-            {
-                foreach (ListViewItem zLvi in listViewElements.SelectedItems)
-                {
-                    var zElement = (ProjectLayoutElement)zLvi.Tag;
-                    zElement.enabled = !zElement.enabled;
-                    UpdateListViewItemState(zLvi, zElement);
-                }
-                LayoutManager.Instance.FireLayoutUpdatedEvent(true);
-            }
+            ElementManager.Instance.ProcessSelectedElementsEnableToggle();
         }
 
-        private void RefreshElementTypes()
+        private void RefreshElementInformation()
         {
             foreach (var zLvi in m_dictionaryItems.Values)
             {
                 var zElement = (ProjectLayoutElement) zLvi.Tag;
                 zLvi.SubItems[2].Text = zElement.type;
+                UpdateListViewItemText(zLvi, zElement);
             }
         }
 

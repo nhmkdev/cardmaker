@@ -13,6 +13,9 @@ Card Maker Version History
 - Numeric (integer) overrides can now be specified in hex form (0x## or just ##) Example: 0xC4 (good idea) or C4 (not a good idea)
 - Added Google spreadsheet browser to the Project Settings dialog.
 - Added Project Settings to project menu (shocking!)
+- Element enabled state toggle is now part of undo/redo
+- Disabled elements no longer accept changes (well hopefully). They should also block some multi-element actions.
+- Added Clear Image Cache and Reload References buttons to the Canvas toolbar
 
 1.0.0.0
 - Added limit to the number of loops of translation within Incept (should protect against typos)

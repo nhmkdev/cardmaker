@@ -68,6 +68,9 @@ namespace CardMaker.Forms
             this.lblVerticalDividers = new System.Windows.Forms.ToolStripLabel();
             this.txtVerticalDividers = new System.Windows.Forms.ToolStripTextBox();
             this.btnToggleDividers = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripButtonClearImageCache = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButtonReloadReferences = new System.Windows.Forms.ToolStripButton();
             this.panelCardCanvas = new Support.UI.PanelEx();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownZoom)).BeginInit();
             this.toolStrip.SuspendLayout();
@@ -119,7 +122,10 @@ namespace CardMaker.Forms
             this.txtHorizontalDividers,
             this.lblVerticalDividers,
             this.txtVerticalDividers,
-            this.btnToggleDividers});
+            this.btnToggleDividers,
+            this.toolStripSeparator3,
+            this.toolStripButtonClearImageCache,
+            this.toolStripButtonReloadReferences});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
             this.toolStrip.Name = "toolStrip";
             this.toolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
@@ -231,6 +237,31 @@ namespace CardMaker.Forms
             this.btnToggleDividers.Text = "Toggle Dividers";
             this.btnToggleDividers.CheckStateChanged += new System.EventHandler(this.btnToggleGuides_CheckStateChanged);
             // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolStripButtonClearImageCache
+            // 
+            this.toolStripButtonClearImageCache.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButtonClearImageCache.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonClearImageCache.Image")));
+            this.toolStripButtonClearImageCache.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButtonClearImageCache.Name = "toolStripButtonClearImageCache";
+            this.toolStripButtonClearImageCache.Size = new System.Drawing.Size(102, 22);
+            this.toolStripButtonClearImageCache.Text = "Clear Image Cache";
+            this.toolStripButtonClearImageCache.Click += new System.EventHandler(this.toolStripButtonClearImageCache_Click);
+            // 
+            // toolStripButtonReloadReferences
+            // 
+            this.toolStripButtonReloadReferences.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButtonReloadReferences.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonReloadReferences.Image")));
+            this.toolStripButtonReloadReferences.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButtonReloadReferences.Name = "toolStripButtonReloadReferences";
+            this.toolStripButtonReloadReferences.Size = new System.Drawing.Size(102, 22);
+            this.toolStripButtonReloadReferences.Text = "Reload References";
+            this.toolStripButtonReloadReferences.Click += new System.EventHandler(this.toolStripButtonReloadReferences_Click);
+            // 
             // panelCardCanvas
             // 
             this.panelCardCanvas.AutoScroll = true;
@@ -278,5 +309,8 @@ namespace CardMaker.Forms
         private System.Windows.Forms.ToolStripTextBox txtHorizontalDividers;
         private System.Windows.Forms.ToolStripTextBox txtVerticalDividers;
         private System.Windows.Forms.ToolStripButton btnToggleDividers;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripButton toolStripButtonClearImageCache;
+        private System.Windows.Forms.ToolStripButton toolStripButtonReloadReferences;
     }
 }

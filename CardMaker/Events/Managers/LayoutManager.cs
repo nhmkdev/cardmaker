@@ -28,6 +28,7 @@ using CardMaker.Card;
 using CardMaker.Data;
 using CardMaker.Events.Args;
 using CardMaker.XML;
+using Support.IO;
 
 namespace CardMaker.Events.Managers
 {
@@ -212,6 +213,17 @@ namespace CardMaker.Events.Managers
                 InitializeActiveLayout();
                 CardMakerInstance.ForceDataCacheRefresh = false;
             }
+        }
+
+        /// <summary>
+        /// Resets the image cache(s)
+        /// </summary>
+        public void ClearImageCache()
+        {
+            DrawItem.DumpImages();
+            DrawItem.DumpOpacityImages();
+            FireLayoutRenderUpdatedEvent();
+            Logger.AddLogLine("Cleared Image Cache");
         }
     }
 }

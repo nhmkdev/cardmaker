@@ -115,6 +115,29 @@ namespace CardMaker.Events.Managers
             return m_listSelectedElements != null && m_listSelectedElements.Count > 0 ? m_listSelectedElements[0] : null;
         }
 
+        public void ProcessSelectedElementsEnableToggle()
+        {
+            var dictionaryRedo = new Dictionary<ProjectLayoutElement, bool>();
+            var dictionaryUndo = new Dictionary<ProjectLayoutElement, bool>();
+
+            foreach (var zElement in m_listSelectedElements)
+            {
+                dictionaryUndo.Add(zElement, zElement.enabled);
+                dictionaryRedo.Add(zElement, !zElement.enabled);
+            }
+
+            UserAction.PushAction(bRedo =>
+            {
+                var dictionaryState = bRedo ? dictionaryRedo : dictionaryUndo;
+                foreach (var zKvp in dictionaryState)
+                {
+                    zKvp.Key.enabled = zKvp.Value;
+                }
+                LayoutManager.Instance.FireLayoutUpdatedEvent(true);
+            }, 
+            true);
+        }
+
         /// <summary>
         /// Adjusts the selected elements based on the passed in parameters
         /// </summary>
