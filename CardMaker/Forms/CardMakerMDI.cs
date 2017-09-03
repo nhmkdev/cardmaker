@@ -575,7 +575,8 @@ namespace CardMaker.Forms
             var zQuery = new QueryPanelDialog("Remove Layout Templates", 450, false);
             zQuery.SetIcon(Properties.Resources.CardMakerIcon);
             zQuery.AddLabel("Select the templates to remove.", 20);
-            zQuery.AddListBox("Templates", listItems.ToArray(), null, true, 120, TEMPLATE);
+            zQuery.AddListBox("Templates", listItems.ToArray(), null, true, 240, TEMPLATE)
+                .Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             zQuery.AllowResize();
             if (DialogResult.OK == zQuery.ShowDialog(this))
             {

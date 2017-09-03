@@ -343,6 +343,9 @@ namespace Support.UI
                 }
             }
 
+            // add the panel controls after the client size has been set (adding them before displayed an odd issue with control anchor/size)
+		    FinalizeControls();
+
             if (0 < m_zPanel.Controls.Count)
             {
                 m_zPanel.SelectNextControl(m_zPanel.Controls[m_zPanel.Controls.Count - 1], true, true, true, true);

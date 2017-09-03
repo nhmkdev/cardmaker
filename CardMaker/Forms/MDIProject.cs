@@ -207,19 +207,35 @@ namespace CardMaker.Forms
             const string TEMPLATE = "template";
             const string NAME = "name";
             const string COUNT = "count";
-            var listItems = new List<string>();
-            LayoutTemplateManager.Instance.LayoutTemplates.ForEach(x => listItems.Add(x.ToString()));
+            var listTemplateNames = new List<string>();
+            LayoutTemplateManager.Instance.LayoutTemplates.ForEach(x => listTemplateNames.Add(x.ToString()));
 
             var zQuery = new QueryPanelDialog("Select Layout Template", 600, false);
             zQuery.SetIcon(Resources.CardMakerIcon);
             zQuery.AddTextBox("New Layout Name", "New Layout", false, NAME);
             zQuery.AddNumericBox("Number to create", 1, 1, 256, COUNT);
-            zQuery.AddListBox("Template", listItems.ToArray(), null, false, 120, TEMPLATE);
-            zQuery.AllowResize();
-            while(DialogResult.OK == zQuery.ShowDialog(this))
+            var zTxtFilter = zQuery.AddTextBox("Template Filter", string.Empty, false, TEMPLATE + NAME);
+            var zListBoxTemplates = zQuery.AddListBox("Template", listTemplateNames.ToArray(), null, false, 240, TEMPLATE);
+            zListBoxTemplates.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right | AnchorStyles.Left;
+            zTxtFilter.TextChanged += (o, args) =>
             {
-                int nSelectedIndex = zQuery.GetIndex(TEMPLATE);
-                if(-1 == nSelectedIndex)
+                var txtBox = (TextBox) o;
+                zListBoxTemplates.Items.Clear();
+                if (string.IsNullOrWhiteSpace(txtBox.Text))
+                {
+                    listTemplateNames.ForEach(zTemplate => zListBoxTemplates.Items.Add(zTemplate));
+                }
+                else
+                {
+                    listTemplateNames.Where(sTemplateName => sTemplateName.Contains(txtBox.Text)).ToList().ForEach(zTemplate => zListBoxTemplates.Items.Add(zTemplate));
+                }
+            };
+
+            zQuery.AllowResize();
+            while (DialogResult.OK == zQuery.ShowDialog(this))
+            {
+                var nSelectedIndex = listTemplateNames.IndexOf(zQuery.GetString(TEMPLATE));
+                if (-1 == nSelectedIndex)
                 {
                     MessageBox.Show("Please select a layout template");
                     continue;

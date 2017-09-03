@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
@@ -46,6 +47,8 @@ namespace Support.UI
         private Control m_zCurrentLayoutControl; // the current panel / tab page to add controls to
         private bool m_bTabbed;
         private int m_nTabIndex; // the tab index value of a control
+
+	    protected Dictionary<Control, List<Control>> m_dictionaryLayoutControlControls = new Dictionary<Control, List<Control>>();
 
         protected int m_nButtonHeight;
         protected TabControl m_zTabControl;
@@ -126,6 +129,33 @@ namespace Support.UI
 		}
 
         /// <summary>
+        /// Performs any finalization process related to the controls (intended for use before showing!)
+        /// </summary>
+	    public void FinalizeControls()
+	    {
+	        // add the panel controls after the client size has been set (adding them before displayed an odd issue with control anchor/size)
+	        foreach (var zLayoutControl in m_dictionaryLayoutControlControls.Keys)
+	        {
+                m_dictionaryLayoutControlControls[zLayoutControl].ForEach(zControl => zLayoutControl.Controls.Add(zControl));
+	        }
+        }
+
+        /// <summary>
+        /// Adds the control in a pending state to be placed on the panel by FinalizeControls
+        /// </summary>
+        /// <param name="zControl">The control to add</param>
+	    private void AddPendingControl(Control zControl)
+        {
+            List<Control> listControls;
+            if (!m_dictionaryLayoutControlControls.TryGetValue(m_zCurrentLayoutControl, out listControls))
+            {
+                listControls = new List<Control>();
+                m_dictionaryLayoutControlControls.Add(m_zCurrentLayoutControl, listControls);
+            }
+            listControls.Add(zControl);
+	    }
+
+        /// <summary>
 		/// Adds a label
 		/// </summary>
 		/// <param name="sLabel">Label string</param>
@@ -137,7 +167,7 @@ namespace Support.UI
 			zLabel.TextAlign = ContentAlignment.MiddleLeft;
             zLabel.Size = new Size(m_zCurrentLayoutControl.ClientSize.Width - (X_CONTROL_BUFFER * 2), nHeight);
             AddToYPosition(zLabel.Height + Y_CONTROL_BUFFER);
-            m_zCurrentLayoutControl.Controls.Add(zLabel);
+		    AddPendingControl(zLabel);
             return zLabel;
 		}
 
@@ -298,9 +328,9 @@ namespace Support.UI
                 numeric_ValueChanged(zNumeric, new EventArgs());
             }
 
-            m_zCurrentLayoutControl.Controls.Add(zLabel);
-            m_zCurrentLayoutControl.Controls.Add(zNumeric);
-            m_zCurrentLayoutControl.Controls.Add(zTrackBar);
+            AddPendingControl(zLabel);
+            AddPendingControl(zNumeric);
+            AddPendingControl(zTrackBar);
             AddToYPosition(zTrackBar.Size.Height + Y_CONTROL_BUFFER);
             var qItem = new QueryItem(ControlType.NumBoxSlider, zNumeric, zTrackBar, ref m_nTabIndex); // the tag of the QueryItem is the trackbar (used when disabling the QueryItem)
             m_dictionaryItems.Add(zQueryKey, qItem);
@@ -512,7 +542,7 @@ namespace Support.UI
 
                 zControl.Location = new Point(zLabel.Location.X + GetLabelWidth(zLabel), GetYPosition());
                 zLabel.Height = zControl.Height;
-                m_zCurrentLayoutControl.Controls.Add(zLabel);
+                AddPendingControl(zLabel);
                 AddToYPosition(Math.Max(zLabel.Height, zControl.Height) + Y_CONTROL_BUFFER);
             }
             else
@@ -520,8 +550,9 @@ namespace Support.UI
                 zControl.Location = new Point((m_zCurrentLayoutControl.ClientSize.Width - zControl.Width) - X_CONTROL_BUFFER, GetYPosition());
                 AddToYPosition(zControl.Height + Y_CONTROL_BUFFER);
             }
-			zControl.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top;
-            m_zCurrentLayoutControl.Controls.Add(zControl);
+
+            zControl.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top;
+            AddPendingControl(zControl);
             var qItem = new QueryItem(eType, zControl, ref m_nTabIndex);
             m_dictionaryItems.Add(zQueryKey, qItem);
 		}
@@ -587,9 +618,9 @@ namespace Support.UI
 			zButton.Anchor = AnchorStyles.Right | AnchorStyles.Top;
 			zButton.Click += zButton_Click;
 
-            m_zCurrentLayoutControl.Controls.Add(zLabel);
-            m_zCurrentLayoutControl.Controls.Add(zText);
-            m_zCurrentLayoutControl.Controls.Add(zButton);
+		    AddPendingControl(zLabel);
+		    AddPendingControl(zText);
+		    AddPendingControl(zButton);
             AddToYPosition(zText.Size.Height + Y_CONTROL_BUFFER);
             var qItem = new QueryItem(ControlType.BrowseBox, zText, zButton, ref m_nTabIndex); // the tag of the QueryItem is the button (used when disabling the QueryItem)
             m_dictionaryItems.Add(zQueryKey, qItem);
@@ -642,9 +673,9 @@ namespace Support.UI
 	            }
             };
 
-	        m_zCurrentLayoutControl.Controls.Add(zLabel);
-	        m_zCurrentLayoutControl.Controls.Add(zText);
-	        m_zCurrentLayoutControl.Controls.Add(zButton);
+	        AddPendingControl(zLabel);
+	        AddPendingControl(zText);
+	        AddPendingControl(zButton);
 	        AddToYPosition(zText.Size.Height + Y_CONTROL_BUFFER);
 	        var qItem = new QueryItem(ControlType.BrowseBox, zText, zButton, ref m_nTabIndex); // the tag of the QueryItem is the button (used when disabling the QueryItem)
 	        m_dictionaryItems.Add(zQueryKey, qItem);
