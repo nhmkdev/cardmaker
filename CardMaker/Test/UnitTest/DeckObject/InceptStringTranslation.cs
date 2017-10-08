@@ -4,6 +4,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using CardMaker.Data;
+using CardMaker.Events.Managers;
 using Support.UI;
 
 namespace UnitTest.DeckObject
@@ -76,12 +77,30 @@ namespace UnitTest.DeckObject
         [TestCase("#(if #(if x == x then a)##(switch;45;35;A;45;b)##(if z == z then a)# == aba then GOOD)#", Result = "GOOD")]
         [TestCase("#(if #(if x == x then a)##(if y == y then b)##(if z == z then a)# == aba then GOOD)#", Result = "GOOD")]
         [TestCase("#(if #(if #(if y == #(switch;45;35;A;45;y)# then x)# == x then a)#ba == #(switch;45;35;A;45;aba)# then GOOD)#", Result = "GOOD")]
-#warning todo: need some heavily nested logic switches within switches within ifs etc
         public string ValidateLogic(string input)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
             var result = _testDeck.TranslateString(input, _testLine, _testElement, false);
             return result.String;
+        }
+
+        [TestCase(-5, -6, true)]
+        [TestCase(5, 5, true)]
+        [TestCase(-5, 5, false)]
+        [TestCase(5, 6, false)]
+        public void ValidateRandom(int nMin, int nMax, bool bExpectError)
+        {
+            _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
+            var result = _testDeck.TranslateString(string.Format("#random;{0};{1}#", nMin, nMax), _testLine, _testElement, false);
+            if (bExpectError)
+            {
+                Assert.AreEqual(result.String, "Invalid random specified. Min >= Max");
+            }
+            else
+            {
+                var nResult = int.Parse(result.String);
+                Assert.True(nResult >= nMin && nResult <= nMax);
+            }
         }
 
         [TestCase("#(switch;goodkey;badkey;1;goodkey;#nodraw)#", false, Result = "#nodraw")]

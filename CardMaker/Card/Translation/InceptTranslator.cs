@@ -57,6 +57,8 @@ namespace CardMaker.Card.Translation
         private static readonly Regex s_regexElementOverride = new Regex(@"(.*)(\$\[)(.+?):(.*?)(\])(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexCardCounter = new Regex(@"(.*)(##)(\d+)(;)(\d+)(;)(\d+)(#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexSubCardCounter = new Regex(@"(.*)(#sc;)(\d+)(;)(\d+)(;)(\d+)(#)(.*)", RegexOptions.Compiled);
+        private static readonly Regex s_regexRandomNumber = new Regex(@"(.*)(#random;)(-?\d+)(;)(-?\d+)(#)(.*)", RegexOptions.Compiled);
+        private static readonly Regex s_regexRandomPool = new Regex(@"(.*)(#randompool;)(.*?)(#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexIfLogic = new Regex(@"(.*)(#\()(if.*?)(\)#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexSwitchLogic = new Regex(@"(.*)(#\()(switch.*?)(\)#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexIfThenStatement = new Regex(@"(if)(.*?)\s([!=><]=|<|>)\s(.*?)(then )(.*)", RegexOptions.Compiled);
@@ -86,9 +88,9 @@ namespace CardMaker.Card.Translation
         /// <returns></returns>
         protected override ElementString TranslateToElementString(string sRawString, int nCardIndex, DeckLine zDeckLine, ProjectLayoutElement zElement)
         {
-            List<string> listLine = zDeckLine.LineColumns;
+            var listLine = zDeckLine.LineColumns;
 
-            string sOutput = sRawString;
+            var sOutput = sRawString;
 
             sOutput = sOutput.Replace("#empty", string.Empty);
 
@@ -170,7 +172,9 @@ namespace CardMaker.Card.Translation
                             sDefineValue = sDefineValue.Replace("{" + nIdx + "}", arrayParams[nIdx]);
                         }
                     }
-                    return zMatch.Groups[1] + sDefineValue + zMatch.Groups[5];
+                    var result = zMatch.Groups[1] + sDefineValue + zMatch.Groups[5];
+                    // perform the #empty replace every time a define is unwrapped
+                    return result.Replace("#empty", string.Empty);
                 }
             ));
 
@@ -211,7 +215,45 @@ namespace CardMaker.Card.Translation
 
             }));
 
-            // TODO: run these in a loop seeking out the furthest logic in the string
+            // Translate random number
+            // Groups                 
+            //    1  2         3      4  5      6  7
+            //@"(.*)(#random;)(-?\d+)(;)(-?\d+)(#)(.*)"
+            sOutput = LoopTranslateRegex(s_regexRandomNumber, sOutput, zElement,
+                (zMatch =>
+                {
+                    int nMin;
+                    int nMax;
+
+                    if (!int.TryParse(zMatch.Groups[3].ToString(), out nMin) ||
+                        !int.TryParse(zMatch.Groups[5].ToString(), out nMax))
+                    {
+                        return "Failed to parse random min/max";
+                    }
+
+                    if (nMin >= nMax)
+                    {
+                        return "Invalid random specified. Min >= Max";
+                    }
+
+                    // max is not inclusive 
+                    return zMatch.Groups[1] + CardMakerInstance.Random.Next(nMin, nMax + 1).ToString() + zMatch.Groups[9];
+                }));
+
+#if false // may drop this completely...
+            // Translate random pool
+            // Groups                 
+            //    1  2             3    4  5
+            //@"(.*)(#randompool;)(.*?)(#)(.*)"
+            sOutput = LoopTranslateRegex(s_regexRandomPool, sOutput, zElement,
+                (zMatch =>
+                {
+                    string poolName = zMatch.Groups[3].ToString();
+
+                    // max is not inclusive 
+                    return zMatch.Groups[1] + LayoutManager.Instance.ActiveDeck.GetRandomPoolValue(poolName) + zMatch.Groups[5];
+                }));
+#endif
 
             // Translate If Logic
             //Groups

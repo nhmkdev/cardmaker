@@ -40,6 +40,8 @@ namespace CardMaker.Events.Managers
         private static LayoutManager m_zInstance;
         
         public Deck ActiveDeck { get; private set; }
+
+#warning TODO: consider not having this public so ActiveDeck.CardLayout is the only source
         public ProjectLayout ActiveLayout { get; private set; }
 
         /// <summary>

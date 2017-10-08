@@ -22,6 +22,7 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -120,6 +121,8 @@ namespace CardMaker.Data
         /// </summary>
         public static bool ProcessingUserAction { get; set; }
 
+        public static Random Random { get; set; }
+
         static CardMakerInstance()
         {
             ApplicationDPI = 72f;
@@ -130,6 +133,7 @@ namespace CardMaker.Data
             GoogleCredentialsInvalid = false;
             GoogleAccessToken = null;
             ProcessingUserAction = false;
+            Random = new Random();
         }
     }
 }

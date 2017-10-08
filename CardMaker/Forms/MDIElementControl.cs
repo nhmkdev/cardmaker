@@ -761,11 +761,7 @@ namespace CardMaker.Forms
             zSetMethodInfo.Invoke(zElement, new object[] { zNewValue });
 
             // execute any control/element property specific functionality
-            Action<ProjectLayoutElement> actionElement;
-            if(m_dictionaryControlActions.TryGetValue(zControl, out actionElement))
-            {
-                actionElement(zElement);
-            }
+            PerformControlChangeActions(zElement, zControl);
 
             if (ElementManager.Instance.GetSelectedElement() != zElement || bSkipControlUpdate)
             {
@@ -824,19 +820,24 @@ namespace CardMaker.Forms
                 m_bFireElementChangeEvents = true;
 
                 // TODO: if the value does not actually change this applies an update for no specific reason... (tbd)
-                PerformControlChangeActions(numericElementX, numericElementY, numericElementW, numericElementH, numericElementRotation);
+                PerformControlChangeActions(zElement, numericElementX, numericElementY, numericElementW, numericElementH, numericElementRotation);
             }
             LayoutManager.Instance.FireLayoutUpdatedEvent(true);
         }
-
-        private void PerformControlChangeActions(params Control[] arraycontrols)
+        
+        /// <summary>
+        /// Perform any actions associated with the specified control using the element as a parameter
+        /// </summary>
+        /// <param name="zElement">The element to act with</param>
+        /// <param name="arraycontrols">The controls to check for associated actions</param>
+        private void PerformControlChangeActions(ProjectLayoutElement zElement, params Control[] arraycontrols)
         {
             Action<ProjectLayoutElement> action;
             foreach(var zControl in arraycontrols)
             {
                 if (m_dictionaryControlActions.TryGetValue(zControl, out action))
                 {
-                    action(ElementManager.Instance.GetSelectedElement());
+                    action(zElement);
                 }                
             }
         }

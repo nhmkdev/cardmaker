@@ -1,4 +1,5 @@
-﻿using CardMaker.Card;
+﻿using System;
+using CardMaker.Card;
 using CardMaker.XML;
 using System.Collections.Generic;
 using CardMaker.Card.Translation;
