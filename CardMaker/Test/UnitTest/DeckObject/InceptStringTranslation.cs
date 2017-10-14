@@ -513,6 +513,34 @@ namespace UnitTest.DeckObject
             return _testDeck.TranslateFileNameString(input, cardNumber, leftPad);
         }
 
+        [TestCase("A#repeat;-1;a#B", Result = "A#repeat;-1;a#B")]
+        [TestCase("A#repeat;0;a#B", Result = "AB")]
+        [TestCase("A#repeat;1;##B", Result = "A#B")]
+        [TestCase("A#repeat;1;##B3#", Result = "A#B3#")]
+        [TestCase("A#repeat;3;##B3#", Result = "A###B3#")]
+        [TestCase("A#repeat;2;@[1]#B", Result = "AaaB")]
+        [TestCase("A#repeat;2;@[4]#B", Result = "AbbbbbbB")]
+        public string TestRepeatTranslator(string input)
+        {
+            var listLines = new List<List<string>>();
+            var listDefines = new List<List<string>>()
+            {
+                new List<string>() { "define", "value" },
+                new List<string>() { "1", "a" },
+                new List<string>() { "2", "b" },
+                new List<string>() { "3", "@[2]" },
+                new List<string>() { "4", "@[3]@[2]@[3]" },
+                new List<string>() { "4ex", "4" },
+                new List<string>() { "5", "@[@[4ex]]" }
+            };
+            _testDeck.ProcessLinesPublic(
+                listLines,
+                listDefines,
+                null);
+
+            return _testDeck.TranslateString(input, _testLine, _testElement, false).String;
+        }
+
         // graphic elements
     }
 }

@@ -19,6 +19,7 @@ Card Maker Version History
 - Minor improvements to the layout template selection dialog (including a text filter)
 - Added random number functionality with #random;min;max#.
 - Fixed bug with #empty usage in define/reference values.
+- Added repeat functionality for repetition when translating
 
 1.0.0.0
 - Added limit to the number of loops of translation within Incept (should protect against typos)

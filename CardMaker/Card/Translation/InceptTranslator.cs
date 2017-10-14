@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text;
 using System.Text.RegularExpressions;
 using CardMaker.Data;
 using CardMaker.Events.Managers;
@@ -57,6 +58,7 @@ namespace CardMaker.Card.Translation
         private static readonly Regex s_regexElementOverride = new Regex(@"(.*)(\$\[)(.+?):(.*?)(\])(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexCardCounter = new Regex(@"(.*)(##)(\d+)(;)(\d+)(;)(\d+)(#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexSubCardCounter = new Regex(@"(.*)(#sc;)(\d+)(;)(\d+)(;)(\d+)(#)(.*)", RegexOptions.Compiled);
+        private static readonly Regex s_regexRepeat = new Regex(@"(.*)(#repeat;)(\d+)(;)(.+?)(#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexRandomNumber = new Regex(@"(.*)(#random;)(-?\d+)(;)(-?\d+)(#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexRandomPool = new Regex(@"(.*)(#randompool;)(.*?)(#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexIfLogic = new Regex(@"(.*)(#\()(if.*?)(\)#)(.*)", RegexOptions.Compiled);
@@ -240,6 +242,30 @@ namespace CardMaker.Card.Translation
                     return zMatch.Groups[1] + CardMakerInstance.Random.Next(nMin, nMax + 1).ToString() + zMatch.Groups[9];
                 }));
 
+
+            // Translate repeat
+            // Groups                 
+            //    1  2         3    4  5    6  7
+            //@"(.*)(#repeat;)(\d+)(;)(.+?)(#)(.*)"
+            sOutput = LoopTranslateRegex(s_regexRepeat, sOutput, zElement,
+                (zMatch =>
+                {
+                    int nRepeatCount;
+                    var zBuilder = new StringBuilder();
+                    if (int.TryParse(zMatch.Groups[3].ToString(), out nRepeatCount))
+                    {
+                        for (var nIdx = 0; nIdx < nRepeatCount; nIdx++)
+                        {
+                            zBuilder.Append(zMatch.Groups[5].ToString());
+                        }
+                    }
+                    else
+                    {
+                        Logger.AddLogLine("Unable to parse repeat count: " + zMatch.Groups[3].ToString());
+                    }
+
+                    return zMatch.Groups[1] + zBuilder.ToString() + zMatch.Groups[7];
+                }));
 #if false // may drop this completely...
             // Translate random pool
             // Groups                 
