@@ -227,7 +227,7 @@ namespace CardMaker.Forms
                 }
                 else
                 {
-                    listTemplateNames.Where(sTemplateName => sTemplateName.Contains(txtBox.Text)).ToList().ForEach(zTemplate => zListBoxTemplates.Items.Add(zTemplate));
+                    listTemplateNames.Where(sTemplateName => sTemplateName.ToLower().Contains(txtBox.Text.ToLower())).ToList().ForEach(zTemplate => zListBoxTemplates.Items.Add(zTemplate));
                 }
             };
 

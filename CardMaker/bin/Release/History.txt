@@ -20,6 +20,8 @@ Card Maker Version History
 - Added random number functionality with #random;min;max#.
 - Fixed bug with #empty usage in define/reference values.
 - Added repeat functionality for repetition when translating
+- Added ![elementname] translator
+- Added %[x,#,#] substring translator
 
 1.0.0.0
 - Added limit to the number of loops of translation within Incept (should protect against typos)

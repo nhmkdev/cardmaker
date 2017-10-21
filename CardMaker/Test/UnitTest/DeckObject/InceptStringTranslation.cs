@@ -345,6 +345,34 @@ namespace UnitTest.DeckObject
             return result.String;
         }
 
+        [TestCase("%[0,0,1]", Result = @"0")]
+        [TestCase("%[0,0,2]", Result = @"[Invalid substring requested]")]
+        [TestCase("A%[0,0,1]", Result = @"A0")]
+        [TestCase("A%[0,0,2]", Result = @"A[Invalid substring requested]")]
+        [TestCase("%[0,0,1]B", Result = @"0B")]
+        [TestCase("%[0,0,2]B", Result = @"[Invalid substring requested]B")]
+        [TestCase("%[@[L4],2,1]", Result = @"b")]
+        [TestCase("%[sample,4,2]", Result = "le" )]
+        public string ValidateSubStringFunctionality(string line)
+        {
+            var listLines = new List<List<string>>();
+            var listDefines = new List<List<string>>()
+            {
+                new List<string>() { "define", "value" },
+                new List<string>() { "L1", "a" },
+                new List<string>() { "L2", "b" },
+                new List<string>() { "L3", "@[L2]" },
+                new List<string>() { "L4", "@[L3]@[L2]@[L3]" },
+            };
+            _testDeck.ProcessLinesPublic(
+                listLines,
+                listDefines,
+                null);
+            _testElement.type = ElementType.FormattedText.ToString();
+            var result = _testDeck.TranslateString(line, _testLine, _testElement, false);
+            return result.String;
+        }
+
         [Test]
         public void ValidateDefinitionBasedOverrides()
         {
@@ -520,6 +548,7 @@ namespace UnitTest.DeckObject
         [TestCase("A#repeat;3;##B3#", Result = "A###B3#")]
         [TestCase("A#repeat;2;@[1]#B", Result = "AaaB")]
         [TestCase("A#repeat;2;@[4]#B", Result = "AbbbbbbB")]
+        [TestCase("A#repeat;2;@[4]##repeat;3;xyz#B", Result = "AbbbbbbxyzxyzxyzB")]
         public string TestRepeatTranslator(string input)
         {
             var listLines = new List<List<string>>();

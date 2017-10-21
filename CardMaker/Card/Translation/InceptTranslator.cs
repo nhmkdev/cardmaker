@@ -54,6 +54,7 @@ namespace CardMaker.Card.Translation
         private const int MAX_TRANSLATION_LOOP_COUNT = 100;
 
         private static readonly Regex s_regexColumnVariable = new Regex(@"(.*)(@\[)(.+?)(\])(.*)", RegexOptions.Compiled);
+        private static readonly Regex s_regexColumnVariableSubstring = new Regex(@"(.*)(%\[)(.+?)(,)(\d+)(,)(\d+)(\])(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexCardVariable = new Regex(@"(.*)(\!\[)(.+?)(\])(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexElementOverride = new Regex(@"(.*)(\$\[)(.+?):(.*?)(\])(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexCardCounter = new Regex(@"(.*)(##)(\d+)(;)(\d+)(;)(\d+)(#)(.*)", RegexOptions.Compiled);
@@ -91,7 +92,7 @@ namespace CardMaker.Card.Translation
         protected override ElementString TranslateToElementString(string sRawString, int nCardIndex, DeckLine zDeckLine, ProjectLayoutElement zElement)
         {
             var listLine = zDeckLine.LineColumns;
-
+            var nTranslationLoopCount = 0;
             var sOutput = sRawString;
 
             sOutput = sOutput.Replace("#empty", string.Empty);
@@ -125,6 +126,10 @@ namespace CardMaker.Card.Translation
                     {
                         sDefineValue = LayoutManager.Instance.ActiveDeck.CardCount.ToString();
                     }
+                    else if (sKey.Equals("elementname"))
+                    {
+                        sDefineValue = zElement.name;
+                    }
                     else
                     {
                         IssueManager.Instance.FireAddIssueEvent("Bad card variable: " + sKey);
@@ -139,14 +144,14 @@ namespace CardMaker.Card.Translation
             //Groups
             //    1    2    3   4   5
             //@"(.*)(@\[)(.+?)(\])(.*)"
-            sOutput = LoopTranslateRegex(s_regexColumnVariable, sOutput, zElement,
-            (zMatch =>
+            Func<Match, string> funcDefineProcessor =
+                zMatch =>
                 {
                     int nIndex;
                     string sDefineValue;
                     var sKey = zMatch.Groups[3].ToString();
 
-                    // check the key for untranslated components
+                    // check the key for define parameters
                     var arrayParams = sKey.Split(new char[] { ',' });
                     if (arrayParams.Length > 1)
                     {
@@ -177,8 +182,44 @@ namespace CardMaker.Card.Translation
                     var result = zMatch.Groups[1] + sDefineValue + zMatch.Groups[5];
                     // perform the #empty replace every time a define is unwrapped
                     return result.Replace("#empty", string.Empty);
-                }
-            ));
+                };
+
+            // Translate substrings (column names / defines)
+            //Groups
+            //    1  2    3    4  5    6  7    8   9  
+            //@"(.*)(%\[)(.+?)(,)(\d+)(,)(\d+)(\])(.*)
+            Func<Match, string> funcDefineSubstringProcessor =
+                zMatch =>
+                {
+                    var sValue = zMatch.Groups[3].ToString();
+                    int nStartIdx;
+                    int nLength;
+                    if (!int.TryParse(zMatch.Groups[5].ToString(), out nStartIdx) ||
+                        !int.TryParse(zMatch.Groups[7].ToString(), out nLength))
+                    {
+                        sValue = "[Invalid substring parameters]";
+                    }
+                    else
+                    {
+                        sValue = sValue.Length >= nStartIdx + nLength
+                            ? sValue.Substring(nStartIdx, nLength)
+                            : "[Invalid substring requested]";
+                    }
+
+
+                    var result = zMatch.Groups[1] + sValue + zMatch.Groups[9];
+                    // perform the #empty replace every time a define is unwrapped
+                    return result.Replace("#empty", string.Empty);
+                };
+
+            // define and define substring processing
+            sOutput = LoopTranslationMatchMap(sOutput, zElement,
+                new Dictionary<Regex, Func<Match, string>>
+                {
+                    { s_regexColumnVariable, funcDefineProcessor},
+                    { s_regexColumnVariableSubstring, funcDefineSubstringProcessor}
+                });
+
 
             // Translate card counter/index
             // Groups                 
@@ -307,58 +348,13 @@ namespace CardMaker.Card.Translation
                           match.Groups[5];
             };
 
-            var nTranslationLoopCount = 0;
-            while (true)
-            {
-                if (nTranslationLoopCount > MAX_TRANSLATION_LOOP_COUNT)
+            // if / switch processor
+            sOutput = LoopTranslationMatchMap(sOutput, zElement,
+                new Dictionary<Regex, Func<Match, string>>
                 {
-                    Logger.AddLogLine("Distrupting traslation loop. It appears to be an endless loop.");
-                    break;
-                }
-
-                var zIfMatch = s_regexIfLogic.Match(sOutput);
-                var zSwitchMatch = s_regexSwitchLogic.Match(sOutput);
-
-                Func<Match, string> funcProcessor;
-                Match zMatchToTranslate;
-
-                // pick the furthest logic item in the string (if or switch)
-                if (zIfMatch.Success && zSwitchMatch.Success)
-                {
-                    // group 2 is the first of the groups that has the actual logic
-                    int iflastIdx = zIfMatch.Groups[2].Index;
-                    int switchlastidx = zSwitchMatch.Groups[2].Index;
-
-                    if (iflastIdx > switchlastidx)
-                    {
-                        zMatchToTranslate = zIfMatch;
-                        funcProcessor = funcIfProcessor;
-                    }
-                    else
-                    {
-                        zMatchToTranslate = zSwitchMatch;
-                        funcProcessor = funcSwitchProcessor;
-                    }
-                }
-                else if (zIfMatch.Success)
-                {
-                    zMatchToTranslate = zIfMatch;
-                    funcProcessor = funcIfProcessor;
-                }
-                else if (zSwitchMatch.Success)
-                {
-                    zMatchToTranslate = zSwitchMatch;
-                    funcProcessor = funcSwitchProcessor;
-                }
-                else
-                {
-                    break;
-                }
-
-                sOutput = TranslateMatch(zMatchToTranslate, zElement, funcProcessor);
-                nTranslationLoopCount++;
-            }
-
+                    { s_regexIfLogic, funcIfProcessor},
+                    { s_regexSwitchLogic, funcSwitchProcessor }
+                });
 
             var dictionaryOverrideFieldToValue = new Dictionary<string, string>();
             // Override evaluation:
@@ -415,6 +411,48 @@ namespace CardMaker.Card.Translation
                 nTranslationLoopCount++;
             }
             return sOut;
+        }
+
+        private static string LoopTranslationMatchMap(string sInput, ProjectLayoutElement zElement,
+            Dictionary<Regex, Func<Match, string>> dictionaryMatchFuncs)
+        {
+            var nTranslationLoopCount = 0;
+            var sOutput = sInput;
+            while (true)
+            {
+                if (nTranslationLoopCount > MAX_TRANSLATION_LOOP_COUNT)
+                {
+                    Logger.AddLogLine("Distrupting traslation loop. It appears to be an endless loop.");
+                    break;
+                }
+                Match zCurrentMatch = null;
+                Func<Match, string> zCurrentFunc = null;
+
+                foreach (var zKeyValue in dictionaryMatchFuncs)
+                {
+                    var zMatch = zKeyValue.Key.Match(sOutput);
+                    if (zMatch.Success)
+                    {
+#warning PREFERS RIGHT MOST using group 2
+                        if (null != zCurrentMatch &&
+                            zCurrentMatch.Groups[2].Index > zMatch.Groups[2].Index)
+                        {
+                            continue;
+                        }
+                        zCurrentMatch = zMatch;
+                        zCurrentFunc = zKeyValue.Value;
+                    }
+                }
+
+                if (zCurrentMatch == null)
+                {
+                    break;
+                }
+
+                sOutput = TranslateMatch(zCurrentMatch, zElement, zCurrentFunc);
+                nTranslationLoopCount++;
+            }
+            return sOutput;
         }
 
         private static string TranslateMatch(Match zMatch, ProjectLayoutElement zElement, Func<Match, string> processFunc)
