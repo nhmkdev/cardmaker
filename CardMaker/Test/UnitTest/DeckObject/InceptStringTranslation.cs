@@ -353,6 +353,9 @@ namespace UnitTest.DeckObject
         [TestCase("%[0,0,2]B", Result = @"[Invalid substring requested]B")]
         [TestCase("%[@[L4],2,1]", Result = @"b")]
         [TestCase("%[sample,4,2]", Result = "le" )]
+        [TestCase("%[sam,le,4,2]", Result = "le")]
+        [TestCase("%[sam,le,4,2],5,2]", Result = "le,5,2]")]
+        [TestCase("%[@[L5],6,3]", Result = "eme")]
         public string ValidateSubStringFunctionality(string line)
         {
             var listLines = new List<List<string>>();
@@ -363,6 +366,7 @@ namespace UnitTest.DeckObject
                 new List<string>() { "L2", "b" },
                 new List<string>() { "L3", "@[L2]" },
                 new List<string>() { "L4", "@[L3]@[L2]@[L3]" },
+                new List<string>() { "L5", "![elementname]" },
             };
             _testDeck.ProcessLinesPublic(
                 listLines,

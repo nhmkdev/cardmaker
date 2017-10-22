@@ -91,6 +91,8 @@ namespace CardMaker.Card.Translation
         /// <returns></returns>
         protected override ElementString TranslateToElementString(string sRawString, int nCardIndex, DeckLine zDeckLine, ProjectLayoutElement zElement)
         {
+#warning Investigate using method references instead of anonymous methods (optimization/code easier to read)
+
             var listLine = zDeckLine.LineColumns;
             var nTranslationLoopCount = 0;
             var sOutput = sRawString;
@@ -107,8 +109,8 @@ namespace CardMaker.Card.Translation
             // Groups
             //     1    2    3   4   5
             // @"(.*)(!\[)(.+?)(\])(.*)"
-            sOutput = LoopTranslateRegex(s_regexCardVariable, sOutput, zElement,
-            (zMatch =>
+            Func<Match, string> funcCardVariableProcessor =
+                (zMatch =>
                 {
                     string sDefineValue;
                     var sKey = zMatch.Groups[3].ToString().ToLower();
@@ -137,8 +139,7 @@ namespace CardMaker.Card.Translation
                     }
 
                     return zMatch.Groups[1] + sDefineValue + zMatch.Groups[5];
-                }
-            ));
+                });
 
             // Translate named items (column names / defines)
             //Groups
@@ -217,7 +218,8 @@ namespace CardMaker.Card.Translation
                 new Dictionary<Regex, Func<Match, string>>
                 {
                     { s_regexColumnVariable, funcDefineProcessor},
-                    { s_regexColumnVariableSubstring, funcDefineSubstringProcessor}
+                    { s_regexColumnVariableSubstring, funcDefineSubstringProcessor},
+                    { s_regexCardVariable, funcCardVariableProcessor }
                 });
 
 
