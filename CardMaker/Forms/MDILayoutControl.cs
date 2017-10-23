@@ -522,8 +522,24 @@ namespace CardMaker.Forms
             zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
             zQuery.SetMaxHeight(600);
             zQuery.AddPullDownBox("Unit of Measure", Enum.GetNames(typeof(MeasurementUnit)), (int)CardMakerSettings.PrintPageMeasurementUnit, IniSettings.PrintPageMeasurementUnit);
-            zQuery.AddNumericBox("Width", 10, 0, int.MaxValue, 1, 2, CARD_WIDTH);
-            zQuery.AddNumericBox("Height", 10, 0, int.MaxValue, 1, 2, CARD_HEIGHT);
+            var currWidth = numericCardSetWidth.Value / numericCardSetDPI.Value;
+            var currHeight = numericCardSetHeight.Value / numericCardSetDPI.Value;
+            switch (CardMakerSettings.PrintPageMeasurementUnit)
+            {
+                case MeasurementUnit.Inch:
+                    //do nothing
+                    break;
+                case MeasurementUnit.Millimeter:
+                    currWidth = (decimal)MeasurementUtil.GetMillimetersFromInch((double)currWidth);
+                    currHeight = (decimal)MeasurementUtil.GetMillimetersFromInch((double)currHeight);
+                    break;
+                case MeasurementUnit.Centimeter:
+                    currWidth = (decimal)MeasurementUtil.GetCentimetersFromInch((double)currWidth);
+                    currHeight = (decimal)MeasurementUtil.GetCentimetersFromInch((double)currHeight);
+                    break;
+            }
+            zQuery.AddNumericBox("Width", currWidth, 0, int.MaxValue, 1, 2, CARD_WIDTH);
+            zQuery.AddNumericBox("Height", currHeight, 0, int.MaxValue, 1, 2, CARD_HEIGHT);
             if (DialogResult.OK == zQuery.ShowDialog(this))
             {
                 switch ((MeasurementUnit) zQuery.GetIndex(IniSettings.PrintPageMeasurementUnit))
