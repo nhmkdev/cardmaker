@@ -91,7 +91,7 @@ namespace CardMaker.Forms
             0,
             131072});
             this.numericUpDownZoom.Minimum = new decimal(new int[] {
-            25,
+            10,
             0,
             0,
             131072});
@@ -245,7 +245,6 @@ namespace CardMaker.Forms
             // toolStripButtonClearImageCache
             // 
             this.toolStripButtonClearImageCache.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButtonClearImageCache.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonClearImageCache.Image")));
             this.toolStripButtonClearImageCache.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonClearImageCache.Name = "toolStripButtonClearImageCache";
             this.toolStripButtonClearImageCache.Size = new System.Drawing.Size(102, 22);
@@ -255,7 +254,6 @@ namespace CardMaker.Forms
             // toolStripButtonReloadReferences
             // 
             this.toolStripButtonReloadReferences.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButtonReloadReferences.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonReloadReferences.Image")));
             this.toolStripButtonReloadReferences.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonReloadReferences.Name = "toolStripButtonReloadReferences";
             this.toolStripButtonReloadReferences.Size = new System.Drawing.Size(102, 22);

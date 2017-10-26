@@ -68,7 +68,7 @@ namespace CardMaker.Card
                         newSizeRatio = (float)zElement.width / (float)zSize.Width;
                     }
 
-                    var scaledFont = new Font(zFont.FontFamily, newSizeRatio * zFont.Size, zFont.Style);
+                    var scaledFont = FontLoader.GetFont(zFont.FontFamily, newSizeRatio * zFont.Size, zFont.Style);
                     //Support.IO.Logger.AddLogLine(scaledFont.Size + " was [" + zFont.Size + "]");
                     zFont = scaledFont;
 
@@ -84,13 +84,13 @@ namespace CardMaker.Card
                             {
                                 if (zFont.Size == 1)
                                     break;
-                                zFont = new Font(zFont.FontFamily, zFont.Size - 1, zFont.Style);
+                                zFont = FontLoader.GetFont(zFont.FontFamily, zFont.Size - 1, zFont.Style);
                                 if (bUpscaled)
                                     break;
                             }
                             else
                             {
-                                zFont = new Font(zFont.FontFamily, zFont.Size + 1, zFont.Style);
+                                zFont = FontLoader.GetFont(zFont.FontFamily, zFont.Size + 1, zFont.Style);
                                 bUpscaled = true;
                             }
                         }

@@ -99,8 +99,8 @@
     <Compile Include="Card\DrawGraphic.cs" />
     <Compile Include="Card\DrawItem.cs" />
     <Compile Include="Card\DrawTextGraphics.cs" />
-    <Compile Include="Card\DrawTextRenderer.cs" />
     <Compile Include="Card\Export\FileCardExporterFactory.cs" />
+    <Compile Include="Card\FontLoader.cs" />
     <Compile Include="Card\FormattedText\Alignment\AlignmentController.cs" />
     <Compile Include="Card\FormattedText\Alignment\HorizontalLeftAlignmentProcessor.cs" />
     <Compile Include="Card\FormattedText\Alignment\HorizontalRightAlignmentProcessor.cs" />

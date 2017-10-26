@@ -619,7 +619,7 @@ namespace CardMaker.Forms
                 {
                     zCardElement.lineheight = 14;
                     zCardElement.SetElementColor(Color.Black);
-                    zCardElement.SetElementFont(new Font("Arial", 12));
+                    zCardElement.SetElementFont(FontLoader.DefaultFont);
                 }
                 listElements.Add(zCardElement);
                 ListViewItem zLvi = CreateListViewItem(zCardElement);

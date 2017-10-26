@@ -333,7 +333,8 @@ namespace CardMaker.Forms
                                 (checkBoxStrikeout.Checked ? FontStyle.Strikeout : FontStyle.Regular) |
                                 (checkBoxUnderline.Checked ? FontStyle.Underline : FontStyle.Regular);
 
-                            var zFont = new Font(m_listFontFamilies[comboFontName.SelectedIndex], (int)numericFontSize.Value, eFontStyle);
+                            // even if this font load fails due to style it should convert over to the valid one
+                            var zFont = FontLoader.GetFont(m_listFontFamilies[comboFontName.SelectedIndex], (int)numericFontSize.Value, eFontStyle);
 
                             var fontRedo = zFont;
                             var fontUndo = zElementToChange.GetElementFont();
@@ -551,7 +552,7 @@ namespace CardMaker.Forms
             contextMenuStripAssist.Show(btnAssist, new Point(btnAssist.Width, 0), ToolStripDropDownDirection.AboveLeft);
         }
 
-        #endregion
+#endregion
 
         private void SetColorValue(Button btnClicked, Color color, ProjectLayoutElement zElement)
         {

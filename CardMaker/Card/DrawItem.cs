@@ -41,7 +41,7 @@ namespace CardMaker.Card
 
         private static readonly Pen s_zPenDebugBorder = new Pen(Color.FromArgb(196, Color.Red), 1);
         private static readonly Pen s_zPenDebugGuides = new Pen(Color.FromArgb(196, Color.LightPink), 1);
-        private static readonly Font s_zDefaultFont = new Font("Arial", 12);
+        private static readonly Font s_zDefaultFont = FontLoader.DefaultFont;
         private static readonly Pen m_zPenElementSelect = Pens.ForestGreen;
 
         private static readonly Dictionary<string, ElementType> s_dictionaryStringElementType = new Dictionary<string, ElementType>();

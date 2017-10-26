@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Reflection;
 using System.Xml.Serialization;
+using CardMaker.Card;
 using CardMaker.Data;
 using Support.IO;
 using Support.Util;
@@ -333,7 +334,7 @@ namespace CardMaker.XML
             {
                 return null;
             }
-            return new Font(
+            return FontLoader.GetFont(
                 arraySplit[0], 
                 fFontSize,
                 (arraySplit[2].Equals("1") ? FontStyle.Bold : FontStyle.Regular) |
