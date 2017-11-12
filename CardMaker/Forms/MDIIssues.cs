@@ -93,15 +93,19 @@ namespace CardMaker.Forms
         {
             if (1 == listViewIssues.SelectedItems.Count)
             {
-                ListViewItem zItem = listViewIssues.SelectedItems[0];
-                int nLayout = int.Parse(zItem.SubItems[0].Text);
-                int nCard = int.Parse(zItem.SubItems[1].Text);
-                // Select the Layout
-                LayoutManager.Instance.FireLayoutSelectRequested(ProjectManager.Instance.LoadedProject.Layout[nLayout]);
-                // Select the Element
-                ElementManager.Instance.FireElementSelectRequestedEvent(LayoutManager.Instance.GetElement(zItem.SubItems[2].Text));
-                // Select the Card Index
-                LayoutManager.Instance.FireDeckIndexChangeRequested(nCard - 1);
+                var zItem = listViewIssues.SelectedItems[0];
+                var nLayout = (int) zItem.Tag;
+                int nCard;
+
+                if (int.TryParse(zItem.SubItems[1].Text, out nCard))
+                {
+                    // Select the Layout
+                    LayoutManager.Instance.FireLayoutSelectRequested(ProjectManager.Instance.LoadedProject.Layout[nLayout]);
+                    // Select the Element
+                    ElementManager.Instance.FireElementSelectRequestedEvent(LayoutManager.Instance.GetElement(zItem.SubItems[2].Text));
+                    // Select the Card Index
+                    LayoutManager.Instance.FireDeckIndexChangeRequested(nCard - 1);
+                }
             }
         }
 
@@ -136,12 +140,14 @@ namespace CardMaker.Forms
 
             if (listViewIssues.InvokeActionIfRequired(() => AddIssue(sIssue)))
             {
+                // NOTE: The tag stores the index of the layout
                 var zItem = new ListViewItem(new string[] {
                     ProjectManager.Instance.LoadedProject.Layout[m_nCurrentLayoutIndex].Name,
                     m_sCurrentCardIndex,
                     m_sCurrentElementName,
                     sIssue
                 });
+                zItem.Tag = m_nCurrentLayoutIndex;
                 listViewIssues.Items.Add(zItem);
             }
         }
