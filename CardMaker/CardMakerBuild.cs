@@ -1,4 +1,4 @@
-﻿#define UNSTABLE
+﻿//#define UNSTABLE
 
 namespace CardMaker
 {

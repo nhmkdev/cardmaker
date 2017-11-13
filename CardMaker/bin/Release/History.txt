@@ -23,6 +23,7 @@ Card Maker Version History
 - Added ![elementname] translator
 - Added %[x,#,#] substring translator
 - Added better handling of fonts that do not have a "Regular" style
+- Fixed Issues dialog functionality
 
 1.0.0.0
 - Added limit to the number of loops of translation within Incept (should protect against typos)
