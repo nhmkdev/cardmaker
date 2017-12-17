@@ -641,6 +641,28 @@ namespace CardMaker.Forms
             }
         }
 
+        private void btnZoomMaxWidth_Click(object sender, EventArgs e)
+        {
+            if (LayoutManager.Instance.ActiveLayout != null)
+            {
+                var widthRatio = (decimal)(panelCardCanvas.Width -
+                                           20) / (decimal)LayoutManager.Instance.ActiveLayout.width;
+                numericUpDownZoom.Value = widthRatio;
+            }
+        }
+
+        private void btnZoomMax_Click(object sender, EventArgs e)
+        {
+            if (LayoutManager.Instance.ActiveLayout != null)
+            {
+                var widthRatio = (decimal) (panelCardCanvas.Width -
+                                 20) / (decimal) LayoutManager.Instance.ActiveLayout.width;
+                var heightRatio = (decimal)(panelCardCanvas.Height -
+                                           20) / (decimal)LayoutManager.Instance.ActiveLayout.height;
+                numericUpDownZoom.Value = Math.Min(widthRatio, heightRatio);
+            }
+        }
+
         private void numericUpDownZoom_ValueChanged(object sender, EventArgs e)
         {
             if (LayoutManager.Instance.ActiveDeck == null)

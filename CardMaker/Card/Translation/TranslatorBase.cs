@@ -56,7 +56,8 @@ namespace CardMaker.Card.Translation
             ListColumnNames = listColumnNames;
         }
 
-        public ElementString TranslateString(string sRawString, int nCardIndex, DeckLine zDeckLine, ProjectLayoutElement zElement, string sCacheSuffix = "")
+        // TODO: just pass in the deck parameter, it appears all callers are from the deck class
+        public ElementString TranslateString(Deck zDeck, string sRawString, int nCardIndex, DeckLine zDeckLine, ProjectLayoutElement zElement, string sCacheSuffix = "")
         {
             var sCacheKey = zElement.name + sCacheSuffix;
 
@@ -67,7 +68,7 @@ namespace CardMaker.Card.Translation
                 return zCached;
             }
 
-            var zElementString = TranslateToElementString(sRawString, nCardIndex, zDeckLine, zElement);
+            var zElementString = TranslateToElementString(zDeck, sRawString, nCardIndex, zDeckLine, zElement);
 
             if (zElementString.String.Contains("#nodraw"))
             {
@@ -98,10 +99,10 @@ namespace CardMaker.Card.Translation
             return zElementString;
         }
 
-        protected abstract ElementString TranslateToElementString(string sRawString, int nCardIndex, DeckLine zDeckLine,
+        protected abstract ElementString TranslateToElementString(Deck zDeck, string sRawString, int nCardIndex, DeckLine zDeckLine,
             ProjectLayoutElement zElement);
 
-        public ProjectLayoutElement GetOverrideElement(ProjectLayoutElement zElement, int nCardIndex, List<string> arrayLine, DeckLine zDeckLine)
+        public ProjectLayoutElement GetOverrideElement(Deck zDeck, ProjectLayoutElement zElement, int nCardIndex, List<string> arrayLine, DeckLine zDeckLine)
         {
             Dictionary<string, int> dictionaryOverrideColumns;
 
@@ -126,7 +127,7 @@ namespace CardMaker.Card.Translation
                         string sValue = arrayLine[nOverrideValueColumnIdx].Trim();
 
                         // Note: TranslateString maintains an element name based cache, the key is critical to make this translation unique
-                        sValue = TranslateString(sValue, nCardIndex, zDeckLine, zOverrideElement, sKey).String;
+                        sValue = TranslateString(zDeck, sValue, nCardIndex, zDeckLine, zOverrideElement, sKey).String;
 
                         UpdateElementField(zOverrideElement, zProperty, sValue);
                     }

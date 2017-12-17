@@ -54,9 +54,14 @@ namespace CardMaker.Forms
         {
             this.components = new System.ComponentModel.Container();
             this.groupBoxElement = new System.Windows.Forms.GroupBox();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.btnNullBackgroundColor = new System.Windows.Forms.Button();
+            this.panelBackgroundColor = new System.Windows.Forms.Panel();
+            this.btnElementBackgroundColor = new System.Windows.Forms.Button();
             this.btnAssist = new System.Windows.Forms.Button();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabPageFont = new System.Windows.Forms.TabPage();
+            this.checkJustifiedText = new System.Windows.Forms.CheckBox();
             this.checkBoxItalic = new System.Windows.Forms.CheckBox();
             this.checkBoxBold = new System.Windows.Forms.CheckBox();
             this.numericWordSpace = new System.Windows.Forms.NumericUpDown();
@@ -118,8 +123,8 @@ namespace CardMaker.Forms
             this.comboElementType = new System.Windows.Forms.ComboBox();
             this.contextMenuReferenceStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.contextMenuStripAssist = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.checkJustifiedText = new System.Windows.Forms.CheckBox();
             this.groupBoxElement.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.tabPageFont.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericWordSpace)).BeginInit();
@@ -141,6 +146,7 @@ namespace CardMaker.Forms
             // 
             // groupBoxElement
             // 
+            this.groupBoxElement.Controls.Add(this.groupBox1);
             this.groupBoxElement.Controls.Add(this.btnAssist);
             this.groupBoxElement.Controls.Add(this.tabControl);
             this.groupBoxElement.Controls.Add(this.groupBoxOutline);
@@ -170,6 +176,45 @@ namespace CardMaker.Forms
             this.groupBoxElement.TabIndex = 11;
             this.groupBoxElement.TabStop = false;
             this.groupBoxElement.Text = "Element";
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.btnNullBackgroundColor);
+            this.groupBox1.Controls.Add(this.panelBackgroundColor);
+            this.groupBox1.Controls.Add(this.btnElementBackgroundColor);
+            this.groupBox1.Location = new System.Drawing.Point(339, 19);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(80, 74);
+            this.groupBox1.TabIndex = 44;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Back";
+            // 
+            // btnNullBackgroundColor
+            // 
+            this.btnNullBackgroundColor.Location = new System.Drawing.Point(42, 44);
+            this.btnNullBackgroundColor.Name = "btnNullBackgroundColor";
+            this.btnNullBackgroundColor.Size = new System.Drawing.Size(32, 20);
+            this.btnNullBackgroundColor.TabIndex = 44;
+            this.btnNullBackgroundColor.Text = "X";
+            this.btnNullBackgroundColor.UseVisualStyleBackColor = true;
+            this.btnNullBackgroundColor.Click += new System.EventHandler(this.btnNullBackgroundColor_Click);
+            // 
+            // panelBackgroundColor
+            // 
+            this.panelBackgroundColor.Location = new System.Drawing.Point(9, 44);
+            this.panelBackgroundColor.Name = "panelBackgroundColor";
+            this.panelBackgroundColor.Size = new System.Drawing.Size(27, 20);
+            this.panelBackgroundColor.TabIndex = 43;
+            // 
+            // btnElementBackgroundColor
+            // 
+            this.btnElementBackgroundColor.Location = new System.Drawing.Point(9, 18);
+            this.btnElementBackgroundColor.Name = "btnElementBackgroundColor";
+            this.btnElementBackgroundColor.Size = new System.Drawing.Size(65, 20);
+            this.btnElementBackgroundColor.TabIndex = 20;
+            this.btnElementBackgroundColor.Text = "Color";
+            this.btnElementBackgroundColor.UseVisualStyleBackColor = true;
+            this.btnElementBackgroundColor.Click += new System.EventHandler(this.btnColor_Click);
             // 
             // btnAssist
             // 
@@ -223,6 +268,16 @@ namespace CardMaker.Forms
             this.tabPageFont.TabIndex = 0;
             this.tabPageFont.Text = "Font";
             this.tabPageFont.UseVisualStyleBackColor = true;
+            // 
+            // checkJustifiedText
+            // 
+            this.checkJustifiedText.Location = new System.Drawing.Point(627, 6);
+            this.checkJustifiedText.Name = "checkJustifiedText";
+            this.checkJustifiedText.Size = new System.Drawing.Size(77, 20);
+            this.checkJustifiedText.TabIndex = 52;
+            this.checkJustifiedText.Text = "Justified";
+            this.checkJustifiedText.UseVisualStyleBackColor = true;
+            this.checkJustifiedText.CheckedChanged += new System.EventHandler(this.HandleElementValueChange);
             // 
             // checkBoxItalic
             // 
@@ -432,7 +487,7 @@ namespace CardMaker.Forms
             this.tabPageShape.Location = new System.Drawing.Point(4, 22);
             this.tabPageShape.Name = "tabPageShape";
             this.tabPageShape.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageShape.Size = new System.Drawing.Size(628, 60);
+            this.tabPageShape.Size = new System.Drawing.Size(706, 60);
             this.tabPageShape.TabIndex = 1;
             this.tabPageShape.Text = "Shape";
             this.tabPageShape.UseVisualStyleBackColor = true;
@@ -471,6 +526,7 @@ namespace CardMaker.Forms
             | System.Windows.Forms.AnchorStyles.Right)));
             this.propertyGridShape.CategoryForeColor = System.Drawing.SystemColors.InactiveCaptionText;
             this.propertyGridShape.HelpVisible = false;
+            this.propertyGridShape.LineColor = System.Drawing.SystemColors.ControlDark;
             this.propertyGridShape.Location = new System.Drawing.Point(130, 3);
             this.propertyGridShape.Name = "propertyGridShape";
             this.propertyGridShape.Size = new System.Drawing.Size(494, 52);
@@ -489,7 +545,7 @@ namespace CardMaker.Forms
             this.tabPageGraphic.Controls.Add(this.checkLockAspect);
             this.tabPageGraphic.Location = new System.Drawing.Point(4, 22);
             this.tabPageGraphic.Name = "tabPageGraphic";
-            this.tabPageGraphic.Size = new System.Drawing.Size(628, 60);
+            this.tabPageGraphic.Size = new System.Drawing.Size(706, 60);
             this.tabPageGraphic.TabIndex = 2;
             this.tabPageGraphic.Text = "Graphic";
             this.tabPageGraphic.UseVisualStyleBackColor = true;
@@ -668,7 +724,7 @@ namespace CardMaker.Forms
             0,
             0});
             this.numericElementOpacity.Name = "numericElementOpacity";
-            this.numericElementOpacity.Size = new System.Drawing.Size(56, 20);
+            this.numericElementOpacity.Size = new System.Drawing.Size(46, 20);
             this.numericElementOpacity.TabIndex = 32;
             this.numericElementOpacity.Value = new decimal(new int[] {
             255,
@@ -700,7 +756,7 @@ namespace CardMaker.Forms
             0,
             -2147483648});
             this.numericElementRotation.Name = "numericElementRotation";
-            this.numericElementRotation.Size = new System.Drawing.Size(56, 20);
+            this.numericElementRotation.Size = new System.Drawing.Size(46, 20);
             this.numericElementRotation.TabIndex = 30;
             this.numericElementRotation.ValueChanged += new System.EventHandler(this.HandleElementValueChange);
             // 
@@ -935,16 +991,6 @@ namespace CardMaker.Forms
             this.contextMenuStripAssist.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this.contextMenuStripAssist.Size = new System.Drawing.Size(61, 4);
             // 
-            // checkJustifiedText
-            // 
-            this.checkJustifiedText.Location = new System.Drawing.Point(627, 6);
-            this.checkJustifiedText.Name = "checkJustifiedText";
-            this.checkJustifiedText.Size = new System.Drawing.Size(77, 20);
-            this.checkJustifiedText.TabIndex = 52;
-            this.checkJustifiedText.Text = "Justified";
-            this.checkJustifiedText.UseVisualStyleBackColor = true;
-            this.checkJustifiedText.CheckedChanged += new System.EventHandler(this.HandleElementValueChange);
-            // 
             // MDIElementControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -958,6 +1004,7 @@ namespace CardMaker.Forms
             this.Load += new System.EventHandler(this.MDIElementControl_Load);
             this.groupBoxElement.ResumeLayout(false);
             this.groupBoxElement.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
             this.tabControl.ResumeLayout(false);
             this.tabPageFont.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.numericWordSpace)).EndInit();
@@ -1047,5 +1094,9 @@ namespace CardMaker.Forms
         private System.Windows.Forms.Button btnAssist;
         private System.Windows.Forms.CheckBox checkKeepOriginalSize;
         private System.Windows.Forms.CheckBox checkJustifiedText;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button btnNullBackgroundColor;
+        private System.Windows.Forms.Panel panelBackgroundColor;
+        private System.Windows.Forms.Button btnElementBackgroundColor;
     }
 }

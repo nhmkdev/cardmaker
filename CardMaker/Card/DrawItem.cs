@@ -152,9 +152,17 @@ namespace CardMaker.Card
             {
                 zGraphics.TranslateTransform(zElement.x + nX, zElement.y + nY);
             }
+
+            if (zElement.GetElementBackgroundColor() != CardMakerConstants.NoColor)
+            {
+                var zBackgroundBrush = 255 != zElement.opacity
+                    ? new SolidBrush(Color.FromArgb(zElement.opacity, zElement.GetElementBackgroundColor()))
+                    : new SolidBrush(zElement.GetElementBackgroundColor());
+                zGraphics.FillRectangle(zBackgroundBrush, 0, 0,
+                    zElement.width, zElement.height);
+            }
+
             // TODO: an interface for all these would be more appropriate
-
-
             // Draw
             switch (eType)
             {   

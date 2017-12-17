@@ -428,7 +428,7 @@ namespace CardMaker.Card
 
         public ElementString TranslateString(string sRawString, DeckLine zDeckLine, ProjectLayoutElement zElement, bool bPrint, string sCacheSuffix = "")
         {
-            return m_zTranslator.TranslateString(sRawString, bPrint ? m_nCardPrintIndex : m_nCardIndex, zDeckLine, zElement, sCacheSuffix);
+            return m_zTranslator.TranslateString(this, sRawString, bPrint ? m_nCardPrintIndex : m_nCardIndex, zDeckLine, zElement, sCacheSuffix);
         }
 
         public ElementString GetStringFromTranslationCache(string sKey)
@@ -452,7 +452,7 @@ namespace CardMaker.Card
 
         public ProjectLayoutElement GetOverrideElement(ProjectLayoutElement zElement, List<string> arrayLine, DeckLine zDeckLine, bool bExport)
         {
-            return m_zTranslator.GetOverrideElement(zElement, bExport ? m_nCardPrintIndex : m_nCardIndex, arrayLine, zDeckLine);
+            return m_zTranslator.GetOverrideElement(this, zElement, bExport ? m_nCardPrintIndex : m_nCardIndex, arrayLine, zDeckLine);
         }
 
         public ProjectLayoutElement GetVariableOverrideElement(ProjectLayoutElement zElement, Dictionary<string, string> dictionaryOverrideFieldToValue)

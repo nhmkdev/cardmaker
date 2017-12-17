@@ -42,7 +42,7 @@ namespace CardMaker.Card.Translation
 
         }
 
-        protected override ElementString TranslateToElementString(string sRawString, int nCardIndex, DeckLine zDeckLine, ProjectLayoutElement zElement)
+        protected override ElementString TranslateToElementString(Deck zDeck, string sRawString, int nCardIndex, DeckLine zDeckLine, ProjectLayoutElement zElement)
         {
             using (var engine = new V8ScriptEngine())
             {

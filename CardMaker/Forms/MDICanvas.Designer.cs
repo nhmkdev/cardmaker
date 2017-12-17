@@ -71,7 +71,9 @@ namespace CardMaker.Forms
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripButtonClearImageCache = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonReloadReferences = new System.Windows.Forms.ToolStripButton();
+            this.btnMaxZoom = new System.Windows.Forms.ToolStripButton();
             this.panelCardCanvas = new Support.UI.PanelEx();
+            this.btnMaxWidthZoom = new System.Windows.Forms.ToolStripButton();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownZoom)).BeginInit();
             this.toolStrip.SuspendLayout();
             this.SuspendLayout();
@@ -111,6 +113,8 @@ namespace CardMaker.Forms
             this.toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripLabel1,
+            this.btnMaxWidthZoom,
+            this.btnMaxZoom,
             this.toolStripSeparator1,
             this.verticalCenterButton,
             this.customVerticalAlignButton,
@@ -206,8 +210,8 @@ namespace CardMaker.Forms
             // lblHorizontalDividers
             // 
             this.lblHorizontalDividers.Name = "lblHorizontalDividers";
-            this.lblHorizontalDividers.Size = new System.Drawing.Size(55, 22);
-            this.lblHorizontalDividers.Text = "Horizontal";
+            this.lblHorizontalDividers.Size = new System.Drawing.Size(14, 22);
+            this.lblHorizontalDividers.Text = "H";
             // 
             // txtHorizontalDividers
             // 
@@ -218,8 +222,8 @@ namespace CardMaker.Forms
             // lblVerticalDividers
             // 
             this.lblVerticalDividers.Name = "lblVerticalDividers";
-            this.lblVerticalDividers.Size = new System.Drawing.Size(42, 22);
-            this.lblVerticalDividers.Text = "Vertical";
+            this.lblVerticalDividers.Size = new System.Drawing.Size(13, 22);
+            this.lblVerticalDividers.Text = "V";
             // 
             // txtVerticalDividers
             // 
@@ -260,6 +264,16 @@ namespace CardMaker.Forms
             this.toolStripButtonReloadReferences.Text = "Reload References";
             this.toolStripButtonReloadReferences.Click += new System.EventHandler(this.toolStripButtonReloadReferences_Click);
             // 
+            // btnMaxZoom
+            // 
+            this.btnMaxZoom.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnMaxZoom.Image = ((System.Drawing.Image)(resources.GetObject("btnMaxZoom.Image")));
+            this.btnMaxZoom.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnMaxZoom.Name = "btnMaxZoom";
+            this.btnMaxZoom.Size = new System.Drawing.Size(31, 22);
+            this.btnMaxZoom.Text = "Max";
+            this.btnMaxZoom.Click += new System.EventHandler(this.btnZoomMax_Click);
+            // 
             // panelCardCanvas
             // 
             this.panelCardCanvas.AutoScroll = true;
@@ -269,6 +283,16 @@ namespace CardMaker.Forms
             this.panelCardCanvas.Name = "panelCardCanvas";
             this.panelCardCanvas.Size = new System.Drawing.Size(852, 524);
             this.panelCardCanvas.TabIndex = 1;
+            // 
+            // btnMaxWidthZoom
+            // 
+            this.btnMaxWidthZoom.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnMaxWidthZoom.Image = ((System.Drawing.Image)(resources.GetObject("btnMaxWidthZoom.Image")));
+            this.btnMaxWidthZoom.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnMaxWidthZoom.Name = "btnMaxWidthZoom";
+            this.btnMaxWidthZoom.Size = new System.Drawing.Size(62, 22);
+            this.btnMaxWidthZoom.Text = "Max Width";
+            this.btnMaxWidthZoom.Click += new System.EventHandler(this.btnZoomMaxWidth_Click);
             // 
             // MDICanvas
             // 
@@ -310,5 +334,7 @@ namespace CardMaker.Forms
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripButton toolStripButtonClearImageCache;
         private System.Windows.Forms.ToolStripButton toolStripButtonReloadReferences;
+        private System.Windows.Forms.ToolStripButton btnMaxZoom;
+        private System.Windows.Forms.ToolStripButton btnMaxWidthZoom;
     }
 }

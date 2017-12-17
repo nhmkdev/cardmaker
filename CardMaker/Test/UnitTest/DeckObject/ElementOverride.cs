@@ -34,6 +34,7 @@ namespace UnitTest.DeckObject
         [TestCase("bordercolor", "0xFF33CCFF")]
         [TestCase("elementcolor", "0x44556677")]
         [TestCase("outlinecolor", "0xAABBCCDD")]
+        [TestCase("backgroundcolor", "0xAABBCCDD")]
         [TestCase("font", "Arial Narrow;11;0;0;0;0")]
         [TestCase("variable", "this is a test!")]
         [TestCase("type", "Text")]

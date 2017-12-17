@@ -22,6 +22,7 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+using System.Drawing;
 using System.Text;
 
 namespace CardMaker.Data
@@ -35,5 +36,6 @@ namespace CardMaker.Data
         public const char CHAR_FILE_SPLIT = '|';
         public const int MAX_RECENT_PROJECTS = 10;
         public const string GOOGLE_CACHE_FILE = ".CardMakerGoogleCache.dat";
+        public static readonly Color NoColor = Color.FromArgb(0, 0, 0, 0);
     }
 }

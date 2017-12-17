@@ -66,6 +66,7 @@ namespace CardMaker.Forms
             btnElementFontColor.Tag = panelFontColor;
             btnElementShapeColor.Tag = panelShapeColor;
             btnElementOutlineColor.Tag = panelOutlineColor;
+            btnElementBackgroundColor.Tag = panelBackgroundColor;
 
             // setup the font related items
             var fonts = new InstalledFontCollection();
@@ -204,6 +205,10 @@ namespace CardMaker.Forms
                 {
                     colorUndo = zElement.GetElementColor();
                 }
+                if (btnClicked == btnElementBackgroundColor)
+                {
+                    colorUndo = zElement.GetElementBackgroundColor();
+                }
 
                 listActions.Add(bRedo =>
                     {
@@ -214,6 +219,48 @@ namespace CardMaker.Forms
                         SetColorValue(btnClicked, bRedo ? colorRedo : colorUndo, zElementToChange);
                         UpdatePanelColors(zElementToChange);
                     });
+            }
+
+            Action<bool> actionChangeColor = bRedo =>
+            {
+                listActions.ForEach(action => action(bRedo));
+                LayoutManager.Instance.FireLayoutUpdatedEvent(true);
+            };
+            UserAction.PushAction(actionChangeColor);
+
+            // perform the action as a redo now
+            actionChangeColor(true);
+        }
+
+        private void btnNullBackgroundColor_Click(object sender, EventArgs e)
+        {
+            // TODO: this and the above method are 80% the same...
+            var listSelectedElements = ElementManager.Instance.SelectedElements;
+            if (null == listSelectedElements)
+            {
+                MessageBox.Show(this, "Please select at least one enabled Element.");
+                return;
+            }
+
+            var btnClicked = (Button)sender;
+            var colorRedo = CardMakerConstants.NoColor;
+
+            var listActions = UserAction.CreateActionList();
+
+            foreach (var zElement in listSelectedElements)
+            {
+                var zElementToChange = zElement;
+                var colorUndo = zElementToChange.GetElementBackgroundColor();
+
+                listActions.Add(bRedo =>
+                {
+                    if (null != LayoutManager.Instance.ActiveDeck)
+                    {
+                        LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElementToChange.name);
+                    }
+                    SetColorValue(btnClicked, bRedo ? colorRedo : colorUndo, zElementToChange);
+                    UpdatePanelColors(zElementToChange);
+                });
             }
 
             Action<bool> actionChangeColor = bRedo =>
@@ -567,6 +614,10 @@ namespace CardMaker.Forms
             else if (btnClicked == btnElementFontColor || btnClicked == btnElementShapeColor)
             {
                 zElement.SetElementColor(color);
+            }
+            if (btnClicked == btnElementBackgroundColor || btnClicked == btnNullBackgroundColor)
+            {
+                zElement.SetElementBackgroundColor(color);
             }
         }
 
@@ -964,6 +1015,9 @@ namespace CardMaker.Forms
             panelOutlineColor.BackColor = zElement.GetElementOutlineColor();
             panelShapeColor.BackColor = zElement.GetElementColor();
             panelFontColor.BackColor = panelShapeColor.BackColor;
+            panelBackgroundColor.BackColor = zElement.GetElementBackgroundColor() == CardMakerConstants.NoColor
+                ? Control.DefaultBackColor
+                : zElement.GetElementBackgroundColor();
         }
 
         private void InsertVariableText(string textToInsert)

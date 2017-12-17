@@ -27,6 +27,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
+using CardMaker.Data;
 using Support.IO;
 using Support.UI;
 
@@ -88,8 +89,8 @@ namespace CardMaker.Card.Export
                     var nX = 0;
                     var nY = 0;
                     var nCardsExportedInImage = 0;
-                    zGraphics.Clear(CurrentDeck.CardLayout.exportTransparentBackground ? 
-                        Color.FromArgb(0, 0, 0, 0) :
+                    zGraphics.Clear(CurrentDeck.CardLayout.exportTransparentBackground ?
+                        CardMakerConstants.NoColor :
                         Color.White);
                     do
                     {

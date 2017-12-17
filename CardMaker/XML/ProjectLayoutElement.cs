@@ -72,6 +72,9 @@ namespace CardMaker.XML
         public string bordercolor { get; set; }
 
         [XmlAttribute]
+        public string backgroundcolor { get; set; }
+
+        [XmlAttribute]
         public int borderthickness { get; set; }
 
         [XmlAttribute]
@@ -118,6 +121,7 @@ namespace CardMaker.XML
         private Color m_colorElement = Color.Black;
         private Color m_colorOutline = Color.Black;
         private Color m_colorBorder = Color.Black;
+        private Color m_colorBackground = CardMakerConstants.NoColor;
         private Font m_fontText;
 
         public override string ToString()
@@ -140,11 +144,12 @@ namespace CardMaker.XML
             height = 40;
             borderthickness = 0;
             outlinethickness = 0;
-            outlinecolor = "000000000";
+            outlinecolor = "0x000000000";
             rotation = 0;
-            bordercolor = "000000000";
+            bordercolor = "0x000000000";
             font = string.Empty;
-            elementcolor = "000000000";
+            elementcolor = "0x000000000";
+            backgroundcolor = "0x00000000";
             type = ElementType.Text.ToString();
             lineheight = 0;
             wordspace = 0;
@@ -174,6 +179,11 @@ namespace CardMaker.XML
             return m_colorOutline;
         }
 
+        public Color GetElementBackgroundColor()
+        {
+            return m_colorBackground;
+        }
+
         public Font GetElementFont()
         {
             return m_fontText;
@@ -197,6 +207,7 @@ namespace CardMaker.XML
             SetElementBorderColor(TranslateColorString(bordercolor));
             SetElementColor(TranslateColorString(elementcolor));
             SetElementOutlineColor(TranslateColorString(outlinecolor));
+            SetElementBackgroundColor(backgroundcolor == null ? Color.FromArgb(0,0,0,0) : TranslateColorString(backgroundcolor));
             m_fontText = !string.IsNullOrEmpty(font)
                 ? TranslateFontString(font)
                 : null;
@@ -222,6 +233,7 @@ namespace CardMaker.XML
             bordercolor = zElement.bordercolor;
             font = zElement.font;
             elementcolor = zElement.elementcolor;
+            backgroundcolor = zElement.backgroundcolor;
             type = zElement.type;
             autoscalefont = zElement.autoscalefont;
             lockaspect = zElement.lockaspect;
@@ -371,6 +383,16 @@ namespace CardMaker.XML
         {
             outlinecolor = GetElementColorString(zColor);
             m_colorOutline = zColor;
+        }
+
+        /// <summary>
+        /// Sets the outline color and color string
+        /// </summary>
+        /// <param name="zColor">The color to pull the values from</param>
+        public void SetElementBackgroundColor(Color zColor)
+        {
+            backgroundcolor = GetElementColorString(zColor);
+            m_colorBackground = zColor;
         }
 
         /// <summary>

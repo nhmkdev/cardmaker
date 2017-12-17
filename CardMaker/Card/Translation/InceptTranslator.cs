@@ -89,7 +89,7 @@ namespace CardMaker.Card.Translation
         /// <param name="zDeckLine"></param>
         /// <param name="zElement"></param>
         /// <returns></returns>
-        protected override ElementString TranslateToElementString(string sRawString, int nCardIndex, DeckLine zDeckLine, ProjectLayoutElement zElement)
+        protected override ElementString TranslateToElementString(Deck zDeck, string sRawString, int nCardIndex, DeckLine zDeckLine, ProjectLayoutElement zElement)
         {
 #warning Investigate using method references instead of anonymous methods (optimization/code easier to read)
 
@@ -126,7 +126,7 @@ namespace CardMaker.Card.Translation
                     }
                     else if (sKey.Equals("cardcount"))
                     {
-                        sDefineValue = LayoutManager.Instance.ActiveDeck.CardCount.ToString();
+                        sDefineValue = zDeck.CardCount.ToString();
                     }
                     else if (sKey.Equals("elementname"))
                     {
