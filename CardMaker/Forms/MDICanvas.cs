@@ -641,7 +641,7 @@ namespace CardMaker.Forms
             }
         }
 
-        private void btnZoomMaxWidth_Click(object sender, EventArgs e)
+        private void btnFitHorizontalZoom_Click(object sender, EventArgs e)
         {
             if (LayoutManager.Instance.ActiveLayout != null)
             {
@@ -651,7 +651,7 @@ namespace CardMaker.Forms
             }
         }
 
-        private void btnZoomMax_Click(object sender, EventArgs e)
+        private void btnFitZoom_Click(object sender, EventArgs e)
         {
             if (LayoutManager.Instance.ActiveLayout != null)
             {

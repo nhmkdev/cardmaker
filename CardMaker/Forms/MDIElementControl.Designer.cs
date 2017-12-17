@@ -54,7 +54,7 @@ namespace CardMaker.Forms
         {
             this.components = new System.ComponentModel.Container();
             this.groupBoxElement = new System.Windows.Forms.GroupBox();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.groupBackgroundColor = new System.Windows.Forms.GroupBox();
             this.btnNullBackgroundColor = new System.Windows.Forms.Button();
             this.panelBackgroundColor = new System.Windows.Forms.Panel();
             this.btnElementBackgroundColor = new System.Windows.Forms.Button();
@@ -124,7 +124,7 @@ namespace CardMaker.Forms
             this.contextMenuReferenceStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.contextMenuStripAssist = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.groupBoxElement.SuspendLayout();
-            this.groupBox1.SuspendLayout();
+            this.groupBackgroundColor.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.tabPageFont.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericWordSpace)).BeginInit();
@@ -146,7 +146,7 @@ namespace CardMaker.Forms
             // 
             // groupBoxElement
             // 
-            this.groupBoxElement.Controls.Add(this.groupBox1);
+            this.groupBoxElement.Controls.Add(this.groupBackgroundColor);
             this.groupBoxElement.Controls.Add(this.btnAssist);
             this.groupBoxElement.Controls.Add(this.tabControl);
             this.groupBoxElement.Controls.Add(this.groupBoxOutline);
@@ -172,26 +172,26 @@ namespace CardMaker.Forms
             this.groupBoxElement.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBoxElement.Location = new System.Drawing.Point(0, 0);
             this.groupBoxElement.Name = "groupBoxElement";
-            this.groupBoxElement.Size = new System.Drawing.Size(732, 312);
+            this.groupBoxElement.Size = new System.Drawing.Size(748, 312);
             this.groupBoxElement.TabIndex = 11;
             this.groupBoxElement.TabStop = false;
             this.groupBoxElement.Text = "Element";
             // 
-            // groupBox1
+            // groupBackgroundColor
             // 
-            this.groupBox1.Controls.Add(this.btnNullBackgroundColor);
-            this.groupBox1.Controls.Add(this.panelBackgroundColor);
-            this.groupBox1.Controls.Add(this.btnElementBackgroundColor);
-            this.groupBox1.Location = new System.Drawing.Point(339, 19);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(80, 74);
-            this.groupBox1.TabIndex = 44;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Back";
+            this.groupBackgroundColor.Controls.Add(this.btnNullBackgroundColor);
+            this.groupBackgroundColor.Controls.Add(this.panelBackgroundColor);
+            this.groupBackgroundColor.Controls.Add(this.btnElementBackgroundColor);
+            this.groupBackgroundColor.Location = new System.Drawing.Point(348, 19);
+            this.groupBackgroundColor.Name = "groupBackgroundColor";
+            this.groupBackgroundColor.Size = new System.Drawing.Size(90, 74);
+            this.groupBackgroundColor.TabIndex = 44;
+            this.groupBackgroundColor.TabStop = false;
+            this.groupBackgroundColor.Text = "Background";
             // 
             // btnNullBackgroundColor
             // 
-            this.btnNullBackgroundColor.Location = new System.Drawing.Point(42, 44);
+            this.btnNullBackgroundColor.Location = new System.Drawing.Point(51, 44);
             this.btnNullBackgroundColor.Name = "btnNullBackgroundColor";
             this.btnNullBackgroundColor.Size = new System.Drawing.Size(32, 20);
             this.btnNullBackgroundColor.TabIndex = 44;
@@ -203,14 +203,14 @@ namespace CardMaker.Forms
             // 
             this.panelBackgroundColor.Location = new System.Drawing.Point(9, 44);
             this.panelBackgroundColor.Name = "panelBackgroundColor";
-            this.panelBackgroundColor.Size = new System.Drawing.Size(27, 20);
+            this.panelBackgroundColor.Size = new System.Drawing.Size(36, 20);
             this.panelBackgroundColor.TabIndex = 43;
             // 
             // btnElementBackgroundColor
             // 
             this.btnElementBackgroundColor.Location = new System.Drawing.Point(9, 18);
             this.btnElementBackgroundColor.Name = "btnElementBackgroundColor";
-            this.btnElementBackgroundColor.Size = new System.Drawing.Size(65, 20);
+            this.btnElementBackgroundColor.Size = new System.Drawing.Size(75, 20);
             this.btnElementBackgroundColor.TabIndex = 20;
             this.btnElementBackgroundColor.Text = "Color";
             this.btnElementBackgroundColor.UseVisualStyleBackColor = true;
@@ -219,7 +219,7 @@ namespace CardMaker.Forms
             // btnAssist
             // 
             this.btnAssist.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnAssist.Location = new System.Drawing.Point(701, 264);
+            this.btnAssist.Location = new System.Drawing.Point(717, 264);
             this.btnAssist.Name = "btnAssist";
             this.btnAssist.Size = new System.Drawing.Size(25, 20);
             this.btnAssist.TabIndex = 47;
@@ -237,7 +237,7 @@ namespace CardMaker.Forms
             this.tabControl.Location = new System.Drawing.Point(12, 97);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(714, 86);
+            this.tabControl.Size = new System.Drawing.Size(730, 86);
             this.tabControl.TabIndex = 46;
             // 
             // tabPageFont
@@ -264,7 +264,7 @@ namespace CardMaker.Forms
             this.tabPageFont.Location = new System.Drawing.Point(4, 22);
             this.tabPageFont.Name = "tabPageFont";
             this.tabPageFont.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageFont.Size = new System.Drawing.Size(706, 60);
+            this.tabPageFont.Size = new System.Drawing.Size(722, 60);
             this.tabPageFont.TabIndex = 0;
             this.tabPageFont.Text = "Font";
             this.tabPageFont.UseVisualStyleBackColor = true;
@@ -632,7 +632,7 @@ namespace CardMaker.Forms
             this.groupBoxOutline.Controls.Add(this.label11);
             this.groupBoxOutline.Controls.Add(this.numericElementOutLineThickness);
             this.groupBoxOutline.Controls.Add(this.btnElementOutlineColor);
-            this.groupBoxOutline.Location = new System.Drawing.Point(577, 19);
+            this.groupBoxOutline.Location = new System.Drawing.Point(596, 19);
             this.groupBoxOutline.Name = "groupBoxOutline";
             this.groupBoxOutline.Size = new System.Drawing.Size(146, 74);
             this.groupBoxOutline.TabIndex = 44;
@@ -689,7 +689,7 @@ namespace CardMaker.Forms
             this.listViewElementColumns.Location = new System.Drawing.Point(12, 189);
             this.listViewElementColumns.MultiSelect = false;
             this.listViewElementColumns.Name = "listViewElementColumns";
-            this.listViewElementColumns.Size = new System.Drawing.Size(714, 69);
+            this.listViewElementColumns.Size = new System.Drawing.Size(730, 69);
             this.listViewElementColumns.TabIndex = 35;
             this.listViewElementColumns.UseCompatibleStateImageBehavior = false;
             this.listViewElementColumns.View = System.Windows.Forms.View.Details;
@@ -724,7 +724,7 @@ namespace CardMaker.Forms
             0,
             0});
             this.numericElementOpacity.Name = "numericElementOpacity";
-            this.numericElementOpacity.Size = new System.Drawing.Size(46, 20);
+            this.numericElementOpacity.Size = new System.Drawing.Size(56, 20);
             this.numericElementOpacity.TabIndex = 32;
             this.numericElementOpacity.Value = new decimal(new int[] {
             255,
@@ -756,7 +756,7 @@ namespace CardMaker.Forms
             0,
             -2147483648});
             this.numericElementRotation.Name = "numericElementRotation";
-            this.numericElementRotation.Size = new System.Drawing.Size(46, 20);
+            this.numericElementRotation.Size = new System.Drawing.Size(56, 20);
             this.numericElementRotation.TabIndex = 30;
             this.numericElementRotation.ValueChanged += new System.EventHandler(this.HandleElementValueChange);
             // 
@@ -811,7 +811,7 @@ namespace CardMaker.Forms
             this.groupBoxElementBorder.Controls.Add(this.label1);
             this.groupBoxElementBorder.Controls.Add(this.numericElementBorderThickness);
             this.groupBoxElementBorder.Controls.Add(this.btnElementBorderColor);
-            this.groupBoxElementBorder.Location = new System.Drawing.Point(425, 19);
+            this.groupBoxElementBorder.Location = new System.Drawing.Point(444, 19);
             this.groupBoxElementBorder.Name = "groupBoxElementBorder";
             this.groupBoxElementBorder.Size = new System.Drawing.Size(146, 74);
             this.groupBoxElementBorder.TabIndex = 24;
@@ -943,7 +943,7 @@ namespace CardMaker.Forms
             // btnElementBrowseImage
             // 
             this.btnElementBrowseImage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnElementBrowseImage.Location = new System.Drawing.Point(701, 286);
+            this.btnElementBrowseImage.Location = new System.Drawing.Point(717, 286);
             this.btnElementBrowseImage.Name = "btnElementBrowseImage";
             this.btnElementBrowseImage.Size = new System.Drawing.Size(25, 20);
             this.btnElementBrowseImage.TabIndex = 12;
@@ -963,7 +963,7 @@ namespace CardMaker.Forms
             this.txtElementVariable.Multiline = true;
             this.txtElementVariable.Name = "txtElementVariable";
             this.txtElementVariable.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtElementVariable.Size = new System.Drawing.Size(622, 43);
+            this.txtElementVariable.Size = new System.Drawing.Size(638, 43);
             this.txtElementVariable.TabIndex = 1;
             this.txtElementVariable.WordWrap = false;
             this.txtElementVariable.TextChanged += new System.EventHandler(this.HandleElementValueChange);
@@ -995,16 +995,16 @@ namespace CardMaker.Forms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(732, 312);
+            this.ClientSize = new System.Drawing.Size(748, 312);
             this.Controls.Add(this.groupBoxElement);
-            this.MinimumSize = new System.Drawing.Size(740, 339);
+            this.MinimumSize = new System.Drawing.Size(756, 339);
             this.Name = "MDIElementControl";
             this.ShowIcon = false;
             this.Text = " Element Control";
             this.Load += new System.EventHandler(this.MDIElementControl_Load);
             this.groupBoxElement.ResumeLayout(false);
             this.groupBoxElement.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
+            this.groupBackgroundColor.ResumeLayout(false);
             this.tabControl.ResumeLayout(false);
             this.tabPageFont.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.numericWordSpace)).EndInit();
@@ -1094,7 +1094,7 @@ namespace CardMaker.Forms
         private System.Windows.Forms.Button btnAssist;
         private System.Windows.Forms.CheckBox checkKeepOriginalSize;
         private System.Windows.Forms.CheckBox checkJustifiedText;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox groupBackgroundColor;
         private System.Windows.Forms.Button btnNullBackgroundColor;
         private System.Windows.Forms.Panel panelBackgroundColor;
         private System.Windows.Forms.Button btnElementBackgroundColor;

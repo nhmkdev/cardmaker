@@ -1,5 +1,10 @@
 Card Maker Version History
 --------------------------
+1.0.0.2
+- Fixed export issue involving use of the cardcount functionality
+- Added background color for all element types
+- Added zoom helpers (Fit + Fit Horizontal)... will someone need "Fit Vertical" ???
+
 1.0.0.1
 - Added divider functionality
 - Added ![cardcount] functionality to the Incept translator

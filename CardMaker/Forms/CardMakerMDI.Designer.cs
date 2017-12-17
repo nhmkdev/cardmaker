@@ -78,6 +78,7 @@ namespace CardMaker.Forms
             this.updateIssuesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importLayoutsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearGoogleCacheToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.projectSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.layoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reloadReferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -92,7 +93,6 @@ namespace CardMaker.Forms
             this.pDFToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.samplePDFToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.projectSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStripMain.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -110,7 +110,7 @@ namespace CardMaker.Forms
             this.menuStripMain.Location = new System.Drawing.Point(0, 0);
             this.menuStripMain.Name = "menuStripMain";
             this.menuStripMain.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.menuStripMain.Size = new System.Drawing.Size(1088, 24);
+            this.menuStripMain.Size = new System.Drawing.Size(1112, 24);
             this.menuStripMain.TabIndex = 15;
             this.menuStripMain.Text = "menuStrip1";
             // 
@@ -322,6 +322,13 @@ namespace CardMaker.Forms
             this.clearGoogleCacheToolStripMenuItem.Text = "Clear All Google Cache Entries";
             this.clearGoogleCacheToolStripMenuItem.Click += new System.EventHandler(this.clearGoogleCacheToolStripMenuItem_Click);
             // 
+            // projectSettingsToolStripMenuItem
+            // 
+            this.projectSettingsToolStripMenuItem.Name = "projectSettingsToolStripMenuItem";
+            this.projectSettingsToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
+            this.projectSettingsToolStripMenuItem.Text = "Project Settings...";
+            this.projectSettingsToolStripMenuItem.Click += new System.EventHandler(this.projectSettingsToolStripMenuItem_Click);
+            // 
             // layoutToolStripMenuItem
             // 
             this.layoutToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -433,18 +440,11 @@ namespace CardMaker.Forms
             this.aboutToolStripMenuItem.Text = "&About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
-            // projectSettingsToolStripMenuItem
-            // 
-            this.projectSettingsToolStripMenuItem.Name = "projectSettingsToolStripMenuItem";
-            this.projectSettingsToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
-            this.projectSettingsToolStripMenuItem.Text = "Project Settings...";
-            this.projectSettingsToolStripMenuItem.Click += new System.EventHandler(this.projectSettingsToolStripMenuItem_Click);
-            // 
             // CardMakerMDI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1088, 696);
+            this.ClientSize = new System.Drawing.Size(1112, 696);
             this.Controls.Add(this.menuStripMain);
             this.IsMdiContainer = true;
             this.KeyPreview = true;

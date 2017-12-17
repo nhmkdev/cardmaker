@@ -84,6 +84,7 @@ namespace CardMaker.Card.Translation
         /// <summary>
         /// Translates the string representing the element. (also handles any nodraw text input)
         /// </summary>
+        /// <param name="zDeck"></param>
         /// <param name="sRawString"></param>
         /// <param name="nCardIndex"></param>
         /// <param name="zDeckLine"></param>

@@ -56,7 +56,6 @@ namespace CardMaker.Card.Translation
             ListColumnNames = listColumnNames;
         }
 
-        // TODO: just pass in the deck parameter, it appears all callers are from the deck class
         public ElementString TranslateString(Deck zDeck, string sRawString, int nCardIndex, DeckLine zDeckLine, ProjectLayoutElement zElement, string sCacheSuffix = "")
         {
             var sCacheKey = zElement.name + sCacheSuffix;

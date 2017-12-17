@@ -179,16 +179,16 @@ namespace CardMaker.Forms
                 zLoggerForm.Size = new Size(403, 117);
                 zLoggerForm.Location = new Point(789, 571);
 #else
-                zCanvasForm.Size = new Size(457, 300);
+                zCanvasForm.Size = new Size(557, 300);
                 zCanvasForm.Location = new Point(209, 5);
-                zElementForm.Size = new Size(579, 290);
+                zElementForm.Size = new Size(756, 339);
                 zElementForm.Location = new Point(3, 310);
                 zLayoutForm.Size = new Size(300, 352);
-                zLayoutForm.Location = new Point(670, 4);
+                zLayoutForm.Location = new Point(768, 4);
                 zProjectForm.Size = new Size(200, 266);
                 zProjectForm.Location = new Point(6, 10);
-                zLoggerForm.Size = new Size(403, 117);
-                zLoggerForm.Location = new Point(667, 531);
+                zLoggerForm.Size = new Size(337, 291);
+                zLoggerForm.Location = new Point(765, 365);
 #endif
             }
 
