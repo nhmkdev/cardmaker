@@ -4,6 +4,7 @@ Card Maker Version History
 - Fixed export issue involving use of the cardcount functionality
 - Added background color for all element types
 - Added zoom helpers (Fit + Fit Horizontal)... will someone need "Fit Vertical" ???
+- Added inline background shape functionality
 
 1.0.0.1
 - Added divider functionality

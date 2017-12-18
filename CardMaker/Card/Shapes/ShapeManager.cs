@@ -27,14 +27,21 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
+using CardMaker.Data;
 using CardMaker.XML;
 
 namespace CardMaker.Card.Shapes
 {
     public class ShapeManager
     {
-        public static Dictionary<string, AbstractShape> s_dictionaryShapeByName = new Dictionary<string,AbstractShape>(); 
+        //                                                        1          2    3  4    5
+        private static readonly Regex regexShapeBG = new Regex(@"(#bgshape:)(.+?)(:)(.+?)(#)", RegexOptions.Compiled);
+        //                                                                1          2    3  4    5  6    7  8    9  10   11 12   13 14   15 16   17
+        private static readonly Regex regexShapeExtendedBG = new Regex(@"(#bgshape:)(.+?)(:)(.+?)(:)(.+?)(:)(.+?)(:)(.+?)(:)(.+?)(:)(.+?)(:)(.+?)(#)", RegexOptions.Compiled);
+
+        public static Dictionary<string, AbstractShape> s_dictionaryShapeByName = new Dictionary<string, AbstractShape>(); 
 
         // group numbers                                
         public static Regex s_regexShapes = new Regex(@"(.*)(#)(.+)(#)", RegexOptions.Compiled);
@@ -57,7 +64,7 @@ namespace CardMaker.Card.Shapes
             }
         }
 
-        public static void HandleShapeRender(Graphics zGraphics, string sShapeInfo, ProjectLayoutElement zElement)
+        public static void HandleShapeRender(Graphics zGraphics, string sShapeInfo, ProjectLayoutElement zElement, int nXOffset = 0, int nYOffset = 0)
         {
             if (s_regexShapes.IsMatch(sShapeInfo))
             {
@@ -75,13 +82,13 @@ namespace CardMaker.Card.Shapes
                     if ((int)AbstractShape.ShapeInformationIndex.BasicShapeInformation < arraySplit.Length)
                     {
                         int nThickness;
-                        var nOverrideWidth = int.MinValue;
-                        var nOverrideHeight = int.MinValue;
-                        bParse = int.TryParse(arraySplit[(int)AbstractShape.ShapeInformationIndex.Thickness], out nThickness);
+                        var nOverrideWidth = Int32.MinValue;
+                        var nOverrideHeight = Int32.MinValue;
+                        bParse = Int32.TryParse(arraySplit[(int)AbstractShape.ShapeInformationIndex.Thickness], out nThickness);
                         if (!arraySplit[(int)AbstractShape.ShapeInformationIndex.OverrideWidth].Equals(AbstractShape.NO_SIZE_OVERRIDE))
-                            bParse &= int.TryParse(arraySplit[(int)AbstractShape.ShapeInformationIndex.OverrideWidth], out nOverrideWidth);
+                            bParse &= Int32.TryParse(arraySplit[(int)AbstractShape.ShapeInformationIndex.OverrideWidth], out nOverrideWidth);
                         if (!arraySplit[(int)AbstractShape.ShapeInformationIndex.OverrideHeight].Equals(AbstractShape.NO_SIZE_OVERRIDE))
-                            bParse &= int.TryParse(arraySplit[(int)AbstractShape.ShapeInformationIndex.OverrideHeight], out nOverrideHeight);
+                            bParse &= Int32.TryParse(arraySplit[(int)AbstractShape.ShapeInformationIndex.OverrideHeight], out nOverrideHeight);
                         zInfo = new ShapeInfo(nThickness, nOverrideWidth, nOverrideHeight, arraySplit);
                     }
                     if (!bParse)
@@ -95,10 +102,10 @@ namespace CardMaker.Card.Shapes
                     var targetRect = new Rectangle(0, 0, zElement.width - 1, zElement.height - 1);
 
                     // internally int.MinValue indicates no override
-                    if (int.MinValue != zInfo.OverrideWidth || int.MinValue != zInfo.OverrideHeight)
+                    if (Int32.MinValue != zInfo.OverrideWidth || Int32.MinValue != zInfo.OverrideHeight)
                     {
-                        var nOverrideWidth = int.MinValue == zInfo.OverrideWidth ? zElement.width : zInfo.OverrideWidth;
-                        var nOverrideHeight = int.MinValue == zInfo.OverrideHeight ? zElement.height : zInfo.OverrideHeight;
+                        var nOverrideWidth = Int32.MinValue == zInfo.OverrideWidth ? zElement.width : zInfo.OverrideWidth;
+                        var nOverrideHeight = Int32.MinValue == zInfo.OverrideHeight ? zElement.height : zInfo.OverrideHeight;
 
                         if (0 == nOverrideWidth || 0 == nOverrideHeight)
                             // nothing to draw
@@ -106,6 +113,10 @@ namespace CardMaker.Card.Shapes
                         targetRect = GetZeroRectangle(nOverrideWidth, nOverrideHeight);
                         zGraphics.TranslateTransform(targetRect.X, targetRect.Y);
                         targetRect = new Rectangle(0, 0, Math.Abs(nOverrideWidth), Math.Abs(nOverrideHeight));
+                    }
+                    else if(nXOffset != 0 || nYOffset != 0)
+                    {
+                        zGraphics.TranslateTransform(nXOffset, nYOffset);
                     }
 
                     zShape.DrawShape(zPath, targetRect, zInfo);
@@ -130,7 +141,66 @@ namespace CardMaker.Card.Shapes
             }
         }
 
-        public static Rectangle GetZeroRectangle(int nX, int nY)
+        public static string ProcessInlineShape(Graphics zGraphics, ProjectLayoutElement zElement, string sInput)
+        {
+            var zExtendedMatch = regexShapeExtendedBG.Match(sInput);
+            Match zMatch = null;
+            if (!zExtendedMatch.Success)
+            {
+                zMatch = regexShapeBG.Match(sInput);
+                if (!zMatch.Success)
+                {
+                    return sInput;
+                }
+            }
+
+            var zBuilder = new StringBuilder();
+            int nXOffset = 0, nYOffset = 0;
+
+            int[] arrayReplaceIndcies = null;
+            var zBgShapeElement = new ProjectLayoutElement(Guid.NewGuid().ToString());
+            if(zExtendedMatch.Success)
+            {
+                nXOffset = ParseDefault(zExtendedMatch.Groups[6].Value, 0);
+                nYOffset = ParseDefault(zExtendedMatch.Groups[8].Value, 0);
+                zBgShapeElement.x = zElement.x;
+                zBgShapeElement.y = zElement.y;
+                zBgShapeElement.width = zElement.width + ParseDefault(zExtendedMatch.Groups[10].Value, 0);
+                zBgShapeElement.height = zElement.height + ParseDefault(zExtendedMatch.Groups[12].Value, 0);
+                zBgShapeElement.outlinethickness = ParseDefault(zExtendedMatch.Groups[14].Value, 0);
+                zBgShapeElement.outlinecolor = zExtendedMatch.Groups[16].Value;
+                zBgShapeElement.elementcolor = zExtendedMatch.Groups[4].Value;
+                zBgShapeElement.variable = zExtendedMatch.Groups[2].Value;
+                zBgShapeElement.type = ElementType.Shape.ToString();
+                zBuilder.Append(zExtendedMatch.Groups[0].Value);
+            }
+            else if(zMatch.Success)
+            {
+                zBgShapeElement.x = zElement.x;
+                zBgShapeElement.y = zElement.y;
+                zBgShapeElement.width = zElement.width;
+                zBgShapeElement.height = zElement.height;
+                zBgShapeElement.elementcolor = zMatch.Groups[4].Value;
+                zBgShapeElement.variable = zMatch.Groups[2].Value;
+                zBgShapeElement.type = ElementType.Shape.ToString();
+                zBuilder.Append(zMatch.Groups[0].Value);
+            }
+
+            zBgShapeElement.InitializeTranslatedFields();
+
+            HandleShapeRender(zGraphics, zBgShapeElement.variable, zBgShapeElement, nXOffset, nYOffset);
+            
+            return sInput.Replace(zBuilder.ToString(), string.Empty);
+        }
+
+        private static int ParseDefault(string sVal, int nDefault)
+        {
+            var nVal = nDefault;
+            int.TryParse(sVal, out nVal);
+            return nVal;
+        }
+
+        private static Rectangle GetZeroRectangle(int nX, int nY)
         {
             if (nX >= 0)
             {

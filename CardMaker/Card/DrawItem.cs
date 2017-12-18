@@ -153,6 +153,7 @@ namespace CardMaker.Card
                 zGraphics.TranslateTransform(zElement.x + nX, zElement.y + nY);
             }
 
+            // render the background color
             if (zElement.GetElementBackgroundColor() != CardMakerConstants.NoColor)
             {
                 var zBackgroundBrush = 255 != zElement.opacity
@@ -161,6 +162,9 @@ namespace CardMaker.Card
                 zGraphics.FillRectangle(zBackgroundBrush, 0, 0,
                     zElement.width, zElement.height);
             }
+
+            // TODO: this should just be a sequence of processors 1) transform 2) background 3) background shape 4) render 5) blah
+            sInput = ShapeManager.ProcessInlineShape(zGraphics, zElement, sInput);
 
             // TODO: an interface for all these would be more appropriate
             // Draw

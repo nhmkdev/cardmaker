@@ -257,64 +257,64 @@ namespace CardMaker.XML
         /// <returns>The color, or Color.Black by default</returns>
         public static Color TranslateColorString(string sColor, int defaultAlpha = 255)
         {
-            sColor = sColor.Trim();
-
-            if (null != sColor)
+            if (string.IsNullOrEmpty(sColor))
             {
-                if (sColor.StartsWith(COLOR_HEX_STR, StringComparison.CurrentCultureIgnoreCase))
-                {
-                    sColor = sColor.Remove(0, 2);
-                }
+                return Color.Black;
+            }
 
-                Color colorByName = Color.FromName(sColor);
-                // no named color will be set this way
-                if (colorByName.A != 0)
-                {
-                    return colorByName;
-                }
+            sColor = sColor.Trim();
+            if (sColor.StartsWith(COLOR_HEX_STR, StringComparison.CurrentCultureIgnoreCase))
+            {
+                sColor = sColor.Remove(0, 2);
+            }
 
-                try
-                {
-                    switch (sColor.Length)
-                    {
-                        case 6: //0xRGB (hex RGB)
-                            return Color.FromArgb(
-                                defaultAlpha,
-                                Math.Min(255,
-                                    Int32.Parse(sColor.Substring(0, 2), System.Globalization.NumberStyles.HexNumber)),
-                                Math.Min(255,
-                                    Int32.Parse(sColor.Substring(2, 2), System.Globalization.NumberStyles.HexNumber)),
-                                Math.Min(255,
-                                    Int32.Parse(sColor.Substring(4, 2), System.Globalization.NumberStyles.HexNumber)));
-                        case 8: //0xRGBA (hex RGBA)
-                            return Color.FromArgb(
-                                Math.Min(255,
-                                    Int32.Parse(sColor.Substring(6, 2), System.Globalization.NumberStyles.HexNumber)),
-                                Math.Min(255,
-                                    Int32.Parse(sColor.Substring(0, 2), System.Globalization.NumberStyles.HexNumber)),
-                                Math.Min(255,
-                                    Int32.Parse(sColor.Substring(2, 2), System.Globalization.NumberStyles.HexNumber)),
-                                Math.Min(255,
-                                    Int32.Parse(sColor.Substring(4, 2), System.Globalization.NumberStyles.HexNumber)));
-                        case 9: //RGB (int RGB)
-                            return Color.FromArgb(
-                                defaultAlpha,
-                                Math.Min(255, Int32.Parse(sColor.Substring(0, 3))),
-                                Math.Min(255, Int32.Parse(sColor.Substring(3, 3))),
-                                Math.Min(255, Int32.Parse(sColor.Substring(6, 3))));
-                        case 12: //RGBA (int RGBA)
-                            return Color.FromArgb(
-                                Math.Min(255, Int32.Parse(sColor.Substring(9, 3))),
-                                Math.Min(255, Int32.Parse(sColor.Substring(0, 3))),
-                                Math.Min(255, Int32.Parse(sColor.Substring(3, 3))),
-                                Math.Min(255, Int32.Parse(sColor.Substring(6, 3))));
-                    }
-                }
-                catch (Exception)
-                {
-                    Logger.AddLogLine("Unsupported color string found: " + sColor);
-                }
+            Color colorByName = Color.FromName(sColor);
+            // no named color will be set this way
+            if (colorByName.A != 0)
+            {
+                return colorByName;
+            }
 
+            try
+            {
+                switch (sColor.Length)
+                {
+                    case 6: //0xRGB (hex RGB)
+                        return Color.FromArgb(
+                            defaultAlpha,
+                            Math.Min(255,
+                                Int32.Parse(sColor.Substring(0, 2), System.Globalization.NumberStyles.HexNumber)),
+                            Math.Min(255,
+                                Int32.Parse(sColor.Substring(2, 2), System.Globalization.NumberStyles.HexNumber)),
+                            Math.Min(255,
+                                Int32.Parse(sColor.Substring(4, 2), System.Globalization.NumberStyles.HexNumber)));
+                    case 8: //0xRGBA (hex RGBA)
+                        return Color.FromArgb(
+                            Math.Min(255,
+                                Int32.Parse(sColor.Substring(6, 2), System.Globalization.NumberStyles.HexNumber)),
+                            Math.Min(255,
+                                Int32.Parse(sColor.Substring(0, 2), System.Globalization.NumberStyles.HexNumber)),
+                            Math.Min(255,
+                                Int32.Parse(sColor.Substring(2, 2), System.Globalization.NumberStyles.HexNumber)),
+                            Math.Min(255,
+                                Int32.Parse(sColor.Substring(4, 2), System.Globalization.NumberStyles.HexNumber)));
+                    case 9: //RGB (int RGB)
+                        return Color.FromArgb(
+                            defaultAlpha,
+                            Math.Min(255, Int32.Parse(sColor.Substring(0, 3))),
+                            Math.Min(255, Int32.Parse(sColor.Substring(3, 3))),
+                            Math.Min(255, Int32.Parse(sColor.Substring(6, 3))));
+                    case 12: //RGBA (int RGBA)
+                        return Color.FromArgb(
+                            Math.Min(255, Int32.Parse(sColor.Substring(9, 3))),
+                            Math.Min(255, Int32.Parse(sColor.Substring(0, 3))),
+                            Math.Min(255, Int32.Parse(sColor.Substring(3, 3))),
+                            Math.Min(255, Int32.Parse(sColor.Substring(6, 3))));
+                }
+            }
+            catch (Exception)
+            {
+                Logger.AddLogLine("Unsupported color string found: " + sColor);
             }
             return Color.Black;
         }
