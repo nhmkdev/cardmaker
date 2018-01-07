@@ -123,6 +123,8 @@ namespace CardMaker.Forms
             this.comboElementType = new System.Windows.Forms.ComboBox();
             this.contextMenuReferenceStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.contextMenuStripAssist = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.txtTileSize = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
             this.groupBoxElement.SuspendLayout();
             this.groupBackgroundColor.SuspendLayout();
             this.tabControl.SuspendLayout();
@@ -487,7 +489,7 @@ namespace CardMaker.Forms
             this.tabPageShape.Location = new System.Drawing.Point(4, 22);
             this.tabPageShape.Name = "tabPageShape";
             this.tabPageShape.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageShape.Size = new System.Drawing.Size(706, 60);
+            this.tabPageShape.Size = new System.Drawing.Size(722, 60);
             this.tabPageShape.TabIndex = 1;
             this.tabPageShape.Text = "Shape";
             this.tabPageShape.UseVisualStyleBackColor = true;
@@ -536,6 +538,8 @@ namespace CardMaker.Forms
             // 
             // tabPageGraphic
             // 
+            this.tabPageGraphic.Controls.Add(this.label9);
+            this.tabPageGraphic.Controls.Add(this.txtTileSize);
             this.tabPageGraphic.Controls.Add(this.checkKeepOriginalSize);
             this.tabPageGraphic.Controls.Add(this.btnSetSizeToImage);
             this.tabPageGraphic.Controls.Add(this.label15);
@@ -545,7 +549,7 @@ namespace CardMaker.Forms
             this.tabPageGraphic.Controls.Add(this.checkLockAspect);
             this.tabPageGraphic.Location = new System.Drawing.Point(4, 22);
             this.tabPageGraphic.Name = "tabPageGraphic";
-            this.tabPageGraphic.Size = new System.Drawing.Size(706, 60);
+            this.tabPageGraphic.Size = new System.Drawing.Size(722, 60);
             this.tabPageGraphic.TabIndex = 2;
             this.tabPageGraphic.Text = "Graphic";
             this.tabPageGraphic.UseVisualStyleBackColor = true;
@@ -991,6 +995,23 @@ namespace CardMaker.Forms
             this.contextMenuStripAssist.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this.contextMenuStripAssist.Size = new System.Drawing.Size(61, 4);
             // 
+            // txtTileSize
+            // 
+            this.txtTileSize.Location = new System.Drawing.Point(270, 32);
+            this.txtTileSize.Name = "txtTileSize";
+            this.txtTileSize.Size = new System.Drawing.Size(100, 20);
+            this.txtTileSize.TabIndex = 42;
+            this.txtTileSize.TextChanged += new System.EventHandler(this.HandleElementValueChange);
+            // 
+            // label9
+            // 
+            this.label9.Location = new System.Drawing.Point(134, 32);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(130, 21);
+            this.label9.TabIndex = 43;
+            this.label9.Text = "Tile Size:";
+            this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
             // MDIElementControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1012,6 +1033,7 @@ namespace CardMaker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.numericFontSize)).EndInit();
             this.tabPageShape.ResumeLayout(false);
             this.tabPageGraphic.ResumeLayout(false);
+            this.tabPageGraphic.PerformLayout();
             this.groupBoxOutline.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.numericElementOutLineThickness)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericElementOpacity)).EndInit();
@@ -1098,5 +1120,7 @@ namespace CardMaker.Forms
         private System.Windows.Forms.Button btnNullBackgroundColor;
         private System.Windows.Forms.Panel panelBackgroundColor;
         private System.Windows.Forms.Button btnElementBackgroundColor;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox txtTileSize;
     }
 }

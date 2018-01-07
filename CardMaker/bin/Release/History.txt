@@ -5,6 +5,9 @@ Card Maker Version History
 - Added background color for all element types
 - Added zoom helpers (Fit + Fit Horizontal)... will someone need "Fit Vertical" ???
 - Added inline background shape functionality
+- Added inline background image functionality
+- Added graphic tiling option ("tile size")
+- Added switch alternative with a different delimiter (::)
 
 1.0.0.1
 - Added divider functionality

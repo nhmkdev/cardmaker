@@ -160,7 +160,7 @@ namespace CardMaker.Card.FormattedText.Markup
 
             // already null checked in the ProcessMarkup
             var zBmp = 255 != zElement.opacity
-                ? DrawItem.LoadOpacityImageFromCache(m_sImageFile, zElement)
+                ? DrawItem.LoadCustomImageFromCache(m_sImageFile, zElement)
                 : DrawItem.LoadImageFromCache(m_sImageFile);
             zGraphics.DrawImage(zBmp, TargetRect.X + m_fXOffset, TargetRect.Y + m_fYOffset, TargetRect.Width, TargetRect.Height);
 

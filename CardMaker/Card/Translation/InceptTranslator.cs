@@ -68,11 +68,16 @@ namespace CardMaker.Card.Translation
         private static readonly Regex s_regexIfThenElseStatement = new Regex(@"(if)(.*?)\s([!=><]=|<|>)\s(.*?)(then )(.*?)( else )(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexIfSet = new Regex(@"(\[)(.*?)(\])", RegexOptions.Compiled);
         private static readonly Regex s_regexSwitchStatement = new Regex(@"(switch)(;)(.*?)(;)(.*)", RegexOptions.Compiled);
+        private static readonly Regex s_regexSwitchStatementAlt = new Regex(@"(switch)(::)(.*?)(::)(.*)", RegexOptions.Compiled);
         private static readonly HashSet<string> s_setDisallowedOverrideFields = new HashSet<string>()
         {
             "name",
             "variable"
         };
+
+        private const string SWITCH_DEFAULT = "#default";
+        private readonly string[] ArraySwitchDelimiter = new string[]{ ";" };
+        private readonly string[] ArraySwitchDelimiterAlt = new string[] { "::" };
 
         public InceptTranslator(Dictionary<string, int> dictionaryColumnNameToIndex, Dictionary<string, string> dictionaryDefines,
             Dictionary<string, Dictionary<string, int>> dictionaryElementToFieldColumnOverrides, List<string> listColumnNames)
@@ -628,35 +633,54 @@ namespace CardMaker.Card.Translation
         private string TranslateSwitchLogic(string sInput)
         {
             //Groups                                   
-            //        1  2    3  4   5
-            //@"(switch)(;)(.*?)(;)(.*)");
+            //      1  2    3  4   5
+            //(switch)(;)(.*?)(;)(.*)");
+            // OR
+            //      1   2    3   4   5
+            //(switch)(::)(.*?)(::)(.*)
             var nDefaultIndex = -1;
+            Match zSwitchMatch = null;
+            var arraySwitchDelimiter = ArraySwitchDelimiter;
             if (s_regexSwitchStatement.IsMatch(sInput))
             {
-                var zMatch = s_regexSwitchStatement.Match(sInput);
-                var sKey = zMatch.Groups[3].ToString();
-                var arrayCases = zMatch.Groups[5].ToString().Split(new char[] { ';' });
-                if (0 == (arrayCases.Length % 2))
-                {
-                    var nIdx = 0;
-                    while (nIdx < arrayCases.Length)
-                    {
-                        if (arrayCases[nIdx].Equals("#default", StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            nDefaultIndex = nIdx;
-                        }
-                        if (arrayCases[nIdx].Equals(sKey, StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            return arrayCases[nIdx + 1];
-                        }
-                        nIdx += 2;
-                    }
-                    if (-1 < nDefaultIndex)
-                    {
-                        return arrayCases[nDefaultIndex + 1];
-                    }
-                }
+                zSwitchMatch = s_regexSwitchStatement.Match(sInput);
             }
+            else if (s_regexSwitchStatementAlt.IsMatch(sInput))
+            {
+                zSwitchMatch = s_regexSwitchStatementAlt.Match(sInput);
+                arraySwitchDelimiter = ArraySwitchDelimiterAlt;
+            }
+            if (zSwitchMatch == null)
+            {
+                return sInput;
+            }
+
+            var sKey = zSwitchMatch.Groups[3].ToString();
+            var arrayCases = zSwitchMatch.Groups[5].ToString().Split(arraySwitchDelimiter, StringSplitOptions.None);
+            if (0 != (arrayCases.Length % 2))
+            {
+                return sInput;
+            }
+
+            var nIdx = 0;
+            while (nIdx < arrayCases.Length)
+            {
+                if (arrayCases[nIdx].Equals(SWITCH_DEFAULT, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    nDefaultIndex = nIdx;
+                }
+                if (arrayCases[nIdx].Equals(sKey, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    return arrayCases[nIdx + 1];
+                }
+                nIdx += 2;
+            }
+
+            if (-1 < nDefaultIndex)
+            {
+                return arrayCases[nDefaultIndex + 1];
+            }
+
             return sInput;
         }
     }

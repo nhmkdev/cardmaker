@@ -47,6 +47,36 @@ namespace UnitTest.DeckObject
             return result.String;
         }
 
+
+        [TestCase("@[TESTCOLUMN1]", Result = "102")]
+        [TestCase("@[testcolumn1]", Result = "102")]
+        [TestCase("@[testColumn1]", Result = "102")]
+        [TestCase("@[testColumn2]", Result = "aaa")]
+        [TestCase(" @[testColumn1]", Result = " 102")]
+        [TestCase(" @[testColumn2]", Result = " aaa")]
+        [TestCase("@[testColumn1] ", Result = "102 ")]
+        [TestCase("@[testColumn2] ", Result = "aaa ")]
+        [TestCase("@[testColumn1]@[testColumn2]", Result = "102aaa")]
+        [TestCase("@[@[testColumn3]]", Result = "102")]
+        public string ValidateReferenceValue(string sInput)
+        {
+            var listLines = new List<List<string>>()
+            {
+                new List<string>() {"count", "testColumn1", "testColumn2", "testColumn3"},
+                new List<string>() {"1", "102", "aaa", "testColumn1"}
+            };
+            var listDefines = new List<List<string>>();
+            _testLine = new DeckLine(listLines[listLines.Count - 1]);
+            _testDeck.ProcessLinesPublic(
+                listLines,
+                listDefines,
+                null);
+
+            return _testDeck.TranslateString(sInput, _testLine, _testElement, false).String;
+        }
+
+        [TestCase("![cardcount]", Result = "10")]
+        [TestCase("![elementname]", Result = TEST_ELEMENT_NAME)]
         [TestCase("![cardIndex]", Result = "0")]
         [TestCase("![deckIndex]", Result = "1")]
         public string ValidateCardVariable(string input)
@@ -84,6 +114,38 @@ namespace UnitTest.DeckObject
             return result.String;
         }
 
+        // note this result sucks -- should just be nothing
+        [TestCase("#(switch;45;15;nothing)#", Result = "switch;45;15;nothing")]
+        [TestCase("#(switch;45;15;nothing;#default;stuff)#", Result = "stuff")]
+        [TestCase("#(switch;45;15;nothing;45;;#default;stuff)#", Result = "")]
+        [TestCase("#(switch;;15;nothing;;;#default;stuff)#", Result = "")]
+        [TestCase("#(switch;;15;nothing;;result;#default;stuff)#", Result = "result")]
+        // this is proof of the switch using the ; delimiter is broken
+        [TestCase("#(switch;;15;nothing;#empty;result;#default;<img=test.png;.8)#", Result = "switch;;15;nothing;;result;#default;<img=test.png;.8")]
+        public string ValidateSwitchLogic(string input)
+        {
+            _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
+
+            var result = _testDeck.TranslateString(input, _testLine, _testElement, false);
+            return result.String;
+        }
+
+        // note this result sucks -- should just be nothing
+        [TestCase("#(switch::45::15::nothing)#", Result = "switch::45::15::nothing")]
+        [TestCase("#(switch::45::15::nothing::#default::stuff)#", Result = "stuff")]
+        [TestCase("#(switch::45::15::nothing::45::::#default::stuff)#", Result = "")]
+        [TestCase("#(switch::::15::nothing::::::#default::stuff)#", Result = "")]
+        [TestCase("#(switch::::15::nothing::::result::#default::stuff)#", Result = "result")]
+        [TestCase("#(switch::::15::nothing::#empty::result::#default::stuff)#", Result = "result")]
+        [TestCase("#(switch::45::15::nothing::#empty::result::#default::<img=test.png;.8>)#", Result = "<img=test.png;.8>")]
+        public string ValidateAltSwitchLogic(string input)
+        {
+            _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
+
+            var result = _testDeck.TranslateString(input, _testLine, _testElement, false);
+            return result.String;
+        }
+
         [TestCase(-5, -6, true)]
         [TestCase(5, 5, true)]
         [TestCase(-5, 5, false)]
@@ -103,6 +165,7 @@ namespace UnitTest.DeckObject
             }
         }
 
+        // TODO: most of these are just tests of logic... not #nodraw testing
         [TestCase("#(switch;goodkey;badkey;1;goodkey;#nodraw)#", false, Result = "#nodraw")]
         [TestCase("Test: #(switch;goodkey;badkey;1;goodkey;#nodraw)#", false, Result = "Test: #nodraw")]
         [TestCase("Test: #(switch;goodkey;badkey;1;goodkey;#nodraw)#", false, Result = "Test: #nodraw")]
@@ -112,6 +175,9 @@ namespace UnitTest.DeckObject
         [TestCase("#(if [1;2;3] == [a;3;b] then #nodraw)#", false, Result = "#nodraw")]
         [TestCase("#(if [1;2;3] == [a;b;c] then #nodraw)#", true, Result = "")]
         [TestCase("Test: #(if a == a then #nodraw)#", false, Result = "Test: #nodraw")]
+        [TestCase("#(if == then #nodraw)#", false, Result = "#nodraw")]
+        [TestCase("#(if #empty == then #nodraw)#", false, Result = "#nodraw")]
+        [TestCase("#(if == #empty then #nodraw)#", false, Result = "#nodraw")]
         [TestCase("#nodraw", false, Result = "#nodraw")]
         [TestCase("#(if a<4 == a>4 then 6 &lt; 7 else #nodraw)#", false, Result = "#nodraw")]
         [TestCase("#(if a<4 == a>4 then #nodraw else 6 &lt; 7)#", true, Result = "6 < 7")]
@@ -398,6 +464,7 @@ namespace UnitTest.DeckObject
             const bool AUTOSCALEFONT = true;
             const bool ENABLED = false;
             const bool LOCKASPECT = true;
+            const string TILESIZE = "45x55";
             const bool KEEPORIGINALSIZE = true;
             const bool JUSTIFIEDTEXT = true;
             const float ROTATION = 55;
@@ -432,6 +499,7 @@ namespace UnitTest.DeckObject
                 getOverride("autoscalefont", AUTOSCALEFONT) +
                 getOverride("enabled", ENABLED) +
                 getOverride("lockaspect", LOCKASPECT) +
+                getOverride("tilesize", TILESIZE) +
                 getOverride("keeporiginalsize", KEEPORIGINALSIZE) +
                 getOverride("justifiedtext", JUSTIFIEDTEXT) +
                 getOverride("rotation", ROTATION) +
@@ -463,6 +531,7 @@ namespace UnitTest.DeckObject
             Assert.AreEqual(AUTOSCALEFONT, _testElement.autoscalefont);
             Assert.AreEqual(ENABLED, _testElement.enabled);
             Assert.AreEqual(LOCKASPECT, _testElement.lockaspect);
+            Assert.AreEqual(TILESIZE, _testElement.tilesize);
             Assert.AreEqual(KEEPORIGINALSIZE, _testElement.keeporiginalsize);
             Assert.AreEqual(JUSTIFIEDTEXT, _testElement.justifiedtext);
             Assert.AreEqual(ROTATION, _testElement.rotation);
@@ -524,7 +593,7 @@ namespace UnitTest.DeckObject
         [TestCase("@[a] ## #SC", 3, 8, Result = "1 00000003 00000003")]
         [TestCase("@[a] ## #SC", 4, 8, Result = "1 00000004 00000004")]
         [TestCase("@[a] ## #SC", 5, 8, Result = "1 00000005 00000001")]
-        public string TestFileNameExport(string input, int cardNumber, int leftPad)
+        public string ValidateFileNameExport(string input, int cardNumber, int leftPad)
         {
             _testDeck.ProcessLinesPublic(
                 new List<List<string>>()
@@ -553,9 +622,15 @@ namespace UnitTest.DeckObject
         [TestCase("A#repeat;2;@[1]#B", Result = "AaaB")]
         [TestCase("A#repeat;2;@[4]#B", Result = "AbbbbbbB")]
         [TestCase("A#repeat;2;@[4]##repeat;3;xyz#B", Result = "AbbbbbbxyzxyzxyzB")]
-        public string TestRepeatTranslator(string input)
+        [TestCase("#repeat;%[@[loot],1,2];<img=icons\\@[cointypeimage%[@[loot],0,1]];.80>#", Result = "<img=icons\\gold.png;.80><img=icons\\gold.png;.80>")]
+        [TestCase("#repeat;%[@[loot],1,2];<img=icons\\@[cointypeimage%[@[loot],0,1]];.80>#", Result = "<img=icons\\gold.png;.80><img=icons\\gold.png;.80>")]
+        public string ValidateRepeatTranslator(string input)
         {
-            var listLines = new List<List<string>>();
+            var listLines = new List<List<string>>()
+            {
+                new List<string>() {"count", "loot"},
+                new List<string>() {"1", "102"}
+            };
             var listDefines = new List<List<string>>()
             {
                 new List<string>() { "define", "value" },
@@ -564,8 +639,10 @@ namespace UnitTest.DeckObject
                 new List<string>() { "3", "@[2]" },
                 new List<string>() { "4", "@[3]@[2]@[3]" },
                 new List<string>() { "4ex", "4" },
-                new List<string>() { "5", "@[@[4ex]]" }
+                new List<string>() { "5", "@[@[4ex]]" },
+                new List<string>() { "cointypeimage1", "gold.png"}
             };
+            _testLine = new DeckLine(listLines[listLines.Count - 1]);
             _testDeck.ProcessLinesPublic(
                 listLines,
                 listDefines,

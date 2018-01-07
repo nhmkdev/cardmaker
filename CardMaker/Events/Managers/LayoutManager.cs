@@ -222,8 +222,7 @@ namespace CardMaker.Events.Managers
         /// </summary>
         public void ClearImageCache()
         {
-            DrawItem.DumpImages();
-            DrawItem.DumpOpacityImages();
+            DrawItem.ClearImageCaches();
             FireLayoutRenderUpdatedEvent();
             Logger.AddLogLine("Cleared Image Cache");
         }

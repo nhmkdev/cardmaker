@@ -60,8 +60,7 @@ namespace CardMaker.Card
 
         ~CardCanvas()
         {
-            DrawItem.DumpImages();
-            DrawItem.DumpOpacityImages();
+            DrawItem.ClearImageCaches();
         }
 
         public void UpdateSize()

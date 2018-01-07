@@ -154,7 +154,7 @@ namespace CardMaker.Card.Shapes
                 }
             }
 
-            var zBuilder = new StringBuilder();
+            var sToReplace = string.Empty;
             int nXOffset = 0, nYOffset = 0;
 
             int[] arrayReplaceIndcies = null;
@@ -172,7 +172,7 @@ namespace CardMaker.Card.Shapes
                 zBgShapeElement.elementcolor = zExtendedMatch.Groups[4].Value;
                 zBgShapeElement.variable = zExtendedMatch.Groups[2].Value;
                 zBgShapeElement.type = ElementType.Shape.ToString();
-                zBuilder.Append(zExtendedMatch.Groups[0].Value);
+                sToReplace = zExtendedMatch.Groups[0].Value;
             }
             else if(zMatch.Success)
             {
@@ -183,14 +183,14 @@ namespace CardMaker.Card.Shapes
                 zBgShapeElement.elementcolor = zMatch.Groups[4].Value;
                 zBgShapeElement.variable = zMatch.Groups[2].Value;
                 zBgShapeElement.type = ElementType.Shape.ToString();
-                zBuilder.Append(zMatch.Groups[0].Value);
+                sToReplace = zMatch.Groups[0].Value;
             }
 
             zBgShapeElement.InitializeTranslatedFields();
 
             HandleShapeRender(zGraphics, zBgShapeElement.variable, zBgShapeElement, nXOffset, nYOffset);
             
-            return sInput.Replace(zBuilder.ToString(), string.Empty);
+            return sInput.Replace(sToReplace, string.Empty);
         }
 
         private static int ParseDefault(string sVal, int nDefault)

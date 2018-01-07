@@ -721,6 +721,7 @@ namespace CardMaker.Forms
             m_dictionaryControlField.Add(comboTextHorizontalAlign, zType.GetProperty("horizontalalign"));
             m_dictionaryControlField.Add(comboTextVerticalAlign, zType.GetProperty("verticalalign"));
             m_dictionaryControlField.Add(numericElementOpacity, zType.GetProperty("opacity"));
+            m_dictionaryControlField.Add(txtTileSize, zType.GetProperty("tilesize"));
 
             // HandleFontSettingChange related 
             m_dictionaryControlField.Add(numericLineSpace, zType.GetProperty("lineheight"));
@@ -916,6 +917,7 @@ namespace CardMaker.Forms
                 comboTextVerticalAlign.SelectedIndex = zElement.verticalalign;
                 comboGraphicHorizontalAlign.SelectedIndex = zElement.horizontalalign;
                 comboGraphicVerticalAlign.SelectedIndex = zElement.verticalalign;
+                txtTileSize.Text = zElement.tilesize;
                 checkJustifiedText.Checked = zElement.justifiedtext;
                 txtElementVariable.Text = zElement.variable;
                 txtElementVariable.SelectionStart = zElement.variable.Length;

@@ -116,6 +116,9 @@ namespace CardMaker.XML
         [XmlAttribute]
         public bool keeporiginalsize { get; set; }
 
+        [XmlAttribute]
+        public string tilesize { get; set; }
+
         #endregion
 
         private Color m_colorElement = Color.Black;
@@ -155,6 +158,7 @@ namespace CardMaker.XML
             wordspace = 0;
             autoscalefont = false;
             lockaspect = false;
+            tilesize = string.Empty;
             keeporiginalsize = false;
             variable = string.Empty;
             name = sName;
@@ -243,6 +247,7 @@ namespace CardMaker.XML
             enabled = zElement.enabled;
             lineheight = zElement.lineheight;
             wordspace = zElement.wordspace;
+            tilesize = zElement.tilesize;
 
             if (bInitializeTranslatedFields)
             {
