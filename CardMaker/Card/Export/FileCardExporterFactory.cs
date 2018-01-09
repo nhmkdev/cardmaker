@@ -81,7 +81,7 @@ namespace CardMaker.Card.Export
                 // associated check box and the file format override text box
             zQuery.AddEnableControl(ExportOptionKey.NameFormatOverride, ExportOptionKey.NameFormat);
             zQuery.AddFolderBrowseBox("Output Folder", 
-                Directory.Exists(ProjectManager.Instance.LoadedProject.lastExportPath) ? ProjectManager.Instance.LoadedProject.lastExportPath : string.Empty, 
+                Directory.Exists(ProjectManager.Instance.LoadedProject.lastExportPath) ? ProjectManager.Instance.LoadedProject.lastExportPath : ProjectManager.Instance.ProjectPath, 
                 ExportOptionKey.Folder);
             zQuery.UpdateEnableStates();
 
@@ -124,7 +124,7 @@ namespace CardMaker.Card.Export
             zQuery.AddNumericBox("Stitch Skip Index", CardMakerSettings.ExportStitchSkipIndex, 0, 65535, 1, 0, ExportOptionKey.StitchSkipIndex);
             zQuery.AddTextBox("File Name Format (optional)", sDefinition ?? string.Empty, false, ExportOptionKey.NameFormat);
             zQuery.AddFolderBrowseBox("Output Folder", 
-                Directory.Exists(ProjectManager.Instance.LoadedProject.lastExportPath) ? ProjectManager.Instance.LoadedProject.lastExportPath : string.Empty, 
+                Directory.Exists(ProjectManager.Instance.LoadedProject.lastExportPath) ? ProjectManager.Instance.LoadedProject.lastExportPath : ProjectManager.Instance.ProjectPath, 
                 ExportOptionKey.Folder);
 
             zQuery.UpdateEnableStates();
