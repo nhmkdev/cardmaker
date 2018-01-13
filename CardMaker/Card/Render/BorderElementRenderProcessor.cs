@@ -25,10 +25,26 @@
 using System.Drawing;
 using CardMaker.XML;
 
-namespace CardMaker.Card
+namespace CardMaker.Card.Render
 {
-    public interface IDrawText
+    class BorderElementRenderProcessor : IElementRenderProcessor
     {
-        void DrawText(Graphics zGraphics, ProjectLayoutElement zElement, string sInput);
+        public string Render(Graphics zGraphics, ProjectLayoutElement zElement, Deck zDeck, string sInput, int nX, int nY, bool bExport)
+        {
+            if (0 != zElement.borderthickness)
+            {
+                // note that the border is inclusive in the width/height consuming 2 pixels (0 to total-1)
+                zGraphics.DrawRectangle(
+                    255 == zElement.opacity
+                        ? new Pen(zElement.GetElementBorderColor(), zElement.borderthickness)
+                        : new Pen(Color.FromArgb(zElement.opacity, zElement.GetElementBorderColor()), zElement.borderthickness),
+                    0,
+                    0,
+                    zElement.width - 1,
+                    zElement.height - 1);
+            }
+
+            return sInput;
+        }
     }
 }

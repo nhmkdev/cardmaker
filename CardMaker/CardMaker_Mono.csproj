@@ -58,17 +58,19 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ClearScript, Version=5.4.3.0, Culture=neutral, PublicKeyToken=935d0c957da47c73, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="ClearScript">
       <HintPath>..\3rdParty\ClearScript\ClearScript.dll</HintPath>
     </Reference>
-    <Reference Include="Google.GData.Client">
+    <Reference Include="Google.GData.Client, Version=2.2.0.0, Culture=neutral, PublicKeyToken=04a59ca9b0273830, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\3rdParty\GoogleDataAPI\Google.GData.Client.dll</HintPath>
     </Reference>
-    <Reference Include="Google.GData.Extensions">
+    <Reference Include="Google.GData.Extensions, Version=2.2.0.0, Culture=neutral, PublicKeyToken=0b4c5df2ebf20876, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\3rdParty\GoogleDataAPI\Google.GData.Extensions.dll</HintPath>
     </Reference>
-    <Reference Include="Google.GData.Spreadsheets">
+    <Reference Include="Google.GData.Spreadsheets, Version=2.2.0.0, Culture=neutral, PublicKeyToken=3f77feb76ff0d9a1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\3rdParty\GoogleDataAPI\Google.GData.Spreadsheets.dll</HintPath>
     </Reference>
     <Reference Include="PdfSharp">
@@ -97,7 +99,6 @@
     <Compile Include="Card\DeckLine.cs" />
     <Compile Include="Card\DrawFormattedText.cs" />
     <Compile Include="Card\DrawGraphic.cs" />
-    <Compile Include="Card\DrawItem.cs" />
     <Compile Include="Card\DrawTextGraphics.cs" />
     <Compile Include="Card\Export\FileCardExporterFactory.cs" />
     <Compile Include="Card\FontLoader.cs" />
@@ -112,12 +113,14 @@
     <Compile Include="Card\FormattedText\Alignment\VerticalBottomAlignmentProcessor.cs" />
     <Compile Include="Card\FormattedText\Alignment\VerticalMiddleAlignmentProcessor.cs" />
     <Compile Include="Card\FormattedText\FormattedTextParser.cs" />
-    <Compile Include="Card\FormattedText\Markup\AlignRightMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\AlignCenterMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\AlignLeftMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\AlignRightMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\BaseAlignMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\LineSpaceMarkup.cs" />
-    <Compile Include="Card\FormattedText\Markup\AlignCenterMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\PixelMarkup.cs" />
+    <Compile Include="Card\IDrawFormattedText.cs" />
+    <Compile Include="Card\IDrawGraphic.cs" />
     <Compile Include="Card\IDrawText.cs" />
     <Compile Include="Card\ElementString.cs" />
     <Compile Include="Card\Export\CardExportBase.cs" />
@@ -144,12 +147,24 @@
     <Compile Include="Card\FormattedText\Markup\YDrawOffsetMarkup.cs" />
     <Compile Include="Card\Export\CompilerCardExporter.cs" />
     <Compile Include="Card\Export\FileCardExporter.cs" />
+    <Compile Include="Card\IInlineBackgroundElementProcessor.cs" />
+    <Compile Include="Card\ImageCache.cs" />
     <Compile Include="Card\Import\CSVReferenceReader.cs" />
     <Compile Include="Card\Import\GoogleReferenceReader.cs" />
     <Compile Include="Card\Import\ReferenceReader.cs" />
     <Compile Include="Card\Import\ReferenceReaderFactory.cs" />
+    <Compile Include="Card\InlineBackgroundElementProcessor.cs" />
     <Compile Include="Card\MeasurementUtil.cs" />
+    <Compile Include="Card\Render\InputElementRenderProcessor.cs" />
+    <Compile Include="Card\Render\IElementRenderProcessor.cs" />
+    <Compile Include="Card\Render\BackgroundColorElementRenderProcessor.cs" />
+    <Compile Include="Card\Render\InlineElementRenderProcessor.cs" />
+    <Compile Include="Card\Render\BorderElementRenderProcessor.cs" />
+    <Compile Include="Card\Render\TypeElementRenderProcessor.cs" />
+    <Compile Include="Card\Render\TransformElementRenderProcessor.cs" />
     <Compile Include="Card\Shapes\Definitions\TriangleShape.cs" />
+    <Compile Include="Card\Shapes\IShapeRenderer.cs" />
+    <Compile Include="Card\Shapes\ShapeInfo.cs" />
     <Compile Include="Card\Translation\FilenameTranslator.cs" />
     <Compile Include="Card\Translation\InceptTranslator.cs" />
     <Compile Include="Card\Translation\JavaScriptTranslator.cs" />

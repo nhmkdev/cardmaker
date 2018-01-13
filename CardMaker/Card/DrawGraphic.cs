@@ -26,30 +26,24 @@ using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
-using System.Text;
 using System.Text.RegularExpressions;
 using CardMaker.Data;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
+using Support.Util;
 
 namespace CardMaker.Card
 {
-    public static partial class DrawItem
+    public class DrawGraphic : IDrawGraphic
     {
         //                                                          1    2  3
         private static readonly Regex regexImageTile = new Regex(@"(.+?)(x)(.+)", RegexOptions.Compiled);
 
-        //                                                        1          2    3
-        private static readonly Regex regexImageBG = new Regex(@"(#bgimage:)(.+?)(#)", RegexOptions.Compiled);
-        //                        #bgimage:[image path]:[x offset]:[y offset]:[width adjust]:[height adjust]:[lock aspect ratio]:[tile size]:[horizontal align]:[vertical align]#
-        //                                                                1          2    3  4    5  6    7  8    9  10   11 12   13 14   15 16      17
-        private static readonly Regex regexImageExtendedBG = new Regex(@"(#bgimage:)(.+?)(:)(.+?)(:)(.+?)(:)(.+?)(:)(.+?)(:)(.+?)(:)(.+?)(:)(.+?)(:)(.+?)(#)", RegexOptions.Compiled);
-
         private const string APPLICATION_FOLDER_MARKER = "{appfolder}";
 
-        private static void DrawGraphic(Graphics zGraphics, string sFile, ProjectLayoutElement zElement, int nXGraphicOffset = 0, int nYGraphicOffset = 0)
+        public void DrawGraphicFile(Graphics zGraphics, string sFile, ProjectLayoutElement zElement, int nXGraphicOffset = 0, int nYGraphicOffset = 0)
         {
-            string sPath = sFile;
+            var sPath = sFile;
             if (string.IsNullOrEmpty(sFile)
                 || sPath.Equals("none", StringComparison.CurrentCultureIgnoreCase))
             {
@@ -71,8 +65,8 @@ namespace CardMaker.Card
             }
 
             var zBmp = 255 != zElement.opacity
-                ? LoadCustomImageFromCache(sPath, zElement)
-                : LoadImageFromCache(sPath);
+                ? ImageCache.LoadCustomImageFromCache(sPath, zElement)
+                : ImageCache.LoadImageFromCache(sPath);
                 
             var nWidth = zElement.width;
             var nHeight = zElement.height;
@@ -85,14 +79,14 @@ namespace CardMaker.Card
                 var zMatch = regexImageTile.Match(zElement.tilesize);
                 if (zMatch.Success)
                 {
-                    var nTileWidth = Math.Max(-1, ParseDefault(zMatch.Groups[1].Value, -1));
-                    var nTileHeight = Math.Max(-1, ParseDefault(zMatch.Groups[3].Value, -1));
+                    var nTileWidth = Math.Max(-1, ParseUtil.ParseDefault(zMatch.Groups[1].Value, -1));
+                    var nTileHeight = Math.Max(-1, ParseUtil.ParseDefault(zMatch.Groups[3].Value, -1));
                     GetAspectRatioHeight(zBmp, nTileWidth, nTileHeight, out nTileWidth, out nTileHeight);
                     // paranoia...
                     nTileWidth = Math.Max(1, nTileWidth);
                     nTileHeight = Math.Max(1, nTileHeight);
 
-                    zBmp = LoadCustomImageFromCache(sFile, zElement, nTileWidth, nTileHeight);
+                    zBmp = ImageCache.LoadCustomImageFromCache(sFile, zElement, nTileWidth, nTileHeight);
                 }
                 using (var zTextureBrush = new TextureBrush(zBmp, WrapMode.Tile))
                 {
@@ -114,17 +108,7 @@ namespace CardMaker.Card
 
             if (zElement.lockaspect)
             {
-                var fAspect = (float)zBmp.Tag;
-
-                var nTargetHeight = (int)((float)nWidth / fAspect);
-                if (nTargetHeight < nHeight)
-                {
-                    nHeight = (int)((float)nWidth / fAspect);
-                }
-                else
-                {
-                    nWidth = (int)((float)nHeight * fAspect);
-                }
+                GetSizeFromAspectRatio((float) zBmp.Tag, nWidth, nHeight, out nWidth, out nHeight);
             }
 
             var nX = 0;
@@ -136,6 +120,21 @@ namespace CardMaker.Card
             zGraphics.DrawImage(zBmp, nX + nXGraphicOffset, nY + nYGraphicOffset, nWidth, nHeight);
         }
 
+        private static void GetSizeFromAspectRatio(float fAspect, int nWidth, int nHeight, out int nDestWidth, out int nDestHeight)
+        {
+            var nTargetHeight = (int)((float)nWidth / fAspect);
+            if (nTargetHeight < nHeight)
+            {
+                nDestWidth = nWidth;
+                nDestHeight = (int)((float)nWidth / fAspect);
+            }
+            else
+            {
+                nDestWidth = (int)((float)nHeight * fAspect);
+                nDestHeight = nHeight;
+            }
+        }
+
         /// <summary>
         /// Draws the image cropped based on alignment. The image is always drawn in proper aspect ratio by this method.
         /// </summary>
@@ -144,11 +143,11 @@ namespace CardMaker.Card
         /// <param name="zElement"></param>
         private static void DrawGraphicOriginalSize(Graphics zGraphics, Bitmap zBmp, ProjectLayoutElement zElement)
         {
-            int nSourceX = 0;
-            int nSourceY = 0;
+            var nSourceX = 0;
+            var nSourceY = 0;
 
-            int nX = 0;
-            int nY = 0;
+            var nX = 0;
+            var nY = 0;
 
             // determine if the update is needed for drawing source X or target X
             if (zBmp.Width > zElement.width)
@@ -183,61 +182,7 @@ namespace CardMaker.Card
                     break;
             }            
         }
-        // TODO: just the string processing as method! (do the same in shapemanager)
-        public static string ProcessInlineBackgroundImage(Graphics zGraphics, ProjectLayoutElement zElement, string sInput)
-        {
-            var zExtendedMatch = regexImageExtendedBG.Match(sInput);
-            Match zMatch = null;
-            if (!zExtendedMatch.Success)
-            {
-                zMatch = regexImageBG.Match(sInput);
-                if (!zMatch.Success)
-                {
-                    return sInput;
-                }
-            }
 
-            var sToReplace = string.Empty;
-
-            int[] arrayReplaceIndcies = null;
-            var zBgImageElement = new ProjectLayoutElement(Guid.NewGuid().ToString());
-            var nXOffset = 0;
-            var nYOffset = 0;
-            if (zExtendedMatch.Success)
-            {
-                /*
-        //                        #bgimage:[image path]:[x offset]:[y offset]:[width adjust]:[height adjust]:[lock aspect ratio]:[tile size]:[horizontal align]:[vertical align]#
-        //                                                                1          2    3  4    5  6    7  8    9  10   11 12   13 14   15 16   17 18
-        private static readonly Regex regexImageExtendedBG = new Regex(@"(#bgimage:)(.+?)(:)(.+?)(:)(.+?)(:)(.+?)(:)(.+?)(:)(.+?)(:)(.+?)(:)(.+?)(:)(.+?)(#)", RegexOptions.Compiled);
-                 */
-
-                nXOffset = ParseDefault(zExtendedMatch.Groups[4].Value, 0);
-                nYOffset = ParseDefault(zExtendedMatch.Groups[6].Value, 0);
-                zBgImageElement.width = zElement.width + ParseDefault(zExtendedMatch.Groups[8].Value, 0);
-                zBgImageElement.height = zElement.height + ParseDefault(zExtendedMatch.Groups[10].Value, 0);
-                zBgImageElement.opacity = zElement.opacity;
-                zBgImageElement.lockaspect = ParseDefault(zExtendedMatch.Groups[12].Value, false);
-                zBgImageElement.tilesize = zExtendedMatch.Groups[14].Value;
-                zBgImageElement.horizontalalign = ParseDefault(zExtendedMatch.Groups[16].Value, 0);
-                zBgImageElement.verticalalign = ParseDefault(zExtendedMatch.Groups[18].Value, 0);
-                zBgImageElement.variable = zExtendedMatch.Groups[2].Value;
-                zBgImageElement.type = ElementType.Graphic.ToString();
-                sToReplace = zExtendedMatch.Groups[0].Value;
-            }
-            else if (zMatch.Success)
-            {
-                zBgImageElement.width = zElement.width;
-                zBgImageElement.height = zElement.height;
-                zBgImageElement.opacity = zElement.opacity;
-                zBgImageElement.variable = zMatch.Groups[2].Value;
-                zBgImageElement.type = ElementType.Graphic.ToString();
-                sToReplace = zMatch.Groups[0].Value;
-            }
-
-            DrawGraphic(zGraphics, zBgImageElement.variable, zBgImageElement, nXOffset, nYOffset);
-
-            return sInput.Replace(sToReplace, string.Empty);
-        }
 #warning needs unit tests
         private static void GetAspectRatioHeight(Bitmap zBmp, int nDesiredWidth, int nDesiredHeight, out int nWidth, out int nHeight)
         {
@@ -262,21 +207,6 @@ namespace CardMaker.Card
                 nWidth = nDesiredWidth;
                 nHeight = nDesiredHeight;
             }
-        }
-
-#warning code duplication!!!
-        private static int ParseDefault(string sVal, int nDefault)
-        {
-            var nVal = nDefault;
-            int.TryParse(sVal, out nVal);
-            return nVal;
-        }
-
-        private static bool ParseDefault(string sVal, bool bDefault)
-        {
-            var bVal = bDefault;
-            bool.TryParse(sVal, out bVal);
-            return bVal;
         }
     }
 }

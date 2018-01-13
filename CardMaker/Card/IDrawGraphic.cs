@@ -27,8 +27,9 @@ using CardMaker.XML;
 
 namespace CardMaker.Card
 {
-    public interface IDrawText
+    public interface IDrawGraphic
     {
-        void DrawText(Graphics zGraphics, ProjectLayoutElement zElement, string sInput);
+        void DrawGraphicFile(Graphics zGraphics, string sFile, ProjectLayoutElement zElement, int nXGraphicOffset = 0,
+            int nYGraphicOffset = 0);
     }
 }

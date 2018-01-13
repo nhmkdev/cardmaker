@@ -23,12 +23,32 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System.Drawing;
+using CardMaker.Data;
 using CardMaker.XML;
 
-namespace CardMaker.Card
+namespace CardMaker.Card.Render
 {
-    public interface IDrawText
+    class TransformElementRenderProcessor : IElementRenderProcessor
     {
-        void DrawText(Graphics zGraphics, ProjectLayoutElement zElement, string sInput);
+        public string Render(Graphics zGraphics, ProjectLayoutElement zElement, Deck zDeck, string sInput, int nX, int nY, bool bExport)
+        {
+            if (0 != zElement.rotation)
+            {
+                // center the internal element then rotate and restore
+                zGraphics.TranslateTransform(zElement.x + nX + (zElement.width >> 1), zElement.y + nY + (zElement.height >> 1));
+                zGraphics.RotateTransform(zElement.rotation);
+                zGraphics.TranslateTransform(-(zElement.width >> 1), -(zElement.height >> 1));
+                if (CardMakerInstance.DrawElementBorder && CardMakerInstance.DrawSelectedElementRotationBounds && !bExport)
+                {
+                    zGraphics.DrawRectangle(Pens.LightGreen, 0, 0, zElement.width - 1, zElement.height - 1);
+                }
+            }
+            else
+            {
+                zGraphics.TranslateTransform(zElement.x + nX, zElement.y + nY);
+            }
+
+            return sInput;
+        }
     }
 }

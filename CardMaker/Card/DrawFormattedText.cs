@@ -31,10 +31,13 @@ using CardMaker.XML;
 
 namespace CardMaker.Card
 {
-    public static partial class DrawItem
+    class DrawFormattedText : IDrawFormattedText
     {
-        public static void DrawFormattedText(Graphics zGraphics, Deck zDeck, ProjectLayoutElement zElement, string sInput, Brush zBrush, Font zFont, Color colorFont)
+        public void Draw(Graphics zGraphics, Deck zDeck, ProjectLayoutElement zElement, string sInput)
         {
+            var zFont = zElement.GetElementFont();
+            var colorFont = zElement.GetElementColor();
+
             // check the cache for this item
             var zDataFormattedCache = zDeck.GetCachedMarkup(zElement.name);
 
@@ -48,14 +51,12 @@ namespace CardMaker.Card
             if (null == zFont) // default to something!
             {
                 // font will show up in red if it's not yet set
-                zFont = s_zDefaultFont;
-                zBrush = Brushes.Red;
+                zFont = FontLoader.DefaultFont;
             }
 
-            if (255 != zElement.opacity)
-            {
-                zBrush = new SolidBrush(Color.FromArgb(zElement.opacity, colorFont));
-            }
+            var zBrush = 255 == zElement.opacity
+                ? new SolidBrush(colorFont)
+                : new SolidBrush(Color.FromArgb(zElement.opacity, colorFont));
 
             zDataFormattedCache = new FormattedTextDataCache();
             var zFormattedData = new FormattedTextData(FormattedTextParser.GetMarkups(sInput));
@@ -106,7 +107,7 @@ namespace CardMaker.Card
                         bFindNextLine = false;
                     }
 
-                    if (!bFindNextLine && zMarkup is SpaceMarkup && ((SpaceMarkup) zMarkup).Optional)
+                    if (!bFindNextLine && zMarkup is SpaceMarkup && ((SpaceMarkup)zMarkup).Optional)
                     {
                         listPassMarkups.RemoveAt(nIdx);
                     }
@@ -140,7 +141,7 @@ namespace CardMaker.Card
                 }
                 nIdx++;
             }
-                
+
             // update the cache
             zDeck.AddCachedMarkup(zElement.name, zDataFormattedCache);
 

@@ -27,8 +27,8 @@ using CardMaker.XML;
 
 namespace CardMaker.Card
 {
-    public interface IDrawText
+    interface IDrawFormattedText
     {
-        void DrawText(Graphics zGraphics, ProjectLayoutElement zElement, string sInput);
+        void Draw(Graphics zGraphics, Deck zDeck, ProjectLayoutElement zElement, string sInput);
     }
 }

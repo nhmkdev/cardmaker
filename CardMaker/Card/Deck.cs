@@ -450,9 +450,9 @@ namespace CardMaker.Card
 
         #endregion
 
-        public ProjectLayoutElement GetOverrideElement(ProjectLayoutElement zElement, List<string> arrayLine, DeckLine zDeckLine, bool bExport)
+        public ProjectLayoutElement GetOverrideElement(ProjectLayoutElement zElement, DeckLine zDeckLine, bool bExport)
         {
-            return m_zTranslator.GetOverrideElement(this, zElement, bExport ? m_nCardPrintIndex : m_nCardIndex, arrayLine, zDeckLine);
+            return m_zTranslator.GetOverrideElement(this, zElement, bExport ? m_nCardPrintIndex : m_nCardIndex, zDeckLine.LineColumns, zDeckLine);
         }
 
         public ProjectLayoutElement GetVariableOverrideElement(ProjectLayoutElement zElement, Dictionary<string, string> dictionaryOverrideFieldToValue)

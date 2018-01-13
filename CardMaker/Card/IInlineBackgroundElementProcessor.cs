@@ -23,12 +23,14 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System.Drawing;
+using CardMaker.Card.Shapes;
 using CardMaker.XML;
 
 namespace CardMaker.Card
 {
-    public interface IDrawText
+    interface IInlineBackgroundElementProcessor
     {
-        void DrawText(Graphics zGraphics, ProjectLayoutElement zElement, string sInput);
+        string ProcessInlineBackgroundGraphic(IDrawGraphic zDrawGraphic, Graphics zGraphics, ProjectLayoutElement zElement, string sInput);
+        string ProcessInlineShape(IShapeRenderer zShapeRenderer, Graphics zGraphics, ProjectLayoutElement zElement, string sInput);
     }
 }

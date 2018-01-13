@@ -56,13 +56,16 @@
     </When>
     <Otherwise>
       <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework">
+          <Private>False</Private>
+        </Reference>
       </ItemGroup>
     </Otherwise>
   </Choose>
   <ItemGroup>
     <Compile Include="DeckObject\ElementOverride.cs" />
     <Compile Include="DeckObject\FormattedText.cs" />
+    <Compile Include="DeckObject\InlineBackgroundElementProcessorTest.cs" />
     <Compile Include="DeckObject\JavaScriptStringTranslation.cs" />
     <Compile Include="DeckObject\InceptStringTranslation.cs" />
     <Compile Include="DeckObject\JavaScriptTranslatorFactory.cs" />

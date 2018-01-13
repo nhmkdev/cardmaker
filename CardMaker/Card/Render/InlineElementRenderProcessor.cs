@@ -23,12 +23,35 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System.Drawing;
+using CardMaker.Card.Shapes;
 using CardMaker.XML;
 
-namespace CardMaker.Card
+namespace CardMaker.Card.Render
 {
-    public interface IDrawText
+    class InlineElementRenderProcessor : IElementRenderProcessor
     {
-        void DrawText(Graphics zGraphics, ProjectLayoutElement zElement, string sInput);
+        private static readonly IInlineBackgroundElementProcessor s_zInlineBackgroundElementProcessor = new InlineBackgroundElementProcessor();
+        private readonly IDrawGraphic m_zDrawGraphic;
+        private readonly IShapeRenderer m_zShapeRenderer;
+
+        private InlineElementRenderProcessor() { }
+
+        public InlineElementRenderProcessor(IShapeRenderer zShapeRenderer, IDrawGraphic zDrawGraphic)
+        {
+            m_zShapeRenderer = zShapeRenderer;
+            m_zDrawGraphic = zDrawGraphic;
+        }
+
+        public string Render(Graphics zGraphics, ProjectLayoutElement zElement, Deck zDeck, string sInput, int nX, int nY, bool bExport)
+        {
+            // TODO: this should just be a sequence of processors 1) transform 2) background 3) background shape 4) render 5) blah
+            // render any inline shape (max of 1)
+            sInput = s_zInlineBackgroundElementProcessor.ProcessInlineShape(m_zShapeRenderer, zGraphics, zElement, sInput);
+
+            // render any inline background image (max of 1)
+            sInput = s_zInlineBackgroundElementProcessor.ProcessInlineBackgroundGraphic(m_zDrawGraphic, zGraphics, zElement, sInput);
+
+            return sInput;
+        }
     }
 }

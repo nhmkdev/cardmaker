@@ -23,12 +23,24 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System.Drawing;
+using CardMaker.Data;
 using CardMaker.XML;
 
-namespace CardMaker.Card
+namespace CardMaker.Card.Render
 {
-    public interface IDrawText
+    class InputElementRenderProcessor : IElementRenderProcessor
     {
-        void DrawText(Graphics zGraphics, ProjectLayoutElement zElement, string sInput);
+        public string Render(Graphics zGraphics, ProjectLayoutElement zElement, Deck zDeck, string sInput, int nX, int nY, bool bExport)
+        {
+            switch (EnumUtil.GetElementType(zElement.type))
+            {
+                case ElementType.Graphic:
+                case ElementType.Shape:
+                    // these types should never require the whitespace
+                    sInput = sInput.Trim();
+                    break;
+            }
+            return sInput;
+        }
     }
 }

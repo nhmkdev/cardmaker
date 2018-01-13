@@ -31,7 +31,7 @@ namespace CardMaker.Card
 {
     public static class FontLoader
     {
-        public static Font DefaultFont => new Font("Arial", 12);
+        public static readonly Font DefaultFont = new Font("Arial", 12);
 
         public static Font GetFont(FontFamily zFontFamily, float fSize, FontStyle eFontStyle)
         {

@@ -22,13 +22,23 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Drawing;
-using CardMaker.XML;
-
-namespace CardMaker.Card
+namespace CardMaker.Card.Shapes
 {
-    public interface IDrawText
+    public class ShapeInfo
     {
-        void DrawText(Graphics zGraphics, ProjectLayoutElement zElement, string sInput);
+        public int Thickness { get; }
+        public int OverrideWidth { get; }
+        public int OverrideHeight { get; }
+        public string[] Arguments { get; private set; }
+
+        private ShapeInfo() { }
+
+        public ShapeInfo(int nThickness, int nOverrideWidth, int nOverrideHeight, string[] arguments)
+        {
+            Thickness = nThickness;
+            OverrideWidth = nOverrideWidth;
+            OverrideHeight = nOverrideHeight;
+            Arguments = arguments;
+        }
     }
 }

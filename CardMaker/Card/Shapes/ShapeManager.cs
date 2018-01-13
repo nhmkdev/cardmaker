@@ -27,26 +27,17 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
-using CardMaker.Data;
 using CardMaker.XML;
 
 namespace CardMaker.Card.Shapes
 {
-    public class ShapeManager
+    public class ShapeManager : IShapeRenderer
     {
-        //                                                        1          2    3  4    5
-        private static readonly Regex regexShapeBG = new Regex(@"(#bgshape:)(.+?)(:)(.+?)(#)", RegexOptions.Compiled);
-        //                                                                1          2    3  4    5  6    7  8    9  10   11 12   13 14   15 16   17
-        private static readonly Regex regexShapeExtendedBG = new Regex(@"(#bgshape:)(.+?)(:)(.+?)(:)(.+?)(:)(.+?)(:)(.+?)(:)(.+?)(:)(.+?)(:)(.+?)(#)", RegexOptions.Compiled);
-
         public static Dictionary<string, AbstractShape> s_dictionaryShapeByName = new Dictionary<string, AbstractShape>(); 
 
         // group numbers                                
         public static Regex s_regexShapes = new Regex(@"(.*)(#)(.+)(#)", RegexOptions.Compiled);
-
-        private ShapeManager(){}
 
         public static Dictionary<string, AbstractShape> ShapeDictionary => s_dictionaryShapeByName;
 
@@ -64,7 +55,7 @@ namespace CardMaker.Card.Shapes
             }
         }
 
-        public static void HandleShapeRender(Graphics zGraphics, string sShapeInfo, ProjectLayoutElement zElement, int nXOffset = 0, int nYOffset = 0)
+        public void HandleShapeRender(Graphics zGraphics, string sShapeInfo, ProjectLayoutElement zElement, int nXOffset = 0, int nYOffset = 0)
         {
             if (s_regexShapes.IsMatch(sShapeInfo))
             {
@@ -120,7 +111,7 @@ namespace CardMaker.Card.Shapes
                     }
 
                     zShape.DrawShape(zPath, targetRect, zInfo);
-                    DrawItem.DrawOutline(zElement, zGraphics, zPath);
+                    CardRenderer.DrawPathOutline(zElement, zGraphics, zPath);
 
                     if (0 == zInfo.Thickness)
                     {
@@ -141,99 +132,28 @@ namespace CardMaker.Card.Shapes
             }
         }
 
-        public static string ProcessInlineShape(Graphics zGraphics, ProjectLayoutElement zElement, string sInput)
+        /// <summary>
+        /// Creates a rectangle based on the specified width and height, if either is negative the rectangle is shifted around the origin
+        /// </summary>
+        /// <param name="nWidth">The width of the desired rectangle (may be negative)</param>
+        /// <param name="nHeight">The height of the desired rectangle (may be negative)</param>
+        /// <returns></returns>
+        private static Rectangle GetZeroRectangle(int nWidth, int nHeight)
         {
-            var zExtendedMatch = regexShapeExtendedBG.Match(sInput);
-            Match zMatch = null;
-            if (!zExtendedMatch.Success)
+            if (nWidth >= 0)
             {
-                zMatch = regexShapeBG.Match(sInput);
-                if (!zMatch.Success)
+                if (nHeight >= 0)
                 {
-                    return sInput;
+                    return new Rectangle(0, 0, nWidth, nHeight);
                 }
-            }
-
-            var sToReplace = string.Empty;
-            int nXOffset = 0, nYOffset = 0;
-
-            int[] arrayReplaceIndcies = null;
-            var zBgShapeElement = new ProjectLayoutElement(Guid.NewGuid().ToString());
-            if(zExtendedMatch.Success)
-            {
-                nXOffset = ParseDefault(zExtendedMatch.Groups[6].Value, 0);
-                nYOffset = ParseDefault(zExtendedMatch.Groups[8].Value, 0);
-                zBgShapeElement.x = zElement.x;
-                zBgShapeElement.y = zElement.y;
-                zBgShapeElement.width = zElement.width + ParseDefault(zExtendedMatch.Groups[10].Value, 0);
-                zBgShapeElement.height = zElement.height + ParseDefault(zExtendedMatch.Groups[12].Value, 0);
-                zBgShapeElement.outlinethickness = ParseDefault(zExtendedMatch.Groups[14].Value, 0);
-                zBgShapeElement.outlinecolor = zExtendedMatch.Groups[16].Value;
-                zBgShapeElement.elementcolor = zExtendedMatch.Groups[4].Value;
-                zBgShapeElement.variable = zExtendedMatch.Groups[2].Value;
-                zBgShapeElement.type = ElementType.Shape.ToString();
-                sToReplace = zExtendedMatch.Groups[0].Value;
-            }
-            else if(zMatch.Success)
-            {
-                zBgShapeElement.x = zElement.x;
-                zBgShapeElement.y = zElement.y;
-                zBgShapeElement.width = zElement.width;
-                zBgShapeElement.height = zElement.height;
-                zBgShapeElement.elementcolor = zMatch.Groups[4].Value;
-                zBgShapeElement.variable = zMatch.Groups[2].Value;
-                zBgShapeElement.type = ElementType.Shape.ToString();
-                sToReplace = zMatch.Groups[0].Value;
-            }
-
-            zBgShapeElement.InitializeTranslatedFields();
-
-            HandleShapeRender(zGraphics, zBgShapeElement.variable, zBgShapeElement, nXOffset, nYOffset);
-            
-            return sInput.Replace(sToReplace, string.Empty);
-        }
-
-        private static int ParseDefault(string sVal, int nDefault)
-        {
-            var nVal = nDefault;
-            int.TryParse(sVal, out nVal);
-            return nVal;
-        }
-
-        private static Rectangle GetZeroRectangle(int nX, int nY)
-        {
-            if (nX >= 0)
-            {
-                if (nY >= 0)
-                {
-                    return new Rectangle(0, 0, nX, nY);
-                }
-                return new Rectangle(0, nY, nX, Math.Abs(nY));
+                return new Rectangle(0, nHeight, nWidth, Math.Abs(nHeight));
             }
             
-            if (nY >= 0)
+            if (nHeight >= 0)
             {
-                return new Rectangle(nX, 0, Math.Abs(nX), nY);
+                return new Rectangle(nWidth, 0, Math.Abs(nWidth), nHeight);
             }
-            return new Rectangle(nX, nY, Math.Abs(nX), Math.Abs(nY));
-        }
-    }
-
-    public class ShapeInfo
-    {
-        public int Thickness { get; }
-        public int OverrideWidth { get; }
-        public int OverrideHeight { get; }
-        public string[] Arguments { get; private set; }
-
-        private ShapeInfo() { }
-
-        public ShapeInfo(int nThickness, int nOverrideWidth, int nOverrideHeight, string [] arguments)
-        {
-            Thickness = nThickness;
-            OverrideWidth = nOverrideWidth;
-            OverrideHeight = nOverrideHeight;
-            Arguments = arguments;
+            return new Rectangle(nWidth, nHeight, Math.Abs(nWidth), Math.Abs(nHeight));
         }
     }
 }

@@ -28,6 +28,7 @@ using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using CardMaker.Data;
+using CardMaker.XML;
 using Support.IO;
 using Support.UI;
 
@@ -192,6 +193,5 @@ namespace CardMaker.Card.Export
                 ? new Bitmap(nWidth, nHeight)
                 : new Bitmap(nWidth, nHeight, zGraphics);
         }
-
     }
 }

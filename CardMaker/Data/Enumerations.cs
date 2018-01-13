@@ -23,8 +23,33 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
+using System.Collections.Generic;
+
 namespace CardMaker.Data
 {
+    public static class EnumUtil
+    {
+        private static readonly Dictionary<string, ElementType> s_dictionaryStringElementType = new Dictionary<string, ElementType>();
+
+        static EnumUtil()
+        {
+            for (var nIdx = 0; nIdx < (int)ElementType.End; nIdx++)
+            {
+                s_dictionaryStringElementType.Add(((ElementType)nIdx).ToString(), (ElementType)nIdx);
+            }
+        }
+
+        public static ElementType GetElementType(string sType)
+        {
+            ElementType eType;
+            if (s_dictionaryStringElementType.TryGetValue(sType, out eType))
+            {
+                return eType;
+            }
+            return ElementType.End;
+        }
+    }
+
     public enum ElementType
     {
         Text,

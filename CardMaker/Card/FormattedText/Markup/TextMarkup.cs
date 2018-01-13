@@ -168,7 +168,7 @@ namespace CardMaker.Card.FormattedText.Markup
                     zPath.AddString(m_sVariable, m_zFont.FontFamily, (int) m_zFont.Style, m_fFontOutlineSize,
                         new PointF(targetX, targetY), zFormat);
 
-                    DrawItem.DrawOutline(zElement, zGraphics, zPath);
+                    CardRenderer.DrawPathOutline(zElement, zGraphics, zPath);
                 }
                 catch (Exception)
                 {

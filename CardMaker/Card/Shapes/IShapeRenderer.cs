@@ -25,10 +25,10 @@
 using System.Drawing;
 using CardMaker.XML;
 
-namespace CardMaker.Card
+namespace CardMaker.Card.Shapes
 {
-    public interface IDrawText
+    public interface IShapeRenderer
     {
-        void DrawText(Graphics zGraphics, ProjectLayoutElement zElement, string sInput);
+        void HandleShapeRender(Graphics zGraphics, string sShapeInfo, ProjectLayoutElement zElement, int nXOffset = 0, int nYOffset = 0);
     }
 }

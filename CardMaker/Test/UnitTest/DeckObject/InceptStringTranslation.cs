@@ -165,6 +165,19 @@ namespace UnitTest.DeckObject
             }
         }
 
+        [TestCase("aaa#random;-5;6#bbb", "aaa", "bbb")]
+        [TestCase("#random;-5;6#bbb", "", "bbb")]
+        [TestCase("aaa#random;-5;6#", "aaa", "")]
+        [TestCase("#random;-5;6##bggraphic::images/Faction_empire.bmp#", "", "#bggraphic::images/Faction_empire.bmp#")]
+        public void ValidateRandomTranslation(string sInput, string sExpectedStart, string sExpectedEnd)
+        {
+            _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
+            var sResult = _testDeck.TranslateString(sInput, _testLine, _testElement, false).String;
+            Console.WriteLine(sResult);
+            Assert.True(sResult.StartsWith(sExpectedStart));
+            Assert.True(sResult.EndsWith(sExpectedEnd));
+        }
+
         // TODO: most of these are just tests of logic... not #nodraw testing
         [TestCase("#(switch;goodkey;badkey;1;goodkey;#nodraw)#", false, Result = "#nodraw")]
         [TestCase("Test: #(switch;goodkey;badkey;1;goodkey;#nodraw)#", false, Result = "Test: #nodraw")]
@@ -387,7 +400,7 @@ namespace UnitTest.DeckObject
         [TestCase("@[action,,]", Result = @"::")]
         [TestCase("@[smallImgTag]", Result = @"<img={1};.90;0;3>")]
         [TestCase("@[L1,@[L2],@[L4]]", Result = @"a")]
-        public String ValidateParameterDefines(string line)
+        public string ValidateParameterDefines(string line)
         {
             var listLines = new List<List<string>>();
             var listDefines = new List<List<string>>()
@@ -487,32 +500,32 @@ namespace UnitTest.DeckObject
             var zElementString = _testDeck.TranslateString(
                 PREFIX +
                 " " +
-                getOverride("x", X) +
-                getOverride("y", Y) +
-                getOverride("width", WIDTH) +
-                getOverride("height", HEIGHT) +
-                getOverride("borderthickness", BORDERTHICKNESS) +
-                getOverride("opacity", OPACITY) +
-                getOverride("outlinethickness", OUTLINETHICKNESS) +
-                getOverride("lineheight", LINEHEIGHT) +
-                getOverride("wordspace", WORDSPACE) +
-                getOverride("autoscalefont", AUTOSCALEFONT) +
-                getOverride("enabled", ENABLED) +
-                getOverride("lockaspect", LOCKASPECT) +
-                getOverride("tilesize", TILESIZE) +
-                getOverride("keeporiginalsize", KEEPORIGINALSIZE) +
-                getOverride("justifiedtext", JUSTIFIEDTEXT) +
-                getOverride("rotation", ROTATION) +
-                getOverride("bordercolor", BORDERCOLOR) +
-                getOverride("elementcolor", ELEMENTCOLOR) +
-                getOverride("outlinecolor", OUTLINECOLOR) +
-                getOverride("font", FONT) +
-                getOverride("verticalalign", VERTICALALIGN) +
-                getOverride("horizontalalign", HORIZONTALALIGN) +
-                getOverride("type", TYPE) +
+                GetOverride("x", X) +
+                GetOverride("y", Y) +
+                GetOverride("width", WIDTH) +
+                GetOverride("height", HEIGHT) +
+                GetOverride("borderthickness", BORDERTHICKNESS) +
+                GetOverride("opacity", OPACITY) +
+                GetOverride("outlinethickness", OUTLINETHICKNESS) +
+                GetOverride("lineheight", LINEHEIGHT) +
+                GetOverride("wordspace", WORDSPACE) +
+                GetOverride("autoscalefont", AUTOSCALEFONT) +
+                GetOverride("enabled", ENABLED) +
+                GetOverride("lockaspect", LOCKASPECT) +
+                GetOverride("tilesize", TILESIZE) +
+                GetOverride("keeporiginalsize", KEEPORIGINALSIZE) +
+                GetOverride("justifiedtext", JUSTIFIEDTEXT) +
+                GetOverride("rotation", ROTATION) +
+                GetOverride("bordercolor", BORDERCOLOR) +
+                GetOverride("elementcolor", ELEMENTCOLOR) +
+                GetOverride("outlinecolor", OUTLINECOLOR) +
+                GetOverride("font", FONT) +
+                GetOverride("verticalalign", VERTICALALIGN) +
+                GetOverride("horizontalalign", HORIZONTALALIGN) +
+                GetOverride("type", TYPE) +
                 // un-overrid-able
-                getOverride("name", NAME) +
-                getOverride("variable", VARIABLE) +
+                GetOverride("name", NAME) +
+                GetOverride("variable", VARIABLE) +
                 " " + 
                 SUFFIX
                 , _testLine, _testElement, false);
@@ -568,7 +581,7 @@ namespace UnitTest.DeckObject
             var zElementString = _testDeck.TranslateString(
                 PREFIX +
                 " " +
-                getOverride("x", string.Empty) +
+                GetOverride("x", string.Empty) +
                 " " +
                 SUFFIX
                 , _testLine, _testElement, false);
@@ -578,7 +591,7 @@ namespace UnitTest.DeckObject
             Assert.AreEqual(PREFIX + "  " + SUFFIX, zElementString.String);
         }
 
-        private string getOverride(string sOverrideField, object zOverrideValue)
+        private string GetOverride(string sOverrideField, object zOverrideValue)
         {
             return "$[{0}:{1}]".FormatString(sOverrideField, zOverrideValue);
         }

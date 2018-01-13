@@ -61,7 +61,6 @@ namespace CardMaker.Card.Translation
         private static readonly Regex s_regexSubCardCounter = new Regex(@"(.*)(#sc;)(\d+)(;)(\d+)(;)(\d+)(#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexRepeat = new Regex(@"(.*)(#repeat;)(\d+)(;)(.+?)(#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexRandomNumber = new Regex(@"(.*)(#random;)(-?\d+)(;)(-?\d+)(#)(.*)", RegexOptions.Compiled);
-        private static readonly Regex s_regexRandomPool = new Regex(@"(.*)(#randompool;)(.*?)(#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexIfLogic = new Regex(@"(.*)(#\()(if.*?)(\)#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexSwitchLogic = new Regex(@"(.*)(#\()(switch.*?)(\)#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexIfThenStatement = new Regex(@"(if)(.*?)\s([!=><]=|<|>)\s(.*?)(then )(.*)", RegexOptions.Compiled);
@@ -100,7 +99,6 @@ namespace CardMaker.Card.Translation
 #warning Investigate using method references instead of anonymous methods (optimization/code easier to read)
 
             var listLine = zDeckLine.LineColumns;
-            var nTranslationLoopCount = 0;
             var sOutput = sRawString;
 
             sOutput = sOutput.Replace("#empty", string.Empty);
@@ -288,7 +286,7 @@ namespace CardMaker.Card.Translation
                     }
 
                     // max is not inclusive 
-                    return zMatch.Groups[1] + CardMakerInstance.Random.Next(nMin, nMax + 1).ToString() + zMatch.Groups[9];
+                    return zMatch.Groups[1] + CardMakerInstance.Random.Next(nMin, nMax + 1).ToString() + zMatch.Groups[7];
                 }));
 
 
@@ -315,20 +313,6 @@ namespace CardMaker.Card.Translation
 
                     return zMatch.Groups[1] + zBuilder.ToString() + zMatch.Groups[7];
                 }));
-#if false // may drop this completely...
-            // Translate random pool
-            // Groups                 
-            //    1  2             3    4  5
-            //@"(.*)(#randompool;)(.*?)(#)(.*)"
-            sOutput = LoopTranslateRegex(s_regexRandomPool, sOutput, zElement,
-                (zMatch =>
-                {
-                    string poolName = zMatch.Groups[3].ToString();
-
-                    // max is not inclusive 
-                    return zMatch.Groups[1] + LayoutManager.Instance.ActiveDeck.GetRandomPoolValue(poolName) + zMatch.Groups[5];
-                }));
-#endif
 
             // Translate If Logic
             //Groups

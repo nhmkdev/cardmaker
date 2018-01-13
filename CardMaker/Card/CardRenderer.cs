@@ -25,6 +25,9 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Text;
+using CardMaker.Card.Render;
+using CardMaker.Card.Shapes;
 using CardMaker.Data;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
@@ -33,7 +36,30 @@ namespace CardMaker.Card
 {
     public class CardRenderer
     {
+        private static readonly Pen s_zPenDebugBorder = new Pen(Color.FromArgb(196, Color.Red), 1);
+        private static readonly Pen s_zPenDebugGuides = new Pen(Color.FromArgb(196, Color.LightPink), 1);
+        private static readonly Pen m_zPenElementSelect = Pens.ForestGreen;
         private readonly Pen penDivider = new Pen(Color.FromArgb(64, Color.Blue));
+
+        // it's not spring, it's hard coded!
+        private static readonly IDrawGraphic s_zDrawGraphic = new DrawGraphic();
+        private static readonly IDrawFormattedText s_zDrawFormattedText = new DrawFormattedText();
+        private static readonly IDrawText s_zDrawText = new DrawTextGraphics();
+        private static readonly IShapeRenderer s_zShapeRenderer = new ShapeManager();
+
+        /// <summary>
+        /// Render order when drawing an element
+        /// </summary>
+        private static readonly List<IElementRenderProcessor> s_listElementRenderProcessors =
+            new List<IElementRenderProcessor>()
+            {
+                new InputElementRenderProcessor(),
+                new TransformElementRenderProcessor(),
+                new BackgroundColorElementRenderProcessor(),
+                new InlineElementRenderProcessor(s_zShapeRenderer, s_zDrawGraphic),
+                new TypeElementRenderProcessor(s_zShapeRenderer, s_zDrawGraphic, s_zDrawFormattedText, s_zDrawText),
+                new BorderElementRenderProcessor()
+            };
 
         public Deck CurrentDeck { get; set; }
         public float ZoomLevel { get; set; }
@@ -50,10 +76,8 @@ namespace CardMaker.Card
 
         public void DrawCard(int nX, int nY, Graphics zGraphics, DeckLine zDeckLine, bool bExport, bool bDrawBackground)
         {
-            List<string> listLine = zDeckLine.LineColumns;
-
             // Custom Graphics Setting
-            zGraphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
+            zGraphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
             zGraphics.SmoothingMode = SmoothingMode.AntiAlias;
             //zGraphics.SmoothingMode = SmoothingMode.HighQuality;
 
@@ -70,15 +94,7 @@ namespace CardMaker.Card
                     : InterpolationMode.Bilinear;
             }
 
-            //Logger.Clear();
-            ProjectLayoutElement zSelectedElement = null;
-
-            if (!bExport)
-            {
-                zSelectedElement = ElementManager.Instance.GetSelectedElement();
-            }
-
-            // draw the background
+            // draw the card background
             if (bDrawBackground)
             {
                 zGraphics.FillRectangle(Brushes.White, nX, nY, CurrentDeck.CardLayout.width,
@@ -98,7 +114,7 @@ namespace CardMaker.Card
 
                         // get override Element (overrides based on data source) (this is a copy!)
                         // This takes place before translation to cover the odd case where the variable field is override in the data source
-                        var zDrawElement = CurrentDeck.GetOverrideElement(zElement, listLine, zDeckLine, bExport);
+                        var zDrawElement = CurrentDeck.GetOverrideElement(zElement, zDeckLine, bExport);
 
                         // translate any index values in the csv
                         var zElementString = CurrentDeck.TranslateString(zDrawElement.variable, zDeckLine, zDrawElement, bExport);
@@ -112,20 +128,12 @@ namespace CardMaker.Card
                             continue;
                         }
 
-                        var eType = DrawItem.GetElementType(zDrawElement.type);
-
                         // initialize the translated fields on the element to draw
                         zDrawElement.InitializeTranslatedFields();
-
-                        //NOTE: removed transform backup (draw element resets it anyway...)
-                        //if (!bExport) // backup is only necessary for zoomed canvas
-                        //{
-                            //matrixPrevious = zGraphics.Transform;
-                        //}
-                        DrawItem.DrawElement(zGraphics, CurrentDeck, zDrawElement, eType, nX, nY, zElementString.String, bExport);
+                   
+                        DrawElement(zGraphics, CurrentDeck, zDrawElement, nX, nY, zElementString.String, bExport);
                         if (!bExport)
                         {
-                            //zGraphics.Transform = matrixPrevious;
                             zGraphics.ScaleTransform(ZoomLevel, ZoomLevel);
                         }
                     }
@@ -137,20 +145,49 @@ namespace CardMaker.Card
                     for (var nIdx = CurrentDeck.CardLayout.Element.Length - 1; nIdx > -1; nIdx--)
                     {
                         ProjectLayoutElement zElement = CurrentDeck.CardLayout.Element[nIdx];
-                        if (zElement.enabled) // only add enabled items to draw
+                        if (zElement.enabled
+                            && CardMakerInstance.DrawElementBorder) // only add enabled items to draw
                         {
-                            var bDrawSelection = zSelectedElement == zElement;
-
-                            if (CardMakerInstance.DrawElementBorder)
-                            {
-                                var matrixPrevious = zGraphics.Transform;
-                                DrawItem.DrawElementDebugBorder(zGraphics, zElement, nX, nY, bDrawSelection);
-                                zGraphics.Transform = matrixPrevious;
-                            }
+                            DrawElementDebugBorder(zGraphics, zElement, nX, nY, ElementManager.Instance.GetSelectedElement() == zElement);
                         }
                     }
                 }
             }
+
+            DrawLayoutDividers(zGraphics, bExport);
+
+            // draw the card border
+            if ((bExport && CardMakerSettings.PrintLayoutBorder) 
+                || (!bExport && CurrentDeck.CardLayout.drawBorder))
+            {
+                // note that the border is inclusive in the width/height consuming 2 pixels (0 to total-1)
+                zGraphics.DrawRectangle(Pens.Black, nX, nY, CurrentDeck.CardLayout.width - 1, CurrentDeck.CardLayout.height - 1);
+            }
+
+            zGraphics.Transform = matrixOriginal;
+        }
+
+        /// <summary>
+        /// Draws the element to the graphics at the specified position
+        /// </summary>
+        /// <param name="zGraphics">The object to render to</param>
+        /// <param name="zDeck">The Deck to operate with</param>
+        /// <param name="zElement">The Element to render</param>
+        /// <param name="nX">The x position to render at</param>
+        /// <param name="nY">The y position to render at</param>
+        /// <param name="sInput">The input string to render the element with</param>
+        /// <param name="bExport">Flag indicating if this is an export</param>
+        private void DrawElement(Graphics zGraphics, Deck zDeck, ProjectLayoutElement zElement,
+            int nX, int nY, string sInput, bool bExport)
+        {
+            s_listElementRenderProcessors.ForEach(zRenderProcessor => sInput = zRenderProcessor.Render(zGraphics, zElement, zDeck, sInput, nX, nY, bExport));
+
+            // always reset the transform
+            zGraphics.ResetTransform();
+        }
+
+        private void DrawLayoutDividers(Graphics zGraphics, bool bExport)
+        {
             if (!bExport && CardMakerInstance.DrawLayoutDividers)
             {
                 if (CardMakerInstance.LayoutDividerHorizontalCount > 0)
@@ -160,7 +197,7 @@ namespace CardMaker.Card
                     for (var nLine = 0; nLine < CardMakerInstance.LayoutDividerHorizontalCount; nLine++)
                     {
                         nHorizontalPos += nSectionWidth;
-                        
+
                         zGraphics.DrawLine(penDivider, nHorizontalPos, 0, nHorizontalPos, CurrentDeck.CardLayout.height);
                     }
                 }
@@ -175,14 +212,58 @@ namespace CardMaker.Card
                     }
                 }
             }
-            // draw the card border
-            if ((bExport && CardMakerSettings.PrintLayoutBorder) || (!bExport && CurrentDeck.CardLayout.drawBorder))
-            {
-                // note that the border is inclusive in the width/height consuming 2 pixels (0 to total-1)
-                zGraphics.DrawRectangle(Pens.Black, nX, nY, CurrentDeck.CardLayout.width - 1, CurrentDeck.CardLayout.height - 1);
-            }
+        }
 
-            zGraphics.Transform = matrixOriginal;
+        /// <summary>
+        /// Renders the element debug border based on the state of the element / application
+        /// </summary>
+        /// <param name="zGraphics">The object to render to</param>
+        /// <param name="zElement">The Element to render</param>
+        /// <param name="nX">The x position to render at</param>
+        /// <param name="nY">The y position to render at</param>
+        /// <param name="bSelected">Flag indicating if this element is currently selected</param>
+        public static void DrawElementDebugBorder(Graphics zGraphics, ProjectLayoutElement zElement, int nX, int nY, bool bSelected)
+        {
+            var matrixPrevious = zGraphics.Transform;
+            // note that the border is inclusive in the width/height consuming 2 pixels (0 to total-1)
+            zGraphics.TranslateTransform(nX, nY);
+            if (bSelected && CardMakerInstance.DrawSelectedElementGuides)
+            {
+                zGraphics.DrawLine(s_zPenDebugGuides, new PointF(0, zElement.y), new PointF(zGraphics.ClipBounds.Width, zElement.y));
+                zGraphics.DrawLine(s_zPenDebugGuides, new PointF(0, zElement.y + zElement.height - 1),
+                    new PointF(zGraphics.ClipBounds.Width, zElement.y + zElement.height));
+                zGraphics.DrawLine(s_zPenDebugGuides, new PointF(zElement.x, 0), new PointF(zElement.x, zGraphics.ClipBounds.Height));
+                zGraphics.DrawLine(s_zPenDebugGuides, new PointF(zElement.x + zElement.width - 1, 0),
+                    new PointF(zElement.x + zElement.width, zGraphics.ClipBounds.Height));
+            }
+            zGraphics.DrawRectangle(s_zPenDebugBorder, zElement.x, zElement.y, zElement.width - 1, zElement.height - 1);
+            if (bSelected)
+            {
+                zGraphics.DrawRectangle(m_zPenElementSelect, zElement.x - 2, zElement.y - 2, zElement.width + 3, zElement.height + 3);
+            }
+            zGraphics.Transform = matrixPrevious;
+        }
+
+        /// <summary>
+        /// Renders the outline if the specified element has a non-zero outline
+        /// </summary>
+        /// <param name="zElement">The element to use the thickness value of</param>
+        /// <param name="zGraphics">The graphics to render to</param>
+        /// <param name="zPath">The path to draw the outline on</param>
+        public static void DrawPathOutline(ProjectLayoutElement zElement, Graphics zGraphics, GraphicsPath zPath)
+        {
+            // draw the outline
+            if (0 >= zElement.outlinethickness)
+            {
+                return;
+            }
+            var outlinePen = new Pen(Color.FromArgb(zElement.opacity, zElement.GetElementOutlineColor()),
+                zElement.outlinethickness)
+            {
+                LineJoin = LineJoin.Round
+            };
+#warning This outline pen linejoin should be customizable (as it rounds the corners but corrects other issues!)
+            zGraphics.DrawPath(outlinePen, zPath);
         }
     }
 }

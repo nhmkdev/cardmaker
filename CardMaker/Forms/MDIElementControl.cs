@@ -40,9 +40,6 @@ namespace CardMaker.Forms
 {
     public partial class MDIElementControl : Form
     {
-#warning - this should be in a central spot... not in some random dialog
-        private readonly Dictionary<string, ElementType> m_dictionaryElementTypes = new Dictionary<string, ElementType>();
-
         // mapping controls directly to special functions when a given control is adjusted
         private readonly Dictionary<Control, Action<ProjectLayoutElement>> m_dictionaryControlActions = new Dictionary<Control, Action<ProjectLayoutElement>>();
         
@@ -327,11 +324,10 @@ namespace CardMaker.Forms
 
             comboShapeType.SelectedIndex = 0;
 
-            for (int nIdx = 0; nIdx < (int)ElementType.End; nIdx++)
+            for (var nIdx = 0; nIdx < (int)ElementType.End; nIdx++)
             {
                 var sType = ((ElementType)nIdx).ToString();
                 comboElementType.Items.Add(sType);
-                m_dictionaryElementTypes.Add(sType, (ElementType)nIdx);
             }
 
             tabControl.Visible = false;
@@ -385,7 +381,7 @@ namespace CardMaker.Forms
 
                             var fontRedo = zFont;
                             var fontUndo = zElementToChange.GetElementFont();
-                            fontUndo = fontUndo ?? DrawItem.DefaultFont;
+                            fontUndo = fontUndo ?? FontLoader.DefaultFont;
 
                             listActions.Add(bRedo =>
                             {
@@ -459,7 +455,7 @@ namespace CardMaker.Forms
         {
             if (!string.IsNullOrEmpty(txtElementVariable.Text))
             {
-                var zBmp = DrawItem.LoadImageFromCache(txtElementVariable.Text);
+                var zBmp = ImageCache.LoadImageFromCache(txtElementVariable.Text);
                 if (null == zBmp)
                 {
                     var zElement = ElementManager.Instance.GetSelectedElement();
@@ -468,7 +464,7 @@ namespace CardMaker.Forms
                         var zElementString = LayoutManager.Instance.ActiveDeck.GetStringFromTranslationCache(zElement.name);
                         if (null != zElementString.String)
                         {
-                            zBmp = DrawItem.LoadImageFromCache(zElementString.String);
+                            zBmp = ImageCache.LoadImageFromCache(zElementString.String);
                         }
                     }
                 }
@@ -527,6 +523,18 @@ namespace CardMaker.Forms
                 contextMenuStripAssist.Items.Add("Add Switch Statement", null,
                     (os, ea) =>
                         InsertVariableText("#(switch;key;keytocheck1;value1;keytocheck2;value2;#default;#empty)#"));
+                contextMenuStripAssist.Items.Add("Add Background Shape (basic)", null,
+                    (os, ea) =>
+                        InsertVariableText("#bgshape::#roundedrect;0;-;-;10#::0xff0000#"));
+                contextMenuStripAssist.Items.Add("Add Background Shape (advanced)", null,
+                    (os, ea) =>
+                        InsertVariableText("#bgshape::#roundedrect;0;-;-;10#::0xff0000::0::0::0::0::0::0xffffff#"));
+                contextMenuStripAssist.Items.Add("Add Background Graphic (basic)", null,
+                    (os, ea) =>
+                        InsertVariableText("#bggraphic::images/Faction_empire.bmp#"));
+                contextMenuStripAssist.Items.Add("Add Background Graphic (advanced)", null,
+                    (os, ea) =>
+                        InsertVariableText("#bggraphic::images/Faction_empire.bmp::0::0::0::0::true::-::0::0#"));
                 switch ((ElementType) comboElementType.SelectedIndex)
                 {
                     case ElementType.FormattedText:
@@ -576,6 +584,18 @@ namespace CardMaker.Forms
                 contextMenuStripAssist.Items.Add("Add Switch Statement", null,
                     (os, ea) =>
                         InsertVariableText(string.Format("switch(key){0}{{{0}case keytocheck1:{0}\tvalue1;{0}}}", Environment.NewLine)));
+                contextMenuStripAssist.Items.Add("Add Background Shape (basic)", null,
+                    (os, ea) =>
+                        InsertVariableText("'#bgshape::#roundedrect;0;-;-;10#::0xff0000#'"));
+                contextMenuStripAssist.Items.Add("Add Background Shape (advanced)", null,
+                    (os, ea) =>
+                        InsertVariableText("'#bgshape::#roundedrect;0;-;-;10#::0xff0000::0::0::0::0::0::0xffffff#'"));
+                contextMenuStripAssist.Items.Add("Add Background Graphic (basic)", null,
+                    (os, ea) =>
+                        InsertVariableText("'#bggraphic::images/Faction_empire.bmp#'"));
+                contextMenuStripAssist.Items.Add("Add Background Graphic (advanced)", null,
+                    (os, ea) =>
+                        InsertVariableText("'#bggraphic::images/Faction_empire.bmp::0::0::0::0::true::-::0::0#'"));
                 switch ((ElementType)comboElementType.SelectedIndex)
                 {
                     case ElementType.FormattedText:
@@ -922,7 +942,7 @@ namespace CardMaker.Forms
                 txtElementVariable.Text = zElement.variable;
                 txtElementVariable.SelectionStart = zElement.variable.Length;
                 txtElementVariable.SelectionLength = 0;
-                ElementType eType = m_dictionaryElementTypes[zElement.type];
+                ElementType eType = EnumUtil.GetElementType(zElement.type);
                 switch (eType)
                 {
                     case ElementType.Shape:
@@ -958,7 +978,7 @@ namespace CardMaker.Forms
                 comboElementType.SelectedIndex = (int)eType;
                 UpdatePanelColors(zElement);
                 Font zFont = zElement.GetElementFont();
-                zFont = zFont ?? DrawItem.DefaultFont;
+                zFont = zFont ?? FontLoader.DefaultFont;
                 for (int nFontIndex = 0; nFontIndex < comboFontName.Items.Count; nFontIndex++)
                 {
                     if (zFont.Name.Equals((string)comboFontName.Items[nFontIndex], StringComparison.CurrentCultureIgnoreCase))

@@ -25,10 +25,10 @@
 using System.Drawing;
 using CardMaker.XML;
 
-namespace CardMaker.Card
+namespace CardMaker.Card.Render
 {
-    public interface IDrawText
+    interface IElementRenderProcessor
     {
-        void DrawText(Graphics zGraphics, ProjectLayoutElement zElement, string sInput);
+        string Render(Graphics zGraphics, ProjectLayoutElement zElement, Deck zDeck, string sInput, int nX, int nY, bool bExport);
     }
 }

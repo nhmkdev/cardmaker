@@ -63,7 +63,7 @@ namespace CardMaker.Card.FormattedText.Markup
 
             m_sImageFile = arrayComponents[0];
 
-            var zBmp = DrawItem.LoadImageFromCache(m_sImageFile);
+            var zBmp = ImageCache.LoadImageFromCache(m_sImageFile);
 
             m_fXOffset = zProcessData.CurrentXOffset;
             m_fYOffset = zProcessData.CurrentYOffset;
@@ -104,8 +104,8 @@ namespace CardMaker.Card.FormattedText.Markup
         {
             // already null checked in the ProcessMarkup
             var zBmp = 255 != zElement.opacity
-                ? DrawItem.LoadCustomImageFromCache(m_sImageFile, zElement)
-                : DrawItem.LoadImageFromCache(m_sImageFile);
+                ? ImageCache.LoadCustomImageFromCache(m_sImageFile, zElement)
+                : ImageCache.LoadImageFromCache(m_sImageFile);
             zGraphics.DrawImage(zBmp, TargetRect.X + m_fXOffset, TargetRect.Y + m_fYOffset, m_nWidth, m_nHeight);
 
             if (CardMakerInstance.DrawFormattedTextBorder)

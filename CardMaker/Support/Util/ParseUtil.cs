@@ -22,6 +22,7 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Globalization;
 
 namespace Support.Util
@@ -41,7 +42,7 @@ namespace Support.Util
         /// <returns>true on success, false otherwise</returns>
         public static bool ParseFloat(string sValue, out float fValue)
         {
-            return float.TryParse(sValue.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out fValue);
+            return Single.TryParse(sValue.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out fValue);
         }
 
         /// <summary>
@@ -53,8 +54,19 @@ namespace Support.Util
         /// <returns>true on success, false otherwise</returns>
         public static bool ParseDecimal(string sValue, out decimal dValue)
         {
-            return decimal.TryParse(sValue.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out dValue);
+            return Decimal.TryParse(sValue.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out dValue);
         }
 
+        public static int ParseDefault(string sVal, int nDefault)
+        {
+            int nVal = Int32.TryParse(sVal, out nVal) ? nVal : nDefault;
+            return nVal;
+        }
+
+        public static bool ParseDefault(string sVal, bool bDefault)
+        {
+            bool bVal = Boolean.TryParse(sVal, out bVal) ? bVal : bDefault;
+            return bVal;
+        }
     }
 }
