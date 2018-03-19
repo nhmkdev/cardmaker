@@ -118,6 +118,7 @@
     <Compile Include="Card\FormattedText\Markup\AlignRightMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\BaseAlignMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\LineSpaceMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\MarkupUtil.cs" />
     <Compile Include="Card\FormattedText\Markup\PixelMarkup.cs" />
     <Compile Include="Card\IDrawFormattedText.cs" />
     <Compile Include="Card\IDrawGraphic.cs" />

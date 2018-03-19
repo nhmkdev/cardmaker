@@ -29,7 +29,7 @@ namespace CardMaker.Card.FormattedText.Markup
 {
     public class NewlineMarkup : MarkupBase
     {
-        public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
+        protected override bool ProcessMarkupHandler(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
             zProcessData.MoveToNextLine(zElement);
             return true;

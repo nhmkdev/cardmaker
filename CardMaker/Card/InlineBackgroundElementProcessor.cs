@@ -61,7 +61,6 @@ namespace CardMaker.Card
 
             var sToReplace = String.Empty;
 
-            int[] arrayReplaceIndcies = null;
             var zBgGraphicElement = new ProjectLayoutElement(Guid.NewGuid().ToString());
             var nXOffset = 0;
             var nYOffset = 0;
@@ -111,7 +110,6 @@ namespace CardMaker.Card
             var sToReplace = String.Empty;
             int nXOffset = 0, nYOffset = 0;
 
-            int[] arrayReplaceIndcies = null;
             var zBgShapeElement = new ProjectLayoutElement(Guid.NewGuid().ToString());
             if (zExtendedMatch.Success)
             {

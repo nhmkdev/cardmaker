@@ -43,8 +43,7 @@ namespace CardMaker.Card.FormattedText.Markup
         /// </summary>
         public virtual bool Aligns => false;
 
-#warning Consider something that sets this based on Aligns instead of in each markup
-        public StringAlignment StringAlignment { get; set; }
+        public StringAlignment StringAlignment { get; private set; }
 
         public RectangleF TargetRect { get; set; }
 
@@ -56,10 +55,28 @@ namespace CardMaker.Card.FormattedText.Markup
         /// <param name="zProcessData"></param>
         /// <param name="zGraphics"></param>
         /// <returns>true if this markup is to be further processed</returns>
-        public virtual bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
+        public bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
+        {
+            if (Aligns)
+            {
+                StringAlignment = zProcessData.CurrentStringAlignment;
+            }
+            return ProcessMarkupHandler(zElement, zData, zProcessData, zGraphics);
+        }
+
+        /// <summary>
+        /// Processes the markup to determine the markup stack information (font settings, rectangle sizes/settings)
+        /// </summary>
+        /// <param name="zElement"></param>
+        /// <param name="zData"></param>
+        /// <param name="zProcessData"></param>
+        /// <param name="zGraphics"></param>
+        /// <returns>true if this markup is to be further processed</returns>
+        protected virtual bool ProcessMarkupHandler(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
             return false;
         }
+
 
         /// <summary>
         /// Second pass after rectangles are configured
@@ -80,42 +97,6 @@ namespace CardMaker.Card.FormattedText.Markup
             return true;
         }
 
-#warning move all this to another file?
-
-        private static readonly Dictionary<string, Type> s_dictionaryMarkupTypes = new Dictionary<string, Type>()
-        {
-            {"b", typeof (FontStyleBoldMarkup)},
-            {"i", typeof (FontStyleItalicMarkup)},
-            {"s", typeof (FontStyleStrikeoutMarkup)},
-            {"u", typeof (FontStyleUnderlineMarkup)},
-            {"f", typeof (FontMarkup)},
-            {"fs", typeof (FontSizeMarkup)},
-            {"fc", typeof (FontColorMarkup)},
-            {"xo", typeof (XDrawOffsetMarkup)},
-            {"yo", typeof (YDrawOffsetMarkup)},
-            {"br", typeof (NewlineMarkup)},
-            {"bgc", typeof (BackgroundColorMarkup)},
-            {"bgi", typeof (BackgroundImageMarkup)},
-            {"spc", typeof (SpaceMarkup)},
-            {"push", typeof (PushMarkup)},
-            {"px", typeof (PixelMarkup)},
-            {"img", typeof (ImageMarkup)},
-            {"ls", typeof(LineSpaceMarkup) },
-            {"ac", typeof(AlignCenterMarkup) },
-            {"ar", typeof(AlignRightMarkup) },
-            {"al", typeof(AlignLeftMarkup) },
-        };
-
-        public static Type GetMarkupType(string sInput)
-        {
-            Type zType;
-            if (s_dictionaryMarkupTypes.TryGetValue(sInput.ToLower(), out zType))
-            {
-                return zType;
-            }
-            return null;
-        }
-
         public static MarkupBase GetMarkup(string sInput)
         {
             // check for the value based tags
@@ -125,7 +106,7 @@ namespace CardMaker.Card.FormattedText.Markup
             {
                 if (2 == arraySplit.Length)
                 {
-                    var typeMarkup = GetMarkupType(arraySplit[0]);
+                    var typeMarkup = MarkupUtil.GetMarkupType(arraySplit[0]);
                     if (null != typeMarkup)
                     {
                         return (MarkupBase) Activator.CreateInstance(typeMarkup, new object[] {arraySplit[1]});
@@ -134,7 +115,7 @@ namespace CardMaker.Card.FormattedText.Markup
                 else
                 {
                     // this check is after the value based tag check because some tags may optionally use values
-                    var typeMarkup = GetMarkupType(sInput);
+                    var typeMarkup = MarkupUtil.GetMarkupType(sInput);
                     if (null != typeMarkup)
                     {
                         return (MarkupBase) Activator.CreateInstance(typeMarkup);

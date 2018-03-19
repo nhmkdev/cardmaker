@@ -43,7 +43,7 @@ namespace CardMaker.Card.FormattedText.Markup
             MarkupToClose = zMarkupToClose;
         }
 
-        public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
+        protected override bool ProcessMarkupHandler(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
             MarkupToClose.CloseMarkup(zData, zProcessData, zGraphics);
 

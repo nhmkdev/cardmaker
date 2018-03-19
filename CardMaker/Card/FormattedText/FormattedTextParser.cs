@@ -112,7 +112,7 @@ namespace CardMaker.Card.FormattedText
                         if (bCloseTag)
                         {
                             // find the tag to actually close
-                            var zMarkupTypeToSeek = MarkupBase.GetMarkupType(sTagName);
+                            var zMarkupTypeToSeek = MarkupUtil.GetMarkupType(sTagName);
                             if (null != zMarkupTypeToSeek)
                             {
                                 for (int nMarkup = listMarkups.Count - 1; nMarkup > -1; nMarkup--)

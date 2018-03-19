@@ -169,7 +169,7 @@ namespace CardMaker.Card.FormattedText.Alignment
             }
         }
 
-        class SubLineAlignmentSet
+        private class SubLineAlignmentSet
         {
             public HorizontalStringAlignment HorizontalStringAlignment { get; }
             public int FirstIndex { get; }

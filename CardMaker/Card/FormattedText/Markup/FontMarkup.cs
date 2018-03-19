@@ -33,7 +33,7 @@ namespace CardMaker.Card.FormattedText.Markup
 
         private Font m_zPreviousFont;
 
-        public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
+        protected override bool ProcessMarkupHandler(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
             var zNewFont = ProjectLayoutElement.TranslateFontString(m_sVariable);
             if (zNewFont != null)

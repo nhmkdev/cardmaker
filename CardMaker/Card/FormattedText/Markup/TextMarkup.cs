@@ -51,14 +51,13 @@ namespace CardMaker.Card.FormattedText.Markup
         {
         }
 
-        public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
+        protected override bool ProcessMarkupHandler(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
             m_zFontBrush = zProcessData.FontBrush;
             m_zFont = zProcessData.Font;
             m_fFontHeight = zProcessData.FontHeight;
             m_fXOffset = zProcessData.CurrentXOffset;
             m_fYOffset = zProcessData.CurrentYOffset;
-            StringAlignment = zProcessData.CurrentStringAlignment;
 
             LineNumber = zProcessData.CurrentLine;
 

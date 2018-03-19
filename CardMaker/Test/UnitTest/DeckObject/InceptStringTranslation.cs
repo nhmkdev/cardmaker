@@ -109,6 +109,8 @@ namespace UnitTest.DeckObject
             return result.String;
         }
 
+        // todo if/switch tests with bggraphic and shape
+
         [TestCase("#(if a == a then word else word2)#", Result = "word")]
         [TestCase("#(if a == b then word else word2)#", Result = "word2")]
         [TestCase("#(if a == b then word else word2)# midword #(if c == d then chowder)#", Result = "word2 midword ")]
@@ -154,13 +156,15 @@ namespace UnitTest.DeckObject
         }
 
         // note this result sucks -- should just be nothing
-        [TestCase("#(switch::45::15::nothing)#", Result = "switch::45::15::nothing")]
-        [TestCase("#(switch::45::15::nothing::#default::stuff)#", Result = "stuff")]
-        [TestCase("#(switch::45::15::nothing::45::::#default::stuff)#", Result = "")]
-        [TestCase("#(switch::::15::nothing::::::#default::stuff)#", Result = "")]
-        [TestCase("#(switch::::15::nothing::::result::#default::stuff)#", Result = "result")]
-        [TestCase("#(switch::::15::nothing::#empty::result::#default::stuff)#", Result = "result")]
-        [TestCase("#(switch::45::15::nothing::#empty::result::#default::<img=test.png;.8>)#", Result = "<img=test.png;.8>")]
+        [TestCase("#(switch//45//15//nothing)#", Result = "switch//45//15//nothing")]
+        [TestCase("#(switch//45//15//nothing//#default//stuff)#", Result = "stuff")]
+        [TestCase("#(switch//45//15//nothing//45////#default//stuff)#", Result = "")]
+        [TestCase("#(switch////15//nothing///////#default//stuff)#", Result = "")]
+        [TestCase("#(switch////15//nothing////result//#default//stuff)#", Result = "result")]
+        [TestCase("#(switch////15//nothing//#empty//result//#default//stuff)#", Result = "result")]
+        [TestCase("#(switch////15//nothing//#empty///img.png//#default//stuff)#", Result = "/img.png")]
+        [TestCase("#(switch//45//15//nothing//#empty//result//#default//<img=test.png;.8>)#", Result = "<img=test.png;.8>")]
+        [TestCase("#(switch//45//15//nothing//#empty//result//#default//<img=test.png;.8>)#", Result = "<img=test.png;.8>")]
         public string ValidateAltSwitchLogic(string input)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");

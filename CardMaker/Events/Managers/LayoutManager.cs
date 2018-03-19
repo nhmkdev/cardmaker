@@ -41,7 +41,6 @@ namespace CardMaker.Events.Managers
         
         public Deck ActiveDeck { get; private set; }
 
-#warning TODO: consider not having this public so ActiveDeck.CardLayout is the only source
         public ProjectLayout ActiveLayout { get; private set; }
 
         /// <summary>

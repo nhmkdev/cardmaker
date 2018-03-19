@@ -34,6 +34,7 @@ using CardMaker.Data;
 using CardMaker.Events.Args;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
+using Support.IO;
 using Support.UI;
 
 namespace CardMaker.Forms
@@ -455,21 +456,25 @@ namespace CardMaker.Forms
         {
             if (!string.IsNullOrEmpty(txtElementVariable.Text))
             {
-                var zBmp = ImageCache.LoadImageFromCache(txtElementVariable.Text);
+                var zElement = ElementManager.Instance.GetSelectedElement();
+                if (null == zElement)
+                {
+                    Logger.AddLogLine("Unable to set element size. Is an element selected?");
+                    return;
+                }
+                var zBmp = ImageCache.LoadCustomImageFromCache(txtElementVariable.Text, zElement);
                 if (null == zBmp)
                 {
-                    var zElement = ElementManager.Instance.GetSelectedElement();
-                    if (null != zElement)
+                    // attempt a translated version of the element variable
+                    var zElementString = LayoutManager.Instance.ActiveDeck.GetStringFromTranslationCache(zElement.name);
+                    if (null != zElementString.String)
                     {
-                        var zElementString = LayoutManager.Instance.ActiveDeck.GetStringFromTranslationCache(zElement.name);
-                        if (null != zElementString.String)
-                        {
-                            zBmp = ImageCache.LoadImageFromCache(zElementString.String);
-                        }
+                        zBmp = ImageCache.LoadCustomImageFromCache(zElementString.String, zElement);
                     }
                 }
                 if (null != zBmp)
                 {
+#warning -- this is 2 events, not 1 (in the case of undo)
                     numericElementW.Value = zBmp.Width;
                     numericElementH.Value = zBmp.Height;
                 }

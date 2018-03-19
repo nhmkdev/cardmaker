@@ -48,7 +48,7 @@ namespace CardMaker.Card.FormattedText.Markup
             Optional = bOptional;
         }
 
-        public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
+        protected override bool ProcessMarkupHandler(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
             int nSpaces;
             if (!int.TryParse(m_sVariable, out nSpaces))
@@ -56,7 +56,6 @@ namespace CardMaker.Card.FormattedText.Markup
                 return false;
             }
 
-            StringAlignment = zProcessData.CurrentStringAlignment;
             LineNumber = zProcessData.CurrentLine;
 
             float fWidth = (float)nSpaces * ((float)zProcessData.FontSpaceWidth + (float)zElement.wordspace);

@@ -39,6 +39,7 @@ namespace CardMaker.Card.FormattedText.Markup
         private string m_sImageFile;
         private int m_nWidth;
         private int m_nHeight;
+        private Bitmap m_zBmp = null;
 
         public override bool Aligns => true;
 
@@ -50,7 +51,7 @@ namespace CardMaker.Card.FormattedText.Markup
         /// <param name="zProcessData"></param>
         /// <param name="zGraphics"></param>
         /// <returns>false -  The BackgroundImageMarkup.Render is called as part of a TextMarkup</returns>
-        public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
+        protected override bool ProcessMarkupHandler(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
             var arrayComponents = m_sVariable.Split(new char[] { ';' });
             if (1 > arrayComponents.Length)
@@ -58,23 +59,22 @@ namespace CardMaker.Card.FormattedText.Markup
                 return false;
             }
 
-            StringAlignment = zProcessData.CurrentStringAlignment;
             LineNumber = zProcessData.CurrentLine;
 
             m_sImageFile = arrayComponents[0];
 
-            var zBmp = ImageCache.LoadImageFromCache(m_sImageFile);
+            m_zBmp = ImageCache.LoadCustomImageFromCache(m_sImageFile, zElement);
 
             m_fXOffset = zProcessData.CurrentXOffset;
             m_fYOffset = zProcessData.CurrentYOffset;
 
-            if (null != zBmp)
+            if (null != m_zBmp)
             {
                 switch (arrayComponents.Length)
                 {
                     case 1:
-                        m_nWidth = zBmp.Width;
-                        m_nHeight = zBmp.Height;
+                        m_nWidth = m_zBmp.Width;
+                        m_nHeight = m_zBmp.Height;
                         TargetRect = new RectangleF(zProcessData.CurrentX, zProcessData.CurrentY, 0, 0);
                         return true;
                     case 5:
@@ -102,11 +102,10 @@ namespace CardMaker.Card.FormattedText.Markup
 
         public override bool Render(ProjectLayoutElement zElement, Graphics zGraphics)
         {
-            // already null checked in the ProcessMarkup
-            var zBmp = 255 != zElement.opacity
-                ? ImageCache.LoadCustomImageFromCache(m_sImageFile, zElement)
-                : ImageCache.LoadImageFromCache(m_sImageFile);
-            zGraphics.DrawImage(zBmp, TargetRect.X + m_fXOffset, TargetRect.Y + m_fYOffset, m_nWidth, m_nHeight);
+            if (null != m_zBmp)
+            {
+                zGraphics.DrawImage(m_zBmp, TargetRect.X + m_fXOffset, TargetRect.Y + m_fYOffset, m_nWidth, m_nHeight);
+            }
 
             if (CardMakerInstance.DrawFormattedTextBorder)
             {

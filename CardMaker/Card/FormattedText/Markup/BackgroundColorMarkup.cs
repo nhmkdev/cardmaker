@@ -41,7 +41,7 @@ namespace CardMaker.Card.FormattedText.Markup
 
         public BackgroundColorMarkup(string sVariable) : base(sVariable) { }
 
-        public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData,
+        protected override bool ProcessMarkupHandler(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData,
             Graphics zGraphics)
         {
             var arrayComponents = m_sVariable.Split(new char[] { ';' });

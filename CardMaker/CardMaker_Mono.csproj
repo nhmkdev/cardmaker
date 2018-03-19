@@ -113,6 +113,7 @@
     <Compile Include="Card\FormattedText\Alignment\VerticalBottomAlignmentProcessor.cs" />
     <Compile Include="Card\FormattedText\Alignment\VerticalMiddleAlignmentProcessor.cs" />
     <Compile Include="Card\FormattedText\FormattedTextParser.cs" />
+    <Compile Include="Card\FormattedText\MarkupUtil.cs" />
     <Compile Include="Card\FormattedText\Markup\AlignCenterMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\AlignLeftMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\AlignRightMarkup.cs" />

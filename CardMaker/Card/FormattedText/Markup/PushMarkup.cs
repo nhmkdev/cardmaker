@@ -37,7 +37,7 @@ namespace CardMaker.Card.FormattedText.Markup
         {
         }
 
-        public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
+        protected override bool ProcessMarkupHandler(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
             var arrayComponents = m_sVariable.Split(new char[] { ';' });
             if (1 > arrayComponents.Length)

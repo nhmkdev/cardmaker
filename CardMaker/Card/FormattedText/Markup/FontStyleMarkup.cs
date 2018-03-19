@@ -31,7 +31,7 @@ namespace CardMaker.Card.FormattedText.Markup
     {
         protected abstract FontStyle Style { get; }
 
-        public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
+        protected override bool ProcessMarkupHandler(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
             zProcessData.AddFontStyle(Style, zGraphics);
             return false;

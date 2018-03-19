@@ -34,7 +34,7 @@ namespace CardMaker.Card.FormattedText.Markup
 
         public XDrawOffsetMarkup(string sVariable) : base(sVariable) { }
 
-        public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
+        protected override bool ProcessMarkupHandler(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
             float fXOffset;
             if (ParseUtil.ParseFloat(m_sVariable, out fXOffset))

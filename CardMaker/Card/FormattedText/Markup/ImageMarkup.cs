@@ -35,26 +35,26 @@ namespace CardMaker.Card.FormattedText.Markup
         private string m_sImageFile;
         private float m_fXOffset;
         private float m_fYOffset;
+        private Bitmap m_zBmp = null;
 
         public override bool Aligns => true;
 
         public ImageMarkup(string sVariable) : base(sVariable){}
 
-        public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
+        protected override bool ProcessMarkupHandler(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
             var arrayComponents = m_sVariable.Split(new char[] { ';' });
             if (1 > arrayComponents.Length)
             {
                 return false;
             }
-            StringAlignment = zProcessData.CurrentStringAlignment;
             LineNumber = zProcessData.CurrentLine;
 
             m_sImageFile = arrayComponents[0];
 
-            var zBmp = ImageCache.LoadImageFromCache(m_sImageFile);
+            m_zBmp = ImageCache.LoadCustomImageFromCache(m_sImageFile, zElement);
 
-            if (null == zBmp)
+            if (null == m_zBmp)
             {
                 return false;
             }
@@ -65,17 +65,17 @@ namespace CardMaker.Card.FormattedText.Markup
             switch (arrayComponents.Length)
             {
                 case 1: // <img=[filename]>
-                    TargetRect = new RectangleF(zProcessData.CurrentX, zProcessData.CurrentY, zBmp.Width, zBmp.Height);
+                    TargetRect = new RectangleF(zProcessData.CurrentX, zProcessData.CurrentY, m_zBmp.Width, m_zBmp.Height);
                     break;
                 case 2: // <img=[filename];[percent]>
                     ParseUtil.ParseFloat(arrayComponents[1], out fLineHeightPercent);
-                    TargetRect = new RectangleF(zProcessData.CurrentX, zProcessData.CurrentY, zBmp.Width, zBmp.Height);
+                    TargetRect = new RectangleF(zProcessData.CurrentX, zProcessData.CurrentY, m_zBmp.Width, m_zBmp.Height);
                     break;
                 case 3: // <img=[filename];[xoffset];[yoffset]>
                     if (ParseUtil.ParseFloat(arrayComponents[1], out m_fXOffset) &&
                         ParseUtil.ParseFloat(arrayComponents[2], out m_fYOffset))
                     {
-                        TargetRect = new RectangleF(zProcessData.CurrentX, zProcessData.CurrentY, zBmp.Width, zBmp.Height);
+                        TargetRect = new RectangleF(zProcessData.CurrentX, zProcessData.CurrentY, m_zBmp.Width, m_zBmp.Height);
                     }
                     break;
                 case 4: // <img=[filename];[percent];[xoffset];[yoffset]>
@@ -83,7 +83,7 @@ namespace CardMaker.Card.FormattedText.Markup
                     if (ParseUtil.ParseFloat(arrayComponents[2], out m_fXOffset) &&
                         ParseUtil.ParseFloat(arrayComponents[3], out m_fYOffset))
                     {
-                        TargetRect = new RectangleF(zProcessData.CurrentX, zProcessData.CurrentY, zBmp.Width, zBmp.Height);
+                        TargetRect = new RectangleF(zProcessData.CurrentX, zProcessData.CurrentY, m_zBmp.Width, m_zBmp.Height);
                     }
                     break;
                 case 5: // <img=[filename];[xoffset];[yoffset];[width];[height]>
@@ -158,11 +158,11 @@ namespace CardMaker.Card.FormattedText.Markup
                 zGraphics.DrawRectangle(Pens.Green, TargetRect.X + m_fXOffset, TargetRect.Y + m_fYOffset, TargetRect.Width, TargetRect.Height);
             }
 
-            // already null checked in the ProcessMarkup
-            var zBmp = 255 != zElement.opacity
-                ? ImageCache.LoadCustomImageFromCache(m_sImageFile, zElement)
-                : ImageCache.LoadImageFromCache(m_sImageFile);
-            zGraphics.DrawImage(zBmp, TargetRect.X + m_fXOffset, TargetRect.Y + m_fYOffset, TargetRect.Width, TargetRect.Height);
+            if (null != m_zBmp)
+            {
+                zGraphics.DrawImage(m_zBmp, TargetRect.X + m_fXOffset, TargetRect.Y + m_fYOffset, TargetRect.Width,
+                    TargetRect.Height);
+            }
 
             if (CardMakerInstance.DrawFormattedTextBorder)
             {

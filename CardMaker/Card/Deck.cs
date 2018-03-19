@@ -495,7 +495,7 @@ namespace CardMaker.Card
             }
         }
 
-#region Cache General
+        #region Cache General
 
         public void ResetDeckCache()
         {
@@ -525,8 +525,6 @@ namespace CardMaker.Card
 
 
         #region Layout Set
-#warning todo: make a deck loader interface so this can be handled from the command line
-
         public void SetAndLoadLayout(ProjectLayout zLayout, bool bExporting)
         {
             CardLayout = zLayout;

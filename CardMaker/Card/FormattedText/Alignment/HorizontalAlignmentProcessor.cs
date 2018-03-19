@@ -44,7 +44,7 @@ namespace CardMaker.Card.FormattedText.Alignment
         public virtual void UpdateLineAlignment(int nFirst, int nLast, bool bLastLine, ProjectLayoutElement zElement,
             List<MarkupBase> listMarkups, float fVerticalOffset, IEnumerable<MarkupBase> listAllMarkups)
         {
-            var fHorizontalOffset = GetHorizontalOffset(zElement, listMarkups[nLast].TargetRect);
+            var fHorizontalOffset = GetHorizontalOffset(zElement, listMarkups[nFirst].TargetRect, listMarkups[nLast].TargetRect);
             for (var nIdx = nFirst; nIdx <= nLast; nIdx++)
             {
                 var rectCurrent = listMarkups[nIdx].TargetRect;
@@ -52,7 +52,7 @@ namespace CardMaker.Card.FormattedText.Alignment
             }
         }
 
-        public virtual float GetHorizontalOffset(ProjectLayoutElement zElement, RectangleF rectLast)
+        public virtual float GetHorizontalOffset(ProjectLayoutElement zElement, RectangleF rectFirst, RectangleF rectLast)
         {
             return 0f;
         }

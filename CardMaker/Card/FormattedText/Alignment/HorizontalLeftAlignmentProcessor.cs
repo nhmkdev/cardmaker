@@ -22,9 +22,17 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+using System.Drawing;
+using CardMaker.XML;
+
 namespace CardMaker.Card.FormattedText.Alignment
 {
     public class HorizontalLeftAlignmentProcessor : HorizontalAlignmentProcessor
     {
+        public override float GetHorizontalOffset(ProjectLayoutElement zElement, RectangleF rectFirst, RectangleF rectLast)
+        {
+            var fXOffset = -rectFirst.X + 1;
+            return fXOffset;
+        }
     }
 }

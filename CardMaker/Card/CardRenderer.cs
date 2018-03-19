@@ -262,7 +262,7 @@ namespace CardMaker.Card
             {
                 LineJoin = LineJoin.Round
             };
-#warning This outline pen linejoin should be customizable (as it rounds the corners but corrects other issues!)
+
             zGraphics.DrawPath(outlinePen, zPath);
         }
     }

@@ -33,7 +33,6 @@ using PhotoshopFile;
 
 namespace CardMaker.Card
 {
-#warning make an interface out of this
     public static class ImageCache
     {
         private const int IMAGE_CACHE_MAX = 100;
@@ -41,12 +40,11 @@ namespace CardMaker.Card
         private static readonly Dictionary<string, Bitmap> s_dictionaryCustomImages = new Dictionary<string, Bitmap>();
 
 
-#warning the callers of this should not be performing the opacity 255 check, that should be ina shared method
         public static Bitmap LoadCustomImageFromCache(string sFile, ProjectLayoutElement zElement, int nTargetWidth = -1, int nTargetHeight = -1)
         {
             Bitmap zDestinationBitmap;
             var sKey = sFile.ToLower() + ":" + zElement.opacity + ":" + nTargetWidth + ":" + nTargetHeight;
-#warning the name of this cache is incorrect because it will include "customized" images (opacity, scale, whatever)
+
             if (s_dictionaryCustomImages.TryGetValue(sKey, out zDestinationBitmap))
             {
                 return zDestinationBitmap;
@@ -54,9 +52,13 @@ namespace CardMaker.Card
 
             var zSourceBitmap = LoadImageFromCache(sFile);
             // if the desired width/height/opcaity match the 'plain' cached copy just return it
-            if (zSourceBitmap.Width == nTargetWidth
-                && zSourceBitmap.Height == nTargetHeight
-                && 255 == zElement.opacity)
+            if (null == zSourceBitmap 
+                ||
+                (
+                    (-1 == nTargetWidth || zSourceBitmap.Width == nTargetWidth)
+                    && (-1 == nTargetHeight || zSourceBitmap.Height == nTargetHeight)
+                    && 255 == zElement.opacity)
+                )
             {
                 return zSourceBitmap;
             }
@@ -67,14 +69,14 @@ namespace CardMaker.Card
                 DumpImagesFromDictionary(s_dictionaryCustomImages);
             }
 
-            var zAttrib = new ImageAttributes();
+            var zImageAttributes = new ImageAttributes();
             if (255 != zElement.opacity)
             {
                 var zColor = new ColorMatrix
                 {
                     Matrix33 = (float)zElement.opacity / 255.0f
                 };
-                zAttrib.SetColorMatrix(zColor);
+                zImageAttributes.SetColorMatrix(zColor);
             }
 
             nTargetWidth = nTargetWidth == -1 ? zSourceBitmap.Width : nTargetWidth;
@@ -84,13 +86,13 @@ namespace CardMaker.Card
             var zGraphics = Graphics.FromImage(zDestinationBitmap);
             // draw the source image into the destination with the desired opacity
             zGraphics.DrawImage(zSourceBitmap, new Rectangle(0, 0, nTargetWidth, nTargetHeight), 0, 0, zSourceBitmap.Width, zSourceBitmap.Height, GraphicsUnit.Pixel,
-                zAttrib);
+                zImageAttributes);
             CacheImage(s_dictionaryCustomImages, sKey, zDestinationBitmap);
 
             return zDestinationBitmap;
         }
 
-        public static Bitmap LoadImageFromCache(string sFile)
+        private static Bitmap LoadImageFromCache(string sFile)
         {
             Bitmap zBitmap;
             var sKey = sFile.ToLower();

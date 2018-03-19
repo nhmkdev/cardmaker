@@ -31,7 +31,6 @@ using System.Windows.Forms;
 
 namespace Support.IO
 {
-
     public class IniManager
     {
         private const char CHAR_SPLITTER = '=';
@@ -195,10 +194,9 @@ namespace Support.IO
                 }
                 zWriter.Close();
             }
-#warning do nothing?
-            catch (Exception)
+            catch (Exception e)
             {
-                throw;
+                Logger.AddLogLine("Failed to persist settings: " + e);
             }
         }
 
@@ -241,9 +239,9 @@ namespace Support.IO
                     }
                 }
             }
-#warning do nothing??
-            catch (Exception)
+            catch (Exception e)
             {
+                Logger.AddLogLine("Failed to get settings: " + e);
             }
             return dictionaryItems;
         }

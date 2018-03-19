@@ -64,9 +64,7 @@ namespace CardMaker.Card
                 return;
             }
 
-            var zBmp = 255 != zElement.opacity
-                ? ImageCache.LoadCustomImageFromCache(sPath, zElement)
-                : ImageCache.LoadImageFromCache(sPath);
+            var zBmp = ImageCache.LoadCustomImageFromCache(sPath, zElement);
                 
             var nWidth = zElement.width;
             var nHeight = zElement.height;
@@ -184,7 +182,7 @@ namespace CardMaker.Card
         }
 
 #warning needs unit tests
-        private static void GetAspectRatioHeight(Bitmap zBmp, int nDesiredWidth, int nDesiredHeight, out int nWidth, out int nHeight)
+        public static void GetAspectRatioHeight(Bitmap zBmp, int nDesiredWidth, int nDesiredHeight, out int nWidth, out int nHeight)
         {
             if (0 >= nDesiredWidth
                 && 0 >= nDesiredHeight)

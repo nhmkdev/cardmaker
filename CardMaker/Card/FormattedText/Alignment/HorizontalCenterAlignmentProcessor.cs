@@ -29,10 +29,16 @@ namespace CardMaker.Card.FormattedText.Alignment
 {
     public class HorizontalCenterAlignmentProcessor : HorizontalAlignmentProcessor
     {
-        public override float GetHorizontalOffset(ProjectLayoutElement zElement, RectangleF rectLast)
+        public override float GetHorizontalOffset(ProjectLayoutElement zElement, RectangleF rectFirst, RectangleF rectLast)
         {
             var fXOffset = -1f; // HACK: slight fudge
-            fXOffset += (zElement.width - (rectLast.X + rectLast.Width)) / 2f;
+            fXOffset += 
+                (
+                    zElement.width - 
+                    (rectLast.Right - rectFirst.X)
+                ) 
+                / 2f;
+            fXOffset -= rectFirst.X;
             return fXOffset;
         }
     }

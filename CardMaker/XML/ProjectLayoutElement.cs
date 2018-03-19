@@ -164,6 +164,7 @@ namespace CardMaker.XML
             name = sName;
             opacity = 255;
             enabled = true;
+            justifiedtext = false;
 
             InitializeTranslatedFields();
         }
@@ -248,6 +249,7 @@ namespace CardMaker.XML
             lineheight = zElement.lineheight;
             wordspace = zElement.wordspace;
             tilesize = zElement.tilesize;
+            justifiedtext = zElement.justifiedtext;
 
             if (bInitializeTranslatedFields)
             {

@@ -106,7 +106,6 @@ namespace UnitTest.DeckObject
         {
             var zTestElement = new ProjectLayoutElement();
             ProjectLayoutElement zBgElement = null;
-            int nResultXOffset = 0, nResultYOffset = 0;
             m_mockShapeRenderer.Setup(h => h.HandleShapeRender(It.IsAny<Graphics>(), It.IsAny<string>(),
                     It.IsAny<ProjectLayoutElement>(), It.IsAny<int>(), It.IsAny<int>()))
                 .Callback<Graphics, string, ProjectLayoutElement, int, int>((g, s, p, x, y) =>

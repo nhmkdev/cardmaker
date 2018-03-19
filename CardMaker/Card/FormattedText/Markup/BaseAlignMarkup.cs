@@ -33,7 +33,7 @@ namespace CardMaker.Card.FormattedText.Markup
 
         protected abstract StringAlignment MarkupAlignment { get; }
 
-        public override bool ProcessMarkup(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
+        protected override bool ProcessMarkupHandler(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
             m_ePreviousStringAlignment = zProcessData.CurrentStringAlignment;
             zProcessData.CurrentStringAlignment = MarkupAlignment;
