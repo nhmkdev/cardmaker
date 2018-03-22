@@ -41,6 +41,10 @@ namespace CardMaker.Forms
 {
     public partial class MDIElementControl : Form
     {
+        private const string SAMPLE_TEXT = "ABCDEF abcdef 1234567890";
+        private const float NORMAL_FONT_SIZE = 11f;
+        private const float PREVIEW_FONT_SIZE = 14f;
+
         // mapping controls directly to special functions when a given control is adjusted
         private readonly Dictionary<Control, Action<ProjectLayoutElement>> m_dictionaryControlActions = new Dictionary<Control, Action<ProjectLayoutElement>>();
         
@@ -52,6 +56,16 @@ namespace CardMaker.Forms
 
         private readonly ContextMenuStrip m_zContextMenu;
 
+        private readonly Font m_zDefaultPreviewFont =
+            FontLoader.GetFont(FontLoader.DefaultFont.FontFamily.Name, PREVIEW_FONT_SIZE, FontStyle.Regular);
+
+        private readonly Font m_zDefaultFont =
+            FontLoader.GetFont(FontLoader.DefaultFont.FontFamily.Name, NORMAL_FONT_SIZE, FontStyle.Regular);
+
+        private Dictionary<string, Font> m_zFontDictionary;
+
+        // used to toggle what is drawn in the combo (font name + (optional) sample)
+        private bool m_bFontComboOpen = false;
 
         private bool m_bFireElementChangeEvents = true;
         private bool m_bFireFontChangeEvents = true;
@@ -68,10 +82,12 @@ namespace CardMaker.Forms
 
             // setup the font related items
             var fonts = new InstalledFontCollection();
+            m_zFontDictionary = new Dictionary<string, Font>(fonts.Families.Length);
             foreach (FontFamily zFontFamily in fonts.Families)
             {
                 m_listFontFamilies.Add(zFontFamily);
                 comboFontName.Items.Add(zFontFamily.Name);
+                m_zFontDictionary.Add(zFontFamily.Name, FontLoader.GetFont(zFontFamily.Name, PREVIEW_FONT_SIZE, FontStyle.Regular));
             }
 
             // configure all event handling actions
@@ -430,6 +446,48 @@ namespace CardMaker.Forms
             SetupElementFont(null);
             HandleFontSettingChange(sender, e);
         }
+
+        private void comboFontName_DropDownClosed(object sender, EventArgs e)
+        {
+            m_bFontComboOpen = false;
+            comboFontName.Invalidate();
+        }
+
+        private void comboFontName_DropDown(object sender, EventArgs e)
+        {
+            m_bFontComboOpen = true;
+        }
+
+        private void comboFontName_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            e.DrawBackground();
+
+            var sFontName = ((ComboBox)sender).Items[e.Index].ToString();
+
+            // the font color needs to constrast from the background... (critical if selected)
+            var zFontBrush = ((e.State & DrawItemState.Selected) == 0)
+                ? new SolidBrush(SystemColors.WindowText) 
+                : new SolidBrush(SystemColors.Window);
+
+            var zGraphics = e.Graphics;
+
+            var zFontNameFont = m_bFontComboOpen ? m_zDefaultPreviewFont : m_zDefaultFont;
+            var zMeasure = zGraphics.MeasureString(sFontName, zFontNameFont);
+            var fNameRenderOffsetY = (e.Bounds.Height - zMeasure.Height) / 2f;
+            zGraphics.DrawString(sFontName, zFontNameFont, zFontBrush, e.Bounds.X, e.Bounds.Y + fNameRenderOffsetY);
+
+            if (m_bFontComboOpen)
+            {
+                var zFont = m_zFontDictionary[sFontName] ?? FontLoader.GetFont(FontLoader.DefaultFont.FontFamily.Name, PREVIEW_FONT_SIZE, FontStyle.Regular);
+                var fSampleRenderOffsetX = e.Bounds.X + zMeasure.Width;
+
+                zMeasure = zGraphics.MeasureString(SAMPLE_TEXT, zFont);
+
+                var fSampleRenderOffsetY = (e.Bounds.Height - zMeasure.Height) / 2f;
+                zGraphics.DrawString(SAMPLE_TEXT, zFont, zFontBrush, fSampleRenderOffsetX, e.Bounds.Y + fSampleRenderOffsetY);
+            }
+        }
+
 
         private void comboShapeType_SelectedIndexChanged(object sender, EventArgs e)
         {

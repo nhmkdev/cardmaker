@@ -86,6 +86,8 @@ namespace CardMaker.Forms
             this.btnElementShapeColor = new System.Windows.Forms.Button();
             this.propertyGridShape = new System.Windows.Forms.PropertyGrid();
             this.tabPageGraphic = new System.Windows.Forms.TabPage();
+            this.label9 = new System.Windows.Forms.Label();
+            this.txtTileSize = new System.Windows.Forms.TextBox();
             this.checkKeepOriginalSize = new System.Windows.Forms.CheckBox();
             this.btnSetSizeToImage = new System.Windows.Forms.Button();
             this.label15 = new System.Windows.Forms.Label();
@@ -123,8 +125,6 @@ namespace CardMaker.Forms
             this.comboElementType = new System.Windows.Forms.ComboBox();
             this.contextMenuReferenceStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.contextMenuStripAssist = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.txtTileSize = new System.Windows.Forms.TextBox();
-            this.label9 = new System.Windows.Forms.Label();
             this.groupBoxElement.SuspendLayout();
             this.groupBackgroundColor.SuspendLayout();
             this.tabControl.SuspendLayout();
@@ -348,24 +348,32 @@ namespace CardMaker.Forms
             // 
             // comboFontName
             // 
+            this.comboFontName.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.comboFontName.DropDownHeight = 200;
             this.comboFontName.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboFontName.DropDownWidth = 500;
             this.comboFontName.FormattingEnabled = true;
-            this.comboFontName.Location = new System.Drawing.Point(6, 6);
+            this.comboFontName.IntegralHeight = false;
+            this.comboFontName.ItemHeight = 28;
+            this.comboFontName.Location = new System.Drawing.Point(0, 0);
             this.comboFontName.Name = "comboFontName";
-            this.comboFontName.Size = new System.Drawing.Size(170, 21);
+            this.comboFontName.Size = new System.Drawing.Size(170, 34);
             this.comboFontName.TabIndex = 36;
+            this.comboFontName.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.comboFontName_DrawItem);
+            this.comboFontName.DropDown += new System.EventHandler(this.comboFontName_DropDown);
             this.comboFontName.SelectedIndexChanged += new System.EventHandler(this.comboFontName_SelectedIndexChanged);
+            this.comboFontName.DropDownClosed += new System.EventHandler(this.comboFontName_DropDownClosed);
             // 
             // panelFontColor
             // 
-            this.panelFontColor.Location = new System.Drawing.Point(61, 32);
+            this.panelFontColor.Location = new System.Drawing.Point(57, 40);
             this.panelFontColor.Name = "panelFontColor";
             this.panelFontColor.Size = new System.Drawing.Size(20, 20);
             this.panelFontColor.TabIndex = 44;
             // 
             // btnElementFontColor
             // 
-            this.btnElementFontColor.Location = new System.Drawing.Point(6, 32);
+            this.btnElementFontColor.Location = new System.Drawing.Point(0, 40);
             this.btnElementFontColor.Name = "btnElementFontColor";
             this.btnElementFontColor.Size = new System.Drawing.Size(49, 20);
             this.btnElementFontColor.TabIndex = 23;
@@ -375,7 +383,7 @@ namespace CardMaker.Forms
             // 
             // checkBoxUnderline
             // 
-            this.checkBoxUnderline.Location = new System.Drawing.Point(156, 32);
+            this.checkBoxUnderline.Location = new System.Drawing.Point(156, 40);
             this.checkBoxUnderline.Name = "checkBoxUnderline";
             this.checkBoxUnderline.Size = new System.Drawing.Size(82, 20);
             this.checkBoxUnderline.TabIndex = 42;
@@ -394,7 +402,7 @@ namespace CardMaker.Forms
             // 
             // checkBoxStrikeout
             // 
-            this.checkBoxStrikeout.Location = new System.Drawing.Point(87, 32);
+            this.checkBoxStrikeout.Location = new System.Drawing.Point(87, 40);
             this.checkBoxStrikeout.Name = "checkBoxStrikeout";
             this.checkBoxStrikeout.Size = new System.Drawing.Size(71, 20);
             this.checkBoxStrikeout.TabIndex = 41;
@@ -553,6 +561,23 @@ namespace CardMaker.Forms
             this.tabPageGraphic.TabIndex = 2;
             this.tabPageGraphic.Text = "Graphic";
             this.tabPageGraphic.UseVisualStyleBackColor = true;
+            // 
+            // label9
+            // 
+            this.label9.Location = new System.Drawing.Point(134, 32);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(130, 21);
+            this.label9.TabIndex = 43;
+            this.label9.Text = "Tile Size:";
+            this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // txtTileSize
+            // 
+            this.txtTileSize.Location = new System.Drawing.Point(270, 32);
+            this.txtTileSize.Name = "txtTileSize";
+            this.txtTileSize.Size = new System.Drawing.Size(100, 20);
+            this.txtTileSize.TabIndex = 42;
+            this.txtTileSize.TextChanged += new System.EventHandler(this.HandleElementValueChange);
             // 
             // checkKeepOriginalSize
             // 
@@ -994,23 +1019,6 @@ namespace CardMaker.Forms
             this.contextMenuStripAssist.Name = "contextMenuStripAssist";
             this.contextMenuStripAssist.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this.contextMenuStripAssist.Size = new System.Drawing.Size(61, 4);
-            // 
-            // txtTileSize
-            // 
-            this.txtTileSize.Location = new System.Drawing.Point(270, 32);
-            this.txtTileSize.Name = "txtTileSize";
-            this.txtTileSize.Size = new System.Drawing.Size(100, 20);
-            this.txtTileSize.TabIndex = 42;
-            this.txtTileSize.TextChanged += new System.EventHandler(this.HandleElementValueChange);
-            // 
-            // label9
-            // 
-            this.label9.Location = new System.Drawing.Point(134, 32);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(130, 21);
-            this.label9.TabIndex = 43;
-            this.label9.Text = "Tile Size:";
-            this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // MDIElementControl
             // 
