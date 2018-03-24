@@ -67,7 +67,8 @@ namespace CardMaker.Card.Translation
         private static readonly Regex s_regexIfThenElseStatement = new Regex(@"(if)(.*?)\s([!=><]=|<|>)\s(.*?)(then )(.*?)( else )(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexIfSet = new Regex(@"(\[)(.*?)(\])", RegexOptions.Compiled);
         private static readonly Regex s_regexSwitchStatement = new Regex(@"(switch)(;)(.*?)(;)(.*)", RegexOptions.Compiled);
-        private static readonly Regex s_regexSwitchStatementAlt = new Regex(@"(switch)(//)(.*?)(//)(.*)", RegexOptions.Compiled);
+
+        private const string SWITCH = "switch";
 
         private static readonly HashSet<string> s_setDisallowedOverrideFields = new HashSet<string>()
         {
@@ -77,7 +78,6 @@ namespace CardMaker.Card.Translation
 
         private const string SWITCH_DEFAULT = "#default";
         private readonly string[] ArraySwitchDelimiter = new string[] {";"};
-        private readonly string[] ArraySwitchDelimiterAlt = new string[] {"//"};
 
         public InceptTranslator(Dictionary<string, int> dictionaryColumnNameToIndex,
             Dictionary<string, string> dictionaryDefines,
@@ -633,25 +633,39 @@ namespace CardMaker.Card.Translation
             //(switch)(::)(.*?)(::)(.*)
             var nDefaultIndex = -1;
             Match zSwitchMatch = null;
-            var arraySwitchDelimiter = ArraySwitchDelimiter;
+            string[] arraySwitchDelimiter;;
+            string sKey = null;
+            string[] arrayCases = null;
             if (s_regexSwitchStatement.IsMatch(sInput))
             {
                 zSwitchMatch = s_regexSwitchStatement.Match(sInput);
+                arraySwitchDelimiter = ArraySwitchDelimiter;
+                sKey = zSwitchMatch.Groups[3].ToString();
+                arrayCases = zSwitchMatch.Groups[5].ToString().Split(arraySwitchDelimiter, StringSplitOptions.None);
             }
-            else if (s_regexSwitchStatementAlt.IsMatch(sInput))
+            else
             {
-                zSwitchMatch = s_regexSwitchStatementAlt.Match(sInput);
-                arraySwitchDelimiter = ArraySwitchDelimiterAlt;
+                if (sInput.StartsWith(SWITCH) && sInput.Length > SWITCH.Length + 2)
+                {
+                    arraySwitchDelimiter = new[] {sInput.Substring(SWITCH.Length, 2)};
+                    var arraySplit = sInput.Split(arraySwitchDelimiter, StringSplitOptions.None);
+                    if (arraySplit.Length > 2)
+                    {
+                        // now trim out the key
+                        sKey = arraySplit[1];
+                        arrayCases = new string[arraySplit.Length - 2];
+                        Array.Copy(arraySplit, 2, arrayCases, 0, arrayCases.Length);
+                    }
+                }
             }
-            if (zSwitchMatch == null)
+            if (sKey == null || arrayCases == null)
             {
                 return sInput;
             }
 
-            var sKey = zSwitchMatch.Groups[3].ToString();
-            var arrayCases = zSwitchMatch.Groups[5].ToString().Split(arraySwitchDelimiter, StringSplitOptions.None);
             if (0 != (arrayCases.Length % 2))
             {
+                // todo: log something?
                 return sInput;
             }
 

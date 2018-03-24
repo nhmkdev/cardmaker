@@ -8,7 +8,7 @@ Card Maker Version History
 - Added inline background shape functionality
 - Added inline background graphic functionality
 - Added graphic tiling option ("tile size")
-- Added switch alternative with a different delimiter (//)
+- Added switch alternative with a different delimiter (customizable!)
 - Fixed problem with random number functionality (text after the replacement was lost!)
 - Fixed issue with justified text (not clear it was even functional...)
 

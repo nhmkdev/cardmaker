@@ -157,7 +157,9 @@ namespace UnitTest.DeckObject
 
         // note this result sucks -- should just be nothing
         [TestCase("#(switch//45//15//nothing)#", Result = "switch//45//15//nothing")]
+        [TestCase("#(switch-=45-=15-=nothing-=#default-=weird)#", Result = "weird")]
         [TestCase("#(switch//45//15//nothing//#default//stuff)#", Result = "stuff")]
+        [TestCase("#(switch////15//nothing//45////#default//stuff)#", Result = "stuff")]
         [TestCase("#(switch//45//15//nothing//45////#default//stuff)#", Result = "")]
         [TestCase("#(switch////15//nothing///////#default//stuff)#", Result = "")]
         [TestCase("#(switch////15//nothing////result//#default//stuff)#", Result = "result")]
@@ -165,6 +167,8 @@ namespace UnitTest.DeckObject
         [TestCase("#(switch////15//nothing//#empty///img.png//#default//stuff)#", Result = "/img.png")]
         [TestCase("#(switch//45//15//nothing//#empty//result//#default//<img=test.png;.8>)#", Result = "<img=test.png;.8>")]
         [TestCase("#(switch//45//15//nothing//#empty//result//#default//<img=test.png;.8>)#", Result = "<img=test.png;.8>")]
+        [TestCase("#(switch--45--15--nothing--#empty--result--#default--<img=test.png;.8>)#", Result = "<img=test.png;.8>")]
+        [TestCase("#(switch----45--15--nothing--#empty--result--#default--<img=test.png;.8>)#", Result = "switch----45--15--nothing----result--#default--<img=test.png;.8>")]
         public string ValidateAltSwitchLogic(string input)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
