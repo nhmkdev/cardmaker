@@ -83,21 +83,6 @@
     <exportWidth>0</exportWidth>
     <exportHeight>0</exportHeight>
   </Layout>
-  <Layout combineReferences="false" width="300" height="800" buffer="0" Name="New Layout" defaultCount="1" dpi="700" drawBorder="true">
-    <exportRotation>0</exportRotation>
-    <exportTransparentBackground>false</exportTransparentBackground>
-    <exportPDFAsPageBack>false</exportPDFAsPageBack>
-    <exportWidth>0</exportWidth>
-    <exportHeight>0</exportHeight>
-  </Layout>
-  <Layout combineReferences="false" width="800" height="800" buffer="0" Name="aaa" defaultCount="1" dpi="300" drawBorder="true">
-    <Element variable="HHello There thisis sample text to show that things are working with some &quot;quoted text&quot; just think Hello There thisis sample text to show that things are working with some &quot;quoted text&quot; just think Hello There thisis sample text to show that things are working with some &quot;quoted text&quot; just think Hello There thisis sample text to show that things are working with some &quot;quoted text&quot; just think Hello There thisis sample text to show that things are working with some &quot;quoted text&quot; just think Hello There thisis sample text to show that things are working with some &quot;quoted text&quot; just think Hello There thisis sample text to show that things are working with some &quot;quoted text&quot; just think ello There thisis sample text to show that things are working with some &quot;quoted text&quot; just think " type="Text" x="66" y="64" width="587" height="515" borderthickness="0" autoscalefont="false" lockaspect="false" keeporiginalsize="false" outlinethickness="0" rotation="0" horizontalalign="0" verticalalign="0" opacity="255" tilesize="" lineheight="14" wordspace="0" justifiedtext="false" name="aaa" font="Tahoma;18;0;0;0;0" elementcolor="0xFFFA2DFF" bordercolor="0x000000FF" backgroundcolor="0x4E4D0AFF" enabled="true" outlinecolor="0x000000FF" />
-    <exportRotation>0</exportRotation>
-    <exportTransparentBackground>false</exportTransparentBackground>
-    <exportPDFAsPageBack>false</exportPDFAsPageBack>
-    <exportWidth>0</exportWidth>
-    <exportHeight>0</exportHeight>
-  </Layout>
   <translatorName>Incept</translatorName>
   <lastExportPath>C:\</lastExportPath>
   <exportNameFormat>##_#L</exportNameFormat>
