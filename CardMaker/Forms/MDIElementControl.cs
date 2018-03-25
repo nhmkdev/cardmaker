@@ -57,10 +57,10 @@ namespace CardMaker.Forms
         private readonly ContextMenuStrip m_zContextMenu;
 
         private readonly Font m_zDefaultPreviewFont =
-            FontLoader.GetFont(FontLoader.DefaultFont.FontFamily.Name, PREVIEW_FONT_SIZE, FontStyle.Regular);
+            FontLoader.GetFont(FontLoader.DefaultFont.FontFamily, PREVIEW_FONT_SIZE, FontStyle.Regular);
 
         private readonly Font m_zDefaultFont =
-            FontLoader.GetFont(FontLoader.DefaultFont.FontFamily.Name, NORMAL_FONT_SIZE, FontStyle.Regular);
+            FontLoader.GetFont(FontLoader.DefaultFont.FontFamily, NORMAL_FONT_SIZE, FontStyle.Regular);
 
         private Dictionary<string, Font> m_zFontDictionary;
 
@@ -81,13 +81,19 @@ namespace CardMaker.Forms
             btnElementBackgroundColor.Tag = panelBackgroundColor;
 
             // setup the font related items
-            var fonts = new InstalledFontCollection();
-            m_zFontDictionary = new Dictionary<string, Font>(fonts.Families.Length);
-            foreach (FontFamily zFontFamily in fonts.Families)
+            var arrayFontFamilies = GetFontFamilies();
+            m_zFontDictionary = new Dictionary<string, Font>(arrayFontFamilies.Length);
+            foreach (var zFontFamily in arrayFontFamilies)
             {
+                if (m_zFontDictionary.ContainsKey(zFontFamily.Name))
+                {
+                    Logger.AddLogLine("Duplicate font family (ignoring): " + zFontFamily.Name);
+                    continue;
+                }
+
                 m_listFontFamilies.Add(zFontFamily);
                 comboFontName.Items.Add(zFontFamily.Name);
-                m_zFontDictionary.Add(zFontFamily.Name, FontLoader.GetFont(zFontFamily.Name, PREVIEW_FONT_SIZE, FontStyle.Regular));
+                m_zFontDictionary[zFontFamily.Name] = FontLoader.GetFont(zFontFamily, PREVIEW_FONT_SIZE, FontStyle.Regular);
             }
 
             // configure all event handling actions
@@ -478,7 +484,7 @@ namespace CardMaker.Forms
 
             if (m_bFontComboOpen)
             {
-                var zFont = m_zFontDictionary[sFontName] ?? FontLoader.GetFont(FontLoader.DefaultFont.FontFamily.Name, PREVIEW_FONT_SIZE, FontStyle.Regular);
+                var zFont = m_zFontDictionary[sFontName] ?? FontLoader.GetFont(FontLoader.DefaultFont.FontFamily, PREVIEW_FONT_SIZE, FontStyle.Regular);
                 var fSampleRenderOffsetX = e.Bounds.X + zMeasure.Width;
 
                 zMeasure = zGraphics.MeasureString(SAMPLE_TEXT, zFont);
@@ -1112,6 +1118,17 @@ namespace CardMaker.Forms
                 txtElementVariable.Text.Remove(previousSelectionStart, txtElementVariable.SelectionLength).Insert(txtElementVariable.SelectionStart, textToInsert);
             txtElementVariable.SelectionStart = previousSelectionStart + textToInsert.Length;
             txtElementVariable.SelectionLength = 0;
+        }
+
+        private FontFamily[] GetFontFamilies()
+        {
+            var zFonts = new InstalledFontCollection();
+            var arrayFontsCopy = new FontFamily[zFonts.Families.Length];
+            Array.Copy(zFonts.Families, arrayFontsCopy, zFonts.Families.Length);
+#if MONO_BUILD // the collection is unsorted in mono
+            Array.Sort(arrayFontsCopy, (a, b) => a.Name.CompareTo(b.Name));
+#endif
+            return arrayFontsCopy;
         }
     }
 }

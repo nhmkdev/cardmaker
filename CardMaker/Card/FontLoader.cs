@@ -33,34 +33,45 @@ namespace CardMaker.Card
     {
         public static readonly Font DefaultFont = new Font("Arial", 12);
 
+#warning There was some bizarre comment about font family name somehow differing when looking up families... thus the ugly duplicated looking code. (TODO: investigate)
+
         public static Font GetFont(FontFamily zFontFamily, float fSize, FontStyle eFontStyle)
         {
-#if true
-            return GetFont(zFontFamily.Name, fSize, eFontStyle);
-#else
-            try
-            {
-                return new Font(zFontFamily, fSize, eFontStyle);
-            }
-            catch (Exception)
-            {
-                Logger.AddLogLine("Font load failed: {0} {1} {2} (attempting to find valid style)".FormatString(zFontFamily.Name, fSize, eFontStyle));
-            }
-            foreach (var eStyle in Enum.GetValues(typeof(FontStyle)))
+            if (zFontFamily.IsStyleAvailable(eFontStyle))
             {
                 try
                 {
-                    var zFont = new Font(zFontFamily, fSize, (FontStyle)eStyle);
-                    Logger.AddLogLine("Font load succeded: {0} {1} {2} (attempting to find valid style)".FormatString(zFontFamily.Name, fSize, eStyle));
-                    return zFont;
+                    return new Font(zFontFamily.Name, fSize, eFontStyle);
                 }
                 catch (Exception)
                 {
-                    Logger.AddLogLine("Font load failed: {0} {1} {2} (attempting to find valid style)".FormatString(zFontFamily.Name, fSize, eStyle));
+                    Logger.AddLogLine("FontFamily load failed: {0} {1} {2} (attempting to find valid style)".FormatString(zFontFamily.Name, fSize, eFontStyle));
                 }
             }
+            else
+            {
+                Logger.AddLogLine("FontFamily load failed: {0} {1} {2} (attempting to find valid style)".FormatString(zFontFamily.Name, fSize, eFontStyle));
+            }
+
+            foreach (var eStyle in Enum.GetValues(typeof(FontStyle)))
+            {
+                var eAltFontStyle = (FontStyle) eStyle;
+                // skip the original style
+                if(eAltFontStyle == eFontStyle) continue;
+                if (zFontFamily.IsStyleAvailable(eAltFontStyle))
+                {
+                    try
+                    {
+                        return new Font(zFontFamily.Name, fSize, eAltFontStyle);
+                    }
+                    catch (Exception)
+                    {
+                        Logger.AddLogLine("FontFamily load failed: {0} {1} {2} (attempting to find valid style)".FormatString(zFontFamily.Name, fSize, eAltFontStyle));
+                    }
+                }
+            }
+            Logger.AddLogLine("FontFamily load failed: {0} {1} (defaulting due to no valid style)".FormatString(zFontFamily.Name, fSize));
             return DefaultFont;
-#endif
         }
 
         public static Font GetFont(string sFontName, float fSize, FontStyle eFontStyle)
@@ -76,15 +87,16 @@ namespace CardMaker.Card
             }
             foreach (var eStyle in Enum.GetValues(typeof(FontStyle)))
             {
+                var eAltFontStyle = (FontStyle)eStyle;
+                // skip the original style
+                if (eAltFontStyle == eFontStyle) continue;
                 try
                 {
-                    var zFont = new Font(sFontName, fSize, (FontStyle)eStyle);
-                    Logger.AddLogLine("Font load succeded: {0} {1} {2} (attempting to find valid style)".FormatString(sFontName, fSize, eStyle));
-                    return zFont;
+                    return new Font(sFontName, fSize, eAltFontStyle);
                 }
                 catch (Exception)
                 {
-                    Logger.AddLogLine("Font load failed: {0} {1} {2} (attempting to find valid style)".FormatString(sFontName, fSize, eStyle));
+                    Logger.AddLogLine("Font load failed: {0} {1} {2} (attempting to find valid style)".FormatString(sFontName, fSize, eAltFontStyle));
                 }
             }
             return DefaultFont;

@@ -77,6 +77,9 @@ namespace CardMaker.Forms
 
         private void CardMakerMDI_Load(object sender, EventArgs e)
         {
+            // logger should be available before the other dialogs
+            var zLoggerForm = SetupMDIForm(new MDILogger(), true);
+
             // always before any dialogs
             ShapeManager.Init();
 
@@ -96,7 +99,6 @@ namespace CardMaker.Forms
             var zCanvasForm = SetupMDIForm(new MDICanvas(), true);
             var zElementForm = SetupMDIForm(new MDIElementControl(), true);
             var zLayoutForm = SetupMDIForm(new MDILayoutControl(), true);
-            var zLoggerForm = SetupMDIForm(new MDILogger(), true);
             var zProjectForm = SetupMDIForm(new MDIProject(), true);
             SetupMDIForm(new MDIIssues(), false);
             SetupMDIForm(new MDIDefines(), false);
