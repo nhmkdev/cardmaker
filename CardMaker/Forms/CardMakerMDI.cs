@@ -473,7 +473,7 @@ namespace CardMaker.Forms
 
         private void exportImagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ExportImages(true);
+            ExportImages(FileCardExporterFactory.BuildFileCardExporter(true));
         }
 
         private void projectSettingsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -639,7 +639,13 @@ namespace CardMaker.Forms
             switch (args.ExportType)
             {
                 case ExportType.Image:
-                    ExportImages(false);
+                    ExportImages(FileCardExporterFactory.BuildFileCardExporter(false));
+                    break;
+                case ExportType.SingleImage:
+                    ExportImages(FileCardExporterFactory.BuildImageExporter());
+                    break;
+                case ExportType.SingleImageClipboard:
+                    ExportImages(FileCardExporterFactory.BuildImageClipboardExporter());
                     break;
                 case ExportType.PDFSharp:
                     ExportViaPDFSharp(false);
@@ -797,9 +803,8 @@ namespace CardMaker.Forms
             }
         }
 
-        private void ExportImages(bool bExportAllLayouts)
+        private void ExportImages(ICardExporter zFileCardExporter)
         {
-            ICardExporter zFileCardExporter = FileCardExporterFactory.BuildFileCardExporter(bExportAllLayouts);
             if (null == zFileCardExporter)
             {
                 return;

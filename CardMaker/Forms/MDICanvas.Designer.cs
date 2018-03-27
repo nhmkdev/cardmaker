@@ -56,8 +56,8 @@ namespace CardMaker.Forms
             this.numericUpDownZoom = new System.Windows.Forms.NumericUpDown();
             this.toolStrip = new System.Windows.Forms.ToolStrip();
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
-            this.btnFitHorizontalZoom = new System.Windows.Forms.ToolStripButton();
             this.btnFitZoom = new System.Windows.Forms.ToolStripButton();
+            this.btnFitHorizontalZoom = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.verticalCenterButton = new System.Windows.Forms.ToolStripButton();
             this.customVerticalAlignButton = new System.Windows.Forms.ToolStripButton();
@@ -73,6 +73,10 @@ namespace CardMaker.Forms
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripButtonClearImageCache = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonReloadReferences = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.btnExport = new System.Windows.Forms.ToolStripButton();
+            this.btnClipboard = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.panelCardCanvas = new Support.UI.PanelEx();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownZoom)).BeginInit();
             this.toolStrip.SuspendLayout();
@@ -129,7 +133,11 @@ namespace CardMaker.Forms
             this.btnToggleDividers,
             this.toolStripSeparator3,
             this.toolStripButtonClearImageCache,
-            this.toolStripButtonReloadReferences});
+            this.toolStripButtonReloadReferences,
+            this.toolStripSeparator4,
+            this.btnExport,
+            this.toolStripSeparator5,
+            this.btnClipboard});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
             this.toolStrip.Name = "toolStrip";
             this.toolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
@@ -142,15 +150,6 @@ namespace CardMaker.Forms
             this.toolStripLabel1.Name = "toolStripLabel1";
             this.toolStripLabel1.Size = new System.Drawing.Size(64, 22);
             // 
-            // btnFitHorizontalZoom
-            // 
-            this.btnFitHorizontalZoom.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.btnFitHorizontalZoom.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnFitHorizontalZoom.Name = "btnFitHorizontalZoom";
-            this.btnFitHorizontalZoom.Size = new System.Drawing.Size(74, 22);
-            this.btnFitHorizontalZoom.Text = "Fit Horizontal";
-            this.btnFitHorizontalZoom.Click += new System.EventHandler(this.btnFitHorizontalZoom_Click);
-            // 
             // btnFitZoom
             // 
             this.btnFitZoom.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -159,6 +158,15 @@ namespace CardMaker.Forms
             this.btnFitZoom.Size = new System.Drawing.Size(23, 22);
             this.btnFitZoom.Text = "Fit";
             this.btnFitZoom.Click += new System.EventHandler(this.btnFitZoom_Click);
+            // 
+            // btnFitHorizontalZoom
+            // 
+            this.btnFitHorizontalZoom.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnFitHorizontalZoom.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnFitHorizontalZoom.Name = "btnFitHorizontalZoom";
+            this.btnFitHorizontalZoom.Size = new System.Drawing.Size(74, 22);
+            this.btnFitHorizontalZoom.Text = "Fit Horizontal";
+            this.btnFitHorizontalZoom.Click += new System.EventHandler(this.btnFitHorizontalZoom_Click);
             // 
             // toolStripSeparator1
             // 
@@ -282,6 +290,36 @@ namespace CardMaker.Forms
             this.toolStripButtonReloadReferences.Text = "Reload References";
             this.toolStripButtonReloadReferences.Click += new System.EventHandler(this.toolStripButtonReloadReferences_Click);
             // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
+            // 
+            // btnExport
+            // 
+            this.btnExport.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnExport.Image = ((System.Drawing.Image)(resources.GetObject("btnExport.Image")));
+            this.btnExport.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnExport.Name = "btnExport";
+            this.btnExport.Size = new System.Drawing.Size(43, 22);
+            this.btnExport.Text = "Export";
+            this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
+            // 
+            // btnClipboard
+            // 
+            this.btnClipboard.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnClipboard.Image = ((System.Drawing.Image)(resources.GetObject("btnClipboard.Image")));
+            this.btnClipboard.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnClipboard.Name = "btnClipboard";
+            this.btnClipboard.Size = new System.Drawing.Size(56, 22);
+            this.btnClipboard.Text = "Clipboard";
+            this.btnClipboard.Click += new System.EventHandler(this.btnClipboard_Click);
+            // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(6, 25);
+            // 
             // panelCardCanvas
             // 
             this.panelCardCanvas.AutoScroll = true;
@@ -334,5 +372,9 @@ namespace CardMaker.Forms
         private System.Windows.Forms.ToolStripButton toolStripButtonReloadReferences;
         private System.Windows.Forms.ToolStripButton btnFitZoom;
         private System.Windows.Forms.ToolStripButton btnFitHorizontalZoom;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripButton btnExport;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+        private System.Windows.Forms.ToolStripButton btnClipboard;
     }
 }

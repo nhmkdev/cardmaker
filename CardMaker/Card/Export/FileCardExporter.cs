@@ -186,12 +186,10 @@ namespace CardMaker.Card.Export
         /// <param name="nWidth"></param>
         /// <param name="nHeight"></param>
         /// <param name="zGraphics"></param>
-        protected override void UpdateBufferBitmap(int nWidth, int nHeight, Graphics zGraphics = null)
+        protected override void UpdateBufferBitmap(int nWidth, int nHeight)
         {
             m_zExportCardBuffer?.Dispose();
-            m_zExportCardBuffer = null == zGraphics
-                ? new Bitmap(nWidth, nHeight)
-                : new Bitmap(nWidth, nHeight, zGraphics);
+            m_zExportCardBuffer = new Bitmap(nWidth, nHeight);
         }
     }
 }

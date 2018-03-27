@@ -24,7 +24,7 @@
 
 namespace CardMaker.Card.Export
 {
-    interface ICardExporter
+    public interface ICardExporter
     {
         void ExportThread();
     }

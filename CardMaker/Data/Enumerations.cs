@@ -90,7 +90,9 @@ namespace CardMaker.Data
     public enum ExportType
     {
         PDFSharp,
-        Image
+        Image,
+        SingleImage,
+        SingleImageClipboard
     }
 
     public enum TranslatorType

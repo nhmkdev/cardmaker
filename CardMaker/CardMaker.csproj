@@ -100,6 +100,8 @@
     <Compile Include="Card\DrawFormattedText.cs" />
     <Compile Include="Card\DrawGraphic.cs" />
     <Compile Include="Card\DrawTextGraphics.cs" />
+    <Compile Include="Card\Export\FileCardClipboardExporter.cs" />
+    <Compile Include="Card\Export\FileCardSingleExporter.cs" />
     <Compile Include="Card\Export\FileCardExporterFactory.cs" />
     <Compile Include="Card\FontLoader.cs" />
     <Compile Include="Card\FormattedText\Alignment\AlignmentController.cs" />

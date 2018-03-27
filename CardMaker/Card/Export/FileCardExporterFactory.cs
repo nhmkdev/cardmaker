@@ -61,12 +61,12 @@ namespace CardMaker.Card.Export
 
         private static readonly string[] s_arrayAllowedFormatNames = s_arrayAllowedFormats.Select(zFormat => zFormat.ToString()).ToArray();
 
-        public static FileCardExporter BuildFileCardExporter(bool bExportAllLayouts)
+        public static ICardExporter BuildFileCardExporter(bool bExportAllLayouts)
         {
             return bExportAllLayouts ? BuildProjectExporter() : BuildLayoutExporter();
         }
 
-        private static FileCardExporter BuildProjectExporter()
+        private static ICardExporter BuildProjectExporter()
         {
             var zQuery = new QueryPanelDialog("Export to Images", 750, false);
             zQuery.SetIcon(Properties.Resources.CardMakerIcon);
@@ -111,7 +111,7 @@ namespace CardMaker.Card.Export
                 CardMakerSettings.ExportStitchSkipIndex, s_arrayAllowedFormats[zQuery.GetIndex(ExportOptionKey.Format)]);
         }
 
-        private static FileCardExporter BuildLayoutExporter()
+        private static ICardExporter BuildLayoutExporter()
         {
             var zQuery = new QueryPanelDialog("Export to Images", 750, false);
             zQuery.SetIcon(Properties.Resources.CardMakerIcon);
@@ -155,6 +155,60 @@ namespace CardMaker.Card.Export
 
             return new FileCardExporter(nLayoutIndex, nLayoutIndex + 1, sFolder, zQuery.GetString(ExportOptionKey.NameFormat),
                 CardMakerSettings.ExportStitchSkipIndex, s_arrayAllowedFormats[zQuery.GetIndex(ExportOptionKey.Format)]);
+        }
+
+        public static ICardExporter BuildImageExporter()
+        {
+            var zQuery = new QueryPanelDialog("Export Image", 750, false);
+            zQuery.SetIcon(Properties.Resources.CardMakerIcon);
+
+            var sDefinition = LayoutManager.Instance.ActiveLayout.exportNameFormat;
+            var nDefaultFormatIndex = GetLastFormatIndex();
+
+            zQuery.AddPullDownBox("Format", s_arrayAllowedFormatNames, nDefaultFormatIndex, ExportOptionKey.Format);
+            zQuery.AddTextBox("File Name Format (optional)", sDefinition ?? string.Empty, false, ExportOptionKey.NameFormat);
+            zQuery.AddFolderBrowseBox("Output Folder",
+                Directory.Exists(ProjectManager.Instance.LoadedProject.lastExportPath) ? ProjectManager.Instance.LoadedProject.lastExportPath : string.Empty,
+                ExportOptionKey.Folder);
+
+            zQuery.UpdateEnableStates();
+
+            if (DialogResult.OK != zQuery.ShowDialog(CardMakerInstance.ApplicationForm))
+            {
+                return null;
+            }
+            var sFolder = zQuery.GetString(ExportOptionKey.Folder);
+            SetupExportFolder(sFolder);
+
+            if (!Directory.Exists(sFolder))
+            {
+                FormUtils.ShowErrorMessage("The folder specified does not exist!");
+                return null;
+            }
+
+            ProjectManager.Instance.LoadedProject.lastExportPath = sFolder;
+            var nLayoutIndex = ProjectManager.Instance.GetLayoutIndex(LayoutManager.Instance.ActiveLayout);
+            if (-1 == nLayoutIndex)
+            {
+                FormUtils.ShowErrorMessage("Unable to determine the current layout. Please select a layout in the tree view and try again.");
+                return null;
+            }
+
+            CardMakerSettings.IniManager.SetValue(IniSettings.LastImageExportFormat, s_arrayAllowedFormatNames[zQuery.GetIndex(ExportOptionKey.Format)]);
+
+            return new FileCardSingleExporter(nLayoutIndex, nLayoutIndex + 1, sFolder, zQuery.GetString(ExportOptionKey.NameFormat),
+                s_arrayAllowedFormats[zQuery.GetIndex(ExportOptionKey.Format)], LayoutManager.Instance.ActiveDeck.CardIndex);
+        }
+
+        public static ICardExporter BuildImageClipboardExporter()
+        {
+            var nLayoutIndex = ProjectManager.Instance.GetLayoutIndex(LayoutManager.Instance.ActiveLayout);
+            if (-1 == nLayoutIndex)
+            {
+                FormUtils.ShowErrorMessage("Unable to determine the current layout. Please select a layout in the tree view and try again.");
+                return null;
+            }
+            return new FileCardClipboardExporter(nLayoutIndex, nLayoutIndex + 1, LayoutManager.Instance.ActiveDeck.CardIndex);
         }
 
         private static int GetLastFormatIndex()

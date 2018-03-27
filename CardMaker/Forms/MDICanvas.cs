@@ -954,6 +954,18 @@ namespace CardMaker.Forms
             LayoutManager.Instance.ClearImageCache();
         }
 
+        private void btnExport_Click(object sender, EventArgs e)
+        {
+            if (LayoutManager.Instance.ActiveLayout == null) return;
+            ExportManager.Instance.ExportRequested(this, new ExportEventArgs(ExportType.SingleImage));
+        }
+
+        private void btnClipboard_Click(object sender, EventArgs e)
+        {
+            if (LayoutManager.Instance.ActiveLayout == null) return;
+            ExportManager.Instance.ExportRequested(this, new ExportEventArgs(ExportType.SingleImageClipboard));
+        }
+
         #endregion
 
         /// <summary>

@@ -1,6 +1,10 @@
 Card Maker Version History
 --------------------------
 1.0.0.2
+- Fixed issue with Local Google Cache
+- Fixed crash related to clearing the Image Cache and FormattedText (hopefully)
+- Added individual export button to the canvas toolbar
+- Added clipboard copy button to the canvas toolbar
 - Added font preview to the font selection dialog.
 - Fixed export issue involving use of the cardcount functionality
 - Added background color for all element types
