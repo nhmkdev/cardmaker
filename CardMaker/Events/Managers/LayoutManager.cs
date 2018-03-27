@@ -222,6 +222,7 @@ namespace CardMaker.Events.Managers
         public void ClearImageCache()
         {
             ImageCache.ClearImageCaches();
+            ActiveDeck?.ResetDeckCache();
             FireLayoutRenderUpdatedEvent();
             Logger.AddLogLine("Cleared Image Cache");
         }
