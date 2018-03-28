@@ -65,6 +65,7 @@ namespace CardMaker.Card.FormattedText.Markup
             switch (arrayComponents.Length)
             {
                 case 1: // <img=[filename]>
+                    fLineHeightPercent = 1.0f;
                     TargetRect = new RectangleF(zProcessData.CurrentX, zProcessData.CurrentY, m_zBmp.Width, m_zBmp.Height);
                     break;
                 case 2: // <img=[filename];[percent]>
