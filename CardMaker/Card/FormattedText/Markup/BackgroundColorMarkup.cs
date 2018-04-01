@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using CardMaker.XML;
+using Support.IO;
 using Support.Util;
 
 namespace CardMaker.Card.FormattedText.Markup
@@ -35,7 +36,8 @@ namespace CardMaker.Card.FormattedText.Markup
     {
         private List<RectangleF> m_listRectangles;
         private Brush m_zBrush = Brushes.Black;
-        private float m_fAdditionalPixels;
+        private float m_fAdditionalHorizontalPixels;
+        private float m_fAdditionalVerticalPixels;
         private float m_fXOffset;
         private float m_fYOffset;
 
@@ -46,37 +48,95 @@ namespace CardMaker.Card.FormattedText.Markup
         {
             var arrayComponents = m_sVariable.Split(new char[] { ';' });
 
+            var fMarkupXOffset = 0f;
+            var fMarkupYOffset = 0f;
+            var fMarkupHeightAdjust = 0f;
+            var fMarkupYWidthAdjust = 0f;
+            m_fAdditionalVerticalPixels = 0f;
+
             if (arrayComponents.Length > 0)
             {
                 m_zBrush = new SolidBrush(ProjectLayoutElement.TranslateColorString(arrayComponents[0], zElement.opacity));
 
-                if (arrayComponents.Length > 1)
+                if (arrayComponents.Length == 2)
                 {
-                    ParseUtil.ParseFloat(arrayComponents[1], out m_fAdditionalPixels);
+                    ParseUtil.ParseFloat(arrayComponents[1], out m_fAdditionalVerticalPixels);
+                }
+                else if (arrayComponents.Length > 4)
+                {
+                    ParseUtil.ParseFloat(arrayComponents[1], out fMarkupXOffset);
+                    ParseUtil.ParseFloat(arrayComponents[2], out fMarkupYOffset);
+                    ParseUtil.ParseFloat(arrayComponents[3], out m_fAdditionalHorizontalPixels);
+                    ParseUtil.ParseFloat(arrayComponents[4], out m_fAdditionalVerticalPixels);
                 }
             }
 
-            m_fXOffset = zProcessData.CurrentXOffset;
-            m_fYOffset = zProcessData.CurrentYOffset;
+            m_fXOffset = zProcessData.CurrentXOffset + fMarkupXOffset;
+            m_fYOffset = zProcessData.CurrentYOffset + fMarkupYOffset;
             return true;
         }
 
         public override bool PostProcessMarkupRectangle(ProjectLayoutElement zElement, List<MarkupBase> listAllMarkups, int nMarkup)
         {
             m_listRectangles = new List<RectangleF>();
-            for (var nIdx = nMarkup + 1; nIdx < listAllMarkups.Count; nIdx++)
+            if (listAllMarkups == null
+                || listAllMarkups.Count == 0
+                // need to have a markup after the bgc is started (otherwise just move along)
+                || listAllMarkups.Count < nMarkup + 2)
+            {
+                return true;
+            }
+
+            var nMarkupLineNumber = -1;
+            float fX = 0, fY = 0, fRight = 0, fBottom = 0;
+            var nIdx = nMarkup + 1;
+
+            for (; nIdx < listAllMarkups.Count; nIdx++)
             {
                 var zMarkup = listAllMarkups[nIdx];
+                // if the markup rectangle does not have size it is not considered for background rendering
+                if (RectangleF.Empty != zMarkup.TargetRect)
+                {
+                    if (zMarkup.LineNumber != nMarkupLineNumber)
+                    {
+                        if (nMarkupLineNumber != -1)
+                        {
+                            AddRowRectangle(new RectangleF(fX, fY, fRight - fX, fBottom - fY));
+                        }
+                        fX = zMarkup.TargetRect.X;
+                        fY = zMarkup.TargetRect.Y;
+                        fBottom = zMarkup.TargetRect.Bottom;
+                        fRight = zMarkup.TargetRect.Right;
+                        nMarkupLineNumber = zMarkup.LineNumber;
+                    }
+                    else
+                    {
+                        // get the max bounds
+                        fY = Math.Min(fY, zMarkup.TargetRect.Y);
+                        fX = Math.Min(fX, zMarkup.TargetRect.X);
+                        fBottom = Math.Max(fBottom, zMarkup.TargetRect.Bottom);
+                        fRight = Math.Max(fRight, zMarkup.TargetRect.Right);
+                    }
+                }
 
                 // check if the markup is closed
                 if (typeof(CloseTagMarkup) == zMarkup.GetType() &&
                     this == ((CloseTagMarkup)zMarkup).MarkupToClose)
                     break;
-
-                m_listRectangles.Add(zMarkup.TargetRect);
             }
 
+            // always add the last markup (should never be null)
+            AddRowRectangle(new RectangleF(fX, fY, fRight - fX, fBottom - fY));
+
             return true;
+        }
+
+        private void AddRowRectangle(RectangleF rect)
+        {
+            if (RectangleF.Empty != rect)
+            {
+                m_listRectangles.Add(rect);
+            }
         }
 
         public override bool Render(ProjectLayoutElement zElement, Graphics zGraphics)
@@ -87,7 +147,7 @@ namespace CardMaker.Card.FormattedText.Markup
             zGraphics.SmoothingMode = SmoothingMode.None;
             foreach (var rect in m_listRectangles)
             {
-                var rectAdjusted = new RectangleF(rect.X + m_fXOffset, rect.Y + m_fYOffset, rect.Width, rect.Height + m_fAdditionalPixels);
+                var rectAdjusted = new RectangleF(rect.X + m_fXOffset, rect.Y + m_fYOffset, rect.Width + m_fAdditionalHorizontalPixels, rect.Height + m_fAdditionalVerticalPixels);
 
                 // do not draw any rectangles outside of the element
                 rectAdjusted.Height = Math.Min(rectAdjusted.Bottom - rectAdjusted.Top, zElement.y + zElement.height);

@@ -77,7 +77,7 @@ namespace CardMaker.Card
             // - Configure per-markup settings based on state of markup stack
             // - Generate list of markups to continue to process (those that are used in the next pass)
             // - Specify Markup rectanlges
-            // - Generate markup rows
+            // - Generate markup rows (LineNumber is usable AFTER this process)
             int nIdx;
             MarkupBase zMarkup;
             for (nIdx = 0; nIdx < zFormattedData.AllMarkups.Count; nIdx++)

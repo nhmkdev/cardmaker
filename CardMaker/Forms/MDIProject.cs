@@ -575,7 +575,18 @@ namespace CardMaker.Forms
             }
         }
 
-#endregion
+        private void windowsExplorerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(string.IsNullOrWhiteSpace(ProjectManager.Instance.ProjectPath)) return;
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+            {
+                FileName = ProjectManager.Instance.ProjectPath,
+                UseShellExecute = true,
+                Verb = "open"
+            });
+        }
+
+        #endregion
 
         /// <summary>
         /// Updates the selected layout node color (if applicable)

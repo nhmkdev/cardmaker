@@ -71,13 +71,14 @@ namespace CardMaker.Card.FormattedText
 
         public void AddFontStyle(FontStyle eStyle, Graphics zGraphics)
         {
-            SetFont(new Font(Font, Font.Style | eStyle), zGraphics);
+            var eNewStyle = Font.Style | eStyle;
+            SetFont(FontLoader.GetFont(Font.FontFamily, Font.Size, eNewStyle), zGraphics);
         }
 
         public void RemoveFontStyle(FontStyle eStyle, Graphics zGraphics)
         {
-            FontStyle eNewStyle = Font.Style & ~eStyle;
-            SetFont(new Font(Font, eNewStyle), zGraphics);
+            var eNewStyle = Font.Style & ~eStyle;
+            SetFont(FontLoader.GetFont(Font.FontFamily, Font.Size, eNewStyle), zGraphics);
         }
 
         public void MoveToNextLine(ProjectLayoutElement zElement)

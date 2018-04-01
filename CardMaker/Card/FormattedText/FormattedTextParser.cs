@@ -115,6 +115,7 @@ namespace CardMaker.Card.FormattedText
                             var zMarkupTypeToSeek = MarkupUtil.GetMarkupType(sTagName);
                             if (null != zMarkupTypeToSeek)
                             {
+#warning no markup stack support... 
                                 for (int nMarkup = listMarkups.Count - 1; nMarkup > -1; nMarkup--)
                                 {
                                     if (listMarkups[nMarkup].GetType() == zMarkupTypeToSeek)
