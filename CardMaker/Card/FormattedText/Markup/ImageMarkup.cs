@@ -54,7 +54,9 @@ namespace CardMaker.Card.FormattedText.Markup
 
             m_zBmp = ImageCache.LoadCustomImageFromCache(m_sImageFile, zElement);
 
-            if (null == m_zBmp)
+            if (null == m_zBmp 
+                || m_zBmp.Width == 0 
+                || m_zBmp.Height == 0)
             {
                 return false;
             }
@@ -110,11 +112,12 @@ namespace CardMaker.Card.FormattedText.Markup
             m_fXOffset += zProcessData.CurrentXOffset;
             m_fYOffset += zProcessData.CurrentYOffset;
 
+            var fAspectRatio = (float)m_zBmp.Width / (float)m_zBmp.Height;
+
             if (-1f != fLineHeightPercent)
             {
-                var aspectRatio = TargetRect.Width / TargetRect.Height;
                 var fNewHeight = fLineHeightPercent * (zProcessData.FontHeight == 0f ? 1f : (float)zProcessData.FontHeight);
-                var fNewWidth = fNewHeight * aspectRatio;
+                var fNewWidth = fNewHeight * fAspectRatio;
                 TargetRect = new RectangleF(zProcessData.CurrentX, zProcessData.CurrentY, fNewWidth, fNewHeight);
             }
 
@@ -128,7 +131,8 @@ namespace CardMaker.Card.FormattedText.Markup
             // cap off excessively wide images
             if (TargetRect.Width + TargetRect.X > zElement.width)
             {
-                TargetRect = new RectangleF(TargetRect.X, TargetRect.Y, zElement.width, TargetRect.Height);
+                var fNewHeight = zElement.width / fAspectRatio;
+                TargetRect = new RectangleF(TargetRect.X, TargetRect.Y, zElement.width, fNewHeight);
             }
 
             // Center the image on the line based on font height or line height (todo figure out which...)
