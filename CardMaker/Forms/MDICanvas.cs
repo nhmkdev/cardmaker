@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using CardMaker.Card;
 using CardMaker.Data;
@@ -331,7 +332,6 @@ namespace CardMaker.Forms
 
         private void cardCanvas_MouseMove(object sender, MouseEventArgs e)
         {
-#warning this would be better with event handler subscribing/unsubscribing (didn't work so well with the 60 seconds I invested in trying it)
             switch (m_eMouseMode)
             {
                 case MouseMode.Rotate:
@@ -346,7 +346,6 @@ namespace CardMaker.Forms
 
         private void cardCanvas_MouseMoveRotateMode(object sender, MouseEventArgs e)
         {
-#warning this is a really bad place for this... maybe switch the mouse handler if in rotate only mode
             if (m_eMouseMode == MouseMode.Rotate)
             {
                 if (MouseButtons.Left == e.Button)
@@ -497,6 +496,13 @@ namespace CardMaker.Forms
                     var nEdgeTop = (int) (zElement.y*m_fZoom - SELECTION_BUFFER);
                     var nEdgeBottom = (int) (zElement.y*m_fZoom + zElement.height*m_fZoom + SELECTION_BUFFER);
 
+                    var regionElementRotated = getRotatedElementRegion(zElement);
+
+#if false
+                    // convenient for debugging...
+                    if (regionElementRotated != null) m_zCardCanvas.CreateGraphics().FillRegion(Brushes.Black, regionElementRotated);
+#endif
+
                     // first verify the cursor is within the SELECTION_BUFFER sized area
                     if ((nX >= (nEdgeLeft)) && (nX <= (nEdgeRight)) &&
                         (nY >= (nEdgeTop)) && (nY <= (nEdgeBottom)))
@@ -550,6 +556,11 @@ namespace CardMaker.Forms
                                 break;
                         }
                     }
+                    else if (null != regionElementRotated && regionElementRotated.IsVisible(e.Location))
+                    {
+                        Cursor = Cursors.SizeAll;
+                        m_eResizeDirection = ResizeDirection.Move;
+                    }
                     else
                     {
                         Cursor = Cursors.Default;
@@ -600,14 +611,17 @@ namespace CardMaker.Forms
                         TranslationLockState = TranslationLock.Unset;
                     }
 
-                    int nX = e.X;
-                    int nY = e.Y;
+                    var regionElementRotated = getRotatedElementRegion(zElement);
+
+                    var nX = e.X;
+                    var nY = e.Y;
 
                     if ((nX >= (int) (zElement.x*m_fZoom - SELECTION_BUFFER) &&
                          nX <= (int) (zElement.x*m_fZoom + zElement.width*m_fZoom + SELECTION_BUFFER)) &&
                         (nY >= (int) (zElement.y*m_fZoom - SELECTION_BUFFER) &&
                          nY <= (int) (zElement.y*m_fZoom + zElement.height*m_fZoom + SELECTION_BUFFER))
-                        || m_eMouseMode == MouseMode.Rotate)
+                        || m_eMouseMode == MouseMode.Rotate
+                        || (null != regionElementRotated && regionElementRotated.IsVisible(e.Location)))
                     {
                         // Setup the start position and allow movement
                         var nXUnzoomed = (int) ((float) nX*m_fZoomRatio);
@@ -966,7 +980,7 @@ namespace CardMaker.Forms
             ExportManager.Instance.ExportRequested(this, new ExportEventArgs(ExportType.SingleImageClipboard));
         }
 
-        #endregion
+#endregion
 
         /// <summary>
         /// Invalidates the panel and card canvas
@@ -975,6 +989,33 @@ namespace CardMaker.Forms
         {
             panelCardCanvas.Invalidate();
             m_zCardCanvas.Invalidate();
+        }
+
+        private Region getRotatedElementRegion(ProjectLayoutElement zElement)
+        {
+            if (0f == zElement.rotation) return null;
+
+#warning consider caching all this...
+            //var cacheKey = zElement.name + "::" + m_fZoom;
+
+            var graphicsPath = new GraphicsPath();
+
+            var pointCenter = new PointF(
+                (((float)zElement.width) / 2f) + (float)zElement.x,
+                (((float)zElement.height) / 2f) + (float)zElement.y
+            );
+
+            var rectElement = new RectangleF(zElement.x, zElement.y, zElement.width, zElement.height);
+
+            graphicsPath.AddRectangle(rectElement);
+
+            var matrix = new Matrix();
+            matrix.Scale(m_fZoom, m_fZoom);
+            matrix.RotateAt(zElement.rotation, pointCenter);
+
+            graphicsPath.Transform(matrix);
+
+            return new Region(graphicsPath);
         }
 
         private bool ResizeRight(int nX)

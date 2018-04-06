@@ -1,6 +1,7 @@
 Card Maker Version History
 --------------------------
 1.0.0.2
+- Added ability to translate rotated elements within the original and resulting bounds
 - Fixed issue with Local Google Cache
 - Fixed crash related to clearing the Image Cache and FormattedText (hopefully)
 - Added individual export button to the canvas toolbar

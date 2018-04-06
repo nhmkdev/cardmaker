@@ -34,10 +34,17 @@ namespace CardMaker.Card.Render
         {
             if (0 != zElement.rotation)
             {
+                var fTranslateX = (float) zElement.width / 2f;
+                var fTranslateY = (float) zElement.height / 2f;
+
                 // center the internal element then rotate and restore
-                zGraphics.TranslateTransform(zElement.x + nX + (zElement.width >> 1), zElement.y + nY + (zElement.height >> 1));
+                zGraphics.TranslateTransform(
+                    (float)zElement.x + (float)nX + fTranslateX, 
+                    (float)zElement.y + (float)nY + fTranslateY);
                 zGraphics.RotateTransform(zElement.rotation);
-                zGraphics.TranslateTransform(-(zElement.width >> 1), -(zElement.height >> 1));
+                zGraphics.TranslateTransform(
+                    -fTranslateX, 
+                    -fTranslateY);
                 if (CardMakerInstance.DrawElementBorder && CardMakerInstance.DrawSelectedElementRotationBounds && !bExport)
                 {
                     zGraphics.DrawRectangle(Pens.LightGreen, 0, 0, zElement.width - 1, zElement.height - 1);
