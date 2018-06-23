@@ -46,6 +46,8 @@ namespace CardMaker.Card.Translation
         {
             using (var engine = new V8ScriptEngine())
             {
+                var hostFunctions = new JavascriptHostFunctions(zElement);
+                engine.AddHostObject("host", Microsoft.ClearScript.HostItemFlags.GlobalMembers, hostFunctions);
                 var sScript = GetJavaScript(nCardIndex, zDeckLine, sRawString);
                 try
                 {
@@ -54,7 +56,8 @@ namespace CardMaker.Card.Translation
                     {
                         return new ElementString()
                         {
-                            String = sValue.ToString()
+                            String = sValue.ToString(),
+                            OverrideFieldToValueDictionary = hostFunctions.dictionaryOverrideFieldToValue
                         };
                     }
                     else

@@ -47,6 +47,16 @@ namespace CardMaker.Card.Translation
         protected readonly Dictionary<string, ElementString> m_dictionaryElementStringCache = new Dictionary<string, ElementString>();
         protected readonly Dictionary<string, FormattedTextDataCache> m_dictionaryMarkupCache = new Dictionary<string, FormattedTextDataCache>();
 
+        private static readonly HashSet<string> s_setDisallowedOverrideFields = new HashSet<string>()
+        {
+            "name",
+            "variable"
+        };
+        public static bool IsDisallowedOverrideField(string sField)
+        {
+            return s_setDisallowedOverrideFields.Contains(sField);
+        }
+
         protected TranslatorBase(Dictionary<string, int> dictionaryColumnNameToIndex, Dictionary<string, string> dictionaryDefines,
             Dictionary<string, Dictionary<string, int>> dictionaryElementToFieldColumnOverrides, List<string> listColumnNames)
         {

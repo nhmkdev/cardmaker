@@ -69,13 +69,7 @@ namespace CardMaker.Card.Translation
         private static readonly Regex s_regexSwitchStatement = new Regex(@"(switch)(;)(.*?)(;)(.*)", RegexOptions.Compiled);
 
         private const string SWITCH = "switch";
-
-        private static readonly HashSet<string> s_setDisallowedOverrideFields = new HashSet<string>()
-        {
-            "name",
-            "variable"
-        };
-
+        
         private const string SWITCH_DEFAULT = "#default";
         private readonly string[] ArraySwitchDelimiter = new string[] {";"};
 
@@ -366,7 +360,7 @@ namespace CardMaker.Card.Translation
                         var sField = zMatch.Groups[3].ToString().ToLower();
                         var sValue = zMatch.Groups[4].ToString();
 
-                        if (!s_setDisallowedOverrideFields.Contains(sField))
+                        if (!IsDisallowedOverrideField(sField))
                         {
                             // empty override values are discarded (matches reference overrides)
                             if (!string.IsNullOrWhiteSpace(sValue))
