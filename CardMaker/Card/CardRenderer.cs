@@ -44,7 +44,12 @@ namespace CardMaker.Card
         // it's not spring, it's hard coded!
         private static readonly IDrawGraphic s_zDrawGraphic = new DrawGraphic();
         private static readonly IDrawFormattedText s_zDrawFormattedText = new DrawFormattedText();
-        private static readonly IDrawText s_zDrawText = new DrawTextGraphics();
+        private static readonly IDrawText s_zDrawText =
+#if false
+            new DrawTextTextRenderer();
+#else
+            new DrawTextGraphics();
+#endif
         private static readonly IShapeRenderer s_zShapeRenderer = new ShapeManager();
 
         /// <summary>

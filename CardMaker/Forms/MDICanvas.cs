@@ -497,7 +497,6 @@ namespace CardMaker.Forms
                     var nEdgeBottom = (int) (zElement.y*m_fZoom + zElement.height*m_fZoom + SELECTION_BUFFER);
 
                     var regionElementRotated = getRotatedElementRegion(zElement);
-
 #if false
                     // convenient for debugging...
                     if (regionElementRotated != null) m_zCardCanvas.CreateGraphics().FillRegion(Brushes.Black, regionElementRotated);
