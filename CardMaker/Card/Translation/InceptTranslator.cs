@@ -206,7 +206,7 @@ namespace CardMaker.Card.Translation
                     {
                         sValue = sValue.Length >= nStartIdx + nLength
                             ? sValue.Substring(nStartIdx, nLength)
-                            : "[Invalid substring requested]";
+                            : string.Empty;
                     }
 
 

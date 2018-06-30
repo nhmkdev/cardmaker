@@ -16,6 +16,7 @@ Card Maker Version History
 - Added switch alternative with a different delimiter (customizable!)
 - Fixed problem with random number functionality (text after the replacement was lost!)
 - Fixed issue with justified text (not clear it was even functional...)
+- Removed translation for substrings that results in an error message (now it will just translate to an empty string)
 
 1.0.0.1
 - Added divider functionality
