@@ -456,11 +456,11 @@ namespace UnitTest.DeckObject
         }
 
         [TestCase("%[0,0,1]", Result = @"0")]
-        [TestCase("%[0,0,2]", Result = @"[Invalid substring requested]")]
+        [TestCase("%[0,0,2]", Result = "")]
         [TestCase("A%[0,0,1]", Result = @"A0")]
-        [TestCase("A%[0,0,2]", Result = @"A[Invalid substring requested]")]
+        [TestCase("A%[0,0,2]", Result = @"A")]
         [TestCase("%[0,0,1]B", Result = @"0B")]
-        [TestCase("%[0,0,2]B", Result = @"[Invalid substring requested]B")]
+        [TestCase("%[0,0,2]B", Result = @"B")]
         [TestCase("%[@[L4],2,1]", Result = @"b")]
         [TestCase("%[sample,4,2]", Result = "le" )]
         [TestCase("%[sam,le,4,2]", Result = "le")]

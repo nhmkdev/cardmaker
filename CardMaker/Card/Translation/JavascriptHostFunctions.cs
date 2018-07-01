@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using CardMaker.XML;
 using Support.IO;
 using Support.UI;
@@ -21,18 +18,14 @@ namespace CardMaker.Card.Translation
 
         public void AddOverrideField(string sField, string sValue)
         {
-            if (!TranslatorBase.IsDisallowedOverrideField(sField))
+            if (TranslatorBase.IsDisallowedOverrideField(sField))
             {
-                // empty override values are discarded (matches reference overrides)
-                if (!string.IsNullOrWhiteSpace(sValue))
-                {
-                    dictionaryOverrideFieldToValue[sField] = sValue;
-                }
+                Logger.AddLogLine("[{1}] override not allowed on element: [{0}]".FormatString(m_zElement.name, sField));
             }
-            else
+            // empty override values are discarded (matches reference overrides)
+            else if (!string.IsNullOrWhiteSpace(sValue))
             {
-                Logger.AddLogLine(
-                    "[{1}] override not allowed on element: [{0}]".FormatString(m_zElement.name, sField));
+                dictionaryOverrideFieldToValue[sField] = sValue;
             }
         }
 

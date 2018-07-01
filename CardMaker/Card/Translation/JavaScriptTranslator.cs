@@ -52,7 +52,7 @@ namespace CardMaker.Card.Translation
                 try
                 {
                     var sValue = engine.Evaluate(sScript);
-                    if (sValue is string || sValue is int)
+                    if (sValue is string || sValue is int || sValue is double)
                     {
                         return new ElementString()
                         {

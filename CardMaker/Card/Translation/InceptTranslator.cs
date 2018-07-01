@@ -360,18 +360,15 @@ namespace CardMaker.Card.Translation
                         var sField = zMatch.Groups[3].ToString().ToLower();
                         var sValue = zMatch.Groups[4].ToString();
 
-                        if (!IsDisallowedOverrideField(sField))
-                        {
-                            // empty override values are discarded (matches reference overrides)
-                            if (!string.IsNullOrWhiteSpace(sValue))
-                            {
-                                dictionaryOverrideFieldToValue[sField] = sValue;
-                            }
-                        }
-                        else
+                        if (IsDisallowedOverrideField(sField))
                         {
                             Logger.AddLogLine(
                                 "[{1}] override not allowed on element: [{0}]".FormatString(zElement.name, sField));
+                        }
+                        // empty override values are discarded (matches reference overrides)
+                        else if (!string.IsNullOrWhiteSpace(sValue))
+                        {
+                            dictionaryOverrideFieldToValue[sField] = sValue;
                         }
 
                         return zMatch.Groups[1].Value + zMatch.Groups[6].Value;
