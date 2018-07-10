@@ -87,6 +87,13 @@ namespace CardMaker.Card.Export
             for (var nIdx = ExportLayoutStartIndex; nIdx < ExportLayoutEndIndex; nIdx++)
             {
                 ChangeExportLayoutIndex(nIdx);
+                if (CurrentDeck.EmptyReference)
+                {
+                    // empty reference layouts are not exported
+                    zWait.ProgressStep(0);
+                    continue;
+                }
+
                 zWait.ProgressReset(1, 0, CurrentDeck.CardCount, 0);
 
                 ConfigurePointSizes(CurrentDeck.CardLayout);

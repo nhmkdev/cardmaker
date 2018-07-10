@@ -57,7 +57,7 @@ namespace UnitTest.DeckObject
             List<List<string>> listDefineLines,
             string sReferencePath)
         {
-            ProcessLines(listLines, listDefineLines, "unittestref");
+            ProcessLines(listLines, listDefineLines, false, "unittestref");
         }
 
         public string GetDefine(string key)

@@ -28,7 +28,6 @@ using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using CardMaker.Data;
-using CardMaker.XML;
 using Support.IO;
 using Support.UI;
 
@@ -65,6 +64,12 @@ namespace CardMaker.Card.Export
             for (var nIdx = ExportLayoutStartIndex; nIdx < ExportLayoutEndIndex; nIdx++)
             {
                 ChangeExportLayoutIndex(nIdx);
+                if (CurrentDeck.EmptyReference)
+                {
+                    // empty reference layouts are not exported
+                    zWait.ProgressStep(0);
+                    continue;
+                }
                 var nPadSize = CurrentDeck.CardCount.ToString(CultureInfo.InvariantCulture).Length;
                 zWait.ProgressReset(1, 0, CurrentDeck.CardCount, 0);
 

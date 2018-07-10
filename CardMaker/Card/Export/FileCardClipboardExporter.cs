@@ -24,13 +24,9 @@
 
 using System;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.Globalization;
-using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 using CardMaker.Data;
-using CardMaker.Events.Managers;
 using Support.IO;
 using Support.UI;
 

@@ -57,6 +57,8 @@ namespace CardMaker.Card
 
         public Dictionary<string, string> Defines => m_zTranslator.DictionaryDefines;
 
+        public bool EmptyReference { get; protected set; }
+
         public int CardIndex
         {
             get
@@ -105,6 +107,7 @@ namespace CardMaker.Card
 
         public Deck()
         {
+            EmptyReference = false;
             ValidLines = new List<DeckLine>();
             TranslatorFactory = new TranslatorFactory();
         }
@@ -194,12 +197,15 @@ namespace CardMaker.Card
                 }
             }
 
-            ProcessLines(listLines, listDefineLines, zRefReader?.ReferencePath);
+            ProcessLines(
+                listLines, 
+                listDefineLines, 
+                zReferenceData != null && zReferenceData.Length > 0, 
+                zRefReader?.ReferencePath);
         }
 
         protected void ProcessLines(List<List<string>> listLines, 
-            List<List<string>> listDefineLines,
-            string sReferencePath)
+            List<List<string>> listDefineLines, bool bHasReferences, string sReferencePath)
         {
 #warning this method is horribly long
 
@@ -335,29 +341,37 @@ namespace CardMaker.Card
                     }
                 }
             }
+
             // always create a line
-            if (0 == ValidLines.Count && 0 < nDefaultCount)
+            if (0 == ValidLines.Count)
             {
-                // create the default number of lines.
-                for (int nIdx = 0; nIdx < nDefaultCount; nIdx++)
+                // if there are no entries in the deck we note it for the sake of exports (no need to create a default junk item)
+                if (bHasReferences) EmptyReference = true;
+
+                if (0 < nDefaultCount)
                 {
-                    if (0 < listColumnNames.Count)// create each line and the correct number of columns
+                    // create the default number of lines.
+                    for (int nIdx = 0; nIdx < nDefaultCount; nIdx++)
                     {
-                        var arrayDefaultLine = new List<string>();
-                        for (int nCol = 0; nCol < arrayDefaultLine.Count; nCol++)
+                        if (0 < listColumnNames.Count) // create each line and the correct number of columns
                         {
-                            arrayDefaultLine.Add(string.Empty);
+                            var arrayDefaultLine = new List<string>();
+                            for (int nCol = 0; nCol < arrayDefaultLine.Count; nCol++)
+                            {
+                                arrayDefaultLine.Add(string.Empty);
+                            }
+                            ValidLines.Add(new DeckLine(arrayDefaultLine));
                         }
-                        ValidLines.Add(new DeckLine(arrayDefaultLine));
+                        else // no columns just create an empty row
+                        {
+                            ValidLines.Add(new DeckLine(new List<string>()));
+                        }
                     }
-                    else // no columns just create an empty row
+                    if (!string.IsNullOrEmpty(sReferencePath))
                     {
-                        ValidLines.Add(new DeckLine(new List<string>()));
+                        IssueManager.Instance.FireAddIssueEvent(
+                            "No lines found for this layout! Generated " + nDefaultCount);
                     }
-                }
-                if (!string.IsNullOrEmpty(sReferencePath))
-                {
-                    IssueManager.Instance.FireAddIssueEvent("No lines found for this layout! Generated " + nDefaultCount);
                 }
             }
 
@@ -527,6 +541,8 @@ namespace CardMaker.Card
         #region Layout Set
         public void SetAndLoadLayout(ProjectLayout zLayout, bool bExporting)
         {
+            EmptyReference = false;
+
             CardLayout = zLayout;
 
             ResetPrintCardIndex();
