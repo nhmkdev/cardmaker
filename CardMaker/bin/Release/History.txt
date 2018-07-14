@@ -1,6 +1,7 @@
 Card Maker Version History
 --------------------------
 1.0.0.2
+- The opacity of inline elements can be specified with an alpha value on the element color (assuming I am happy with the outcome).
 - Updated project wide export image/pdf to skip layouts with references but no actual entries
 - Removed translation for substrings that results in an error message (now it will just translate to an empty string)
 - Added AddOverrideField to JavaScript definition functionality (Thanks to salmelo - github pull request)

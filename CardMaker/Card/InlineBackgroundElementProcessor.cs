@@ -139,10 +139,11 @@ namespace CardMaker.Card
             }
 
             zBgShapeElement.InitializeTranslatedFields();
+            zBgShapeElement.opacity = zBgShapeElement.GetElementColor().A;
 
             zShapeRenderer.HandleShapeRender(zGraphics, zBgShapeElement.variable, zBgShapeElement, nXOffset, nYOffset);
 
-            return sInput.Replace(sToReplace, String.Empty);
+            return sInput.Replace(sToReplace, string.Empty);
         }
     }
 }
