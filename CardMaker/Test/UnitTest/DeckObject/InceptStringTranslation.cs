@@ -145,6 +145,8 @@ namespace UnitTest.DeckObject
         [TestCase("#(switch;45;15;nothing;45;;#default;stuff)#", Result = "")]
         [TestCase("#(switch;;15;nothing;;;#default;stuff)#", Result = "")]
         [TestCase("#(switch;;15;nothing;;result;#default;stuff)#", Result = "result")]
+        [TestCase("#(switch;85;15;nothing;;result;#default;#switchkey)#", Result = "85")]
+        [TestCase("#(switch;85;15;nothing;;result;#default;)#", Result = "")]
         // this is proof of the switch using the ; delimiter is broken
         [TestCase("#(switch;;15;nothing;#empty;result;#default;<img=test.png;.8)#", Result = "switch;;15;nothing;;result;#default;<img=test.png;.8")]
         public string ValidateSwitchLogic(string input)

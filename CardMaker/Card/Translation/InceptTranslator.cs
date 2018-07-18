@@ -71,6 +71,7 @@ namespace CardMaker.Card.Translation
         private const string SWITCH = "switch";
         
         private const string SWITCH_DEFAULT = "#default";
+        private const string SWITCH_KEY = "#switchkey";
         private readonly string[] ArraySwitchDelimiter = new string[] {";"};
 
         public InceptTranslator(Dictionary<string, int> dictionaryColumnNameToIndex,
@@ -676,7 +677,9 @@ namespace CardMaker.Card.Translation
 
             if (-1 < nDefaultIndex)
             {
-                return arrayCases[nDefaultIndex + 1];
+                return arrayCases[nDefaultIndex + 1].Equals(SWITCH_KEY, StringComparison.CurrentCultureIgnoreCase)
+                    ? sKey
+                    : arrayCases[nDefaultIndex + 1];
             }
 
             return sInput;
