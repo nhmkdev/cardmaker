@@ -116,12 +116,22 @@ namespace Support.UI
             MarkClean();
         }
 
+	    protected bool IsOpenCanceledByDirty()
+	    {
+	        // need to check if there is something to save
+	        var cancelEventArgs = new CancelEventArgs();
+	        SaveOnEvent(cancelEventArgs, true);
+	        return cancelEventArgs.Cancel;
+	    }
+
 		/// <summary>
 		/// Initializes the Open process via the OpenFileDialog
 		/// </summary>
 		protected void InitOpen()
 		{
-		    var ofn = new OpenFileDialog
+            if(IsOpenCanceledByDirty()) return;
+
+            var ofn = new OpenFileDialog
 		    {
 		        InitialDirectory = GetDialogDirectory(),
                 Filter = 0 == m_sFileOpenFilter.Length 
@@ -155,7 +165,9 @@ namespace Support.UI
 		/// <returns>true on success, false otherwise</returns>
 		protected bool InitOpen(string sFileName)
 		{
-			if(OpenFormData(sFileName))
+		    if (IsOpenCanceledByDirty()) return false;
+
+            if (OpenFormData(sFileName))
 			{
                 SetLoadedFile(sFileName);
 				return true;

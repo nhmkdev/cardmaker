@@ -1,6 +1,7 @@
 Card Maker Version History
 --------------------------
 1.0.0.2
+- Fixed open functions (recents and open) to prompt if the current project has not been saved
 - Added #switchkey functionality to switch statements so the key can be referenced
 - The opacity of inline elements can be specified with an alpha value on the element color (assuming I am happy with the outcome).
 - Updated project wide export image/pdf to skip layouts with references but no actual entries
