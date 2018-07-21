@@ -526,7 +526,7 @@ namespace CardMaker.Forms
                     Logger.AddLogLine("Unable to set element size. Is an element selected?");
                     return;
                 }
-                var zBmp = ImageCache.LoadCustomImageFromCache(txtElementVariable.Text, zElement);
+                var zBmp = ImageCache.LoadCustomImageFromCache(CardPathUtil.getPath(txtElementVariable.Text), zElement);
                 if (null == zBmp)
                 {
                     // attempt a translated version of the element variable

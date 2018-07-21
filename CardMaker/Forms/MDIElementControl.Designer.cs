@@ -305,7 +305,7 @@ namespace CardMaker.Forms
             // 
             this.numericWordSpace.Location = new System.Drawing.Point(421, 32);
             this.numericWordSpace.Minimum = new decimal(new int[] {
-            100,
+            1000,
             0,
             0,
             -2147483648});

@@ -94,6 +94,7 @@
     <Compile Include="Card\CardCanvas.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Card\CardPathUtil.cs" />
     <Compile Include="Card\CardRenderer.cs" />
     <Compile Include="Card\Deck.cs" />
     <Compile Include="Card\DeckLine.cs" />

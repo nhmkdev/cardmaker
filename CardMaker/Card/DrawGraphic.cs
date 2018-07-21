@@ -27,7 +27,6 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
 using System.Text.RegularExpressions;
-using CardMaker.Data;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
 using Support.Util;
@@ -39,28 +38,18 @@ namespace CardMaker.Card
         //                                                          1    2  3
         private static readonly Regex regexImageTile = new Regex(@"(.+?)(x)(.+)", RegexOptions.Compiled);
 
-        private const string APPLICATION_FOLDER_MARKER = "{appfolder}";
-
         public void DrawGraphicFile(Graphics zGraphics, string sFile, ProjectLayoutElement zElement, int nXGraphicOffset = 0, int nYGraphicOffset = 0)
         {
             var sPath = sFile;
-            if (string.IsNullOrEmpty(sFile)
+            if (string.IsNullOrEmpty(sPath)
                 || sPath.Equals("none", StringComparison.CurrentCultureIgnoreCase))
             {
                 return;
             }
-            if (sPath.StartsWith(APPLICATION_FOLDER_MARKER))
-            {
-                sPath = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location),
-                    sPath.Replace(APPLICATION_FOLDER_MARKER, string.Empty));
-            }
+            sPath = CardPathUtil.getPath(sPath);
             if (!File.Exists(sPath))
             {
-                sPath = ProjectManager.Instance.ProjectPath + sFile;
-            }
-            if (!File.Exists(sPath))
-            {
-                IssueManager.Instance.FireAddIssueEvent("Image file not found: " + sFile);
+                IssueManager.Instance.FireAddIssueEvent("Image file not found: " + sPath);
                 return;
             }
 
@@ -84,7 +73,7 @@ namespace CardMaker.Card
                     nTileWidth = Math.Max(1, nTileWidth);
                     nTileHeight = Math.Max(1, nTileHeight);
 
-                    zBmp = ImageCache.LoadCustomImageFromCache(sFile, zElement, nTileWidth, nTileHeight);
+                    zBmp = ImageCache.LoadCustomImageFromCache(sPath, zElement, nTileWidth, nTileHeight);
                 }
                 using (var zTextureBrush = new TextureBrush(zBmp, WrapMode.Tile))
                 {
