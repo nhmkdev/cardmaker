@@ -95,7 +95,7 @@ namespace CardMaker.Card.Translation
 
             for (int nIdx = 0; nIdx < ListColumnNames.Count; nIdx++)
             {
-                AddVar(zBuilder, ListColumnNames[nIdx], zDeckLine.LineColumns[nIdx]);
+                AddVar(zBuilder, ListColumnNames[nIdx], zDeckLine.LineColumns.Count > nIdx ? zDeckLine.LineColumns[nIdx] : "");
             }
             zBuilder.Append(sDefintion);
             return zBuilder.ToString();
