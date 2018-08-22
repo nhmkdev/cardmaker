@@ -27,3 +27,5 @@
 /CardMaker/Test/UnitTest/obj/
 /packages/
 CardMaker.sln.DotSettings.user
+
+\.vs/
