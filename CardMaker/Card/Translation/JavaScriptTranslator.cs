@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using CardMaker.Events.Managers;
 using CardMaker.XML;
 using Microsoft.ClearScript.V8;
 using Support.IO;
@@ -116,22 +117,26 @@ namespace CardMaker.Card.Translation
             zBuilder.Append("=");
             // functions or single quoted items are left as-is
             // note this does not tolerate (whitespace)'
-            if (sValue.StartsWith(FUNCTION_PREFIX))
+            if (sValue.StartsWith(FUNCTION_PREFIX) && ProjectManager.Instance.LoadedProject.jsKeepFunctions)
             {
                 zBuilder.AppendLine(sValue);
             }
-            else if (sValue.StartsWith("'"))
+            else if (sValue.StartsWith("'") && !ProjectManager.Instance.LoadedProject.jsEscapeSingleQuotes)
             {
                 zBuilder.Append(sValue);
                 zBuilder.AppendLine(";");
             }
-            else if (sValue.StartsWith("~"))
+            else if (sValue.StartsWith("~") && ProjectManager.Instance.LoadedProject.jsTildeMeansCode)
             {
                 zBuilder.Append(sValue.Substring(1));
                 zBuilder.AppendLine(";");
             }
             else
             {
+                if (ProjectManager.Instance.LoadedProject.jsEscapeSingleQuotes)
+                {
+                    sValue = sValue.Replace("'", @"\'");
+                }
                 zBuilder.Append("'");
                 zBuilder.Append(sValue);
                 zBuilder.AppendLine("';");
