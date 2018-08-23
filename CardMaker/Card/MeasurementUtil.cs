@@ -35,5 +35,15 @@ namespace CardMaker.Card
         {
             return dCentimeter / 2.54d;
         }
+
+        public static double GetMillimetersFromInch(double dMillimeter)
+        {
+            return dMillimeter * 25.4d;
+        }
+
+        public static double GetCentimetersFromInch(double dCentimeter)
+        {
+            return dCentimeter * 2.54d;
+        }
     }
 }

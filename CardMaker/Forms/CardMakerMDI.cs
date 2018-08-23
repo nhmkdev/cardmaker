@@ -741,23 +741,6 @@ namespace CardMaker.Forms
             const string OUTPUT_FILE = "output_file";
             const string OPEN_ON_EXPORT = "open_on_export";
 
-            zQuery.AddPullDownBox("Page Orientation", 
-                new string[]
-                {
-                    PageOrientation.Portrait.ToString(),
-                    PageOrientation.Landscape.ToString()
-                },
-                m_nPdfExportLastOrientationIndex,
-                ORIENTATION);
-
-            zQuery.AddFileBrowseBox("Output File", m_sPdfExportLastFile, "PDF files (*.pdf)|*.pdf|All files (*.*)|*.*", OUTPUT_FILE);
-            zQuery.AddCheckBox("Open PDF on Export", m_bPdfExportLastOpen, OPEN_ON_EXPORT);
-
-            if (DialogResult.OK != zQuery.ShowDialog(this))
-            {
-                return;
-            }
-
             var nStartLayoutIdx = 0;
             var nEndLayoutIdx = ProjectManager.Instance.LoadedProject.Layout.Length;
             if (!bExportAllLayouts)
@@ -770,6 +753,30 @@ namespace CardMaker.Forms
                 }
                 nStartLayoutIdx = nIdx;
                 nEndLayoutIdx = nIdx + 1;
+            }
+
+            zQuery.AddPullDownBox("Page Orientation", 
+                new string[]
+                {
+                    PageOrientation.Portrait.ToString(),
+                    PageOrientation.Landscape.ToString()
+                },
+                m_nPdfExportLastOrientationIndex,
+                ORIENTATION);
+
+            var sExportFileName = string.IsNullOrWhiteSpace(m_sPdfExportLastFile)
+                ? ProjectManager.Instance.ProjectPath + 
+                  (bExportAllLayouts 
+                      ? Path.GetFileNameWithoutExtension(ProjectManager.Instance.ProjectFilePath) + ".pdf" 
+                      : LayoutManager.Instance.ActiveLayout.Name + ".pdf")
+                : m_sPdfExportLastFile;
+
+            zQuery.AddFileBrowseBox("Output File", sExportFileName, "PDF files (*.pdf)|*.pdf|All files (*.*)|*.*", OUTPUT_FILE);
+            zQuery.AddCheckBox("Open PDF on Export", m_bPdfExportLastOpen, OPEN_ON_EXPORT);
+
+            if (DialogResult.OK != zQuery.ShowDialog(this))
+            {
+                return;
             }
 
             m_sPdfExportLastFile = zQuery.GetString(OUTPUT_FILE);
