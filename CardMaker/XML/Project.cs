@@ -44,6 +44,12 @@ namespace CardMaker.XML
 
         public string overrideDefineReferenceName { get; set; }
 
+        public bool jsEscapeSingleQuotes { get; set; }
+
+        public bool jsTildeMeansCode { get; set; } = true;
+
+        public bool jsKeepFunctions { get; set; } = true;
+
         #endregion
 
         /// <summary>

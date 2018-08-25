@@ -337,7 +337,10 @@ namespace Support.UI
                 }
                 if (nLargestHeight > 0)
                 {
-                    nLargestHeight = Math.Min(m_nMaxDesiredHeight, nLargestHeight);
+                    if (m_nMaxDesiredHeight > 0)
+                    {
+                        nLargestHeight = Math.Min(m_nMaxDesiredHeight, nLargestHeight);
+                    }
                     // hard coded extra vertical space
                     m_zForm.ClientSize = new Size(m_zForm.ClientSize.Width, nLargestHeight + 60);
                 }
