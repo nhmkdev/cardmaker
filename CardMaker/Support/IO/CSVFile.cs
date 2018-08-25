@@ -84,8 +84,15 @@ namespace Support.IO
                 {
                     switch (sLine[nIdx])
                     {
-                        case '\"':
-                            if (bQuote)
+                        case '"':
+
+                            if (sLine.Length > nIdx + 1 && sLine[nIdx + 1] == '"')
+                            {
+                                // insert csv standard double quotes escapes
+                                nIdx++;
+                                zBuilder.Append("\"");
+                            }
+                            else if (bQuote)
                             {
                                 if (bKeepQuotes)
                                 {
