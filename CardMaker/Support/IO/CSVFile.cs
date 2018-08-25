@@ -39,9 +39,9 @@ namespace Support.IO
         public string Filename { get; }
         public bool DisplayFullPath { get; set; }
 
-        private CSVFile() { }
+        public CSVFile() { }
 
-        public CSVFile(string sFile, bool bKeepQuotes, bool bReadEmptyLines, Encoding eEncoding)
+        public CSVFile(string sFile, Encoding eEncoding)
         {
             if (null == sFile)
                 // create an empty collection
@@ -54,13 +54,21 @@ namespace Support.IO
 
             m_sSourceFile = Path.GetFullPath(sFile);
             Filename = Path.GetFileName(sFile);
-            string[] arrayLines = File.ReadAllLines(m_sSourceFile, eEncoding);
+            var arrayLines = File.ReadAllLines(m_sSourceFile, eEncoding);
+            ProcessCSVLines(arrayLines);
+        }
+
+        public void ProcessCSVLines(string[] arrayLines)
+        {
+            m_listRawText.Clear();
+            m_listRows.Clear();
+
             var bQuote = false;
             var zBuilder = new StringBuilder();
             var listColumns = new List<string>();
             foreach (string sLine in arrayLines)
             {
-                if (0 == sLine.Trim().Length && !bReadEmptyLines)
+                if (0 == sLine.Trim().Length)
                 {
                     if (bQuote)
                     {
@@ -85,43 +93,38 @@ namespace Support.IO
                     switch (sLine[nIdx])
                     {
                         case '"':
-
-                            if (sLine.Length > nIdx + 1 && sLine[nIdx + 1] == '"')
+                            if (bQuote)
                             {
-                                // insert csv standard double quotes escapes
-                                nIdx++;
-                                zBuilder.Append("\"");
-                            }
-                            else if (bQuote)
-                            {
-                                if (bKeepQuotes)
+                                // detect csv standard double quotes escapes (excel for example)
+                                if (sLine.Length > nIdx + 1 && sLine[nIdx + 1] == '"')
                                 {
+                                    nIdx++; // jump past the other quote
                                     zBuilder.Append("\"");
                                 }
-
-                                listColumns.Add(zBuilder.ToString());
-                                // no further characters should be added so the builder is null'd
-                                zBuilder = null;
-                                nIdx++;
-                                // consume characters until a "," is found (nothing post close-quote is kept)
-                                while (nIdx < sLine.Length)
+                                else
                                 {
-                                    if (',' == sLine[nIdx])
-                                    {
-                                        zBuilder = new StringBuilder();
-                                        break;
-                                    }
+                                    listColumns.Add(zBuilder.ToString());
+                                    // no further characters should be added so the builder is null'd
+                                    zBuilder = null;
                                     nIdx++;
+                                    // consume characters until a "," is found (nothing post close-quote is kept)
+                                    while (nIdx < sLine.Length)
+                                    {
+                                        if (',' == sLine[nIdx])
+                                        {
+                                            zBuilder = new StringBuilder();
+                                            break;
+                                        }
+                                        nIdx++;
+                                    }
+                                    bQuote = false;
                                 }
-                                bQuote = false;
                             }
                             else
                             {
                                 // this throws out any previous text that came before the quote
                                 zBuilder = new StringBuilder();
                                 bQuote = true;
-                                if (bKeepQuotes)
-                                    zBuilder.Append("\"");
                             }
                             break;
                         case ',':

@@ -74,7 +74,7 @@ namespace CardMaker.Card.Import
             }
             try
             {
-                zCSVParser = new CSVFile(sCombinedPath, false, false, Encoding.UTF8);
+                zCSVParser = new CSVFile(sCombinedPath, Encoding.UTF8);
             }
             catch (Exception)
             {
@@ -86,7 +86,7 @@ namespace CardMaker.Card.Import
             {
                 var sTmpFile = sCombinedPath + "." + DateTime.Now.Millisecond + ".tmp";
                 File.Copy(sCombinedPath, sTmpFile);
-                zCSVParser = new CSVFile(sTmpFile, false, false, Encoding.UTF8);
+                zCSVParser = new CSVFile(sTmpFile, Encoding.UTF8);
                 File.Delete(sTmpFile); // remove the temp file
             }
 
