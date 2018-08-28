@@ -188,7 +188,7 @@ namespace CardMaker.Forms
             zQuery.AddTextBox("Name", "New Layout", false, NAME);
             zQuery.AddNumericBox("Width", 300, 1, Int32.MaxValue, WIDTH);
             zQuery.AddNumericBox("Height", 300, 1, Int32.MaxValue, HEIGHT);
-            zQuery.AddNumericBox("DPI", 300, 100, 9600, DPI);
+            zQuery.AddNumericBox("DPI", 300, 100, 600, DPI);
             if (DialogResult.OK == zQuery.ShowDialog(this))
             {
                 var zLayout = new ProjectLayout(zQuery.GetString(NAME))
