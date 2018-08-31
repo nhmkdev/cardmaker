@@ -25,10 +25,13 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using CardMaker.Data;
 using CardMaker.Events.Args;
 using CardMaker.XML;
 using Support.UI;
+using CardMaker.Card;
+using CardMaker.Forms;
 
 namespace CardMaker.Events.Managers
 {
@@ -157,20 +160,61 @@ namespace CardMaker.Events.Managers
                 return;
             }
 
+            ProcessElementsChange(m_listSelectedElements, nX, nY, nWidth, nHeight, dScaleWidth, dScaleHeight);
+        }
+
+        /// <summary>
+        /// Adjusts elements based on the passed in parameters
+        /// </summary>
+        /// <param name="mElementList">list of elements</param>
+        /// <param name="nX">x adjustment</param>
+        /// <param name="nY">y adjustment</param>
+        /// <param name="nWidth">width adjustment</param>
+        /// <param name="nHeight">height adjustment</param>
+        /// <param name="dScaleWidth">width scale</param>
+        /// <param name="dScaleHeight">height scale</param>
+        /// <param name="bScaleAllDimensions">scale element positions and visual properties</param>
+        public void ProcessElementsChange(IEnumerable<ProjectLayoutElement> mElementList, int nX, int nY, int nWidth, int nHeight, decimal dScaleWidth = 1, decimal dScaleHeight = 1, bool bScaleAllDimensions = false)
+        {
+            // TODO: consider breaking up the method, the input sets never overlap
+            // TODO: move to a central spot (maybe a static method in ElementManager?) -- problem is the need for the selected elements
+
             // construct a before and after dictionary
             Dictionary<ProjectLayoutElement, ElementPosition> dictionarySelectedUndo = GetUndoRedoPoints();
 
             if (dScaleWidth != 1 || dScaleHeight != 1)
             {
-                foreach (var zElement in m_listSelectedElements)
+                foreach (var zElement in mElementList)
                 {
                     zElement.width = (int)Math.Max(1, zElement.width * dScaleWidth);
                     zElement.height = (int)Math.Max(1, zElement.height * dScaleHeight);
+
+                    if(bScaleAllDimensions)
+                    {
+                        zElement.x = (int)Math.Max(1, zElement.x * dScaleWidth);
+                        zElement.y = (int)Math.Max(1, zElement.y * dScaleHeight);
+
+                        var eType = EnumUtil.GetElementType(zElement.type);
+                        switch (eType)
+                        {
+                            case ElementType.Text:
+                            case ElementType.FormattedText:
+                                var eFont = zElement.GetElementFont();
+                                var eNewFont = new Font(eFont.FontFamily, eFont.Size * (float)dScaleHeight, eFont.Style, eFont.Unit, eFont.GdiCharSet, eFont.GdiVerticalFont);
+                                zElement.SetElementFont(eNewFont);
+                                break;
+                        }
+
+                        if (null != LayoutManager.Instance.ActiveDeck)
+                        {
+                            LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElement.name);
+                        }
+                    }
                 }
             }
             else
             {
-                foreach (var zElement in m_listSelectedElements)
+                foreach (var zElement in mElementList)
                 {
                     zElement.x = zElement.x + nX;
                     zElement.y = zElement.y + nY;

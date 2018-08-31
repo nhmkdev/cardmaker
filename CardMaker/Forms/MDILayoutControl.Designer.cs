@@ -54,6 +54,7 @@ namespace CardMaker.Forms
         {
             this.components = new System.ComponentModel.Container();
             this.groupBoxCardSet = new System.Windows.Forms.GroupBox();
+            this.btnConfigureSize = new System.Windows.Forms.Button();
             this.checkLoadAllReferences = new System.Windows.Forms.CheckBox();
             this.btnScale = new System.Windows.Forms.Button();
             this.resizeBtn = new System.Windows.Forms.Button();
@@ -87,7 +88,7 @@ namespace CardMaker.Forms
             this.label2 = new System.Windows.Forms.Label();
             this.numericRowIndex = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
-            this.btnConfigureSize = new System.Windows.Forms.Button();
+            this.btnScaleDpi = new System.Windows.Forms.Button();
             this.groupBoxCardSet.SuspendLayout();
             this.contextMenuElements.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericCardSetDPI)).BeginInit();
@@ -101,6 +102,7 @@ namespace CardMaker.Forms
             // 
             // groupBoxCardSet
             // 
+            this.groupBoxCardSet.Controls.Add(this.btnScaleDpi);
             this.groupBoxCardSet.Controls.Add(this.btnConfigureSize);
             this.groupBoxCardSet.Controls.Add(this.checkLoadAllReferences);
             this.groupBoxCardSet.Controls.Add(this.btnScale);
@@ -129,6 +131,16 @@ namespace CardMaker.Forms
             this.groupBoxCardSet.TabIndex = 12;
             this.groupBoxCardSet.TabStop = false;
             this.groupBoxCardSet.Text = "Card Layout";
+            // 
+            // btnConfigureSize
+            // 
+            this.btnConfigureSize.Location = new System.Drawing.Point(257, 41);
+            this.btnConfigureSize.Name = "btnConfigureSize";
+            this.btnConfigureSize.Size = new System.Drawing.Size(59, 20);
+            this.btnConfigureSize.TabIndex = 34;
+            this.btnConfigureSize.Text = "Setup";
+            this.btnConfigureSize.UseVisualStyleBackColor = true;
+            this.btnConfigureSize.Click += new System.EventHandler(this.btnConfigureSize_Click);
             // 
             // checkLoadAllReferences
             // 
@@ -212,27 +224,27 @@ namespace CardMaker.Forms
             this.pasteSettingsToolStripMenuItem});
             this.contextMenuElements.Name = "contextMenuElements";
             this.contextMenuElements.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.contextMenuElements.Size = new System.Drawing.Size(156, 70);
+            this.contextMenuElements.Size = new System.Drawing.Size(157, 70);
             this.contextMenuElements.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuElements_Opening);
             // 
             // copyToolStripMenuItem
             // 
             this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-            this.copyToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.copyToolStripMenuItem.Text = "Copy";
             this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
             // 
             // pasteToolStripMenuItem
             // 
             this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
-            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.pasteToolStripMenuItem.Text = "Paste";
             this.pasteToolStripMenuItem.Click += new System.EventHandler(this.pasteToolStripMenuItem_Click);
             // 
             // pasteSettingsToolStripMenuItem
             // 
             this.pasteSettingsToolStripMenuItem.Name = "pasteSettingsToolStripMenuItem";
-            this.pasteSettingsToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.pasteSettingsToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.pasteSettingsToolStripMenuItem.Text = "Paste Settings...";
             this.pasteSettingsToolStripMenuItem.Click += new System.EventHandler(this.pasteSettingsToolStripMenuItem_Click);
             // 
@@ -511,15 +523,15 @@ namespace CardMaker.Forms
             this.label1.Text = "Card:";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // btnConfigureSize
+            // btnScaleDpi
             // 
-            this.btnConfigureSize.Location = new System.Drawing.Point(257, 41);
-            this.btnConfigureSize.Name = "btnConfigureSize";
-            this.btnConfigureSize.Size = new System.Drawing.Size(59, 20);
-            this.btnConfigureSize.TabIndex = 34;
-            this.btnConfigureSize.Text = "Setup";
-            this.btnConfigureSize.UseVisualStyleBackColor = true;
-            this.btnConfigureSize.Click += new System.EventHandler(this.btnConfigureSize_Click);
+            this.btnScaleDpi.Location = new System.Drawing.Point(257, 16);
+            this.btnScaleDpi.Name = "btnScaleDpi";
+            this.btnScaleDpi.Size = new System.Drawing.Size(59, 20);
+            this.btnScaleDpi.TabIndex = 35;
+            this.btnScaleDpi.Text = "Scale";
+            this.btnScaleDpi.UseVisualStyleBackColor = true;
+            this.btnScaleDpi.Click += new System.EventHandler(this.btnScaleDpi_Click);
             // 
             // MDILayoutControl
             // 
@@ -583,5 +595,6 @@ namespace CardMaker.Forms
         private System.Windows.Forms.CheckBox checkLoadAllReferences;
         private System.Windows.Forms.ToolStripMenuItem pasteSettingsToolStripMenuItem;
         private System.Windows.Forms.Button btnConfigureSize;
+        private System.Windows.Forms.Button btnScaleDpi;
     }
 }

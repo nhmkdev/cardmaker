@@ -514,6 +514,35 @@ namespace CardMaker.Forms
             }
         }
 
+        private void btnScaleDpi_Click(object sender, EventArgs e)
+        {
+            const string CARD_DPI = "cardDpi";
+            const string SCALE_BORDER = "scaleBorder";
+            var zQuery = new QueryPanelDialog("CardMaker DPI Converter", 450, 250, false);
+            zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
+            zQuery.SetMaxHeight(600);
+            var oldDpi = numericCardSetDPI.Value;
+            zQuery.AddNumericBox("New DPI", oldDpi, 0, int.MaxValue, 1, 2, CARD_DPI);
+            zQuery.AddCheckBox("Scale layout size", true, SCALE_BORDER);
+            if (DialogResult.OK == zQuery.ShowDialog(this))
+            {
+                var dpiRatio = zQuery.GetDecimal(CARD_DPI) / oldDpi;
+                var scaleLayout = zQuery.GetBool(SCALE_BORDER);
+                numericCardSetDPI.Value = zQuery.GetDecimal(CARD_DPI);
+                if (scaleLayout)
+                {
+                    numericCardSetWidth.Value = (int) Math.Max(1, numericCardSetWidth.Value * dpiRatio);
+                    numericCardSetHeight.Value = (int) Math.Max(1, numericCardSetHeight.Value * dpiRatio);
+                }
+
+                if (LayoutManager.Instance.ActiveLayout.Element != null)
+                {
+                    ElementManager.Instance.ProcessElementsChange(LayoutManager.Instance.ActiveLayout.Element, 0, 0, 0,
+                        0, dpiRatio, dpiRatio, true);
+                }
+            }
+        }
+
         private void btnConfigureSize_Click(object sender, EventArgs e)
         {
             const string CARD_WIDTH = "cardWidth";
