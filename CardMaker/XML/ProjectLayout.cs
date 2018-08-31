@@ -23,6 +23,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Runtime.Remoting.Proxies;
+using System.Windows.Forms;
 using System.Xml.Serialization;
 
 namespace CardMaker.XML
@@ -50,6 +52,8 @@ namespace CardMaker.XML
         public int exportWidth { get; set; }
         
         public int exportHeight { get; set; }
+
+        public float? lastZoom { get; set; }
 
         [XmlAttribute]
         public bool combineReferences { get; set; }
@@ -89,6 +93,7 @@ namespace CardMaker.XML
             defaultCount = 1;
             dpi = 100;
             drawBorder = true;
+            lastZoom = 1.0f;
         }
 
         /// <summary>
