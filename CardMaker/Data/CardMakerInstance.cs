@@ -51,6 +51,11 @@ namespace CardMaker.Data
         public static bool DrawElementBorder { get; set; }
 
         /// <summary>
+        /// Flag indicating whether to draw the selected elements' borders
+        /// </summary>
+        public static bool AlwaysDrawSelectionBorder { get; set; }
+
+        /// <summary>
         /// Flag indicating whether to draw the selected element guides
         /// </summary>
         public static bool DrawSelectedElementGuides { get; set; }
@@ -129,6 +134,7 @@ namespace CardMaker.Data
             ApplicationDPI = 72f;
             DrawFormattedTextBorder = false;
             DrawElementBorder = true;
+            AlwaysDrawSelectionBorder = true;
             DrawSelectedElementGuides = true;
             DrawSelectedElementRotationBounds = true;
             GoogleCredentialsInvalid = false;

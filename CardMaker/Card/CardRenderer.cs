@@ -151,8 +151,7 @@ namespace CardMaker.Card
                     for (var nIdx = CurrentDeck.CardLayout.Element.Length - 1; nIdx > -1; nIdx--)
                     {
                         ProjectLayoutElement zElement = CurrentDeck.CardLayout.Element[nIdx];
-                        if (zElement.enabled
-                            && CardMakerInstance.DrawElementBorder) // only add enabled items to draw
+                        if (zElement.enabled) // only add enabled items to draw
                         {
                             DrawElementDebugBorder(zGraphics, zElement, nX, nY, ElementManager.Instance.GetSelectedElement() == zElement);
                         }
@@ -231,22 +230,35 @@ namespace CardMaker.Card
         public static void DrawElementDebugBorder(Graphics zGraphics, ProjectLayoutElement zElement, int nX, int nY, bool bSelected)
         {
             var matrixPrevious = zGraphics.Transform;
-            // note that the border is inclusive in the width/height consuming 2 pixels (0 to total-1)
-            zGraphics.TranslateTransform(nX, nY);
-            if (bSelected && CardMakerInstance.DrawSelectedElementGuides)
+
+            if (CardMakerInstance.DrawElementBorder || CardMakerInstance.AlwaysDrawSelectionBorder)
             {
-                zGraphics.DrawLine(s_zPenDebugGuides, new PointF(0, zElement.y), new PointF(zGraphics.ClipBounds.Width, zElement.y));
-                zGraphics.DrawLine(s_zPenDebugGuides, new PointF(0, zElement.y + zElement.height - 1),
-                    new PointF(zGraphics.ClipBounds.Width, zElement.y + zElement.height));
-                zGraphics.DrawLine(s_zPenDebugGuides, new PointF(zElement.x, 0), new PointF(zElement.x, zGraphics.ClipBounds.Height));
-                zGraphics.DrawLine(s_zPenDebugGuides, new PointF(zElement.x + zElement.width - 1, 0),
-                    new PointF(zElement.x + zElement.width, zGraphics.ClipBounds.Height));
+                // note that the border is inclusive in the width/height consuming 2 pixels (0 to total-1)
+                zGraphics.TranslateTransform(nX, nY);
+                if (bSelected && CardMakerInstance.DrawSelectedElementGuides)
+                {
+                    zGraphics.DrawLine(s_zPenDebugGuides, new PointF(0, zElement.y),
+                        new PointF(zGraphics.ClipBounds.Width, zElement.y));
+                    zGraphics.DrawLine(s_zPenDebugGuides, new PointF(0, zElement.y + zElement.height - 1),
+                        new PointF(zGraphics.ClipBounds.Width, zElement.y + zElement.height));
+                    zGraphics.DrawLine(s_zPenDebugGuides, new PointF(zElement.x, 0),
+                        new PointF(zElement.x, zGraphics.ClipBounds.Height));
+                    zGraphics.DrawLine(s_zPenDebugGuides, new PointF(zElement.x + zElement.width - 1, 0),
+                        new PointF(zElement.x + zElement.width, zGraphics.ClipBounds.Height));
+                }
             }
-            zGraphics.DrawRectangle(s_zPenDebugBorder, zElement.x, zElement.y, zElement.width - 1, zElement.height - 1);
-            if (bSelected)
+
+            if (CardMakerInstance.DrawElementBorder)
+            {
+                zGraphics.DrawRectangle(s_zPenDebugBorder, zElement.x, zElement.y, zElement.width - 1,
+                    zElement.height - 1);
+            }
+
+            if ((CardMakerInstance.DrawElementBorder || CardMakerInstance.AlwaysDrawSelectionBorder) && bSelected)
             {
                 zGraphics.DrawRectangle(m_zPenElementSelect, zElement.x - 2, zElement.y - 2, zElement.width + 3, zElement.height + 3);
             }
+
             zGraphics.Transform = matrixPrevious;
         }
 

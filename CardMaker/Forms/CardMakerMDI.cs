@@ -246,10 +246,18 @@ namespace CardMaker.Forms
         {
             InitOpen();
         }
+
         private void drawElementBordersToolStripMenuItem_Click(object sender, EventArgs e)
         {
             drawElementBordersToolStripMenuItem.Checked = !drawElementBordersToolStripMenuItem.Checked;
             CardMakerInstance.DrawElementBorder = drawElementBordersToolStripMenuItem.Checked;
+            LayoutManager.Instance.FireLayoutRenderUpdatedEvent();
+        }
+
+        private void drawSelectionBordersToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            drawSelectionBordersToolStripMenuItem.Checked = !drawSelectionBordersToolStripMenuItem.Checked;
+            CardMakerInstance.AlwaysDrawSelectionBorder = drawSelectionBordersToolStripMenuItem.Checked;
             LayoutManager.Instance.FireLayoutRenderUpdatedEvent();
         }
 

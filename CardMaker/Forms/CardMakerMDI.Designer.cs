@@ -70,6 +70,7 @@ namespace CardMaker.Forms
             this.redoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.drawElementBordersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.drawSelectionBordersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.drawSelectedElementGuidesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.drawSelectedElementRotationBoundsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.drawFormattedTextWordOutlinesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -129,7 +130,7 @@ namespace CardMaker.Forms
             this.toolStripMenuItem2,
             this.closeToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "&File";
             this.fileToolStripMenuItem.DropDownOpening += new System.EventHandler(this.fileToolStripMenuItem_DropDownOpening);
             // 
@@ -137,7 +138,7 @@ namespace CardMaker.Forms
             // 
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
             this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(244, 22);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(251, 22);
             this.newToolStripMenuItem.Text = "&New Project";
             this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
@@ -145,7 +146,7 @@ namespace CardMaker.Forms
             // 
             this.openProjectToolStripMenuItem.Name = "openProjectToolStripMenuItem";
             this.openProjectToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openProjectToolStripMenuItem.Size = new System.Drawing.Size(244, 22);
+            this.openProjectToolStripMenuItem.Size = new System.Drawing.Size(251, 22);
             this.openProjectToolStripMenuItem.Text = "&Open Project...";
             this.openProjectToolStripMenuItem.Click += new System.EventHandler(this.openProjectToolStripMenuItem_Click);
             // 
@@ -153,57 +154,57 @@ namespace CardMaker.Forms
             // 
             this.saveProjectToolStripMenuItem.Name = "saveProjectToolStripMenuItem";
             this.saveProjectToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveProjectToolStripMenuItem.Size = new System.Drawing.Size(244, 22);
+            this.saveProjectToolStripMenuItem.Size = new System.Drawing.Size(251, 22);
             this.saveProjectToolStripMenuItem.Text = "&Save Project...";
             this.saveProjectToolStripMenuItem.Click += new System.EventHandler(this.saveProjectToolStripMenuItem_Click);
             // 
             // saveProjectAsToolStripMenuItem
             // 
             this.saveProjectAsToolStripMenuItem.Name = "saveProjectAsToolStripMenuItem";
-            this.saveProjectAsToolStripMenuItem.Size = new System.Drawing.Size(244, 22);
+            this.saveProjectAsToolStripMenuItem.Size = new System.Drawing.Size(251, 22);
             this.saveProjectAsToolStripMenuItem.Text = "Save Project &As...";
             this.saveProjectAsToolStripMenuItem.Click += new System.EventHandler(this.saveProjectAsToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(241, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(248, 6);
             // 
             // toolStripMenuItem3
             // 
             this.toolStripMenuItem3.Name = "toolStripMenuItem3";
             this.toolStripMenuItem3.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(244, 22);
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(251, 22);
             this.toolStripMenuItem3.Text = "Export Project to Images...";
             this.toolStripMenuItem3.Click += new System.EventHandler(this.exportImagesToolStripMenuItem_Click);
             // 
             // exportProjectThroughPDFSharpToolStripMenuItem
             // 
             this.exportProjectThroughPDFSharpToolStripMenuItem.Name = "exportProjectThroughPDFSharpToolStripMenuItem";
-            this.exportProjectThroughPDFSharpToolStripMenuItem.Size = new System.Drawing.Size(244, 22);
+            this.exportProjectThroughPDFSharpToolStripMenuItem.Size = new System.Drawing.Size(251, 22);
             this.exportProjectThroughPDFSharpToolStripMenuItem.Text = "Export Project to PDF...";
             this.exportProjectThroughPDFSharpToolStripMenuItem.Click += new System.EventHandler(this.exportProjectToPDFToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(241, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(248, 6);
             // 
             // recentProjectsToolStripMenuItem
             // 
             this.recentProjectsToolStripMenuItem.Name = "recentProjectsToolStripMenuItem";
-            this.recentProjectsToolStripMenuItem.Size = new System.Drawing.Size(244, 22);
+            this.recentProjectsToolStripMenuItem.Size = new System.Drawing.Size(251, 22);
             this.recentProjectsToolStripMenuItem.Text = "Recent Projects";
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(241, 6);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(248, 6);
             // 
             // closeToolStripMenuItem
             // 
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(244, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(251, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
@@ -213,7 +214,7 @@ namespace CardMaker.Forms
             this.undoToolStripMenuItem,
             this.redoToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.editToolStripMenuItem.Text = "Edit";
             this.editToolStripMenuItem.DropDownOpening += new System.EventHandler(this.editToolStripMenuItem_DropDownOpening);
             // 
@@ -221,7 +222,7 @@ namespace CardMaker.Forms
             // 
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.undoToolStripMenuItem.Text = "Undo";
             this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
             // 
@@ -229,7 +230,7 @@ namespace CardMaker.Forms
             // 
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
-            this.redoToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.redoToolStripMenuItem.Text = "Redo";
             this.redoToolStripMenuItem.Click += new System.EventHandler(this.redoToolStripMenuItem_Click);
             // 
@@ -237,11 +238,12 @@ namespace CardMaker.Forms
             // 
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.drawElementBordersToolStripMenuItem,
+            this.drawSelectionBordersToolStripMenuItem,
             this.drawSelectedElementGuidesToolStripMenuItem,
             this.drawSelectedElementRotationBoundsToolStripMenuItem,
             this.drawFormattedTextWordOutlinesToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
-            this.viewToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.viewToolStripMenuItem.Text = "&View";
             // 
             // drawElementBordersToolStripMenuItem
@@ -250,16 +252,26 @@ namespace CardMaker.Forms
             this.drawElementBordersToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.drawElementBordersToolStripMenuItem.Name = "drawElementBordersToolStripMenuItem";
             this.drawElementBordersToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F4;
-            this.drawElementBordersToolStripMenuItem.Size = new System.Drawing.Size(290, 22);
+            this.drawElementBordersToolStripMenuItem.Size = new System.Drawing.Size(304, 22);
             this.drawElementBordersToolStripMenuItem.Text = "&Draw Element Borders";
             this.drawElementBordersToolStripMenuItem.Click += new System.EventHandler(this.drawElementBordersToolStripMenuItem_Click);
+            // 
+            // drawSelectionBordersToolStripMenuItem
+            // 
+            this.drawSelectionBordersToolStripMenuItem.Checked = true;
+            this.drawSelectionBordersToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.drawSelectionBordersToolStripMenuItem.Name = "drawSelectionBordersToolStripMenuItem";
+            this.drawSelectionBordersToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.F4)));
+            this.drawSelectionBordersToolStripMenuItem.Size = new System.Drawing.Size(304, 22);
+            this.drawSelectionBordersToolStripMenuItem.Text = "Always Draw Selection Borders";
+            this.drawSelectionBordersToolStripMenuItem.Click += new System.EventHandler(this.drawSelectionBordersToolStripMenuItem_Click);
             // 
             // drawSelectedElementGuidesToolStripMenuItem
             // 
             this.drawSelectedElementGuidesToolStripMenuItem.Checked = true;
             this.drawSelectedElementGuidesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.drawSelectedElementGuidesToolStripMenuItem.Name = "drawSelectedElementGuidesToolStripMenuItem";
-            this.drawSelectedElementGuidesToolStripMenuItem.Size = new System.Drawing.Size(290, 22);
+            this.drawSelectedElementGuidesToolStripMenuItem.Size = new System.Drawing.Size(304, 22);
             this.drawSelectedElementGuidesToolStripMenuItem.Text = "Draw Selected Element Guides";
             this.drawSelectedElementGuidesToolStripMenuItem.Click += new System.EventHandler(this.drawSelectedElementGuidesToolStripMenuItem_Click);
             // 
@@ -268,7 +280,7 @@ namespace CardMaker.Forms
             this.drawSelectedElementRotationBoundsToolStripMenuItem.Checked = true;
             this.drawSelectedElementRotationBoundsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.drawSelectedElementRotationBoundsToolStripMenuItem.Name = "drawSelectedElementRotationBoundsToolStripMenuItem";
-            this.drawSelectedElementRotationBoundsToolStripMenuItem.Size = new System.Drawing.Size(290, 22);
+            this.drawSelectedElementRotationBoundsToolStripMenuItem.Size = new System.Drawing.Size(304, 22);
             this.drawSelectedElementRotationBoundsToolStripMenuItem.Text = "Draw Selected Element Rotation Bounds";
             this.drawSelectedElementRotationBoundsToolStripMenuItem.Click += new System.EventHandler(this.drawSelectedElementRotationBoundsToolStripMenuItem_Click);
             // 
@@ -276,7 +288,7 @@ namespace CardMaker.Forms
             // 
             this.drawFormattedTextWordOutlinesToolStripMenuItem.Name = "drawFormattedTextWordOutlinesToolStripMenuItem";
             this.drawFormattedTextWordOutlinesToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F4)));
-            this.drawFormattedTextWordOutlinesToolStripMenuItem.Size = new System.Drawing.Size(290, 22);
+            this.drawFormattedTextWordOutlinesToolStripMenuItem.Size = new System.Drawing.Size(304, 22);
             this.drawFormattedTextWordOutlinesToolStripMenuItem.Text = "Draw Formatted Text Word Borders";
             this.drawFormattedTextWordOutlinesToolStripMenuItem.Click += new System.EventHandler(this.drawFormattedTextWordBordersToolStripMenuItem_Click);
             // 
@@ -289,14 +301,14 @@ namespace CardMaker.Forms
             this.clearGoogleCacheToolStripMenuItem,
             this.projectSettingsToolStripMenuItem});
             this.projectToolStripMenuItem.Name = "projectToolStripMenuItem";
-            this.projectToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
+            this.projectToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
             this.projectToolStripMenuItem.Text = "&Project";
             // 
             // clearCacheToolStripMenuItem
             // 
             this.clearCacheToolStripMenuItem.Name = "clearCacheToolStripMenuItem";
             this.clearCacheToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F6;
-            this.clearCacheToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
+            this.clearCacheToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
             this.clearCacheToolStripMenuItem.Text = "&Clear Image Cache";
             this.clearCacheToolStripMenuItem.Click += new System.EventHandler(this.clearCacheToolStripMenuItem_Click);
             // 
@@ -304,28 +316,28 @@ namespace CardMaker.Forms
             // 
             this.updateIssuesToolStripMenuItem.Name = "updateIssuesToolStripMenuItem";
             this.updateIssuesToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F8;
-            this.updateIssuesToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
+            this.updateIssuesToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
             this.updateIssuesToolStripMenuItem.Text = "&Update Known Issues...";
             this.updateIssuesToolStripMenuItem.Click += new System.EventHandler(this.updateIssuesToolStripMenuItem_Click);
             // 
             // importLayoutsToolStripMenuItem
             // 
             this.importLayoutsToolStripMenuItem.Name = "importLayoutsToolStripMenuItem";
-            this.importLayoutsToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
+            this.importLayoutsToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
             this.importLayoutsToolStripMenuItem.Text = "Import Layouts from Project...";
             this.importLayoutsToolStripMenuItem.Click += new System.EventHandler(this.importLayoutsToolStripMenuItem_Click);
             // 
             // clearGoogleCacheToolStripMenuItem
             // 
             this.clearGoogleCacheToolStripMenuItem.Name = "clearGoogleCacheToolStripMenuItem";
-            this.clearGoogleCacheToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
+            this.clearGoogleCacheToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
             this.clearGoogleCacheToolStripMenuItem.Text = "Clear All Google Cache Entries";
             this.clearGoogleCacheToolStripMenuItem.Click += new System.EventHandler(this.clearGoogleCacheToolStripMenuItem_Click);
             // 
             // projectSettingsToolStripMenuItem
             // 
             this.projectSettingsToolStripMenuItem.Name = "projectSettingsToolStripMenuItem";
-            this.projectSettingsToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
+            this.projectSettingsToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
             this.projectSettingsToolStripMenuItem.Text = "Project Settings...";
             this.projectSettingsToolStripMenuItem.Click += new System.EventHandler(this.projectSettingsToolStripMenuItem_Click);
             // 
@@ -334,14 +346,14 @@ namespace CardMaker.Forms
             this.layoutToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.reloadReferencesToolStripMenuItem});
             this.layoutToolStripMenuItem.Name = "layoutToolStripMenuItem";
-            this.layoutToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
+            this.layoutToolStripMenuItem.Size = new System.Drawing.Size(55, 20);
             this.layoutToolStripMenuItem.Text = "Layout";
             // 
             // reloadReferencesToolStripMenuItem
             // 
             this.reloadReferencesToolStripMenuItem.Name = "reloadReferencesToolStripMenuItem";
             this.reloadReferencesToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F9;
-            this.reloadReferencesToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.reloadReferencesToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
             this.reloadReferencesToolStripMenuItem.Text = "Reload References";
             this.reloadReferencesToolStripMenuItem.Click += new System.EventHandler(this.reloadReferencesToolStripMenuItem_Click);
             // 
@@ -355,14 +367,14 @@ namespace CardMaker.Forms
             this.updateGoogleCredentialsToolStripMenuItem,
             this.settingsToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
             this.toolsToolStripMenuItem.Text = "&Tools";
             // 
             // projectManagerToolStripMenuItem
             // 
             this.projectManagerToolStripMenuItem.Name = "projectManagerToolStripMenuItem";
             this.projectManagerToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F7;
-            this.projectManagerToolStripMenuItem.Size = new System.Drawing.Size(279, 22);
+            this.projectManagerToolStripMenuItem.Size = new System.Drawing.Size(296, 22);
             this.projectManagerToolStripMenuItem.Text = "Project Manager...";
             this.projectManagerToolStripMenuItem.Click += new System.EventHandler(this.projectManagerToolStripMenuItem_Click);
             // 
@@ -370,42 +382,42 @@ namespace CardMaker.Forms
             // 
             this.colorPickerToolStripMenuItem.Name = "colorPickerToolStripMenuItem";
             this.colorPickerToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
-            this.colorPickerToolStripMenuItem.Size = new System.Drawing.Size(279, 22);
+            this.colorPickerToolStripMenuItem.Size = new System.Drawing.Size(296, 22);
             this.colorPickerToolStripMenuItem.Text = "Color Picker...";
             this.colorPickerToolStripMenuItem.Click += new System.EventHandler(this.colorPickerToolStripMenuItem_Click);
             // 
             // layoutTemplatesToolStripMenuItem
             // 
             this.layoutTemplatesToolStripMenuItem.Name = "layoutTemplatesToolStripMenuItem";
-            this.layoutTemplatesToolStripMenuItem.Size = new System.Drawing.Size(279, 22);
+            this.layoutTemplatesToolStripMenuItem.Size = new System.Drawing.Size(296, 22);
             this.layoutTemplatesToolStripMenuItem.Text = "Remove Layout Templates...";
             this.layoutTemplatesToolStripMenuItem.Click += new System.EventHandler(this.removeLayoutTemplatesToolStripMenuItem_Click);
             // 
             // illegalFilenameCharacterReplacementToolStripMenuItem
             // 
             this.illegalFilenameCharacterReplacementToolStripMenuItem.Name = "illegalFilenameCharacterReplacementToolStripMenuItem";
-            this.illegalFilenameCharacterReplacementToolStripMenuItem.Size = new System.Drawing.Size(279, 22);
+            this.illegalFilenameCharacterReplacementToolStripMenuItem.Size = new System.Drawing.Size(296, 22);
             this.illegalFilenameCharacterReplacementToolStripMenuItem.Text = "&Illegal File Name Character Replacement...";
             this.illegalFilenameCharacterReplacementToolStripMenuItem.Click += new System.EventHandler(this.illegalFilenameCharacterReplacementToolStripMenuItem_Click);
             // 
             // updateGoogleCredentialsToolStripMenuItem
             // 
             this.updateGoogleCredentialsToolStripMenuItem.Name = "updateGoogleCredentialsToolStripMenuItem";
-            this.updateGoogleCredentialsToolStripMenuItem.Size = new System.Drawing.Size(279, 22);
+            this.updateGoogleCredentialsToolStripMenuItem.Size = new System.Drawing.Size(296, 22);
             this.updateGoogleCredentialsToolStripMenuItem.Text = "Update Google Credentials...";
             this.updateGoogleCredentialsToolStripMenuItem.Click += new System.EventHandler(this.updateGoogleCredentialsToolStripMenuItem_Click);
             // 
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(279, 22);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(296, 22);
             this.settingsToolStripMenuItem.Text = "Settings...";
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
             // windowToolStripMenuItem
             // 
             this.windowToolStripMenuItem.Name = "windowToolStripMenuItem";
-            this.windowToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
+            this.windowToolStripMenuItem.Size = new System.Drawing.Size(63, 20);
             this.windowToolStripMenuItem.Text = "&Window";
             // 
             // helpToolStripMenuItem
@@ -415,28 +427,28 @@ namespace CardMaker.Forms
             this.samplePDFToolStripMenuItem,
             this.aboutToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(40, 20);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.helpToolStripMenuItem.Text = "Help";
             // 
             // pDFToolStripMenuItem
             // 
             this.pDFToolStripMenuItem.Name = "pDFToolStripMenuItem";
             this.pDFToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
-            this.pDFToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.pDFToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
             this.pDFToolStripMenuItem.Text = "&Instructions (PDF)";
             this.pDFToolStripMenuItem.Click += new System.EventHandler(this.pDFToolStripMenuItem_Click);
             // 
             // samplePDFToolStripMenuItem
             // 
             this.samplePDFToolStripMenuItem.Name = "samplePDFToolStripMenuItem";
-            this.samplePDFToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.samplePDFToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
             this.samplePDFToolStripMenuItem.Text = "&Sample (PDF)";
             this.samplePDFToolStripMenuItem.Click += new System.EventHandler(this.samplePDFToolStripMenuItem_Click);
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
             this.aboutToolStripMenuItem.Text = "&About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
@@ -501,6 +513,7 @@ namespace CardMaker.Forms
         private System.Windows.Forms.ToolStripMenuItem drawSelectedElementGuidesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem drawSelectedElementRotationBoundsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem projectSettingsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem drawSelectionBordersToolStripMenuItem;
     }
 }
 
