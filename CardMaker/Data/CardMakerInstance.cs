@@ -134,7 +134,7 @@ namespace CardMaker.Data
             ApplicationDPI = 72f;
             DrawFormattedTextBorder = false;
             DrawElementBorder = true;
-            AlwaysDrawSelectionBorder = true;
+            AlwaysDrawSelectionBorder = false;
             DrawSelectedElementGuides = true;
             DrawSelectedElementRotationBounds = true;
             GoogleCredentialsInvalid = false;

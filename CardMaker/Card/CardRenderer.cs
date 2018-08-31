@@ -229,12 +229,10 @@ namespace CardMaker.Card
         /// <param name="bSelected">Flag indicating if this element is currently selected</param>
         public static void DrawElementDebugBorder(Graphics zGraphics, ProjectLayoutElement zElement, int nX, int nY, bool bSelected)
         {
-            var matrixPrevious = zGraphics.Transform;
-
+            // draw the element guides
             if (CardMakerInstance.DrawElementBorder || CardMakerInstance.AlwaysDrawSelectionBorder)
             {
                 // note that the border is inclusive in the width/height consuming 2 pixels (0 to total-1)
-                zGraphics.TranslateTransform(nX, nY);
                 if (bSelected && CardMakerInstance.DrawSelectedElementGuides)
                 {
                     zGraphics.DrawLine(s_zPenDebugGuides, new PointF(0, zElement.y),
@@ -254,12 +252,11 @@ namespace CardMaker.Card
                     zElement.height - 1);
             }
 
+            // draw the selection border
             if ((CardMakerInstance.DrawElementBorder || CardMakerInstance.AlwaysDrawSelectionBorder) && bSelected)
             {
                 zGraphics.DrawRectangle(m_zPenElementSelect, zElement.x - 2, zElement.y - 2, zElement.width + 3, zElement.height + 3);
             }
-
-            zGraphics.Transform = matrixPrevious;
         }
 
         /// <summary>
