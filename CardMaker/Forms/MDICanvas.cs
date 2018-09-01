@@ -55,6 +55,7 @@ namespace CardMaker.Forms
         private TranslationLock m_eTranslationLockState = TranslationLock.Unset;
         private readonly ContextMenuStrip m_zContextMenu = new ContextMenuStrip();
 
+        private bool m_bCanvasLayoutLoading = false;
         private readonly CardCanvas m_zCardCanvas;
         private float m_fZoom = 1.0f;
         private float m_fZoomRatio = 1.0f;
@@ -273,15 +274,12 @@ namespace CardMaker.Forms
         {
             // pass the loaded deck into the renderer
             m_zCardCanvas.Reset(args.Deck);
-            if (args.Deck?.CardLayout.lastZoom != null)
+            m_bCanvasLayoutLoading = true;
+            if (args.Deck != null)
             {
-                numericUpDownZoom.Value = (decimal) args.Deck.CardLayout.lastZoom;
+                numericUpDownZoom.Value = Math.Max((decimal) args.Deck.CardLayout.zoom, numericUpDownZoom.Minimum);
             }
-            else
-            {
-                numericUpDownZoom.Value = (decimal) 1.0;
-            }
-
+            m_bCanvasLayoutLoading = false;
             Redraw();
         }
 
@@ -694,7 +692,9 @@ namespace CardMaker.Forms
             m_fZoom = (float)numericUpDownZoom.Value;
             m_fZoomRatio = 1.0f / m_fZoom;
             TranslationLockState = TranslationLock.Unset;
-            m_zCardCanvas.CardRenderer.CurrentDeck.CardLayout.lastZoom = m_fZoom;
+            m_zCardCanvas.CardRenderer.CurrentDeck.CardLayout.zoom = m_fZoom;
+            // ^^ this changes the layout so mark it dirty, also avoid doing so every time a layout is selected
+            if (!m_bCanvasLayoutLoading) LayoutManager.Instance.FireLayoutUpdatedEvent(true);
             m_zCardCanvas.CardRenderer.ZoomLevel = m_fZoom;
             LayoutManager.Instance.ActiveDeck.ResetDeckCache();
             m_zCardCanvas.UpdateSize();

@@ -24,7 +24,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using CardMaker.Data;
 using CardMaker.Events.Args;
 using CardMaker.XML;

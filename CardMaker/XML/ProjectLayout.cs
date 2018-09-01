@@ -23,9 +23,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-using System.Runtime.Remoting.Proxies;
-using System.Windows.Forms;
 using System.Xml.Serialization;
+using Support.IO;
 
 namespace CardMaker.XML
 {
@@ -53,7 +52,7 @@ namespace CardMaker.XML
         
         public int exportHeight { get; set; }
 
-        public float? lastZoom { get; set; }
+        public float zoom { get; set; } = 1;
 
         [XmlAttribute]
         public bool combineReferences { get; set; }
@@ -93,7 +92,6 @@ namespace CardMaker.XML
             defaultCount = 1;
             dpi = 100;
             drawBorder = true;
-            lastZoom = 1.0f;
         }
 
         /// <summary>
@@ -109,6 +107,7 @@ namespace CardMaker.XML
             dpi = zLayout.dpi;
             drawBorder = zLayout.drawBorder;
             buffer = zLayout.buffer;
+            zoom = zLayout.zoom;
             combineReferences = zLayout.combineReferences;
             exportNameFormat = zLayout.exportNameFormat;
             exportRotation = zLayout.exportRotation;
