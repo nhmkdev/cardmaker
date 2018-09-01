@@ -23,7 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
@@ -989,10 +988,10 @@ namespace Support.UI
             return zQueryItem;
 		}
 
-		/// <summary>
-		/// Used to throw a general exception when the wrong type is queried
-		/// </summary>
-		private void ThrowWrongTypeException()
+        /// <summary>
+        /// Used to throw a general exception when the wrong type is queried
+        /// </summary>
+        private void ThrowWrongTypeException()
 		{
 			throw new Exception("QueryDialog: Incorrect type for specified return.");
 		}

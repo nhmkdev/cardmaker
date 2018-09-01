@@ -54,6 +54,7 @@ namespace CardMaker.Forms
         {
             this.components = new System.ComponentModel.Container();
             this.groupBoxCardSet = new System.Windows.Forms.GroupBox();
+            this.btnConfigureSize = new System.Windows.Forms.Button();
             this.checkLoadAllReferences = new System.Windows.Forms.CheckBox();
             this.btnScale = new System.Windows.Forms.Button();
             this.resizeBtn = new System.Windows.Forms.Button();
@@ -87,7 +88,6 @@ namespace CardMaker.Forms
             this.label2 = new System.Windows.Forms.Label();
             this.numericRowIndex = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
-            this.btnConfigureSize = new System.Windows.Forms.Button();
             this.groupBoxCardSet.SuspendLayout();
             this.contextMenuElements.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericCardSetDPI)).BeginInit();
@@ -125,10 +125,20 @@ namespace CardMaker.Forms
             this.groupBoxCardSet.Enabled = false;
             this.groupBoxCardSet.Location = new System.Drawing.Point(0, 46);
             this.groupBoxCardSet.Name = "groupBoxCardSet";
-            this.groupBoxCardSet.Size = new System.Drawing.Size(322, 279);
+            this.groupBoxCardSet.Size = new System.Drawing.Size(322, 327);
             this.groupBoxCardSet.TabIndex = 12;
             this.groupBoxCardSet.TabStop = false;
             this.groupBoxCardSet.Text = "Card Layout";
+            // 
+            // btnConfigureSize
+            // 
+            this.btnConfigureSize.Location = new System.Drawing.Point(257, 41);
+            this.btnConfigureSize.Name = "btnConfigureSize";
+            this.btnConfigureSize.Size = new System.Drawing.Size(59, 20);
+            this.btnConfigureSize.TabIndex = 34;
+            this.btnConfigureSize.Text = "Resize";
+            this.btnConfigureSize.UseVisualStyleBackColor = true;
+            this.btnConfigureSize.Click += new System.EventHandler(this.btnConfigureSize_Click);
             // 
             // checkLoadAllReferences
             // 
@@ -144,7 +154,7 @@ namespace CardMaker.Forms
             // btnScale
             // 
             this.btnScale.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnScale.Location = new System.Drawing.Point(143, 231);
+            this.btnScale.Location = new System.Drawing.Point(143, 279);
             this.btnScale.Name = "btnScale";
             this.btnScale.Size = new System.Drawing.Size(60, 20);
             this.btnScale.TabIndex = 32;
@@ -155,7 +165,7 @@ namespace CardMaker.Forms
             // resizeBtn
             // 
             this.resizeBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.resizeBtn.Location = new System.Drawing.Point(143, 253);
+            this.resizeBtn.Location = new System.Drawing.Point(143, 301);
             this.resizeBtn.Name = "resizeBtn";
             this.resizeBtn.Size = new System.Drawing.Size(60, 20);
             this.resizeBtn.TabIndex = 31;
@@ -179,7 +189,7 @@ namespace CardMaker.Forms
             this.listViewElements.HideSelection = false;
             this.listViewElements.Location = new System.Drawing.Point(6, 89);
             this.listViewElements.Name = "listViewElements";
-            this.listViewElements.Size = new System.Drawing.Size(310, 136);
+            this.listViewElements.Size = new System.Drawing.Size(310, 184);
             this.listViewElements.TabIndex = 30;
             this.listViewElements.UseCompatibleStateImageBehavior = false;
             this.listViewElements.View = System.Windows.Forms.View.Details;
@@ -281,7 +291,7 @@ namespace CardMaker.Forms
             // btnElementRename
             // 
             this.btnElementRename.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnElementRename.Location = new System.Drawing.Point(77, 253);
+            this.btnElementRename.Location = new System.Drawing.Point(77, 301);
             this.btnElementRename.Name = "btnElementRename";
             this.btnElementRename.Size = new System.Drawing.Size(60, 20);
             this.btnElementRename.TabIndex = 25;
@@ -292,7 +302,7 @@ namespace CardMaker.Forms
             // btnElementUp
             // 
             this.btnElementUp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnElementUp.Location = new System.Drawing.Point(263, 231);
+            this.btnElementUp.Location = new System.Drawing.Point(263, 279);
             this.btnElementUp.Name = "btnElementUp";
             this.btnElementUp.Size = new System.Drawing.Size(53, 20);
             this.btnElementUp.TabIndex = 24;
@@ -303,7 +313,7 @@ namespace CardMaker.Forms
             // btnElementDown
             // 
             this.btnElementDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnElementDown.Location = new System.Drawing.Point(262, 254);
+            this.btnElementDown.Location = new System.Drawing.Point(262, 302);
             this.btnElementDown.Name = "btnElementDown";
             this.btnElementDown.Size = new System.Drawing.Size(54, 20);
             this.btnElementDown.TabIndex = 23;
@@ -331,7 +341,7 @@ namespace CardMaker.Forms
             // btnDuplicate
             // 
             this.btnDuplicate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnDuplicate.Location = new System.Drawing.Point(77, 231);
+            this.btnDuplicate.Location = new System.Drawing.Point(77, 279);
             this.btnDuplicate.Name = "btnDuplicate";
             this.btnDuplicate.Size = new System.Drawing.Size(60, 20);
             this.btnDuplicate.TabIndex = 20;
@@ -360,7 +370,7 @@ namespace CardMaker.Forms
             // btnRemoveElement
             // 
             this.btnRemoveElement.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnRemoveElement.Location = new System.Drawing.Point(6, 253);
+            this.btnRemoveElement.Location = new System.Drawing.Point(6, 301);
             this.btnRemoveElement.Name = "btnRemoveElement";
             this.btnRemoveElement.Size = new System.Drawing.Size(65, 20);
             this.btnRemoveElement.TabIndex = 15;
@@ -417,7 +427,7 @@ namespace CardMaker.Forms
             // btnAddElement
             // 
             this.btnAddElement.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnAddElement.Location = new System.Drawing.Point(6, 231);
+            this.btnAddElement.Location = new System.Drawing.Point(6, 279);
             this.btnAddElement.Name = "btnAddElement";
             this.btnAddElement.Size = new System.Drawing.Size(65, 20);
             this.btnAddElement.TabIndex = 10;
@@ -511,21 +521,11 @@ namespace CardMaker.Forms
             this.label1.Text = "Card:";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // btnConfigureSize
-            // 
-            this.btnConfigureSize.Location = new System.Drawing.Point(257, 41);
-            this.btnConfigureSize.Name = "btnConfigureSize";
-            this.btnConfigureSize.Size = new System.Drawing.Size(59, 20);
-            this.btnConfigureSize.TabIndex = 34;
-            this.btnConfigureSize.Text = "Setup";
-            this.btnConfigureSize.UseVisualStyleBackColor = true;
-            this.btnConfigureSize.Click += new System.EventHandler(this.btnConfigureSize_Click);
-            // 
             // MDILayoutControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(322, 325);
+            this.ClientSize = new System.Drawing.Size(322, 373);
             this.Controls.Add(this.groupBoxCardSet);
             this.Controls.Add(this.groupBoxCardCount);
             this.MinimumSize = new System.Drawing.Size(330, 352);

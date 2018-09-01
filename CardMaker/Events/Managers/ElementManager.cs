@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using CardMaker.Card;
 using CardMaker.Data;
 using CardMaker.Events.Args;
 using CardMaker.XML;
@@ -146,7 +147,8 @@ namespace CardMaker.Events.Managers
         /// <param name="nHeight">height adjustment</param>
         /// <param name="dScaleWidth">width scale</param>
         /// <param name="dScaleHeight">height scale</param>
-        public void ProcessSelectedElementsChange(int nX, int nY, int nWidth, int nHeight, decimal dScaleWidth = 1, decimal dScaleHeight = 1)
+        public void ProcessSelectedElementsChange(int nX, int nY, int nWidth, int nHeight, decimal dScaleWidth = 1,
+            decimal dScaleHeight = 1)
         {
             // TODO: consider breaking up the method, the input sets never overlap
             // TODO: move to a central spot (maybe a static method in ElementManager?) -- problem is the need for the selected elements
@@ -156,20 +158,66 @@ namespace CardMaker.Events.Managers
                 return;
             }
 
+            ProcessElementsChange(m_listSelectedElements, nX, nY, nWidth, nHeight, dScaleWidth, dScaleHeight);
+        }
+
+        /// <summary>
+        /// Adjusts elements based on the passed in parameters
+        /// </summary>
+        /// <param name="listElements">list of elements</param>
+        /// <param name="nX">x adjustment</param>
+        /// <param name="nY">y adjustment</param>
+        /// <param name="nWidth">width adjustment</param>
+        /// <param name="nHeight">height adjustment</param>
+        /// <param name="dScaleWidth">width scale</param>
+        /// <param name="dScaleHeight">height scale</param>
+        /// <param name="bScaleAllDimensions">scale element positions and extents</param>
+        /// <param name="listUserActions">List of user actions to prepend to the element adjustments for undo/redo</param>
+        public static void ProcessElementsChange(IEnumerable<ProjectLayoutElement> listElements, int nX, int nY, int nWidth, int nHeight, 
+            decimal dScaleWidth = 1, decimal dScaleHeight = 1, 
+            bool bScaleAllDimensions = false,
+            List<Action<bool>> listUserActions = null)
+        {
+            // construct a list of user actions (if needed)
+            listUserActions = listUserActions ?? new List<Action<bool>>();
+
             // construct a before and after dictionary
-            Dictionary<ProjectLayoutElement, ElementPosition> dictionarySelectedUndo = GetUndoRedoPoints();
+            var dictionarySelectedUndo = GetUndoRedoPoints(listElements);
 
             if (dScaleWidth != 1 || dScaleHeight != 1)
             {
-                foreach (var zElement in m_listSelectedElements)
+                foreach (var zElement in listElements)
                 {
-                    zElement.width = (int)Math.Max(1, zElement.width * dScaleWidth);
-                    zElement.height = (int)Math.Max(1, zElement.height * dScaleHeight);
+                    zElement.width = (int) Math.Max(1, zElement.width * dScaleWidth);
+                    zElement.height = (int) Math.Max(1, zElement.height * dScaleHeight);
+                    if (bScaleAllDimensions)
+                    {
+                        zElement.x = (int) Math.Max(1, zElement.x * dScaleWidth);
+                        zElement.y = (int) Math.Max(1, zElement.y * dScaleHeight);
+                        var eType = EnumUtil.GetElementType(zElement.type);
+                        switch (eType)
+                        {
+                            case ElementType.Text:
+                            case ElementType.FormattedText:
+                                var zOldFont = zElement.GetElementFont();
+                                var zNewFont = FontLoader.GetFont(zOldFont.FontFamily, Math.Max(1f, zOldFont.Size * (float)dScaleHeight), zOldFont.Style);
+                                zElement.SetElementFont(zNewFont);
+                                listUserActions.Add(bRedo =>
+                                {
+                                    zElement.SetElementFont(bRedo ? zNewFont : zOldFont);
+                                });
+                                break;
+                        }
+                        if (null != LayoutManager.Instance.ActiveDeck)
+                        {
+                            LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElement.name);
+                        }
+                    }
                 }
             }
             else
             {
-                foreach (var zElement in m_listSelectedElements)
+                foreach (var zElement in listElements)
                 {
                     zElement.x = zElement.x + nX;
                     zElement.y = zElement.y + nY;
@@ -178,9 +226,11 @@ namespace CardMaker.Events.Managers
                 }
             }
 
-            ConfigureUserAction(dictionarySelectedUndo, GetUndoRedoPoints());
+            listUserActions.Add(createElementsUserAction(dictionarySelectedUndo, GetUndoRedoPoints(listElements)));
 
-            FireElementBoundsUpdateEvent();
+            UserAction.PushActions(listUserActions);
+
+            Instance.FireElementBoundsUpdateEvent();
         }
 
         /// <summary>
@@ -189,10 +239,19 @@ namespace CardMaker.Events.Managers
         /// <returns>The rectangle collection</returns>
         public Dictionary<ProjectLayoutElement, ElementPosition> GetUndoRedoPoints()
         {
-            if (null != m_listSelectedElements)
+            return GetUndoRedoPoints(m_listSelectedElements);
+        }
+
+        /// <summary>
+        /// Creates a collection of rectangles based on the selected list of elements
+        /// </summary>
+        /// <returns>The rectangle collection</returns>
+        public static Dictionary<ProjectLayoutElement, ElementPosition> GetUndoRedoPoints(IEnumerable<ProjectLayoutElement> listElements)
+        {
+            if (null != listElements)
             {
                 var dictionarySelectedUndo = new Dictionary<ProjectLayoutElement, ElementPosition>();
-                foreach (var zElement in m_listSelectedElements)
+                foreach (var zElement in listElements)
                 {
                     dictionarySelectedUndo.Add(zElement, new ElementPosition(zElement));
                 }
@@ -202,20 +261,22 @@ namespace CardMaker.Events.Managers
         }
 
         /// <summary>
-        /// Adds a new user action based on the undo/redo collections of elements -> rectangles
+        /// Generates a user action based on the specified dictionaries of elements.
         /// </summary>
-        /// <param name="dictionarySelectedUndo">The undo collection of rectangles</param>
-        /// <param name="dictionarySelectedRedo">The redo collection of rectangles</param>
-        public void ConfigureUserAction(Dictionary<ProjectLayoutElement, ElementPosition> dictionarySelectedUndo,
+        /// <param name="dictionarySelectedUndo"></param>
+        /// <param name="dictionarySelectedRedo"></param>
+        /// <returns></returns>
+        public static Action<bool> createElementsUserAction(
+            Dictionary<ProjectLayoutElement, ElementPosition> dictionarySelectedUndo,
             Dictionary<ProjectLayoutElement, ElementPosition> dictionarySelectedRedo)
         {
             // configure the variables used for undo/redo
             var dictionaryUndoElements = dictionarySelectedUndo;
             var dictionaryRedoElements = dictionarySelectedRedo;
 
-            UserAction.PushAction(bRedo =>
+            return bRedo =>
             {
-                Dictionary<ProjectLayoutElement, ElementPosition> dictionaryElementsChange = bRedo
+                var dictionaryElementsChange = bRedo
                     ? dictionaryRedoElements
                     : dictionaryUndoElements;
                 foreach (var kvp in dictionaryElementsChange)
@@ -228,8 +289,19 @@ namespace CardMaker.Events.Managers
                     zElement.height = rectChange.Height;
                     zElement.rotation = kvp.Value.Rotation;
                 }
-                FireElementBoundsUpdateEvent();
-            });
+                Instance.FireElementBoundsUpdateEvent();
+            };
+        }
+
+        /// <summary>
+        /// Adds a new user action based on the undo/redo collections of elements -> rectangles
+        /// </summary>
+        /// <param name="dictionarySelectedUndo">The undo collection of rectangles</param>
+        /// <param name="dictionarySelectedRedo">The redo collection of rectangles</param>
+        public static void ConfigureUserAction(Dictionary<ProjectLayoutElement, ElementPosition> dictionarySelectedUndo,
+            Dictionary<ProjectLayoutElement, ElementPosition> dictionarySelectedRedo)
+        {
+            UserAction.PushAction(createElementsUserAction(dictionarySelectedUndo, dictionarySelectedRedo));
         }
     }
 }

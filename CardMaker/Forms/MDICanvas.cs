@@ -590,7 +590,7 @@ namespace CardMaker.Forms
             CardMakerInstance.CanvasUserAction = false;
             if (null != m_listSelectedElements && m_bElementSelected)
             {
-               ElementManager.Instance.ConfigureUserAction(m_dictionarySelectedUndo, ElementManager.Instance.GetUndoRedoPoints());
+               ElementManager.ConfigureUserAction(m_dictionarySelectedUndo, ElementManager.Instance.GetUndoRedoPoints());
             }
 
             m_dictionarySelectedUndo = null;
@@ -716,7 +716,7 @@ namespace CardMaker.Forms
             {
                 zElement.y = (zLayout.height - zElement.height) / 2;
             }
-            ElementManager.Instance.ConfigureUserAction(dictionaryOriginalPositions,
+            ElementManager.ConfigureUserAction(dictionaryOriginalPositions,
                 ElementManager.Instance.GetUndoRedoPoints());
             ElementManager.Instance.FireElementBoundsUpdateEvent();
         }
@@ -737,7 +737,7 @@ namespace CardMaker.Forms
                 zElement.x = (zLayout.width - zElement.width) / 2;
             }
 
-            ElementManager.Instance.ConfigureUserAction(dictionaryOriginalPositions,
+            ElementManager.ConfigureUserAction(dictionaryOriginalPositions,
                 ElementManager.Instance.GetUndoRedoPoints());
             ElementManager.Instance.FireElementBoundsUpdateEvent();
         }
@@ -789,7 +789,7 @@ namespace CardMaker.Forms
                 nX += nHorizontalSpace;
                 nY += nVerticalSpace;
             }
-            ElementManager.Instance.ConfigureUserAction(dictionaryOriginalPositions,
+            ElementManager.ConfigureUserAction(dictionaryOriginalPositions,
                 ElementManager.Instance.GetUndoRedoPoints());
 
             ElementManager.Instance.FireElementBoundsUpdateEvent();
@@ -860,7 +860,7 @@ namespace CardMaker.Forms
                         break;
                 }
             }
-            ElementManager.Instance.ConfigureUserAction(dictionaryOriginalPositions,
+            ElementManager.ConfigureUserAction(dictionaryOriginalPositions,
                 ElementManager.Instance.GetUndoRedoPoints());
 
             ElementManager.Instance.FireElementBoundsUpdateEvent();
@@ -933,7 +933,7 @@ namespace CardMaker.Forms
                         break;
                 }
             }
-            ElementManager.Instance.ConfigureUserAction(dictionaryOriginalPositions,
+            ElementManager.ConfigureUserAction(dictionaryOriginalPositions,
                 ElementManager.Instance.GetUndoRedoPoints());
 
             ElementManager.Instance.FireElementBoundsUpdateEvent();

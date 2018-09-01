@@ -38,6 +38,19 @@ namespace Support.UI
         public static Action OnClearUserActions { get; set; }
 
         /// <summary>
+        /// Pushes an action enumerable onto the action stack (as one action)
+        /// </summary>
+        /// <param name="listActions">The action to push</param>
+        /// <param name="bPerformAction">Flag indicating whether to execute the action after pushing it</param>
+        public static void PushActions(List<Action<bool>> listActions, bool bPerformAction = false)
+        {
+            PushAction(bRedo =>
+            {
+                listActions.ForEach(action => action(bRedo));
+            });
+        }
+
+        /// <summary>
         /// Pushes an action onto the action stack
         /// </summary>
         /// <param name="zAction">The action to push</param>

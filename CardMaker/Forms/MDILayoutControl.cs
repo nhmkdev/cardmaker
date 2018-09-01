@@ -100,6 +100,7 @@ namespace CardMaker.Forms
 
         void Layout_Updated(object sender, LayoutEventArgs args)
         {
+            RefreshLayoutControls(args.Layout);
             RefreshElementInformation();
         }
 
@@ -516,48 +517,7 @@ namespace CardMaker.Forms
 
         private void btnConfigureSize_Click(object sender, EventArgs e)
         {
-            const string CARD_WIDTH = "cardWidth";
-            const string CARD_HEIGHT = "cardHeight";
-            var zQuery = new QueryPanelDialog("CardMaker Settings", 450, 250, false);
-            zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
-            zQuery.SetMaxHeight(600);
-            zQuery.AddPullDownBox("Unit of Measure", Enum.GetNames(typeof(MeasurementUnit)), (int)CardMakerSettings.PrintPageMeasurementUnit, IniSettings.PrintPageMeasurementUnit);
-            var currWidth = numericCardSetWidth.Value / numericCardSetDPI.Value;
-            var currHeight = numericCardSetHeight.Value / numericCardSetDPI.Value;
-            switch (CardMakerSettings.PrintPageMeasurementUnit)
-            {
-                case MeasurementUnit.Inch:
-                    //do nothing
-                    break;
-                case MeasurementUnit.Millimeter:
-                    currWidth = (decimal)MeasurementUtil.GetMillimetersFromInch((double)currWidth);
-                    currHeight = (decimal)MeasurementUtil.GetMillimetersFromInch((double)currHeight);
-                    break;
-                case MeasurementUnit.Centimeter:
-                    currWidth = (decimal)MeasurementUtil.GetCentimetersFromInch((double)currWidth);
-                    currHeight = (decimal)MeasurementUtil.GetCentimetersFromInch((double)currHeight);
-                    break;
-            }
-            zQuery.AddNumericBox("Width", currWidth, 0, int.MaxValue, 1, 2, CARD_WIDTH);
-            zQuery.AddNumericBox("Height", currHeight, 0, int.MaxValue, 1, 2, CARD_HEIGHT);
-            if (DialogResult.OK == zQuery.ShowDialog(this))
-            {
-                switch ((MeasurementUnit) zQuery.GetIndex(IniSettings.PrintPageMeasurementUnit))
-                {
-                    case MeasurementUnit.Inch:
-                        numericCardSetWidth.Value = zQuery.GetDecimal(CARD_WIDTH) * numericCardSetDPI.Value;
-                        numericCardSetHeight.Value = zQuery.GetDecimal(CARD_HEIGHT) * numericCardSetDPI.Value;
-                        break;
-                    case MeasurementUnit.Millimeter:
-                        numericCardSetWidth.Value = (decimal)(MeasurementUtil.GetInchesFromMillimeter((double)zQuery.GetDecimal(CARD_WIDTH)) * (double)numericCardSetDPI.Value);
-                        numericCardSetHeight.Value = (decimal)(MeasurementUtil.GetInchesFromMillimeter((double)zQuery.GetDecimal(CARD_HEIGHT)) * (double)numericCardSetDPI.Value);
-                        break;
-                    case MeasurementUnit.Centimeter:
-                        numericCardSetWidth.Value = (decimal)(MeasurementUtil.GetInchesFromCentimeter((double)zQuery.GetDecimal(CARD_WIDTH)) * (double)numericCardSetDPI.Value);
-                        numericCardSetHeight.Value = (decimal)(MeasurementUtil.GetInchesFromCentimeter((double)zQuery.GetDecimal(CARD_HEIGHT)) * (double)numericCardSetDPI.Value);
-                        break;
-                }
-            }
+            LayoutManager.ShowAdjustLayoutSettingsDialog(false, LayoutManager.Instance.ActiveLayout, this);
         }
 
         #endregion
@@ -841,6 +801,22 @@ namespace CardMaker.Forms
         private void ToggleEnableState()
         {
             ElementManager.Instance.ProcessSelectedElementsEnableToggle();
+        }
+
+        /// <summary>
+        /// Updates the layout controls to reflect the specified layout (without firing events)
+        /// </summary>
+        /// <param name="zLayout">The layout to use for specifying the settings</param>
+        private void RefreshLayoutControls(ProjectLayout zLayout)
+        {
+            if (zLayout != null)
+            {
+                m_bFireLayoutChangeEvents = false;
+                numericCardSetDPI.Value = zLayout.dpi;
+                numericCardSetWidth.Value = zLayout.width;
+                numericCardSetHeight.Value = zLayout.height;
+                m_bFireLayoutChangeEvents = true;
+            }
         }
 
         private void RefreshElementInformation()

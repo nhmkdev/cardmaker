@@ -118,6 +118,7 @@ namespace Support.UI
 		    {
 		        Size = new Size(nWidth, 300)
 		    };
+
             Button btnDefault = null; // used to set the proper height of the internal panel
 
             // setup the buttons
@@ -355,7 +356,7 @@ namespace Support.UI
             }
 		}
 
-		#endregion
+        #endregion
 
-	}
+    }
 }

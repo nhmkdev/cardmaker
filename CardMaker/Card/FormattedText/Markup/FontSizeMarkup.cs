@@ -40,7 +40,7 @@ namespace CardMaker.Card.FormattedText.Markup
             if (ParseUtil.ParseFloat(m_sVariable, out fNewSize) && fNewSize > 0)
             {
                 m_zPreviousFont = zProcessData.Font;
-                zProcessData.SetFont(new Font(zProcessData.Font.FontFamily, fNewSize, zProcessData.Font.Style), zGraphics);
+                zProcessData.SetFont(FontLoader.GetFont(zProcessData.Font.FontFamily, fNewSize, zProcessData.Font.Style), zGraphics);
             }
             return false;
         }
