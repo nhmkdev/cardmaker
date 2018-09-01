@@ -28,6 +28,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using CardMaker.Data;
+using CardMaker.Events.Managers;
 
 namespace UnitTest.DeckObject
 {
@@ -45,6 +46,8 @@ namespace UnitTest.DeckObject
         [SetUp]
         public void Setup()
         {
+            // JavaScriptTranslator uses a few settings from the project file
+            ProjectManager.Instance.OpenProject(null);
             _testDeck = new TestDeck(new JavaScriptTranslatorFactory());
             _testLine = new DeckLine(new List<string>());
             _testElement = new ProjectLayoutElement(TEST_ELEMENT_NAME);
