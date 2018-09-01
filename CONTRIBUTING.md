@@ -2,6 +2,11 @@
 
 ## Community Goals
 
+### Unit Tests Must Pass
+
+The existing tests must pass.
+If you added any they better pass.
+
 ### Keep It Respectful
 
 This application has been slowly developed for over 6 years. It shows its age in many ways. Please keep this in mind when commenting on the code
