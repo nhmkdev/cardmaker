@@ -159,22 +159,17 @@ namespace CardMaker.Card.FormattedText.Markup
             }
             else
             {
-                // prepare to draw text
-                var zPath = new GraphicsPath();
-
                 try
                 {
+                    var zPath = new GraphicsPath();
                     zPath.AddString(m_sVariable, m_zFont.FontFamily, (int) m_zFont.Style, m_fFontOutlineSize,
                         new PointF(targetX, targetY), zFormat);
-
-                    CardRenderer.DrawPathOutline(zElement, zGraphics, zPath);
+                    CardRenderer.DrawElementPath(zElement, zGraphics, zPath, m_zFontBrush);
                 }
                 catch (Exception)
                 {
                     Logger.AddLogLine("Unable to render text (font issue?)");
                 }
-                // fill in the outline
-                zGraphics.FillPath(m_zFontBrush, zPath);
             }
             return true;
         }

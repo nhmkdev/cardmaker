@@ -132,21 +132,16 @@ namespace CardMaker.Card
             }
             else
             {
-                // prepare to draw text
-                var zPath = new GraphicsPath();
-
                 try
                 {
+                    var zPath = new GraphicsPath();
                     zPath.AddString(sInput, zFont.FontFamily, (int)zFont.Style, fEmSize, new RectangleF(0, 0, zElement.width, zElement.height), zFormat);
-                    CardRenderer.DrawPathOutline(zElement, zGraphics, zPath);
+                    CardRenderer.DrawElementPath(zElement, zGraphics, zPath, zBrush);
                 }
                 catch (Exception)
                 {
                     Logger.AddLogLine("Unable to render text (font issue?)");
                 }
-
-                // fill in the outline
-                zGraphics.FillPath(zBrush, zPath);
             }
         }
     }

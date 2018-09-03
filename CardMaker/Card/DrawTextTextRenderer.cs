@@ -294,7 +294,7 @@ namespace CardMaker.Card
                         };
 
                         zPath.AddString(sLine, zFont.FontFamily, (int)zFont.Style, fEmSize, new RectangleF(0, nLineOffset, zElement.width, zElement.height), zFormat);
-                        CardRenderer.DrawPathOutline(zElement, zGraphics, zPath);
+                        //CardRenderer.DrawElementPath(zElement, zGraphics, zPath);
                     }
                     catch (Exception)
                     {

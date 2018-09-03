@@ -28,6 +28,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using CardMaker.Data;
 using CardMaker.XML;
 
 namespace CardMaker.Card.Shapes
@@ -43,7 +44,7 @@ namespace CardMaker.Card.Shapes
 
         public static void Init()
         {
-            foreach (Type typeObj in Assembly.GetExecutingAssembly().GetTypes())
+            foreach (var typeObj in Assembly.GetExecutingAssembly().GetTypes())
             {
                 if (typeObj.Namespace == "CardMaker.Card.Shapes.Definitions"
                     && !typeObj.IsAbstract
@@ -57,79 +58,88 @@ namespace CardMaker.Card.Shapes
 
         public void HandleShapeRender(Graphics zGraphics, string sShapeInfo, ProjectLayoutElement zElement, int nXOffset = 0, int nYOffset = 0)
         {
-            if (s_regexShapes.IsMatch(sShapeInfo))
+            if (!s_regexShapes.IsMatch(sShapeInfo))
             {
-                var zMatch = s_regexShapes.Match(sShapeInfo);
-                ShapeInfo zInfo = null;
-                var bParse = false;
-                var arraySplit = zMatch.Groups[3].ToString().Split(new char[] { ';' });
-                var sShapeName = arraySplit[(int)AbstractShape.ShapeInformationIndex.Name];
-                AbstractShape zShape;
-                if (s_dictionaryShapeByName.TryGetValue(sShapeName, out zShape))
-                {
-                    // allow any shapes with extended settings to read in the values (ShapeInformationIndex extension)
-                    zShape.InitializeItem(sShapeInfo);
-
-                    if ((int)AbstractShape.ShapeInformationIndex.BasicShapeInformation < arraySplit.Length)
-                    {
-                        int nThickness;
-                        var nOverrideWidth = Int32.MinValue;
-                        var nOverrideHeight = Int32.MinValue;
-                        bParse = Int32.TryParse(arraySplit[(int)AbstractShape.ShapeInformationIndex.Thickness], out nThickness);
-                        if (!arraySplit[(int)AbstractShape.ShapeInformationIndex.OverrideWidth].Equals(AbstractShape.NO_SIZE_OVERRIDE))
-                            bParse &= Int32.TryParse(arraySplit[(int)AbstractShape.ShapeInformationIndex.OverrideWidth], out nOverrideWidth);
-                        if (!arraySplit[(int)AbstractShape.ShapeInformationIndex.OverrideHeight].Equals(AbstractShape.NO_SIZE_OVERRIDE))
-                            bParse &= Int32.TryParse(arraySplit[(int)AbstractShape.ShapeInformationIndex.OverrideHeight], out nOverrideHeight);
-                        zInfo = new ShapeInfo(nThickness, nOverrideWidth, nOverrideHeight, arraySplit);
-                    }
-                    if (!bParse)
-                    {
-                        return; // invalid (error?)
-                    }
-
-                    var previousTransform = zGraphics.Transform;
-                    var zPath = new GraphicsPath();
-
-                    var targetRect = new Rectangle(0, 0, zElement.width - 1, zElement.height - 1);
-
-                    // internally int.MinValue indicates no override
-                    if (Int32.MinValue != zInfo.OverrideWidth || Int32.MinValue != zInfo.OverrideHeight)
-                    {
-                        var nOverrideWidth = Int32.MinValue == zInfo.OverrideWidth ? zElement.width : zInfo.OverrideWidth;
-                        var nOverrideHeight = Int32.MinValue == zInfo.OverrideHeight ? zElement.height : zInfo.OverrideHeight;
-
-                        if (0 == nOverrideWidth || 0 == nOverrideHeight)
-                            // nothing to draw
-                            return;
-                        targetRect = GetZeroRectangle(nOverrideWidth, nOverrideHeight);
-                        zGraphics.TranslateTransform(targetRect.X, targetRect.Y);
-                        targetRect = new Rectangle(0, 0, Math.Abs(nOverrideWidth), Math.Abs(nOverrideHeight));
-                    }
-                    else if(nXOffset != 0 || nYOffset != 0)
-                    {
-                        zGraphics.TranslateTransform(nXOffset, nYOffset);
-                    }
-
-                    zShape.DrawShape(zPath, targetRect, zInfo);
-                    CardRenderer.DrawPathOutline(zElement, zGraphics, zPath);
-
-                    if (0 == zInfo.Thickness)
-                    {
-                        var zShapeBrush = 255 != zElement.opacity 
-                            ? new SolidBrush(Color.FromArgb(zElement.opacity, zElement.GetElementColor()))
-                            : new SolidBrush(zElement.GetElementColor());
-                        zGraphics.FillPath(zShapeBrush, zPath);
-                    }
-                    else
-                    {
-                        var zShapePen = 255 != zElement.opacity
-                            ? new Pen(Color.FromArgb(zElement.opacity, zElement.GetElementColor()), zInfo.Thickness)
-                            : new Pen(zElement.GetElementColor(), zInfo.Thickness);
-                        zGraphics.DrawPath(zShapePen, zPath);
-                    }
-                    zGraphics.Transform = previousTransform;
-                }
+                return;
             }
+
+            var zMatch = s_regexShapes.Match(sShapeInfo);
+            ShapeInfo zShapeInfo = null;
+            var bParse = false;
+            var arraySplit = zMatch.Groups[3].ToString().Split(new char[] { ';' });
+            var sShapeName = arraySplit[(int)AbstractShape.ShapeInformationIndex.Name];
+            AbstractShape zShape;
+            if (s_dictionaryShapeByName.TryGetValue(sShapeName, out zShape))
+            {
+                // allow any shapes with extended settings to read in the values (ShapeInformationIndex extension)
+                zShape.InitializeItem(sShapeInfo);
+
+                if ((int)AbstractShape.ShapeInformationIndex.BasicShapeInformation < arraySplit.Length)
+                {
+                    int nThickness;
+                    var nOverrideWidth = Int32.MinValue;
+                    var nOverrideHeight = Int32.MinValue;
+                    bParse = Int32.TryParse(arraySplit[(int)AbstractShape.ShapeInformationIndex.Thickness], out nThickness);
+                    if (!arraySplit[(int)AbstractShape.ShapeInformationIndex.OverrideWidth].Equals(AbstractShape.NO_SIZE_OVERRIDE))
+                        bParse &= Int32.TryParse(arraySplit[(int)AbstractShape.ShapeInformationIndex.OverrideWidth], out nOverrideWidth);
+                    if (!arraySplit[(int)AbstractShape.ShapeInformationIndex.OverrideHeight].Equals(AbstractShape.NO_SIZE_OVERRIDE))
+                        bParse &= Int32.TryParse(arraySplit[(int)AbstractShape.ShapeInformationIndex.OverrideHeight], out nOverrideHeight);
+                    zShapeInfo = new ShapeInfo(nThickness, nOverrideWidth, nOverrideHeight, arraySplit);
+                }
+                if (!bParse)
+                {
+                    return; // invalid (error?)
+                }
+
+                var previousTransform = zGraphics.Transform;
+                var zPath = new GraphicsPath();
+
+                var targetRect = new Rectangle(0, 0, zElement.width - 1, zElement.height - 1);
+
+                // internally int.MinValue indicates no override
+                if (Int32.MinValue != zShapeInfo.OverrideWidth || Int32.MinValue != zShapeInfo.OverrideHeight)
+                {
+                    var nOverrideWidth = Int32.MinValue == zShapeInfo.OverrideWidth ? zElement.width : zShapeInfo.OverrideWidth;
+                    var nOverrideHeight = Int32.MinValue == zShapeInfo.OverrideHeight ? zElement.height : zShapeInfo.OverrideHeight;
+
+                    if (0 == nOverrideWidth || 0 == nOverrideHeight)
+                        // nothing to draw
+                        return;
+                    targetRect = GetZeroRectangle(nOverrideWidth, nOverrideHeight);
+                    zGraphics.TranslateTransform(targetRect.X, targetRect.Y);
+                    targetRect = new Rectangle(0, 0, Math.Abs(nOverrideWidth), Math.Abs(nOverrideHeight));
+                }
+                else if(nXOffset != 0 || nYOffset != 0)
+                {
+                    zGraphics.TranslateTransform(nXOffset, nYOffset);
+                }
+
+                zShape.DrawShape(zPath, targetRect, zShapeInfo);
+
+                if (0 == zShapeInfo.Thickness)
+                {
+                    CardRenderer.DrawElementPath(zElement, zGraphics, zPath, GetFillBrush(zElement));
+                }
+                else
+                {
+                    var zFillBrush = zElement.GetElementBackgroundColor() != CardMakerConstants.NoColor
+                        ? CardRenderer.GetElementOpacityBrush(zElement, zElement.GetElementBackgroundColor())
+                        : null;
+
+                    CardRenderer.DrawElementPath(zElement, zGraphics, zPath, zFillBrush);
+                    zGraphics.DrawPath(CardRenderer.GetElementOpacityPen(zElement, zElement.GetElementColor(), zShapeInfo.Thickness), zPath);
+                }
+                zGraphics.Transform = previousTransform;
+            }
+        }
+
+        private static Brush GetFillBrush(ProjectLayoutElement zElement)
+        {
+            // prefer the background color
+            return CardRenderer.GetElementOpacityBrush(zElement,
+                zElement.GetElementBackgroundColor() != CardMakerConstants.NoColor
+                    ? zElement.GetElementBackgroundColor()
+                    : zElement.GetElementColor());
         }
 
         /// <summary>

@@ -1,6 +1,7 @@
 Card Maker Version History
 --------------------------
 1.0.0.2
+- Updated handling for outlines and opacity.
 - Fixed a old bug related to the properties field and the shape element definition
 - Massive overhaul to the Layout resize functionality... now with undo! (accessible in the project > layout context menu and via Resize button) (kek444/nhmkdev)
 - Zoom level is now persisted per layout and saved in the project file (kek444)

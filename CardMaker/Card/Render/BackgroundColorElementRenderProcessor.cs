@@ -33,7 +33,8 @@ namespace CardMaker.Card.Render
         public string Render(Graphics zGraphics, ProjectLayoutElement zElement, Deck zDeck, string sInput, int nX, int nY, bool bExport)
         {
             // render the background color
-            if (CardMakerConstants.NoColor != zElement.GetElementBackgroundColor())
+            if (CardMakerConstants.NoColor != zElement.GetElementBackgroundColor() 
+                && ElementType.Shape != EnumUtil.GetElementType(zElement.type))
             {
                 var zBackgroundBrush = 255 != zElement.opacity
                     ? new SolidBrush(Color.FromArgb(zElement.opacity, zElement.GetElementBackgroundColor()))

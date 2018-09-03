@@ -260,25 +260,86 @@ namespace CardMaker.Card
         }
 
         /// <summary>
-        /// Renders the outline if the specified element has a non-zero outline
+        /// Gets a new brush based on the passed in element and color.
+        /// </summary>
+        /// <param name="zElement"></param>
+        /// <param name="color"></param>
+        /// <returns></returns>
+        public static Brush GetElementOpacityBrush(ProjectLayoutElement zElement, Color color)
+        {
+            return new SolidBrush(GetElementOpacityColor(zElement, color));
+        }
+
+        /// <summary>
+        /// Gets a new pen based on the passed in element, color, and thickness.
+        /// </summary>
+        /// <param name="zElement"></param>
+        /// <param name="color"></param>
+        /// <param name="nThickness"></param>
+        /// <returns></returns>
+        public static Pen GetElementOpacityPen(ProjectLayoutElement zElement, Color color, int nThickness)
+        {
+            return new Pen(GetElementOpacityColor(zElement, color), nThickness);
+        }
+
+        /// <summary>
+        /// Gets the color based on the element opacity
+        /// </summary>
+        /// <param name="zElement"></param>
+        /// <param name="color"></param>
+        /// <returns></returns>
+        public static Color GetElementOpacityColor(ProjectLayoutElement zElement, Color color)
+        {
+            return 255 != zElement.opacity
+                ? Color.FromArgb(zElement.opacity, color)
+                : color;
+        }
+
+        /// <summary>
+        /// Renders the element path and outline based on the passed in parameters. If the opacity of the element is 255 everything will be rendered using direct graphics calls.
+        /// If the element opacity is not 255 the outline and fill must be rendered as regions. This will appear to be somewhat pixelated in comparison to the other mode.
+        /// This is necessary due to the need for clipping due to opacity. Without using regions the clipping results in 'space' between the shape and outline.
         /// </summary>
         /// <param name="zElement">The element to use the thickness value of</param>
         /// <param name="zGraphics">The graphics to render to</param>
-        /// <param name="zPath">The path to draw the outline on</param>
-        public static void DrawPathOutline(ProjectLayoutElement zElement, Graphics zGraphics, GraphicsPath zPath)
+        /// <param name="zPath">The path to draw the shape and outline on</param>
+        /// <param name="zFillBrush">The optional brush to fill the path with</param>
+        public static void DrawElementPath(ProjectLayoutElement zElement, Graphics zGraphics, GraphicsPath zPath, Brush zFillBrush)
         {
             // draw the outline
-            if (0 >= zElement.outlinethickness)
+            if (0 < zElement.outlinethickness)
+            {
+                var outlinePen = GetElementOpacityPen(zElement, zElement.GetElementOutlineColor(), zElement.outlinethickness);
+                outlinePen.LineJoin = LineJoin.Round;
+
+                if (zElement.opacity < 255)
+                {
+                    var zPriorClip = zGraphics.Clip;
+                    zGraphics.SetClip(new Region(zPath), CombineMode.Exclude);
+                    zGraphics.DrawPath(outlinePen, zPath);
+                    zGraphics.Clip = zPriorClip;
+                }
+                else
+                {
+                    zGraphics.DrawPath(outlinePen, zPath);
+                }
+            }
+
+            // no brush nothing else to draw
+            if (zFillBrush == null)
             {
                 return;
             }
-            var outlinePen = new Pen(Color.FromArgb(zElement.opacity, zElement.GetElementOutlineColor()),
-                zElement.outlinethickness)
-            {
-                LineJoin = LineJoin.Round
-            };
 
-            zGraphics.DrawPath(outlinePen, zPath);
+            // draw the actual content (text/shapes)
+            if (zElement.opacity < 255)
+            {
+                zGraphics.FillRegion(zFillBrush, new Region(zPath));
+            }
+            else
+            {
+                zGraphics.FillPath(zFillBrush, zPath);
+            }
         }
     }
 }
