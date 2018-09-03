@@ -1023,7 +1023,8 @@ namespace CardMaker.Forms
                             if (dictionaryShapeTypeIndex.TryGetValue(sType, out nSelectedIndex))
                             {
                                 comboShapeType.SelectedIndex = nSelectedIndex;
-                                var zShape = (AbstractShape)comboShapeType.SelectedItem;
+                                // always make a copy of the shape object for properties editing
+                                var zShape = (AbstractShape)Activator.CreateInstance(comboShapeType.SelectedItem.GetType());
                                 zShape.InitializeItem(zElement.variable);
                                 // associated the prop grid with this shape object
                                 propertyGridShape.SelectedObject = zShape;
