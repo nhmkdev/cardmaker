@@ -29,7 +29,7 @@ using System.Net;
 using System.Text;
 using Support.IO;
 
-namespace Support.UI
+namespace Support.Google
 {
     public static class GoogleApi
     {

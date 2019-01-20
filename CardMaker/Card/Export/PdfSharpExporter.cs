@@ -25,6 +25,8 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
+using System.Windows.Forms;
 using CardMaker.Data;
 using CardMaker.XML;
 using PdfSharp;
@@ -78,6 +80,25 @@ namespace CardMaker.Card.Export
         public void ExportThread()
         {
             var zWait = WaitDialog.Instance;
+
+            if (File.Exists(m_sExportFile))
+            {
+                try
+                {
+                    File.Delete(m_sExportFile);
+                }
+                catch (Exception)
+                {
+                    Logger.AddLogLine("Failed to delete PDF before export.");
+                }
+
+                if (File.Exists(m_sExportFile))
+                {
+                    DisplayError(zWait.Owner);
+                    zWait.CloseWaitDialog();
+                    return;
+                }
+            }
 
 #if !MONO_BUILD
             Bitmap zBuffer = null;
@@ -192,6 +213,7 @@ namespace CardMaker.Card.Export
             catch (Exception ex)
             {
                 Logger.AddLogLine("Error saving PDF (is it open?) " + ex.Message);
+                DisplayError(zWait.Owner);
                 zWait.ThreadSuccess = false;
             }
 
@@ -425,6 +447,17 @@ namespace CardMaker.Card.Export
                     (m_dPageMarginEndX - m_dPageMarginX) / m_dLayoutPointWidth,
                     CurrentDeck.ValidLines.Count - nNextExportIndex)
                 );
+        }
+
+        /// <summary>
+        /// Shows the read-only error (assumes the file is open in a viewer)
+        /// </summary>
+        private void DisplayError(Form zWaitForm)
+        {
+            zWaitForm.InvokeAction(() =>
+            {
+                MessageBox.Show(zWaitForm.Owner, "The destination file may be open in a PDF viewer. Please close it before exporting.", "PDF Write Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            });
         }
     }
 }

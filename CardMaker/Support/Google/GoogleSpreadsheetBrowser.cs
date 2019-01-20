@@ -29,8 +29,9 @@ using System.Windows.Forms;
 using Google.GData.Client;
 using Google.GData.Spreadsheets;
 using Support.IO;
+using Support.UI;
 
-namespace Support.UI
+namespace Support.Google
 {
     public partial class GoogleSpreadsheetBrowser : Form
     {

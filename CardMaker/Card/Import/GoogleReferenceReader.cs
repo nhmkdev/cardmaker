@@ -30,6 +30,7 @@ using CardMaker.Events.Managers;
 using CardMaker.XML;
 using Google.GData.Client;
 using Google.GData.Spreadsheets;
+using Support.Google;
 using Support.IO;
 using Support.UI;
 

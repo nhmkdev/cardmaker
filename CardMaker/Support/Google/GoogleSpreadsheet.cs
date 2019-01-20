@@ -28,7 +28,7 @@ using Google.GData.Client;
 using Google.GData.Spreadsheets;
 using Support.IO;
 
-namespace Support.UI
+namespace Support.Google
 {
     public static class GoogleSpreadsheet
     {
