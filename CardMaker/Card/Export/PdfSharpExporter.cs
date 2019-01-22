@@ -213,7 +213,7 @@ namespace CardMaker.Card.Export
             catch (Exception ex)
             {
                 Logger.AddLogLine("Error saving PDF (is it open?) " + ex.Message);
-                DisplayError(zWait.Owner);
+                DisplayError(zWait.Owner, ex.Message);
                 zWait.ThreadSuccess = false;
             }
 
@@ -452,11 +452,11 @@ namespace CardMaker.Card.Export
         /// <summary>
         /// Shows the read-only error (assumes the file is open in a viewer)
         /// </summary>
-        private void DisplayError(Form zWaitForm)
+        private void DisplayError(Form zWaitForm, string extraMessage = "")
         {
             zWaitForm.InvokeAction(() =>
             {
-                MessageBox.Show(zWaitForm.Owner, "The destination file may be open in a PDF viewer. Please close it before exporting.", "PDF Write Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(zWaitForm.Owner, extraMessage + Environment.NewLine + "The destination file may be open in a PDF viewer. Please close it before exporting.", "PDF Write Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             });
         }
     }
