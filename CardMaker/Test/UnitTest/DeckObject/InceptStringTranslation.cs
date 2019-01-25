@@ -61,7 +61,7 @@ namespace UnitTest.DeckObject
             Assert.AreEqual(result, secondResult);
         }
 
-        [TestCase("sample string with nothing special.", Result = "sample string with nothing special.")]
+        [TestCase("sample string with nothing special.", ExpectedResult = "sample string with nothing special.")]
         public string ValidateNonTranslate(string input)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
@@ -71,16 +71,16 @@ namespace UnitTest.DeckObject
         }
 
 
-        [TestCase("@[TESTCOLUMN1]", Result = "102")]
-        [TestCase("@[testcolumn1]", Result = "102")]
-        [TestCase("@[testColumn1]", Result = "102")]
-        [TestCase("@[testColumn2]", Result = "aaa")]
-        [TestCase(" @[testColumn1]", Result = " 102")]
-        [TestCase(" @[testColumn2]", Result = " aaa")]
-        [TestCase("@[testColumn1] ", Result = "102 ")]
-        [TestCase("@[testColumn2] ", Result = "aaa ")]
-        [TestCase("@[testColumn1]@[testColumn2]", Result = "102aaa")]
-        [TestCase("@[@[testColumn3]]", Result = "102")]
+        [TestCase("@[TESTCOLUMN1]", ExpectedResult = "102")]
+        [TestCase("@[testcolumn1]", ExpectedResult = "102")]
+        [TestCase("@[testColumn1]", ExpectedResult = "102")]
+        [TestCase("@[testColumn2]", ExpectedResult = "aaa")]
+        [TestCase(" @[testColumn1]", ExpectedResult = " 102")]
+        [TestCase(" @[testColumn2]", ExpectedResult = " aaa")]
+        [TestCase("@[testColumn1] ", ExpectedResult = "102 ")]
+        [TestCase("@[testColumn2] ", ExpectedResult = "aaa ")]
+        [TestCase("@[testColumn1]@[testColumn2]", ExpectedResult = "102aaa")]
+        [TestCase("@[@[testColumn3]]", ExpectedResult = "102")]
         public string ValidateReferenceValue(string sInput)
         {
             var listLines = new List<List<string>>()
@@ -98,10 +98,10 @@ namespace UnitTest.DeckObject
             return _testDeck.TranslateString(sInput, _testLine, _testElement, false).String;
         }
 
-        [TestCase("![cardcount]", Result = "10")]
-        [TestCase("![elementname]", Result = TEST_ELEMENT_NAME)]
-        [TestCase("![cardIndex]", Result = "0")]
-        [TestCase("![deckIndex]", Result = "1")]
+        [TestCase("![cardcount]", ExpectedResult = "10")]
+        [TestCase("![elementname]", ExpectedResult = TEST_ELEMENT_NAME)]
+        [TestCase("![cardIndex]", ExpectedResult = "0")]
+        [TestCase("![deckIndex]", ExpectedResult = "1")]
         public string ValidateCardVariable(string input)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
@@ -111,27 +111,27 @@ namespace UnitTest.DeckObject
 
         // todo if/switch tests with bggraphic and shape
 
-        [TestCase("#(if a == a then word else word2)#", Result = "word")]
-        [TestCase("#(if a == b then word else word2)#", Result = "word2")]
-        [TestCase("#(if a == b then word else word2)# midword #(if c == d then chowder)#", Result = "word2 midword ")]
-        [TestCase("#(if 2 > 0 then Deploy Roll: +2)# Deploy Success: +1pt#(switch;+1;+1;;-1;;#default;s)##(if DBA == then #nodraw)#", Result= "Deploy Roll: +2 Deploy Success: +1pt")]
-        [TestCase("#(if 1.000 > 1 then A else B)#", Result = "B")]
-        [TestCase("#(if 1,000 > 1 then A else B)#", Result = "B")]
-        [TestCase("#(if 1.100 > 1 then A else B)#", Result = "A")]
-        [TestCase("#(if 1,100 > 1 then A else B)#", Result = "A")]
-        [TestCase("#(if 1.100 > 1.05 then A else B)#", Result = "A")]
-        [TestCase("#(if 1,100 > 1,05 then A else B)#", Result = "A")]
-        [TestCase("#(if 1.100 > 1,05 then A else B)#", Result = "A")]
-        [TestCase("#(if 1.100 < 1,05 then A else B)#", Result = "B")]
-        [TestCase("#(if 24 < 24 then A else B)#", Result = "B")]
-        [TestCase("#(if 24 >= 24 then A else B)#", Result = "A")]
-        [TestCase("#(if 24 <= 24 then A else B)#", Result = "A")]
-        [TestCase("#(if 26 >= 24 then A else B)#", Result = "A")]
-        [TestCase("#(if 26 <= 24 then A else B)#", Result = "B")]
-        [TestCase("#(if aaa#(switch;45;35;A;45;b)#a == aaaba then GOOD)#", Result = "GOOD")]
-        [TestCase("#(if #(if x == x then a)##(switch;45;35;A;45;b)##(if z == z then a)# == aba then GOOD)#", Result = "GOOD")]
-        [TestCase("#(if #(if x == x then a)##(if y == y then b)##(if z == z then a)# == aba then GOOD)#", Result = "GOOD")]
-        [TestCase("#(if #(if #(if y == #(switch;45;35;A;45;y)# then x)# == x then a)#ba == #(switch;45;35;A;45;aba)# then GOOD)#", Result = "GOOD")]
+        [TestCase("#(if a == a then word else word2)#", ExpectedResult = "word")]
+        [TestCase("#(if a == b then word else word2)#", ExpectedResult = "word2")]
+        [TestCase("#(if a == b then word else word2)# midword #(if c == d then chowder)#", ExpectedResult = "word2 midword ")]
+        [TestCase("#(if 2 > 0 then Deploy Roll: +2)# Deploy Success: +1pt#(switch;+1;+1;;-1;;#default;s)##(if DBA == then #nodraw)#", ExpectedResult= "Deploy Roll: +2 Deploy Success: +1pt")]
+        [TestCase("#(if 1.000 > 1 then A else B)#", ExpectedResult = "B")]
+        [TestCase("#(if 1,000 > 1 then A else B)#", ExpectedResult = "B")]
+        [TestCase("#(if 1.100 > 1 then A else B)#", ExpectedResult = "A")]
+        [TestCase("#(if 1,100 > 1 then A else B)#", ExpectedResult = "A")]
+        [TestCase("#(if 1.100 > 1.05 then A else B)#", ExpectedResult = "A")]
+        [TestCase("#(if 1,100 > 1,05 then A else B)#", ExpectedResult = "A")]
+        [TestCase("#(if 1.100 > 1,05 then A else B)#", ExpectedResult = "A")]
+        [TestCase("#(if 1.100 < 1,05 then A else B)#", ExpectedResult = "B")]
+        [TestCase("#(if 24 < 24 then A else B)#", ExpectedResult = "B")]
+        [TestCase("#(if 24 >= 24 then A else B)#", ExpectedResult = "A")]
+        [TestCase("#(if 24 <= 24 then A else B)#", ExpectedResult = "A")]
+        [TestCase("#(if 26 >= 24 then A else B)#", ExpectedResult = "A")]
+        [TestCase("#(if 26 <= 24 then A else B)#", ExpectedResult = "B")]
+        [TestCase("#(if aaa#(switch;45;35;A;45;b)#a == aaaba then GOOD)#", ExpectedResult = "GOOD")]
+        [TestCase("#(if #(if x == x then a)##(switch;45;35;A;45;b)##(if z == z then a)# == aba then GOOD)#", ExpectedResult = "GOOD")]
+        [TestCase("#(if #(if x == x then a)##(if y == y then b)##(if z == z then a)# == aba then GOOD)#", ExpectedResult = "GOOD")]
+        [TestCase("#(if #(if #(if y == #(switch;45;35;A;45;y)# then x)# == x then a)#ba == #(switch;45;35;A;45;aba)# then GOOD)#", ExpectedResult = "GOOD")]
         public string ValidateLogic(string input)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
@@ -140,15 +140,15 @@ namespace UnitTest.DeckObject
         }
 
         // note this result sucks -- should just be nothing
-        [TestCase("#(switch;45;15;nothing)#", Result = "switch;45;15;nothing")]
-        [TestCase("#(switch;45;15;nothing;#default;stuff)#", Result = "stuff")]
-        [TestCase("#(switch;45;15;nothing;45;;#default;stuff)#", Result = "")]
-        [TestCase("#(switch;;15;nothing;;;#default;stuff)#", Result = "")]
-        [TestCase("#(switch;;15;nothing;;result;#default;stuff)#", Result = "result")]
-        [TestCase("#(switch;85;15;nothing;;result;#default;#switchkey)#", Result = "85")]
-        [TestCase("#(switch;85;15;nothing;;result;#default;)#", Result = "")]
+        [TestCase("#(switch;45;15;nothing)#", ExpectedResult = "switch;45;15;nothing")]
+        [TestCase("#(switch;45;15;nothing;#default;stuff)#", ExpectedResult = "stuff")]
+        [TestCase("#(switch;45;15;nothing;45;;#default;stuff)#", ExpectedResult = "")]
+        [TestCase("#(switch;;15;nothing;;;#default;stuff)#", ExpectedResult = "")]
+        [TestCase("#(switch;;15;nothing;;result;#default;stuff)#", ExpectedResult = "result")]
+        [TestCase("#(switch;85;15;nothing;;result;#default;#switchkey)#", ExpectedResult = "85")]
+        [TestCase("#(switch;85;15;nothing;;result;#default;)#", ExpectedResult = "")]
         // this is proof of the switch using the ; delimiter is broken
-        [TestCase("#(switch;;15;nothing;#empty;result;#default;<img=test.png;.8)#", Result = "switch;;15;nothing;;result;#default;<img=test.png;.8")]
+        [TestCase("#(switch;;15;nothing;#empty;result;#default;<img=test.png;.8)#", ExpectedResult = "switch;;15;nothing;;result;#default;<img=test.png;.8")]
         public string ValidateSwitchLogic(string input)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
@@ -158,19 +158,19 @@ namespace UnitTest.DeckObject
         }
 
         // note this result sucks -- should just be nothing
-        [TestCase("#(switch//45//15//nothing)#", Result = "switch//45//15//nothing")]
-        [TestCase("#(switch-=45-=15-=nothing-=#default-=weird)#", Result = "weird")]
-        [TestCase("#(switch//45//15//nothing//#default//stuff)#", Result = "stuff")]
-        [TestCase("#(switch////15//nothing//45////#default//stuff)#", Result = "stuff")]
-        [TestCase("#(switch//45//15//nothing//45////#default//stuff)#", Result = "")]
-        [TestCase("#(switch////15//nothing///////#default//stuff)#", Result = "")]
-        [TestCase("#(switch////15//nothing////result//#default//stuff)#", Result = "result")]
-        [TestCase("#(switch////15//nothing//#empty//result//#default//stuff)#", Result = "result")]
-        [TestCase("#(switch////15//nothing//#empty///img.png//#default//stuff)#", Result = "/img.png")]
-        [TestCase("#(switch//45//15//nothing//#empty//result//#default//<img=test.png;.8>)#", Result = "<img=test.png;.8>")]
-        [TestCase("#(switch//45//15//nothing//#empty//result//#default//<img=test.png;.8>)#", Result = "<img=test.png;.8>")]
-        [TestCase("#(switch--45--15--nothing--#empty--result--#default--<img=test.png;.8>)#", Result = "<img=test.png;.8>")]
-        [TestCase("#(switch----45--15--nothing--#empty--result--#default--<img=test.png;.8>)#", Result = "switch----45--15--nothing----result--#default--<img=test.png;.8>")]
+        [TestCase("#(switch//45//15//nothing)#", ExpectedResult = "switch//45//15//nothing")]
+        [TestCase("#(switch-=45-=15-=nothing-=#default-=weird)#", ExpectedResult = "weird")]
+        [TestCase("#(switch//45//15//nothing//#default//stuff)#", ExpectedResult = "stuff")]
+        [TestCase("#(switch////15//nothing//45////#default//stuff)#", ExpectedResult = "stuff")]
+        [TestCase("#(switch//45//15//nothing//45////#default//stuff)#", ExpectedResult = "")]
+        [TestCase("#(switch////15//nothing///////#default//stuff)#", ExpectedResult = "")]
+        [TestCase("#(switch////15//nothing////result//#default//stuff)#", ExpectedResult = "result")]
+        [TestCase("#(switch////15//nothing//#empty//result//#default//stuff)#", ExpectedResult = "result")]
+        [TestCase("#(switch////15//nothing//#empty///img.png//#default//stuff)#", ExpectedResult = "/img.png")]
+        [TestCase("#(switch//45//15//nothing//#empty//result//#default//<img=test.png;.8>)#", ExpectedResult = "<img=test.png;.8>")]
+        [TestCase("#(switch//45//15//nothing//#empty//result//#default//<img=test.png;.8>)#", ExpectedResult = "<img=test.png;.8>")]
+        [TestCase("#(switch--45--15--nothing--#empty--result--#default--<img=test.png;.8>)#", ExpectedResult = "<img=test.png;.8>")]
+        [TestCase("#(switch----45--15--nothing--#empty--result--#default--<img=test.png;.8>)#", ExpectedResult = "switch----45--15--nothing----result--#default--<img=test.png;.8>")]
         public string ValidateAltSwitchLogic(string input)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
@@ -212,21 +212,21 @@ namespace UnitTest.DeckObject
         }
 
         // TODO: most of these are just tests of logic... not #nodraw testing
-        [TestCase("#(switch;goodkey;badkey;1;goodkey;#nodraw)#", false, Result = "#nodraw")]
-        [TestCase("Test: #(switch;goodkey;badkey;1;goodkey;#nodraw)#", false, Result = "Test: #nodraw")]
-        [TestCase("Test: #(switch;goodkey;badkey;1;goodkey;#nodraw)#", false, Result = "Test: #nodraw")]
-        [TestCase("#(switch;goodkey;badkey;1;goodkey;#nodraw)# [test]", false, Result = "#nodraw [test]")]
-        [TestCase("Test: #(switch;goodkey;badkey;1;otherbadkey;2;#default;#nodraw)#", false, Result = "Test: #nodraw")]
-        [TestCase("#(if a == a then #nodraw)#", false, Result = "#nodraw")]
-        [TestCase("#(if [1;2;3] == [a;3;b] then #nodraw)#", false, Result = "#nodraw")]
-        [TestCase("#(if [1;2;3] == [a;b;c] then #nodraw)#", true, Result = "")]
-        [TestCase("Test: #(if a == a then #nodraw)#", false, Result = "Test: #nodraw")]
-        [TestCase("#(if == then #nodraw)#", false, Result = "#nodraw")]
-        [TestCase("#(if #empty == then #nodraw)#", false, Result = "#nodraw")]
-        [TestCase("#(if == #empty then #nodraw)#", false, Result = "#nodraw")]
-        [TestCase("#nodraw", false, Result = "#nodraw")]
-        [TestCase("#(if a<4 == a>4 then 6 &lt; 7 else #nodraw)#", false, Result = "#nodraw")]
-        [TestCase("#(if a<4 == a>4 then #nodraw else 6 &lt; 7)#", true, Result = "6 < 7")]
+        [TestCase("#(switch;goodkey;badkey;1;goodkey;#nodraw)#", false, ExpectedResult = "#nodraw")]
+        [TestCase("Test: #(switch;goodkey;badkey;1;goodkey;#nodraw)#", false, ExpectedResult = "Test: #nodraw")]
+        [TestCase("Test: #(switch;goodkey;badkey;1;goodkey;#nodraw)#", false, ExpectedResult = "Test: #nodraw")]
+        [TestCase("#(switch;goodkey;badkey;1;goodkey;#nodraw)# [test]", false, ExpectedResult = "#nodraw [test]")]
+        [TestCase("Test: #(switch;goodkey;badkey;1;otherbadkey;2;#default;#nodraw)#", false, ExpectedResult = "Test: #nodraw")]
+        [TestCase("#(if a == a then #nodraw)#", false, ExpectedResult = "#nodraw")]
+        [TestCase("#(if [1;2;3] == [a;3;b] then #nodraw)#", false, ExpectedResult = "#nodraw")]
+        [TestCase("#(if [1;2;3] == [a;b;c] then #nodraw)#", true, ExpectedResult = "")]
+        [TestCase("Test: #(if a == a then #nodraw)#", false, ExpectedResult = "Test: #nodraw")]
+        [TestCase("#(if == then #nodraw)#", false, ExpectedResult = "#nodraw")]
+        [TestCase("#(if #empty == then #nodraw)#", false, ExpectedResult = "#nodraw")]
+        [TestCase("#(if == #empty then #nodraw)#", false, ExpectedResult = "#nodraw")]
+        [TestCase("#nodraw", false, ExpectedResult = "#nodraw")]
+        [TestCase("#(if a<4 == a>4 then 6 &lt; 7 else #nodraw)#", false, ExpectedResult = "#nodraw")]
+        [TestCase("#(if a<4 == a>4 then #nodraw else 6 &lt; 7)#", true, ExpectedResult = "6 < 7")]
         public string ValidateNoDraw(string input, bool expectedDrawElement)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
@@ -236,9 +236,9 @@ namespace UnitTest.DeckObject
         }
 
         // x + (current card index * y) with left padded 0's numbering z
-        [TestCase("##0;0;0#", 0, Result = "0")]
-        [TestCase("##0;0;0#", 10, Result = "0")]
-        [TestCase("##500;10;8#", 1, Result = "00000510")]
+        [TestCase("##0;0;0#", 0, ExpectedResult = "0")]
+        [TestCase("##0;0;0#", 10, ExpectedResult = "0")]
+        [TestCase("##500;10;8#", 1, ExpectedResult = "00000510")]
         public string ValidateCounter(string input, int cardIndex)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
@@ -246,11 +246,11 @@ namespace UnitTest.DeckObject
             return _testDeck.TranslateString(input, _testLine, _testElement, false).String;
         }
 
-        [TestCase("a", "3", Result = "3")]
-        [TestCase("3", "a", Result = "a")]
-        [TestCase("", "a", Result = "@[]")]
-        [TestCase("-", "a", Result = "a")]
-        //[TestCase(" ", "a", Result = "a")] // TODO: this is not a valid key and should throw an error in processing
+        [TestCase("a", "3", ExpectedResult = "3")]
+        [TestCase("3", "a", ExpectedResult = "a")]
+        [TestCase("", "a", ExpectedResult = "@[]")]
+        [TestCase("-", "a", ExpectedResult = "a")]
+        //[TestCase(" ", "a", ExpectedResult = "a")] // TODO: this is not a valid key and should throw an error in processing
         public string ValidateColumnReference(string keyName, string keyValue)
         {
             _testDeck.ProcessLinesPublic(
@@ -264,8 +264,8 @@ namespace UnitTest.DeckObject
             return _testDeck.TranslateString("@["+ keyName + "]", _testDeck.ValidLines[0], _testElement, false).String;
         }
 
-        [TestCase("x", "x" , Result = 1)]
-        [TestCase("X", "x", Result = 1)]
+        [TestCase("x", "x" , ExpectedResult = 1)]
+        [TestCase("X", "x", ExpectedResult = 1)]
         public int ValidateAllowedLayout(string layoutName, string allowedLayout)
         {
             _testDeck.CardLayout.Name = layoutName;
@@ -295,10 +295,10 @@ namespace UnitTest.DeckObject
             Assert.AreEqual(_testDeck.CardLayout.defaultCount, _testDeck.CardCount);
         }
 
-        [TestCase(1, 0, Result = 1)]
-        [TestCase(0, 1, Result = 1)]
-        [TestCase(1, 1, Result = 2)]
-        [TestCase(5, 32, Result = 37)]
+        [TestCase(1, 0, ExpectedResult = 1)]
+        [TestCase(0, 1, ExpectedResult = 1)]
+        [TestCase(1, 1, ExpectedResult = 2)]
+        [TestCase(5, 32, ExpectedResult = 37)]
         public int ValidateCardCounts(int cardCountOne, int cardCountTwo)
         {
             var listLines = new List<List<string>>()
@@ -314,10 +314,10 @@ namespace UnitTest.DeckObject
             return _testDeck.CardCount;
         }
 
-        [TestCase("\\c", Result=",")]
-        [TestCase("\\q", Result = "\"")]
-        [TestCase("&gt;", Result = ">")]
-        [TestCase("&lt;", Result = "<")]
+        [TestCase("\\c", ExpectedResult=",")]
+        [TestCase("\\q", ExpectedResult = "\"")]
+        [TestCase("&gt;", ExpectedResult = ">")]
+        [TestCase("&lt;", ExpectedResult = "<")]
         public string ValidateSpecialCharacterTranslation(string input)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
@@ -333,8 +333,8 @@ namespace UnitTest.DeckObject
             Assert.AreEqual(Environment.NewLine, result.String);
         }
 
-        [TestCase("\\c", Result = "\\c")]
-        [TestCase("\\q", Result = "\\q")]
+        [TestCase("\\c", ExpectedResult = "\\c")]
+        [TestCase("\\q", ExpectedResult = "\\q")]
         public string ValidateSpecialCharacterNonTranslation(string input)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
@@ -375,10 +375,10 @@ namespace UnitTest.DeckObject
             }
         }
 
-        [TestCase("@[1]@[2]", Result = "ab")]
-        [TestCase("@[4]@[2]@[1]", Result = "bbbba")]
-        [TestCase("@[5]", Result = "bbb")]
-        [TestCase("@[5] at the @[1] end test @[5]", Result = "bbb at the a end test bbb")]
+        [TestCase("@[1]@[2]", ExpectedResult = "ab")]
+        [TestCase("@[4]@[2]@[1]", ExpectedResult = "bbbba")]
+        [TestCase("@[5]", ExpectedResult = "bbb")]
+        [TestCase("@[5] at the @[1] end test @[5]", ExpectedResult = "bbb at the a end test bbb")]
         public string ValidateNestedDefines(string line)
         {
             var listLines = new List<List<string>>();
@@ -422,17 +422,17 @@ namespace UnitTest.DeckObject
             _testDeck.TranslateString(line, _testLine, _testElement, false);
         }
 
-        [TestCase("@[action,aa,bb]", Result = "aa::bb")]
-        [TestCase("@[action,Aa,bB]", Result = "Aa::bB")]
-        [TestCase("@[action,@[L4],bb]", Result = "bbb::bb")]
-        [TestCase("@[actionCaller,@[L1]]", Result = "a::zork")]
-        [TestCase("@[smallImgTag,@[theCoin]]", Result = @"<img=\images\coin.png;.90;0;3>")]
-        [TestCase("@[smallImgTag, @[theCoin]]", Result = @"<img= \images\coin.png;.90;0;3>")]
-        [TestCase("@[smallImgTag,\t@[theCoin]]", Result = "<img=\t\\images\\coin.png;.90;0;3>")]
-        [TestCase("@[smallImgTag,]", Result = @"<img=;.90;0;3>")]
-        [TestCase("@[action,,]", Result = @"::")]
-        [TestCase("@[smallImgTag]", Result = @"<img={1};.90;0;3>")]
-        [TestCase("@[L1,@[L2],@[L4]]", Result = @"a")]
+        [TestCase("@[action,aa,bb]", ExpectedResult = "aa::bb")]
+        [TestCase("@[action,Aa,bB]", ExpectedResult = "Aa::bB")]
+        [TestCase("@[action,@[L4],bb]", ExpectedResult = "bbb::bb")]
+        [TestCase("@[actionCaller,@[L1]]", ExpectedResult = "a::zork")]
+        [TestCase("@[smallImgTag,@[theCoin]]", ExpectedResult = @"<img=\images\coin.png;.90;0;3>")]
+        [TestCase("@[smallImgTag, @[theCoin]]", ExpectedResult = @"<img= \images\coin.png;.90;0;3>")]
+        [TestCase("@[smallImgTag,\t@[theCoin]]", ExpectedResult = "<img=\t\\images\\coin.png;.90;0;3>")]
+        [TestCase("@[smallImgTag,]", ExpectedResult = @"<img=;.90;0;3>")]
+        [TestCase("@[action,,]", ExpectedResult = @"::")]
+        [TestCase("@[smallImgTag]", ExpectedResult = @"<img={1};.90;0;3>")]
+        [TestCase("@[L1,@[L2],@[L4]]", ExpectedResult = @"a")]
         public string ValidateParameterDefines(string line)
         {
             var listLines = new List<List<string>>();
@@ -457,17 +457,17 @@ namespace UnitTest.DeckObject
             return result.String;
         }
 
-        [TestCase("%[0,0,1]", Result = @"0")]
-        [TestCase("%[0,0,2]", Result = "")]
-        [TestCase("A%[0,0,1]", Result = @"A0")]
-        [TestCase("A%[0,0,2]", Result = @"A")]
-        [TestCase("%[0,0,1]B", Result = @"0B")]
-        [TestCase("%[0,0,2]B", Result = @"B")]
-        [TestCase("%[@[L4],2,1]", Result = @"b")]
-        [TestCase("%[sample,4,2]", Result = "le" )]
-        [TestCase("%[sam,le,4,2]", Result = "le")]
-        [TestCase("%[sam,le,4,2],5,2]", Result = "le,5,2]")]
-        [TestCase("%[@[L5],6,3]", Result = "eme")]
+        [TestCase("%[0,0,1]", ExpectedResult = @"0")]
+        [TestCase("%[0,0,2]", ExpectedResult = "")]
+        [TestCase("A%[0,0,1]", ExpectedResult = @"A0")]
+        [TestCase("A%[0,0,2]", ExpectedResult = @"A")]
+        [TestCase("%[0,0,1]B", ExpectedResult = @"0B")]
+        [TestCase("%[0,0,2]B", ExpectedResult = @"B")]
+        [TestCase("%[@[L4],2,1]", ExpectedResult = @"b")]
+        [TestCase("%[sample,4,2]", ExpectedResult = "le" )]
+        [TestCase("%[sam,le,4,2]", ExpectedResult = "le")]
+        [TestCase("%[sam,le,4,2],5,2]", ExpectedResult = "le,5,2]")]
+        [TestCase("%[@[L5],6,3]", ExpectedResult = "eme")]
         public string ValidateSubStringFunctionality(string line)
         {
             var listLines = new List<List<string>>();
@@ -629,16 +629,16 @@ namespace UnitTest.DeckObject
             return "$[{0}:{1}]".FormatString(sOverrideField, zOverrideValue);
         }
 
-        [TestCase("##?", 15, 8, Result = "00000015bb")]
-        [TestCase("@[a] ##", 123456, 4, Result = "1 123456")]
-        [TestCase("@[aa] ##", 123456, 4, Result = "2 123456")]
-        [TestCase("@[bb] ##?", 123456, 8, Result = "[UNKNOWN] 00123456bb")]
-        [TestCase("@[a] ## #SC", 0, 8, Result = "1 00000000 00000001")]
-        [TestCase("@[a] ## #SC", 1, 8, Result = "1 00000001 00000001")]
-        [TestCase("@[a] ## #SC", 2, 8, Result = "1 00000002 00000002")]
-        [TestCase("@[a] ## #SC", 3, 8, Result = "1 00000003 00000003")]
-        [TestCase("@[a] ## #SC", 4, 8, Result = "1 00000004 00000004")]
-        [TestCase("@[a] ## #SC", 5, 8, Result = "1 00000005 00000001")]
+        [TestCase("##?", 15, 8, ExpectedResult = "00000015bb")]
+        [TestCase("@[a] ##", 123456, 4, ExpectedResult = "1 123456")]
+        [TestCase("@[aa] ##", 123456, 4, ExpectedResult = "2 123456")]
+        [TestCase("@[bb] ##?", 123456, 8, ExpectedResult = "[UNKNOWN] 00123456bb")]
+        [TestCase("@[a] ## #SC", 0, 8, ExpectedResult = "1 00000000 00000001")]
+        [TestCase("@[a] ## #SC", 1, 8, ExpectedResult = "1 00000001 00000001")]
+        [TestCase("@[a] ## #SC", 2, 8, ExpectedResult = "1 00000002 00000002")]
+        [TestCase("@[a] ## #SC", 3, 8, ExpectedResult = "1 00000003 00000003")]
+        [TestCase("@[a] ## #SC", 4, 8, ExpectedResult = "1 00000004 00000004")]
+        [TestCase("@[a] ## #SC", 5, 8, ExpectedResult = "1 00000005 00000001")]
         public string ValidateFileNameExport(string input, int cardNumber, int leftPad)
         {
             _testDeck.ProcessLinesPublic(
@@ -660,16 +660,16 @@ namespace UnitTest.DeckObject
             return _testDeck.TranslateFileNameString(input, cardNumber, leftPad);
         }
 
-        [TestCase("A#repeat;-1;a#B", Result = "A#repeat;-1;a#B")]
-        [TestCase("A#repeat;0;a#B", Result = "AB")]
-        [TestCase("A#repeat;1;##B", Result = "A#B")]
-        [TestCase("A#repeat;1;##B3#", Result = "A#B3#")]
-        [TestCase("A#repeat;3;##B3#", Result = "A###B3#")]
-        [TestCase("A#repeat;2;@[1]#B", Result = "AaaB")]
-        [TestCase("A#repeat;2;@[4]#B", Result = "AbbbbbbB")]
-        [TestCase("A#repeat;2;@[4]##repeat;3;xyz#B", Result = "AbbbbbbxyzxyzxyzB")]
-        [TestCase("#repeat;%[@[loot],1,2];<img=icons\\@[cointypeimage%[@[loot],0,1]];.80>#", Result = "<img=icons\\gold.png;.80><img=icons\\gold.png;.80>")]
-        [TestCase("#repeat;%[@[loot],1,2];<img=icons\\@[cointypeimage%[@[loot],0,1]];.80>#", Result = "<img=icons\\gold.png;.80><img=icons\\gold.png;.80>")]
+        [TestCase("A#repeat;-1;a#B", ExpectedResult = "A#repeat;-1;a#B")]
+        [TestCase("A#repeat;0;a#B", ExpectedResult = "AB")]
+        [TestCase("A#repeat;1;##B", ExpectedResult = "A#B")]
+        [TestCase("A#repeat;1;##B3#", ExpectedResult = "A#B3#")]
+        [TestCase("A#repeat;3;##B3#", ExpectedResult = "A###B3#")]
+        [TestCase("A#repeat;2;@[1]#B", ExpectedResult = "AaaB")]
+        [TestCase("A#repeat;2;@[4]#B", ExpectedResult = "AbbbbbbB")]
+        [TestCase("A#repeat;2;@[4]##repeat;3;xyz#B", ExpectedResult = "AbbbbbbxyzxyzxyzB")]
+        [TestCase("#repeat;%[@[loot],1,2];<img=icons\\@[cointypeimage%[@[loot],0,1]];.80>#", ExpectedResult = "<img=icons\\gold.png;.80><img=icons\\gold.png;.80>")]
+        [TestCase("#repeat;%[@[loot],1,2];<img=icons\\@[cointypeimage%[@[loot],0,1]];.80>#", ExpectedResult = "<img=icons\\gold.png;.80><img=icons\\gold.png;.80>")]
         public string ValidateRepeatTranslator(string input)
         {
             var listLines = new List<List<string>>()

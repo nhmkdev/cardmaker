@@ -30,14 +30,14 @@ namespace UnitTest.Support.Util
     [TestFixture]
     internal class ParseUtilTest
     {
-        [TestCase("1", 1, Result = true)]
-        [TestCase("1.0", 1, Result = true)]
-        [TestCase("1,0", 1, Result = true)]
-        [TestCase("1.1", 1.1f, Result = true)]
-        [TestCase("1,1", 1.1f, Result = true)]
-        [TestCase("123.456", 123.456f, Result = true)]
-        [TestCase("123,456", 123.456f, Result = true)]
-        [TestCase("c", 0, Result = false)]
+        [TestCase("1", 1, ExpectedResult = true)]
+        [TestCase("1.0", 1, ExpectedResult = true)]
+        [TestCase("1,0", 1, ExpectedResult = true)]
+        [TestCase("1.1", 1.1f, ExpectedResult = true)]
+        [TestCase("1,1", 1.1f, ExpectedResult = true)]
+        [TestCase("123.456", 123.456f, ExpectedResult = true)]
+        [TestCase("123,456", 123.456f, ExpectedResult = true)]
+        [TestCase("c", 0, ExpectedResult = false)]
         public bool VerifyFloatParse(string sInput, float fExpectedValue)
         {
             float fValue;
@@ -49,14 +49,14 @@ namespace UnitTest.Support.Util
             return true;
         }
 
-        [TestCase("1", 1, Result = true)]
-        [TestCase("1.0", 1, Result = true)]
-        [TestCase("1,0", 1, Result = true)]
-        [TestCase("1.1", 1.1, Result = true)]
-        [TestCase("1,1", 1.1, Result = true)]
-        [TestCase("123.456", 123.456, Result = true)]
-        [TestCase("123,456", 123.456, Result = true)]
-        [TestCase("c", 0, Result = false)]
+        [TestCase("1", 1, ExpectedResult = true)]
+        [TestCase("1.0", 1, ExpectedResult = true)]
+        [TestCase("1,0", 1, ExpectedResult = true)]
+        [TestCase("1.1", 1.1, ExpectedResult = true)]
+        [TestCase("1,1", 1.1, ExpectedResult = true)]
+        [TestCase("123.456", 123.456, ExpectedResult = true)]
+        [TestCase("123,456", 123.456, ExpectedResult = true)]
+        [TestCase("c", 0, ExpectedResult = false)]
         public bool VerifyDecimalParse(string sInput, decimal dExpectedValue)
         {
             decimal dValue;

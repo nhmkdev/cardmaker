@@ -442,11 +442,11 @@
     <PreBuildEvent>
     </PreBuildEvent>
     <PostBuildEvent>DEL "$(SolutionDir)$(OutDir)*.zip"
-COPY /Y $(SolutionDir)\3rdParty\GoogleDataAPI\GData-LICENSE-2.0.txt $(TargetDir)\Licenses
-COPY /Y $(SolutionDir)\3rdParty\PDFSharp\PDFSharp-License.txt $(TargetDir)\Licenses
-COPY /Y $(SolutionDir)\3rdParty\ClearScript\*.license $(TargetDir)\Licenses
-COPY /Y $(SolutionDir)\3rdParty\ClearScript\ClearScriptV8* $(TargetDir)
-COPY /Y $(SolutionDir)\3rdParty\ClearScript\v8* $(TargetDir)
+COPY "$(SolutionDir)\3rdParty\GoogleDataAPI\GData-LICENSE-2.0.txt" "$(TargetDir)\Licenses"
+COPY "$(SolutionDir)\3rdParty\PDFSharp\PDFSharp-License.txt" "$(TargetDir)\Licenses"
+COPY "$(SolutionDir)\3rdParty\ClearScript\*.license" "$(TargetDir)\Licenses"
+COPY "$(SolutionDir)\3rdParty\ClearScript\ClearScriptV8*" "$(TargetDir)"
+COPY "$(SolutionDir)\3rdParty\ClearScript\v8*" "$(TargetDir)"
 "C:\Program Files\7-Zip\7z" a "$(TargetDir)CardMaker_X.X.X.X.zip" "$(TargetDir)CardMaker.exe" "$(TargetDir)CardMaker_Mono.exe" "$(TargetDir)*.dll" "$(TargetDir)Card_Maker.pdf" "$(TargetDir)Card_Maker_Basic_Project.pdf"  "$(TargetDir)Card_Maker_JavaScript.pdf" "$(TargetDir)Sample" "$(TargetDir)Readme.txt" "$(TargetDir)History.txt" "$(TargetDir)Licenses" "$(TargetDir)images" "$(TargetDir)templates" -tzip -mx5</PostBuildEvent>
   </PropertyGroup>
 </Project>
