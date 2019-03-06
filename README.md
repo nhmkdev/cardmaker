@@ -6,7 +6,7 @@ This application was created to help me generate components for a board game. Yo
 
 ## Download
 
-Latest stable (I hope) release binary: [Download 1.0.0.1](https://github.com/nhmkdev/cardmaker/releases/tag/v.1.0.0.1)
+Latest stable (I hope) release binary: [Download 1.0.0.2](https://github.com/nhmkdev/cardmaker/releases/tag/v.1.0.0.2)
 
 [Download The Game Crafter templates for CardMaker](https://raw.githubusercontent.com/wiki/nhmkdev/cardmaker/CardMaker_TGC_Templates.zip)
 
