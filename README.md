@@ -55,9 +55,11 @@ You will need to modify this code to correctly use your application.
 
 ## Games Developed with CardMaker
 
-CardMaker played some role in the development of these games (not necessarily the final product though!). If you have a game that should be listed here let me know.
+CardMaker played some role in the development of these games (prototyping or otherwise). Let me know if you have a game that should be listed here.
 
-[Cave Paintings](http://rnrgames.com/cave-paintings)
+[Cardpocalypse](http://cardpocalyp.se/) & [Cardpocalypse Steam Link](https://store.steampowered.com/app/904400/Cardpocalypse/)<br/>
+[Cave Paintings](http://rnrgames.com/cave-paintings)<br/>
+[Iliad: Heroes of Troy](http://www.escapevelocitygames.com/iliad/)<br/>
 
 ## History
 
