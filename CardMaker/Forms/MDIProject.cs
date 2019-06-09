@@ -439,6 +439,7 @@ namespace CardMaker.Forms
             const string ROTATION = "ROTATION";
             const string EXPORT_WIDTH = "EXPORT_WIDTH";
             const string EXPORT_HEIGHT = "EXPORT_HEIGHT";
+            const string EXPORT_CROP = "EXPORT_CROP";
             const string EXPORT_TRANSPARENT = "EXPORT_TRANSPARENT";
             const string EXPORT_PDF_AS_PAGE_BACK = "EXPORT_PDF_AS_PAGE_BACK";
 
@@ -487,6 +488,9 @@ namespace CardMaker.Forms
                     0, 65536, EXPORT_WIDTH);
                 var numericExportHeight = zQuery.AddNumericBox("Export Height", zProjectLayout.exportHeight,
                     0, 65536, EXPORT_HEIGHT);
+
+                zQuery.AddTextBox("Export Crop Definition", string.Empty, false, EXPORT_CROP);
+
                 zQuery.AddCheckBox("Export Transparent Background", zProjectLayout.exportTransparentBackground,
                     EXPORT_TRANSPARENT);
 
@@ -518,6 +522,7 @@ namespace CardMaker.Forms
                     zProjectLayout.exportRotation = int.Parse(zQuery.GetString(ROTATION));
                     zProjectLayout.exportWidth = int.Parse(zQuery.GetString(EXPORT_WIDTH));
                     zProjectLayout.exportHeight = int.Parse(zQuery.GetString(EXPORT_HEIGHT));
+                    zProjectLayout.exportCropDefinition = zQuery.GetString(EXPORT_CROP);
                     zProjectLayout.exportTransparentBackground = zQuery.GetBool(EXPORT_TRANSPARENT);
                     zProjectLayout.exportPDFAsPageBack = zQuery.GetBool(EXPORT_PDF_AS_PAGE_BACK);
                 }

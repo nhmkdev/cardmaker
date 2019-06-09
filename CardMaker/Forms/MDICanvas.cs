@@ -339,6 +339,21 @@ namespace CardMaker.Forms
 
         private void cardCanvas_MouseMove(object sender, MouseEventArgs e)
         {
+            var xText = "-";
+            var yText = "-";
+
+            if (CardMakerSettings.ShowCanvasXY)
+            {
+                var nXUnzoomed = (int) ((float) e.X * m_fZoomRatio);
+                var nYUnzoomed = (int) ((float) e.Y * m_fZoomRatio);
+                xText = nXUnzoomed.ToString();
+                yText = nYUnzoomed.ToString();
+            }
+
+            lblX.Text = xText;
+            lblY.Text = yText;
+
+
             switch (m_eMouseMode)
             {
                 case MouseMode.Rotate:

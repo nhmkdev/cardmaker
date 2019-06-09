@@ -1,5 +1,9 @@
 Card Maker Version History
 --------------------------
+1.0.1.0
+- Added Crop Export Definition (for PDF to start with) allowing for cropped outputs.
+- Added an optional x/y display to the Canvas form.
+
 1.0.0.2
 - Updated handling for outlines and opacity.
 - Fixed a old bug related to the properties field and the shape element definition

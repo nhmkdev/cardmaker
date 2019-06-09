@@ -390,6 +390,7 @@ namespace CardMaker.Forms
                 new string[] { TranslatorType.Incept.ToString(), TranslatorType.JavaScript.ToString() }, (int)CardMakerSettings.DefaultTranslatorType, IniSettings.DefaultTranslator);
             zQuery.AddCheckBox("Log Incept Translation", CardMakerSettings.LogInceptTranslation,
                 IniSettings.LogInceptTranslation);
+            zQuery.AddCheckBox("Show Canvas Mouse Location", CardMakerSettings.ShowCanvasXY, IniSettings.ShowCanvasXY);
 
 #if !MONO_BUILD
             zQuery.AddTab("PDF Export");
@@ -418,6 +419,7 @@ namespace CardMaker.Forms
                 CardMakerSettings.PrintLayoutsOnNewPage = zQuery.GetBool(IniSettings.PrintLayoutsOnNewPage);
                 CardMakerSettings.DefaultTranslatorType = (TranslatorType)zQuery.GetIndex(IniSettings.DefaultTranslator);
                 CardMakerSettings.LogInceptTranslation = zQuery.GetBool(IniSettings.LogInceptTranslation);
+                CardMakerSettings.ShowCanvasXY = zQuery.GetBool(IniSettings.ShowCanvasXY);
 
                 var bWasGoogleCacheEnabled = CardMakerSettings.EnableGoogleCache;
                 CardMakerSettings.EnableGoogleCache = zQuery.GetBool(IniSettings.EnableGoogleCache);

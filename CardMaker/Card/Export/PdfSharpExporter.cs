@@ -117,7 +117,9 @@ namespace CardMaker.Card.Export
 
                 zWait.ProgressReset(1, 0, CurrentDeck.CardCount, 0);
 
-                ConfigurePointSizes(CurrentDeck.CardLayout);
+                var rectCrop = CurrentDeck.CardLayout.getExportCropDefinition();
+
+                ConfigurePointSizes(CurrentDeck.CardLayout, rectCrop);
 
                 // necessary tracking for which index of the layout is to be exported (this is NOT necessarily the index of the card due to the page back functionality)
                 var nNextExportIndex = 0;
@@ -146,7 +148,7 @@ namespace CardMaker.Card.Export
 
 #if !MONO_BUILD
                 zBuffer?.Dispose();
-                zBuffer = new Bitmap(CurrentDeck.CardLayout.width, CurrentDeck.CardLayout.height);
+                zBuffer = createExportBuffer(CurrentDeck.CardLayout, rectCrop);
 
                 float fOriginalXDpi = zBuffer.HorizontalResolution;
                 float fOriginalYDpi = zBuffer.VerticalResolution;
@@ -160,7 +162,7 @@ namespace CardMaker.Card.Export
 
 #if MONO_BUILD
                     // mono build won't support the optimization so re-create the buffer
-                    Bitmap zBuffer = new Bitmap(CurrentDeck.CardLayout.width, CurrentDeck.CardLayout.height);
+                    Bitmap zBuffer = createExportBuffer(CurrentDeck.CardLayout, rectCrop);
 #endif
 
 #if !MONO_BUILD
@@ -174,7 +176,10 @@ namespace CardMaker.Card.Export
                     }
                     else
                     {
-                        CardRenderer.DrawPrintLineToGraphics(Graphics.FromImage(zBuffer));
+                        CardRenderer.DrawPrintLineToGraphics(Graphics.FromImage(zBuffer), -rectCrop.X, -rectCrop.Y, true);
+                        // if cropping the border needs to be drawn to the cropped size
+                        if (rectCrop != Rectangle.Empty)
+                            CardRenderer.DrawBorder(Graphics.FromImage(zBuffer), 0, 0, zBuffer.Width, zBuffer.Height, CurrentDeck.CardLayout.drawBorder, true);
                     }
 
                     // apply any export rotation
@@ -285,16 +290,18 @@ namespace CardMaker.Card.Export
         /// Updates the point sizes to match that of the PDF exporter
         /// </summary>
         /// <param name="zLayout"></param>
-        private void ConfigurePointSizes(ProjectLayout zLayout)
+        private void ConfigurePointSizes(ProjectLayout zLayout, Rectangle rectCrop)
         {
-            int nWidth = zLayout.width;
-            int nHeight = zLayout.height;
+            var nWidth = rectCrop.Width == 0 ? zLayout.width : rectCrop.Width;
+            var nHeight = rectCrop.Height == 0 ? zLayout.height : rectCrop.Height;
             switch (zLayout.exportRotation)
             {
                 case 90:
                 case -90:
-                    nWidth = zLayout.height;
-                    nHeight = zLayout.width;
+                    var nTempWidth = nWidth;
+                    var nTempHeight = nHeight;
+                    nWidth = nTempHeight;
+                    nHeight = nTempWidth;
                     break;
             }
 
@@ -447,6 +454,19 @@ namespace CardMaker.Card.Export
                     (m_dPageMarginEndX - m_dPageMarginX) / m_dLayoutPointWidth,
                     CurrentDeck.ValidLines.Count - nNextExportIndex)
                 );
+        }
+
+        /// <summary>
+        /// Creates a new export buffer bitmap based on the layout and any cropping rect
+        /// </summary>
+        /// <param name="zLayout">The layout to use as a basis for the buffer creation</param>
+        /// <param name="rectCrop">The rectangle to use for cropping</param>
+        /// <returns></returns>
+        private static Bitmap createExportBuffer(ProjectLayout zLayout, Rectangle rectCrop)
+        {
+            return new Bitmap(
+                rectCrop.Width == 0 ? zLayout.width : rectCrop.Width,
+                rectCrop.Height == 0 ? zLayout.height : rectCrop.Height);
         }
 
         /// <summary>

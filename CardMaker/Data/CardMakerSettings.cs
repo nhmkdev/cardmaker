@@ -148,6 +148,12 @@ namespace CardMaker.Data
             set { s_zIniManager.SetValue(IniSettings.EnableGoogleCache, value.ToString()); }
         }
 
+        public static bool ShowCanvasXY
+        {
+            get { return s_zIniManager.GetValue(IniSettings.ShowCanvasXY, bool.TrueString).Equals(bool.TrueString); }
+            set { s_zIniManager.SetValue(IniSettings.ShowCanvasXY, value.ToString()); }
+        }
+
         public static TranslatorType DefaultTranslatorType
         {
             get
