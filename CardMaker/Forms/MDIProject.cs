@@ -489,7 +489,7 @@ namespace CardMaker.Forms
                 var numericExportHeight = zQuery.AddNumericBox("Export Height", zProjectLayout.exportHeight,
                     0, 65536, EXPORT_HEIGHT);
 
-                zQuery.AddTextBox("Export Crop Definition", string.Empty, false, EXPORT_CROP);
+                zQuery.AddTextBox("Export Crop Definition", zProjectLayout.exportCropDefinition, false, EXPORT_CROP);
 
                 zQuery.AddCheckBox("Export Transparent Background", zProjectLayout.exportTransparentBackground,
                     EXPORT_TRANSPARENT);
