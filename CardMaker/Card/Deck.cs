@@ -303,7 +303,9 @@ namespace CardMaker.Card
 
                     while (nLine < listLines.Count)
                     {
-                        if (!CardLayout.Name.Equals(listLines[nLine][nAllowedLayoutColumn], StringComparison.CurrentCultureIgnoreCase))
+                        // some rows may not include the column at that index
+                        if (listLines[nLine].Count > nAllowedLayoutColumn 
+                            && !CardLayout.Name.Equals(listLines[nLine][nAllowedLayoutColumn], StringComparison.CurrentCultureIgnoreCase))
                         {
                             listLines.RemoveAt(nLine);
                         }
