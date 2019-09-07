@@ -40,10 +40,10 @@ namespace UnitTest.DeckObject
         private InlineBackgroundElementProcessor backgroundElementProcessor = new InlineBackgroundElementProcessor();
         private Graphics m_zGraphics = Graphics.FromImage(new Bitmap(1024, 1024));
 
-        [TestCase("aaa#bggraphic::images/Faction_empire.bmp#bbb", "images/Faction_empire.bmp", Result = "aaabbb")]
-        [TestCase("#bggraphic::images/Faction_empire.bmp#bbb", "images/Faction_empire.bmp", Result = "bbb")]
-        [TestCase("aaa#bggraphic::images/Faction_empire.bmp#", "images/Faction_empire.bmp", Result = "aaa")]
-        [TestCase("aaa#bggraphic::c:\\images\\Faction_empire.bmp#bbb", "c:\\images\\Faction_empire.bmp", Result = "aaabbb")]
+        [TestCase("aaa#bggraphic::images/Faction_empire.bmp#bbb", "images/Faction_empire.bmp", ExpectedResult = "aaabbb")]
+        [TestCase("#bggraphic::images/Faction_empire.bmp#bbb", "images/Faction_empire.bmp", ExpectedResult = "bbb")]
+        [TestCase("aaa#bggraphic::images/Faction_empire.bmp#", "images/Faction_empire.bmp", ExpectedResult = "aaa")]
+        [TestCase("aaa#bggraphic::c:\\images\\Faction_empire.bmp#bbb", "c:\\images\\Faction_empire.bmp", ExpectedResult = "aaabbb")]
         public string ValidateBasicInlineBackgroundImage(string sInput, string sExpectedElementDefinition)
         {
             var zTestElement = new ProjectLayoutElement();
@@ -60,9 +60,9 @@ namespace UnitTest.DeckObject
             return result;
         }
 
-        [TestCase("aaa#bggraphic::images/Faction_empire.bmp::-5::-15::10::15::true::-::1::1#bbb", "images/Faction_empire.bmp", -5, -15, 10, 15, true, "-", 1, 1, Result = "aaabbb")]
-        [TestCase("#bggraphic::images/Faction_empire.bmp::-5::-15::10::15::true::-::1::1#bbb", "images/Faction_empire.bmp", -5, -15, 10, 15, true, "-", 1, 1, Result = "bbb")]
-        [TestCase("aaa#bggraphic::images/Faction_empire.bmp::-5::-15::10::15::true::-::1::1#", "images/Faction_empire.bmp", -5, -15, 10, 15, true, "-", 1, 1, Result = "aaa")]
+        [TestCase("aaa#bggraphic::images/Faction_empire.bmp::-5::-15::10::15::true::-::1::1#bbb", "images/Faction_empire.bmp", -5, -15, 10, 15, true, "-", 1, 1, ExpectedResult = "aaabbb")]
+        [TestCase("#bggraphic::images/Faction_empire.bmp::-5::-15::10::15::true::-::1::1#bbb", "images/Faction_empire.bmp", -5, -15, 10, 15, true, "-", 1, 1, ExpectedResult = "bbb")]
+        [TestCase("aaa#bggraphic::images/Faction_empire.bmp::-5::-15::10::15::true::-::1::1#", "images/Faction_empire.bmp", -5, -15, 10, 15, true, "-", 1, 1, ExpectedResult = "aaa")]
         public string ValidateExtendedInlineBackgroundImage(string sInput, string sVariable, int nX, int nY, int nWidthAdjust, int nHeightAdjust, bool bLockAspect,
             string sTileSize, int nHorizontalAlign, int nVerticalAlign)
         {
@@ -98,9 +98,9 @@ namespace UnitTest.DeckObject
             return result;
         }
 
-        [TestCase("aaa#bgshape::#roundedrect;0;-;-;30#::0xff00ff#bbb", "#roundedrect;0;-;-;30#", "0xff00ffff", Result = "aaabbb")]
-        [TestCase("#bgshape::#roundedrect;0;-;-;30#::0xff00ff#bbb", "#roundedrect;0;-;-;30#", "0xff00ffff", Result = "bbb")]
-        [TestCase("aaa#bgshape::#roundedrect;0;-;-;30#::0xff00ff#", "#roundedrect;0;-;-;30#", "0xff00ffff", Result = "aaa")]
+        [TestCase("aaa#bgshape::#roundedrect;0;-;-;30#::0xff00ff#bbb", "#roundedrect;0;-;-;30#", "0xff00ffff", ExpectedResult = "aaabbb")]
+        [TestCase("#bgshape::#roundedrect;0;-;-;30#::0xff00ff#bbb", "#roundedrect;0;-;-;30#", "0xff00ffff", ExpectedResult = "bbb")]
+        [TestCase("aaa#bgshape::#roundedrect;0;-;-;30#::0xff00ff#", "#roundedrect;0;-;-;30#", "0xff00ffff", ExpectedResult = "aaa")]
         public string ValidateBasicInlineBackgroundShape(string sInput,
             string sVariable, string sColor)
         {
@@ -125,9 +125,9 @@ namespace UnitTest.DeckObject
             return result;
         }
 
-        [TestCase("aaa#bgshape::#roundedrect;0;-;-;30#::0xffffff00::-20::-10::40::50::5::0xff0000#bbb", "#roundedrect;0;-;-;30#", "0xffffff00", -20, -10, 40, 50, 5, "0xff0000ff", Result = "aaabbb")]
-        [TestCase("#bgshape::#roundedrect;0;-;-;30#::0xffffff00::-20::-10::40::50::5::0xff0000#bbb", "#roundedrect;0;-;-;30#", "0xffffff00", -20, -10, 40, 50, 5, "0xff0000ff", Result = "bbb")]
-        [TestCase("aaa#bgshape::#roundedrect;0;-;-;30#::0xffffff00::-20::-10::40::50::5::0xff0000#", "#roundedrect;0;-;-;30#", "0xffffff00", -20, -10, 40, 50, 5, "0xff0000ff", Result = "aaa")]
+        [TestCase("aaa#bgshape::#roundedrect;0;-;-;30#::0xffffff00::-20::-10::40::50::5::0xff0000#bbb", "#roundedrect;0;-;-;30#", "0xffffff00", -20, -10, 40, 50, 5, "0xff0000ff", ExpectedResult = "aaabbb")]
+        [TestCase("#bgshape::#roundedrect;0;-;-;30#::0xffffff00::-20::-10::40::50::5::0xff0000#bbb", "#roundedrect;0;-;-;30#", "0xffffff00", -20, -10, 40, 50, 5, "0xff0000ff", ExpectedResult = "bbb")]
+        [TestCase("aaa#bgshape::#roundedrect;0;-;-;30#::0xffffff00::-20::-10::40::50::5::0xff0000#", "#roundedrect;0;-;-;30#", "0xffffff00", -20, -10, 40, 50, 5, "0xff0000ff", ExpectedResult = "aaa")]
         public string ValidateExtendedInlineBackgroundShape(string sInput,
             string sVariable, string sColor, int nX, int nY, int nWidth, int nHeight, int nOutlineThickness, string sOutlineColor)
         {
