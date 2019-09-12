@@ -57,10 +57,12 @@ You will need to modify this code to correctly use your application.
 
 CardMaker played some role in the development of these games (prototyping or otherwise). Let me know if you have a game that should be listed here.
 
-[Cardpocalypse](http://cardpocalyp.se/) & [Cardpocalypse Steam Link](https://store.steampowered.com/app/904400/Cardpocalypse/)<br/>
-[Town Builder: Coevorden](https://boardgamegeek.com/boardgame/255633/town-builder-coevorden) & [(Publisher page)](http://www.firstfishgames.com/our-games/town-builder-coevorden/)<br/>
-[Cave Paintings](http://rnrgames.com/cave-paintings)<br/>
-[Iliad: Heroes of Troy](http://www.escapevelocitygames.com/iliad/)<br/>
+| Game Link(s) |
+| --- |
+| [Cardpocalypse](http://cardpocalyp.se/) & [Cardpocalypse Steam Link](https://store.steampowered.com/app/904400/Cardpocalypse/) |
+| [Cave Paintings](http://rnrgames.com/cave-paintings) |
+| [Iliad: Heroes of Troy](http://www.escapevelocitygames.com/iliad/)<br/> |
+| [Town Builder: Coevorden](https://boardgamegeek.com/boardgame/255633/town-builder-coevorden) & [(Publisher page)](http://www.firstfishgames.com/our-games/town-builder-coevorden/) |
 
 ## History
 
