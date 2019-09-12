@@ -78,7 +78,7 @@ CardMaker played some role in the development of these games (prototyping or oth
 
 ## Special Thanks
 
-* Eric Raue
+* Eric Raué
 * Kolja Geldmacher
 * Everyone that has contributed to the project through emailing bugs and requesting features
 
