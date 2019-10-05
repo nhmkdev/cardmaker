@@ -351,8 +351,7 @@ namespace CardMaker.Forms
                 return;
             }
 
-            var zDialog = new GoogleSpreadsheetBrowser(GoogleReferenceReader.APP_NAME, GoogleReferenceReader.CLIENT_ID,
-                CardMakerInstance.GoogleAccessToken, true);
+            var zDialog = new GoogleSpreadsheetBrowser(new GoogleSpreadsheet(CardMakerInstance.GoogleInitializerFactory), true);
             if (DialogResult.OK == zDialog.ShowDialog(this))
             {
                 var bNewDefault = 0 == treeView.SelectedNode.Nodes.Count;
@@ -360,8 +359,8 @@ namespace CardMaker.Forms
                 var tnReference = AddReferenceNode(
                     treeView.SelectedNode,
                     CardMakerConstants.GOOGLE_REFERENCE + CardMakerConstants.GOOGLE_REFERENCE_SPLIT_CHAR +
-                    zDialog.SelectedSpreadsheet.Title.Text + CardMakerConstants.GOOGLE_REFERENCE_SPLIT_CHAR +
-                    zDialog.SelectedSheet.Title.Text,
+                    zDialog.SelectedSpreadsheet + CardMakerConstants.GOOGLE_REFERENCE_SPLIT_CHAR +
+                    zDialog.SelectedSheet,
                     bNewDefault,
                     zLayout);
                 if (null == tnReference)
@@ -590,7 +589,7 @@ namespace CardMaker.Forms
             });
         }
 
-        #endregion
+#endregion
 
         /// <summary>
         /// Updates the selected layout node color (if applicable)

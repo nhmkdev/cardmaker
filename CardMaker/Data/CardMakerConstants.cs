@@ -24,11 +24,14 @@
 
 using System.Drawing;
 using System.Text;
+using Google.Apis.Drive.v3;
+using Google.Apis.Sheets.v4;
 
 namespace CardMaker.Data
 {
     public static class CardMakerConstants
     {
+        public const string APPLICATION_NAME = "CardMaker";
         public const string GOOGLE_REFERENCE = "google";
         public const char GOOGLE_REFERENCE_SPLIT_CHAR = ';';
         public static readonly Encoding XML_ENCODING = Encoding.UTF8;
@@ -37,5 +40,12 @@ namespace CardMaker.Data
         public const int MAX_RECENT_PROJECTS = 10;
         public const string GOOGLE_CACHE_FILE = ".CardMakerGoogleCache.dat";
         public static readonly Color NoColor = Color.FromArgb(0, 0, 0, 0);
+
+        // Google connectivity constants
+        public const string GOOGLE_CLIENT_ID = "455195524701-cmdvv6fl5ru9uftin99kjmhojt36mnm9.apps.googleusercontent.com";
+
+        public static readonly string[] GOOGLE_SCOPES = new string[]
+            {SheetsService.Scope.SpreadsheetsReadonly, DriveService.Scope.DriveReadonly};
+
     }
 }

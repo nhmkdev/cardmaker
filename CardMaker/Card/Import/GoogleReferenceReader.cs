@@ -28,8 +28,6 @@ using System.IO;
 using CardMaker.Data;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
-using Google.GData.Client;
-using Google.GData.Spreadsheets;
 using Support.Google;
 using Support.IO;
 using Support.UI;
@@ -40,7 +38,6 @@ namespace CardMaker.Card.Import
     {
         public const string APP_NAME = "CardMaker";
         public const string CLIENT_ID = "455195524701-cmdvv6fl5ru9uftin99kjmhojt36mnm9.apps.googleusercontent.com";
-        private readonly SpreadsheetsService m_zSpreadsheetsService;
 
         public class GoogleCacheItem
         {
@@ -56,9 +53,6 @@ namespace CardMaker.Card.Import
 
         public GoogleReferenceReader()
         {
-            m_zSpreadsheetsService = GoogleSpreadsheet.GetSpreadsheetsService(APP_NAME, CLIENT_ID,
-                CardMakerInstance.GoogleAccessToken);
-
             LoadCache();
 
             if (!IsAllDataCached() || CardMakerInstance.ForceDataCacheRefresh)
@@ -131,23 +125,25 @@ namespace CardMaker.Card.Import
 
             var bCredentialsError = false;
 
-            List<List<string>> listGoogleData;
+            List<List<string>> listGoogleData = null;
             try
             {
-                listGoogleData = GoogleSpreadsheet.GetSpreadsheet(m_zSpreadsheetsService, sSpreadsheetName, sSheetName);
+                listGoogleData = new GoogleSpreadsheet(CardMakerInstance.GoogleInitializerFactory).GetSheetContentsBySpreadsheetName(sSpreadsheetName, sSheetName);
             }
+#warning What is the google credential exception?
+#if false
             catch (InvalidCredentialsException e)
             {
                 Logger.AddLogLine("Credentials exception: " + e.Message);
                 bCredentialsError = true;
                 listGoogleData = null;
             }
+#endif
             catch (Exception e)
             {
                 Logger.AddLogLine("General exception: " + e.Message);
                 listGoogleData = null;
             }
-
             if (null == listGoogleData)
             {
                 Logger.AddLogLine("Failed to load data from Google Spreadsheet." + "[" + sSpreadsheetName + "," + sSheetName + "]" + (bCredentialsError ? " Google reported a problem with your credentials." : string.Empty));

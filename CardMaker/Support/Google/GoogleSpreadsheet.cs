@@ -24,133 +24,147 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Google.GData.Client;
-using Google.GData.Spreadsheets;
+using Google.Apis.Drive.v3;
+using Google.Apis.Sheets.v4;
 using Support.IO;
+using Support.UI;
 
 namespace Support.Google
 {
-    public static class GoogleSpreadsheet
+    public class GoogleSpreadsheet
     {
-        const string SCOPE = "https://spreadsheets.google.com/feeds";
+        private GoogleInitializerFactory zInitializerFactory;
 
-        // API KEY etc. config here: https://console.developers.google.com/project
-
-        public static SpreadsheetsService GetSpreadsheetsService(string sAppName, string sClientId, 
-            string sGoogleAccessToken)
+        public GoogleSpreadsheet(GoogleInitializerFactory zInitializerFactory)
         {
-            var zAuthParameters = new OAuth2Parameters()
-            {
-                ClientId = sClientId,
-                Scope = SCOPE,
-                AccessToken = sGoogleAccessToken
-            };
-
-            var spreadsheetsService = new SpreadsheetsService(sAppName)
-            {
-                RequestFactory = new GOAuth2RequestFactory(null, sAppName, zAuthParameters)
-            };
-
-            return spreadsheetsService;
+            this.zInitializerFactory = zInitializerFactory;
         }
 
-        // TODO: all callers of this method should handle exceptions (InvalidCredentialsException etc.)
-        public static List<List<string>> GetSpreadsheet(SpreadsheetsService zSpreadsheetService, string sSpreadsheetName, string sSheetName)
+        public List<List<string>> GetSheetContentsBySpreadsheetName(string sSpreadsheetName, string sSheetName,
+            bool bAutoFillBlanks = true)
         {
-            var listLines = new List<List<string>>();
+            return GetSheetContentsBySpreadsheetId(GetSpreadsheetId(sSpreadsheetName), sSheetName, bAutoFillBlanks);
+        }
 
-            // get all spreadsheets
+        /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="sSpreadsheetId"></param>
+            /// <param name="sSheetName"></param>
+            /// <param name="bAutoFillBlanks"></param>
+            /// <returns></returns>
+        public List<List<string>> GetSheetContentsBySpreadsheetId(string sSpreadsheetId, string sSheetName, bool bAutoFillBlanks = true)
+        {
+            var zSheetsService = CreateSheetsService();
+            // https://developers.google.com/sheets/api/guides/concepts (specifying the sheet name results in all the data)
+            var zValueRange = zSheetsService.Spreadsheets.Values.Get(sSpreadsheetId, sSheetName).Execute();
+            var listAllRows = new List<List<string>>();
 
-            var query = new SpreadsheetQuery
+            var nColumnCount = -1;
+
+            foreach (var zRowCells in zValueRange.Values)
             {
-                // only ask for the spreadsheet by the given name
-                Title = sSpreadsheetName
-            };
-            var feed = zSpreadsheetService.Query(query);
-
-            var bFoundSpreadsheet = false;
-            foreach (var entry in feed.Entries)
-            {
-                if (entry.Title.Text != sSpreadsheetName)
-                {
+                // blank rows are ignored
+                if(zRowCells.Count == 0)
                     continue;
+                // get the overall column count based on the first line that has actual content (treated as the header row)
+                if(nColumnCount == -1)
+                    nColumnCount = zRowCells.Count;
+
+                var listColumns = new List<string>();
+                foreach (var zCell in zRowCells)
+                {
+                    listColumns.Add(zCell.ToString());
                 }
-
-                bFoundSpreadsheet = true;
-                Logger.AddLogLine("Google: Found spreadsheet: " + sSpreadsheetName);
-
-                var link = entry.Links.FindService(GDataSpreadsheetsNameTable.WorksheetRel, null);
-
-                var wsquery = new WorksheetQuery(link.HRef.ToString())
+                // blank rows are not include
+                if (listColumns.Count > 0)
                 {
-                    Title = sSheetName
-                };
-                var wsfeed = zSpreadsheetService.Query(wsquery);
-
-                var bFoundSheet = false;
-
-                foreach (var worksheet in wsfeed.Entries)
-                {
-                    //System.Diagnostics.Trace.WriteLine(worksheet.Title.Text);
-
-                    if (worksheet.Title.Text != sSheetName)
+                    if (bAutoFillBlanks && listColumns.Count < nColumnCount)
                     {
-                        continue;
+                        listColumns.AddRange(new int[nColumnCount - listColumns.Count].Select(x => string.Empty).ToList());
                     }
-                    bFoundSheet = true;
-                    Logger.AddLogLine("Google: Found sheet: " + sSheetName);
-
-                    var cellFeedLink = worksheet.Links.FindService(GDataSpreadsheetsNameTable.CellRel, null);
-
-                    var cquery = new CellQuery(cellFeedLink.HRef.ToString());
-                    var cfeed = zSpreadsheetService.Query(cquery);
-
-                    //System.Diagnostics.Trace.WriteLine("Cells in this worksheet:");
-                    uint uRow = 1;
-                    uint uCol = 1;
-                    var listRow = new List<string>();
-                    foreach (var curCell in cfeed.Entries.OfType<CellEntry>())
-                    {
-                        // NOTE: This completely ignores blank lines in the spreadsheet
-                        if (uRow != curCell.Cell.Row)
-                        {
-                            // new row, flush the previous
-                            listLines.Add(listRow);
-                            listRow = new List<string>();
-                            uRow = curCell.Cell.Row;
-                            uCol = 1;
-                        }
-
-                        // fill in any missing columns with empty strings
-                        if (uCol != curCell.Cell.Column)
-                        {
-                            while (uCol < curCell.Cell.Column)
-                            {
-                                listRow.Add(string.Empty);
-                                uCol++;
-                            }
-                        }
-
-                        listRow.Add(curCell.Cell.Value ?? string.Empty);
-                        uCol++;
-                    }
-                    // always flush the last line
-                    listLines.Add(listRow);
+                    listAllRows.Add(listColumns);
                 }
-                if (bFoundSheet)
-                {
-                    break;
-                }
-                Logger.AddLogLine("Google: Failed to find sheet: " + sSheetName);
             }
 
-            if (!bFoundSpreadsheet)
+            processNewLines(listAllRows);
+            return listAllRows;
+        }
+
+        public List<string> GetSheetNames(string sSpreadsheetId)
+        {
+            var zSheetsService = CreateSheetsService();
+            // TODO: this can likely be optimized to not return everything (contents won't be included)
+            var zSpreadSheet = zSheetsService.Spreadsheets.Get(sSpreadsheetId).Execute();
+            return zSpreadSheet.Sheets.Select(sheet => sheet.Properties.Title).ToList();
+        }
+
+        /// <summary>
+        /// Retrieves all the spreadsheets available in the drive with a mapping to the id
+        /// </summary>
+        /// <returns></returns>
+        public string GetSpreadsheetId(string sSpreadsheetName)
+        {
+            var zDriveService = CreateDriveService();
+
+            var zListRequest = zDriveService.Files.List();
+            // lookup only spreadsheets
+            zListRequest.Q = "name = '{0}'".FormatString(sSpreadsheetName);
+            zListRequest.Fields = "files(id)";
+
+            // references -- 
+            // https://www.daimto.com/search-files-on-google-drive-with-c/
+            // https://developers.google.com/drive/api/v3/search-parameters
+            var zResultFileList = zListRequest.Execute();
+            if (zResultFileList.Files.Count == 1)
             {
-                Logger.AddLogLine("Google: Failed to find spreadsheet: " + sSpreadsheetName);
+                return zResultFileList.Files[0].Id;
             }
+            else
+            {
+                return null;
+            }
+        }
 
-            processNewLines(listLines);
-            return listLines;
+        /// <summary>
+        /// Retrieves all the spreadsheets available in the drive with a mapping to the id
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<string, string> GetSpreadsheetList()
+        {
+            var dictionaryNameID = new Dictionary<string, string>();
+            var zDriveService = CreateDriveService();
+            
+            var zListRequest = zDriveService.Files.List();
+            // lookup only spreadsheets
+            zListRequest.Q = "mimeType='application/vnd.google-apps.spreadsheet'";
+            zListRequest.PageSize = 100;
+            zListRequest.Fields = "nextPageToken, files(name, id)";
+
+            // references -- 
+            // https://www.daimto.com/search-files-on-google-drive-with-c/
+            // https://developers.google.com/drive/api/v3/search-parameters
+            do
+            {
+                var zResultFileList = zListRequest.Execute();
+                foreach (var zFile in zResultFileList.Files)
+                {
+                    dictionaryNameID.Add(zFile.Name, zFile.Id);
+                }
+                zListRequest.PageToken = zResultFileList.NextPageToken;
+            } while (zListRequest.PageToken != null);
+
+            return dictionaryNameID;
+        }
+
+        private SheetsService CreateSheetsService()
+        {
+            return new SheetsService(zInitializerFactory.CreateInitializer());
+        }
+
+        private DriveService CreateDriveService()
+        {
+            return new DriveService(zInitializerFactory.CreateInitializer());
         }
 
         /// <summary>
@@ -171,23 +185,6 @@ namespace Support.Google
                     listLine[nIdx] = listLine[nIdx].Replace("\n", "\\n");
                 }
             }
-        }
-
-        public static AtomEntryCollection GetSpreadsheetList(SpreadsheetsService zSpreadsheetService)
-        {
-            // get all spreadsheet names
-            var query = new SpreadsheetQuery();
-            var feed = zSpreadsheetService.Query(query);
-            return feed.Entries;
-        }
-
-        public static AtomEntryCollection GetSheetNames(SpreadsheetsService zSpreadsheetService, AtomEntry zSheetEntry)
-        {
-            var link = zSheetEntry.Links.FindService(GDataSpreadsheetsNameTable.WorksheetRel, null);
-
-            var wsquery = new WorksheetQuery(link.HRef.ToString());
-            var wsfeed = zSpreadsheetService.Query(wsquery);
-            return wsfeed.Entries;
         }
     }
 }
