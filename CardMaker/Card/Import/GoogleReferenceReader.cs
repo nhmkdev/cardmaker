@@ -28,6 +28,7 @@ using System.IO;
 using CardMaker.Data;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
+using Google;
 using Support.Google;
 using Support.IO;
 using Support.UI;
@@ -36,9 +37,6 @@ namespace CardMaker.Card.Import
 {
     public class GoogleReferenceReader : ReferenceReader
     {
-        public const string APP_NAME = "CardMaker";
-        public const string CLIENT_ID = "455195524701-cmdvv6fl5ru9uftin99kjmhojt36mnm9.apps.googleusercontent.com";
-
         public class GoogleCacheItem
         {
             public string Reference { get; set; }
@@ -57,10 +55,18 @@ namespace CardMaker.Card.Import
 
             if (!IsAllDataCached() || CardMakerInstance.ForceDataCacheRefresh)
             {
-                // local cache is not enough to load this reference, check token access
-                if (!GoogleApi.VerifyAccessToken(CardMakerInstance.GoogleAccessToken))
+                var zSpreadsheet =
+                    new GoogleSpreadsheet(CardMakerInstance.GoogleInitializerFactory);
+                try
                 {
-                    CardMakerInstance.GoogleCredentialsInvalid = true;
+                    zSpreadsheet.MakeSimpleSpreadsheetRequest();
+                }
+                catch (GoogleApiException e)
+                {
+                    if (GoogleApi.IsAuthorizationError(e))
+                    {
+                        CardMakerInstance.GoogleCredentialsInvalid = true;
+                    }
                 }
             }
         }
@@ -123,22 +129,20 @@ namespace CardMaker.Card.Import
             var sSpreadsheetName = arraySettings[1];
             var sSheetName = arraySettings[2] + sNameAppend;
 
-            var bCredentialsError = false;
+            var bAuthorizationError = false;
 
             List<List<string>> listGoogleData = null;
             try
             {
-                listGoogleData = new GoogleSpreadsheet(CardMakerInstance.GoogleInitializerFactory).GetSheetContentsBySpreadsheetName(sSpreadsheetName, sSheetName);
+                listGoogleData =
+                    new GoogleSpreadsheet(CardMakerInstance.GoogleInitializerFactory).GetSheetContentsBySpreadsheetName(
+                        sSpreadsheetName, sSheetName);
             }
-#warning What is the google credential exception?
-#if false
-            catch (InvalidCredentialsException e)
+            catch (GoogleApiException e)
             {
-                Logger.AddLogLine("Credentials exception: " + e.Message);
-                bCredentialsError = true;
-                listGoogleData = null;
+                Logger.AddLogLine("Google Spreadsheet access exception: " + e.Message);
+                bAuthorizationError = GoogleApi.IsAuthorizationError(e);
             }
-#endif
             catch (Exception e)
             {
                 Logger.AddLogLine("General exception: " + e.Message);
@@ -146,7 +150,7 @@ namespace CardMaker.Card.Import
             }
             if (null == listGoogleData)
             {
-                Logger.AddLogLine("Failed to load data from Google Spreadsheet." + "[" + sSpreadsheetName + "," + sSheetName + "]" + (bCredentialsError ? " Google reported a problem with your credentials." : string.Empty));
+                Logger.AddLogLine("Failed to load data from Google Spreadsheet." + "[" + sSpreadsheetName + "," + sSheetName + "]" + (bAuthorizationError ? " Google reported a problem with your credentials." : string.Empty));
             }
             else
             {

@@ -22,6 +22,7 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Google.Apis.Drive.v3;
@@ -134,7 +135,7 @@ namespace Support.Google
         {
             var dictionaryNameID = new Dictionary<string, string>();
             var zDriveService = CreateDriveService();
-            
+
             var zListRequest = zDriveService.Files.List();
             // lookup only spreadsheets
             zListRequest.Q = "mimeType='application/vnd.google-apps.spreadsheet'";
@@ -155,6 +156,22 @@ namespace Support.Google
             } while (zListRequest.PageToken != null);
 
             return dictionaryNameID;
+        }
+
+        /// <summary>
+        /// This method is used like an auth check
+        /// </summary>
+        public void MakeSimpleSpreadsheetRequest()
+        {
+            var zDriveService = CreateDriveService();
+
+            var zListRequest = zDriveService.Files.List();
+            // lookup only spreadsheets
+            zListRequest.Q = "mimeType='application/vnd.google-apps.spreadsheet'";
+            zListRequest.PageSize = 1;
+            zListRequest.Fields = "files(name, id)";
+
+            zListRequest.Execute();
         }
 
         private SheetsService CreateSheetsService()

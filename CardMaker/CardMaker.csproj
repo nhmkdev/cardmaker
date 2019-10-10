@@ -323,7 +323,6 @@
     <Compile Include="Support\3rdParty\PhotoshopFile\ResolutionInfo.cs" />
     <Compile Include="Support\3rdParty\PhotoshopFile\Thumbnail.cs" />
     <Compile Include="Support\3rdParty\SimpleJson\SimpleJson.cs" />
-    <Compile Include="Support\Google\GoogleAccessTokenVerifier.cs" />
     <Compile Include="Support\Google\GoogleApi.cs" />
     <Compile Include="Support\Google\GoogleInitializerFactory.cs" />
     <Compile Include="Support\Google\GoogleSpreadsheet.cs" />

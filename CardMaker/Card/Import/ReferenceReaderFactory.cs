@@ -39,10 +39,7 @@ namespace CardMaker.Card.Import
                                                            CardMakerConstants.GOOGLE_REFERENCE_SPLIT_CHAR))
             {
                 var zReader = new GoogleReferenceReader(zReference);
-                if (!CardMakerInstance.GoogleCredentialsInvalid)
-                {
-                    return zReader;
-                }
+                return CardMakerInstance.GoogleCredentialsInvalid ? null : zReader;
             }
             return new CSVReferenceReader(zReference);
         }
