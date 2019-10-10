@@ -78,8 +78,8 @@
     <Reference Include="Google.Apis.Core, Version=1.10.0.25331, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Apis.Core.1.10.0\lib\portable-net40+sl50+win+wpa81+wp80\Google.Apis.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Google.Apis.Drive.v3, Version=1.41.1.1722, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.Drive.v3.1.41.1.1722\lib\net40\Google.Apis.Drive.v3.dll</HintPath>
+    <Reference Include="Google.Apis.Drive.v3, Version=1.41.1.1729, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Apis.Drive.v3.1.41.1.1729\lib\net40\Google.Apis.Drive.v3.dll</HintPath>
     </Reference>
     <Reference Include="Google.Apis.PlatformServices, Version=1.10.0.25332, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Apis.1.10.0\lib\net40\Google.Apis.PlatformServices.dll</HintPath>
@@ -503,7 +503,7 @@ COPY /Y $(SolutionDir)\3rdParty\PDFSharp\PDFSharp-License.txt $(TargetDir)\Licen
 COPY /Y $(SolutionDir)\3rdParty\ClearScript\*.license $(TargetDir)\Licenses
 COPY /Y $(SolutionDir)\3rdParty\ClearScript\ClearScriptV8* $(TargetDir)
 COPY /Y $(SolutionDir)\3rdParty\ClearScript\v8* $(TargetDir)
-"C:\Program Files\7-Zip\7z" a "$(TargetDir)CardMaker_X.X.X.X.zip" "$(TargetDir)CardMaker.exe" "$(TargetDir)CardMaker_Mono.exe" "$(TargetDir)*.dll" "$(TargetDir)Card_Maker.pdf" "$(TargetDir)Card_Maker_Basic_Project.pdf"  "$(TargetDir)Card_Maker_JavaScript.pdf" "$(TargetDir)Sample" "$(TargetDir)Readme.txt" "$(TargetDir)History.txt" "$(TargetDir)Licenses" "$(TargetDir)images" "$(TargetDir)templates" -tzip -mx5</PostBuildEvent>
+"C:\Program Files\7-Zip\7z" a "$(TargetDir)CardMaker_X.X.X.X.zip" "$(TargetDir)CardMaker.ex*" "$(TargetDir)CardMaker_Mono.ex*" "$(TargetDir)*.dll" "$(TargetDir)Card_Maker.pdf" "$(TargetDir)Card_Maker_Basic_Project.pdf"  "$(TargetDir)Card_Maker_JavaScript.pdf" "$(TargetDir)Sample" "$(TargetDir)Readme.txt" "$(TargetDir)History.txt" "$(TargetDir)Licenses" "$(TargetDir)images" "$(TargetDir)templates" -tzip -mx5</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
