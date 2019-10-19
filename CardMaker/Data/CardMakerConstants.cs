@@ -32,8 +32,6 @@ namespace CardMaker.Data
     public static class CardMakerConstants
     {
         public const string APPLICATION_NAME = "CardMaker";
-        public const string GOOGLE_REFERENCE = "google";
-        public const char GOOGLE_REFERENCE_SPLIT_CHAR = ';';
         public static readonly Encoding XML_ENCODING = Encoding.UTF8;
         public const string VISIBLE_SETTING = ".visible";
         public const char CHAR_FILE_SPLIT = '|';

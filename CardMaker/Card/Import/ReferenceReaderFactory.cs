@@ -35,8 +35,8 @@ namespace CardMaker.Card.Import
             {
                 return null;
             }
-            if (zReference.RelativePath.StartsWith(CardMakerConstants.GOOGLE_REFERENCE +
-                                                           CardMakerConstants.GOOGLE_REFERENCE_SPLIT_CHAR))
+            if (zReference.RelativePath.StartsWith(GoogleSpreadsheetReference.GOOGLE_REFERENCE +
+                                                           GoogleSpreadsheetReference.GOOGLE_REFERENCE_SPLIT_CHAR))
             {
                 var zReader = new GoogleReferenceReader(zReference);
                 return CardMakerInstance.GoogleCredentialsInvalid ? null : zReader;

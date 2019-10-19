@@ -22,15 +22,16 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Google.Apis.Drive.v3;
 using Google.Apis.Sheets.v4;
+using Google.Apis.Sheets.v4.Data;
+using Support.Google.Sheets;
 using Support.IO;
 using Support.UI;
 
-namespace Support.Google
+namespace Support.Google.Sheets
 {
     public class GoogleSpreadsheet
     {
@@ -44,20 +45,41 @@ namespace Support.Google
         public List<List<string>> GetSheetContentsBySpreadsheetName(string sSpreadsheetName, string sSheetName,
             bool bAutoFillBlanks = true)
         {
-            return GetSheetContentsBySpreadsheetId(GetSpreadsheetId(sSpreadsheetName), sSheetName, bAutoFillBlanks);
+            var sSpreadsheetId = GetSpreadsheetId(sSpreadsheetName);
+            return sSpreadsheetId == null 
+                ? null
+                : GetSheetContentsBySpreadsheetId(sSpreadsheetId, sSheetName, bAutoFillBlanks);
+        }
+
+        public Spreadsheet GetSpreadsheet(string sSpreadsheetId)
+        {
+            var zSheetsService = CreateSheetsService();
+            // https://developers.google.com/sheets/api/guides/concepts (specifying the sheet name results in all the data)
+            var zResult = zSheetsService.Spreadsheets.Get(sSpreadsheetId).Execute();
+            return zResult;
+        }
+
+        public bool DoesChildSheetExist(string sSpreadsheetId, string sSheetName)
+        {
+            var zSpreadsheetInfo = GetSpreadsheet(sSpreadsheetId);
+            var zSheetInfo = zSpreadsheetInfo.Sheets.FirstOrDefault(zSheet => sSheetName == zSheet.Properties.Title);
+            return zSheetInfo != null;
         }
 
         /// <summary>
-            /// 
-            /// </summary>
-            /// <param name="sSpreadsheetId"></param>
-            /// <param name="sSheetName"></param>
-            /// <param name="bAutoFillBlanks"></param>
-            /// <returns></returns>
+        /// 
+        /// </summary>
+        /// <param name="sSpreadsheetId"></param>
+        /// <param name="sSheetName"></param>
+        /// <param name="bAutoFillBlanks"></param>
+        /// <returns></returns>
         public List<List<string>> GetSheetContentsBySpreadsheetId(string sSpreadsheetId, string sSheetName, bool bAutoFillBlanks = true)
         {
             var zSheetsService = CreateSheetsService();
             // https://developers.google.com/sheets/api/guides/concepts (specifying the sheet name results in all the data)
+
+            if (!DoesChildSheetExist(sSpreadsheetId, sSheetName)) return null;
+
             var zValueRange = zSheetsService.Spreadsheets.Values.Get(sSpreadsheetId, sSheetName).Execute();
             var listAllRows = new List<List<string>>();
 
@@ -117,8 +139,10 @@ namespace Support.Google
             // https://www.daimto.com/search-files-on-google-drive-with-c/
             // https://developers.google.com/drive/api/v3/search-parameters
             var zResultFileList = zListRequest.Execute();
-            if (zResultFileList.Files.Count == 1)
+            if (zResultFileList.Files.Count > 0)
             {
+                if(zResultFileList.Files.Count > 1)
+                    Logger.AddLogLine("WARNING: There are {0} Spreadsheets with the name {1}. Only the first found will be used. Please re-add the reference to correct this issue.".FormatString(zResultFileList.Files.Count, sSpreadsheetName));
                 return zResultFileList.Files[0].Id;
             }
             else
@@ -131,9 +155,9 @@ namespace Support.Google
         /// Retrieves all the spreadsheets available in the drive with a mapping to the id
         /// </summary>
         /// <returns></returns>
-        public Dictionary<string, string> GetSpreadsheetList()
+        public List<GoogleSheetInfo> GetSpreadsheetList()
         {
-            var dictionaryNameID = new Dictionary<string, string>();
+            var listSheetInfos = new List<GoogleSheetInfo>();
             var zDriveService = CreateDriveService();
 
             var zListRequest = zDriveService.Files.List();
@@ -150,12 +174,16 @@ namespace Support.Google
                 var zResultFileList = zListRequest.Execute();
                 foreach (var zFile in zResultFileList.Files)
                 {
-                    dictionaryNameID.Add(zFile.Name, zFile.Id);
+                    listSheetInfos.Add(new GoogleSheetInfo()
+                    {
+                        Name = zFile.Name,
+                        Id = zFile.Id
+                    });
                 }
                 zListRequest.PageToken = zResultFileList.NextPageToken;
             } while (zListRequest.PageToken != null);
 
-            return dictionaryNameID;
+            return listSheetInfos;
         }
 
         /// <summary>

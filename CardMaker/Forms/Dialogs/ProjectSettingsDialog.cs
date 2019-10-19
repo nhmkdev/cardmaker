@@ -24,10 +24,11 @@
 
 using System;
 using System.Windows.Forms;
+using CardMaker.Card.Import;
 using CardMaker.Data;
 using CardMaker.Events.Managers;
 using CardMaker.Properties;
-using Support.Google;
+using Support.Google.Sheets;
 using Support.UI;
 
 namespace CardMaker.Forms.Dialogs
@@ -66,7 +67,11 @@ namespace CardMaker.Forms.Dialogs
                     }
                     return null;
                 },
-                (zGoogleSpreadsheetBrowser, txtOverride) => { txtOverride.Text = zGoogleSpreadsheetBrowser.SelectedSpreadsheet; },
+                (zGoogleSpreadsheetBrowser, txtOverride) =>
+                {
+                    txtOverride.Text = new GoogleSpreadsheetReference(zGoogleSpreadsheetBrowser.SelectedSpreadsheet)
+                        .generateSpreadsheetReference();
+                },
                 OVERRIDE_DEFINE_REFRENCE_NAME);
 
             zQuery.ChangeToTab("Javascript");

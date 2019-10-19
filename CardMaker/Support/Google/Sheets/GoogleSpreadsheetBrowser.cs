@@ -29,15 +29,15 @@ using System.Windows.Forms;
 using Support.IO;
 using Support.UI;
 
-namespace Support.Google
+namespace Support.Google.Sheets
 {
     public partial class GoogleSpreadsheetBrowser : Form
     {
         private readonly bool m_bRequireSheetSelect;
 
-        private Dictionary<string, string> m_dictionaryNameID;
+        private List<GoogleSheetInfo> m_listGoogleSheets;
         private GoogleSpreadsheet m_zGoogleSpreadsheet;
-        public string SelectedSpreadsheet => listViewSpreadsheets.SelectedItems.Count == 0 ? null : ((KeyValuePair<string,string>)listViewSpreadsheets.SelectedItems[0].Tag).Key;
+        public GoogleSheetInfo SelectedSpreadsheet => listViewSpreadsheets.SelectedItems.Count == 0 ? null : (GoogleSheetInfo)listViewSpreadsheets.SelectedItems[0].Tag;
         public string SelectedSheet => listViewSheets.SelectedItems.Count == 0 ? null : (string)listViewSheets.SelectedItems[0].Tag;
 
         public GoogleSpreadsheetBrowser(GoogleSpreadsheet zGoogleSpreadsheet, bool bRequireSheetSelect)
@@ -53,13 +53,13 @@ namespace Support.Google
         {
             var listNewItems = new List<ListViewItem>();
 
-            foreach (var entry in m_dictionaryNameID)
+            foreach (var entry in m_listGoogleSheets)
             {
-                if (-1 == entry.Key.IndexOf(txtFilter.Text, StringComparison.OrdinalIgnoreCase))
+                if (-1 == entry.Name.IndexOf(txtFilter.Text, StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }
-                var zLvi = new ListViewItem(entry.Key)
+                var zLvi = new ListViewItem(entry.Name)
                 {
                     Tag = entry
                 };
@@ -76,11 +76,11 @@ namespace Support.Google
             var zWait = new WaitDialog(1,
                 () =>
                 {
-                    var dictionaryNameID = PerformSpreadsheetRetrieve(
+                    var listGoogleSheets = PerformSpreadsheetRetrieve(
                         () => m_zGoogleSpreadsheet.GetSpreadsheetList(),
                         () => listViewSpreadsheets.InvokeAction(() => listViewSpreadsheets.Clear()));
 
-                    if (null == dictionaryNameID)
+                    if (null == listGoogleSheets)
                     {
                         this.InvokeAction(
                             () => MessageBox.Show(this, "Failed to access Google Spreadsheets", "Access Failed", MessageBoxButtons.OK, MessageBoxIcon.Error));
@@ -89,11 +89,11 @@ namespace Support.Google
                         return;
                     }
 
-                    m_dictionaryNameID = dictionaryNameID;
+                    m_listGoogleSheets = listGoogleSheets;
                     var listNewItems = new List<ListViewItem>();
-                    foreach (var entry in dictionaryNameID)
+                    foreach (var entry in listGoogleSheets)
                     {
-                        var zLvi = new ListViewItem(entry.Key)
+                        var zLvi = new ListViewItem(entry.Name)
                         {
                             Tag = entry
                         };
@@ -135,7 +135,7 @@ namespace Support.Google
                     var zLvi = listViewSpreadsheets.InvokeFunc(getCurrentSelectedtem);
 
                     var listSheets = PerformSpreadsheetRetrieve(
-                        () => m_zGoogleSpreadsheet.GetSheetNames(((KeyValuePair<string, string>)zLvi.Tag).Value),
+                        () => m_zGoogleSpreadsheet.GetSheetNames(((GoogleSheetInfo)zLvi.Tag).Id),
                         () => listViewSheets.InvokeAction(() => listViewSheets.Clear()));
 
                     if (null == listSheets)
@@ -148,7 +148,6 @@ namespace Support.Google
                     {
                         var zNewLvi = new ListViewItem(sSheetName)
                         {
-#warning Is the tag necessary here?
                             Tag = sSheetName
                         };
                         listNewItems.Add(zNewLvi);

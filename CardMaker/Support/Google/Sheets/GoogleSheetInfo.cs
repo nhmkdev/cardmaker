@@ -22,28 +22,11 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#define UNSTABLE
-
-namespace CardMaker
+namespace Support.Google.Sheets
 {
-    public static class CardMakerBuild
+    public class GoogleSheetInfo
     {
-        public static string GetBuildSuffix()
-        {
-#if UNSTABLE
-            return "[UNSTABLE] V.A4";
-#else
-            return string.Empty;
-#endif
-        }
-
-        public static bool IsUnstable()
-        {
-#if UNSTABLE
-            return true;
-#else
-            return false;
-#endif
-        }
+        public string Name { get; set; }
+        public string Id { get; set; }
     }
 }

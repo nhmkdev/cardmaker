@@ -36,7 +36,7 @@ using CardMaker.Events.Managers;
 using CardMaker.Forms.Dialogs;
 using CardMaker.Properties;
 using CardMaker.XML;
-using Support.Google;
+using Support.Google.Sheets;
 using Support.IO;
 using Support.UI;
 using LayoutEventArgs = CardMaker.Events.Args.LayoutEventArgs;
@@ -356,11 +356,13 @@ namespace CardMaker.Forms
             {
                 var bNewDefault = 0 == treeView.SelectedNode.Nodes.Count;
                 var zLayout = (ProjectLayout)treeView.SelectedNode.Tag;
+                var zGoogleSpreadsheetReference = new GoogleSpreadsheetReference(zDialog.SelectedSpreadsheet)
+                {
+                    SheetName = zDialog.SelectedSheet
+                };
                 var tnReference = AddReferenceNode(
                     treeView.SelectedNode,
-                    CardMakerConstants.GOOGLE_REFERENCE + CardMakerConstants.GOOGLE_REFERENCE_SPLIT_CHAR +
-                    zDialog.SelectedSpreadsheet + CardMakerConstants.GOOGLE_REFERENCE_SPLIT_CHAR +
-                    zDialog.SelectedSheet,
+                    zGoogleSpreadsheetReference.generateFullReference(),
                     bNewDefault,
                     zLayout);
                 if (null == tnReference)

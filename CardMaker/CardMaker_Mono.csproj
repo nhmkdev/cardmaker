@@ -210,6 +210,7 @@
     <Compile Include="Card\ImageCache.cs" />
     <Compile Include="Card\Import\CSVReferenceReader.cs" />
     <Compile Include="Card\Import\GoogleReferenceReader.cs" />
+    <Compile Include="Card\Import\GoogleSpreadsheetReference.cs" />
     <Compile Include="Card\Import\ReferenceReader.cs" />
     <Compile Include="Card\Import\ReferenceReaderFactory.cs" />
     <Compile Include="Card\InlineBackgroundElementProcessor.cs" />
@@ -325,11 +326,12 @@
     <Compile Include="Support\3rdParty\SimpleJson\SimpleJson.cs" />
     <Compile Include="Support\Google\GoogleApi.cs" />
     <Compile Include="Support\Google\GoogleInitializerFactory.cs" />
-    <Compile Include="Support\Google\GoogleSpreadsheet.cs" />
-    <Compile Include="Support\Google\GoogleSpreadsheetBrowser.cs">
+    <Compile Include="Support\Google\Sheets\GoogleSheetInfo.cs" />
+    <Compile Include="Support\Google\Sheets\GoogleSpreadsheet.cs" />
+    <Compile Include="Support\Google\Sheets\GoogleSpreadsheetBrowser.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Support\Google\GoogleSpreadsheetBrowser.Designer.cs">
+    <Compile Include="Support\Google\Sheets\GoogleSpreadsheetBrowser.Designer.cs">
       <DependentUpon>GoogleSpreadsheetBrowser.cs</DependentUpon>
     </Compile>
     <Compile Include="Support\IO\CSVFile.cs" />
@@ -420,7 +422,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="Support\Google\GoogleSpreadsheetBrowser.resx">
+    <EmbeddedResource Include="Support\Google\Sheets\GoogleSpreadsheetBrowser.resx">
       <DependentUpon>GoogleSpreadsheetBrowser.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Support\UI\RGBColorSelectDialog.resx">
