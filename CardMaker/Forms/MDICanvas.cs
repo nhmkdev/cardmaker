@@ -162,13 +162,16 @@ namespace CardMaker.Forms
                 int nHChange = 0;
                 int nVChange = 0;
                 // NOTE: this method only detects keydown events
+                bool ignoreDisabledElements = false;
                 switch (keyData)
                 {
                     case Keys.Control | Keys.Add:
+                        ignoreDisabledElements = true;
                         numericUpDownZoom.Value = Math.Min(numericUpDownZoom.Maximum,
                             numericUpDownZoom.Value + numericUpDownZoom.Increment);
                         break;
                     case Keys.Control | Keys.Subtract:
+                        ignoreDisabledElements = true;
                         numericUpDownZoom.Value = Math.Max(numericUpDownZoom.Minimum,
                             numericUpDownZoom.Value - numericUpDownZoom.Increment);
                         break;
@@ -215,24 +218,35 @@ namespace CardMaker.Forms
                         nHChange = 1;
                         m_zCardCanvas.Focus();
                         break;
+                    case Keys.A:
+                        ignoreDisabledElements = true;
+                        AutoSaveManager.Instance.ToggleAutoSave();
+                        UpdateFormText();
+                        break;
                     case Keys.M:
+                        ignoreDisabledElements = true;
                         ChangeMouseMode(MouseMode.Move == m_eMouseMode
                             ? MouseMode.MoveResize
                             : MouseMode.Move);
                         break;
                     case Keys.R:
+                        ignoreDisabledElements = true;
                         ChangeMouseMode(MouseMode.Rotate == m_eMouseMode
                             ? MouseMode.MoveResize
                             : MouseMode.Rotate);
                         break;
                 }
-                if (CheckAllSelectedElementsEnabled(false))
+
+                if (!ignoreDisabledElements)
                 {
-                    ElementManager.Instance.ProcessSelectedElementsChange(nHChange, nVChange, 0, 0);
-                }
-                else
-                {
-                    Logger.AddLogLine("You cannot adjust disabled elements!");
+                    if (CheckAllSelectedElementsEnabled(false))
+                    {
+                        ElementManager.Instance.ProcessSelectedElementsChange(nHChange, nVChange, 0, 0);
+                    }
+                    else
+                    {
+                        Logger.AddLogLine("You cannot adjust disabled elements!");
+                    }
                 }
             }
             return base.ProcessCmdKey(ref msg, keyData);
@@ -1101,7 +1115,11 @@ namespace CardMaker.Forms
                 return;
             }
             m_eMouseMode = eDestinationMode;
+            UpdateFormText();
+        }
 
+        private void UpdateFormText()
+        {
             switch (m_eMouseMode)
             {
                 case MouseMode.Move:
@@ -1117,6 +1135,11 @@ namespace CardMaker.Forms
                     Cursor = new Cursor(Properties.Resources.RotateCursor.Handle);
                     break;
             }
+
+            Text += " [AutoSave: {0}]".FormatString(
+                AutoSaveManager.Instance.IsEnabled()
+                    ? "Enabled"
+                    : "Disabled");
         }
 
         private bool CheckAllSelectedElementsEnabled(bool bShowWarning)

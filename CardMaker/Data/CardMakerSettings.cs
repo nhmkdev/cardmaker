@@ -189,5 +189,25 @@ namespace CardMaker.Data
             get { return s_zIniManager.GetValue(IniSettings.LogInceptTranslation, bool.FalseString).Equals(bool.TrueString); }
             set { s_zIniManager.SetValue(IniSettings.LogInceptTranslation, value.ToString()); }
         }
+
+        public static bool AutoSaveEnabled
+        {
+            get { return s_zIniManager.GetValue(IniSettings.AutoSaveEnabled, bool.FalseString).Equals(bool.TrueString); }
+            set { s_zIniManager.SetValue(IniSettings.AutoSaveEnabled, value.ToString()); }
+        }
+
+        public static int AutoSaveIntervalMinutes
+        {
+            get
+            {
+                int nValue;
+                if (int.TryParse(s_zIniManager.GetValue(IniSettings.AutoSaveIntervalMinutes, "1"), out nValue))
+                {
+                    return nValue;
+                }
+                return 0;
+            }
+            set { s_zIniManager.SetValue(IniSettings.AutoSaveIntervalMinutes, value.ToString()); }
+        }
     }
 }

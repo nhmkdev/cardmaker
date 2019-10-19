@@ -249,6 +249,7 @@
     <Compile Include="Events\Args\LayoutElementNumericAdjustEventArgs.cs" />
     <Compile Include="Events\Args\LayoutEventArgs.cs" />
     <Compile Include="Events\Args\ProjectEventArgs.cs" />
+    <Compile Include="Events\Managers\AutoSaveManager.cs" />
     <Compile Include="Events\Managers\ExportManager.cs" />
     <Compile Include="Events\Managers\GoogleAuthManager.cs" />
     <Compile Include="Forms\CardMakerMDI.cs">
