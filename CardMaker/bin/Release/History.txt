@@ -2,6 +2,7 @@ Card Maker Version History
 --------------------------
 1.1.0.0
 - Added support for the non-deprecated Google Sheets API
+- Added support for AutoSave (Disabled by default, can toggle with Ctrl+T)
 
 1.0.1.0
 - Added Crop Export Definition (for PDF to start with) allowing for cropped outputs.

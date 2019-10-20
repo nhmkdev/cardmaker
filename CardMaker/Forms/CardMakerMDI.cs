@@ -56,6 +56,9 @@ namespace CardMaker.Forms
         private bool m_bPdfExportLastOpen;
         private int m_nPdfExportLastOrientationIndex;
 
+        // forms
+        private MDICanvas m_zMDICanvas;
+
         public CardMakerMDI()
         {
             InitializeComponent();
@@ -97,7 +100,7 @@ namespace CardMaker.Forms
             GoogleAuthManager.Instance.GoogleAuthCredentialsError += GoogleAuthUpdate_Requested;
 
             // Setup all the child dialogs
-            var zCanvasForm = SetupMDIForm(new MDICanvas(), true);
+            m_zMDICanvas = SetupMDIForm(new MDICanvas(), true);
             var zElementForm = SetupMDIForm(new MDIElementControl(), true);
             var zLayoutForm = SetupMDIForm(new MDILayoutControl(), true);
             var zProjectForm = SetupMDIForm(new MDIProject(), true);
@@ -171,8 +174,8 @@ namespace CardMaker.Forms
             {
                 Logger.AddLogLine("Restored default form layout.");
 #if MONO_BUILD
-                zCanvasForm.Size = new Size(457, 300);
-                zCanvasForm.Location = new Point(209, 5);
+                m_zMDICanvas.Size = new Size(457, 300);
+                m_zMDICanvas.Location = new Point(209, 5);
                 zElementForm.Size = new Size(768, 379);
                 zElementForm.Location = new Point(3, 310);
                 zLayoutForm.Size = new Size(300, 352);
@@ -182,8 +185,8 @@ namespace CardMaker.Forms
                 zLoggerForm.Size = new Size(403, 117);
                 zLoggerForm.Location = new Point(789, 571);
 #else
-                zCanvasForm.Size = new Size(557, 300);
-                zCanvasForm.Location = new Point(209, 5);
+                m_zMDICanvas.Size = new Size(557, 300);
+                m_zMDICanvas.Location = new Point(209, 5);
                 zElementForm.Size = new Size(756, 339);
                 zElementForm.Location = new Point(3, 310);
                 zLayoutForm.Size = new Size(300, 352);
@@ -366,6 +369,12 @@ namespace CardMaker.Forms
         {
             undoToolStripMenuItem.Enabled = 0 < UserAction.UndoCount;
             redoToolStripMenuItem.Enabled = 0 < UserAction.RedoCount;
+        }
+
+        private void toggleAutoSaveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AutoSaveManager.Instance.ToggleAutoSave();
+            m_zMDICanvas.UpdateFormText();
         }
 
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -863,7 +872,7 @@ namespace CardMaker.Forms
             }
         }
 
-        private Form SetupMDIForm(Form zForm, bool bDefaultShow)
+        private T SetupMDIForm<T>(T zForm, bool bDefaultShow) where T : Form
         {
             zForm.MdiParent = this;
             bool bShow;

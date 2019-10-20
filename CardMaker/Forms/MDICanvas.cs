@@ -218,11 +218,6 @@ namespace CardMaker.Forms
                         nHChange = 1;
                         m_zCardCanvas.Focus();
                         break;
-                    case Keys.A:
-                        ignoreDisabledElements = true;
-                        AutoSaveManager.Instance.ToggleAutoSave();
-                        UpdateFormText();
-                        break;
                     case Keys.M:
                         ignoreDisabledElements = true;
                         ChangeMouseMode(MouseMode.Move == m_eMouseMode
@@ -1118,7 +1113,7 @@ namespace CardMaker.Forms
             UpdateFormText();
         }
 
-        private void UpdateFormText()
+        public void UpdateFormText()
         {
             switch (m_eMouseMode)
             {

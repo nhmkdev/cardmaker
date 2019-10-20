@@ -27,7 +27,6 @@ using System.Linq;
 using Google.Apis.Drive.v3;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
-using Support.Google.Sheets;
 using Support.IO;
 using Support.UI;
 
@@ -35,6 +34,8 @@ namespace Support.Google.Sheets
 {
     public class GoogleSpreadsheet
     {
+        private const string SPREADSHEET_MIMETYPE_QUERY = "mimeType='application/vnd.google-apps.spreadsheet'";
+
         private GoogleInitializerFactory zInitializerFactory;
 
         public GoogleSpreadsheet(GoogleInitializerFactory zInitializerFactory)
@@ -132,7 +133,7 @@ namespace Support.Google.Sheets
 
             var zListRequest = zDriveService.Files.List();
             // lookup only spreadsheets
-            zListRequest.Q = "name = '{0}'".FormatString(sSpreadsheetName);
+            zListRequest.Q = "name = '{0}' AND {1}".FormatString(sSpreadsheetName, SPREADSHEET_MIMETYPE_QUERY);
             zListRequest.Fields = "files(id)";
 
             // references -- 
@@ -162,7 +163,7 @@ namespace Support.Google.Sheets
 
             var zListRequest = zDriveService.Files.List();
             // lookup only spreadsheets
-            zListRequest.Q = "mimeType='application/vnd.google-apps.spreadsheet'";
+            zListRequest.Q = SPREADSHEET_MIMETYPE_QUERY;
             zListRequest.PageSize = 100;
             zListRequest.Fields = "nextPageToken, files(name, id)";
 
@@ -195,7 +196,7 @@ namespace Support.Google.Sheets
 
             var zListRequest = zDriveService.Files.List();
             // lookup only spreadsheets
-            zListRequest.Q = "mimeType='application/vnd.google-apps.spreadsheet'";
+            zListRequest.Q = SPREADSHEET_MIMETYPE_QUERY;
             zListRequest.PageSize = 1;
             zListRequest.Fields = "files(name, id)";
 
