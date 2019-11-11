@@ -178,7 +178,7 @@ namespace CardMaker.Card
         public static void DrawBorder(Graphics zGraphics, int nX, int nY, int nWidth, int nHeight, bool bLayoutDrawBorder, bool bExport)
         {
             // draw the card border
-            if ((bExport && CardMakerSettings.PrintLayoutBorder)
+            if ((bExport && CardMakerSettings.PrintLayoutBorder && bLayoutDrawBorder)
                 || (!bExport && bLayoutDrawBorder))
             {
                 // note that the border is inclusive in the width/height consuming 2 pixels (0 to total-1)
