@@ -322,11 +322,8 @@ namespace CardMaker.Forms
             LayoutManager.ShowAdjustLayoutSettingsDialog(true, (ProjectLayout)treeView.SelectedNode.Tag, this);
         }
 
-        private void addReferenceToolStripMenuItem_Click(object sender, EventArgs e)
+        private void tryToAddReferenceNode(string sFile)
         {
-            var sFile = FormUtils.FileOpenHandler("CSV files (*.csv)|*.csv|All files (*.*)|*.*", null, true);
-            if (null != sFile)
-            {
                 var zLayout = (ProjectLayout)treeView.SelectedNode.Tag;
                 var bNewDefault = 0 == treeView.SelectedNode.Nodes.Count;
                 var tnReference = AddReferenceNode(treeView.SelectedNode, sFile, bNewDefault, zLayout);
@@ -339,9 +336,17 @@ namespace CardMaker.Forms
                 {
                     tnReference.Parent.Expand();
                     LayoutManager.Instance.RefreshActiveLayout();
-
+                    LayoutManager.Instance.FireLayoutUpdatedEvent(true);
                 }
                 ProjectManager.Instance.FireProjectUpdated(true);
+        }
+
+        private void addReferenceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var sFile = FormUtils.FileOpenHandler("CSV files (*.csv)|*.csv|All files (*.*)|*.*", null, true);
+            if (null != sFile)
+            {
+                tryToAddReferenceNode(sFile);
             }
         }
 
@@ -360,11 +365,10 @@ namespace CardMaker.Forms
                 }
                 xlApp.Quit();
 
-                // TODO: Show a dialog that lists sheet to pick from
                 ExcelSheetSelectionDialog dialog = new ExcelSheetSelectionDialog(sheets);
                 if(dialog.ShowDialog() == DialogResult.OK)
                 {
-                    Console.WriteLine("Selected " + dialog.GetSelectedSheet());
+                    tryToAddReferenceNode(ExcelSpreadsheetReference.generateFullReference(sFile, dialog.GetSelectedSheet()));
                 }
             }
         }
@@ -379,29 +383,11 @@ namespace CardMaker.Forms
             var zDialog = new GoogleSpreadsheetBrowser(new GoogleSpreadsheet(CardMakerInstance.GoogleInitializerFactory), true);
             if (DialogResult.OK == zDialog.ShowDialog(this))
             {
-                var bNewDefault = 0 == treeView.SelectedNode.Nodes.Count;
-                var zLayout = (ProjectLayout)treeView.SelectedNode.Tag;
                 var zGoogleSpreadsheetReference = new GoogleSpreadsheetReference(zDialog.SelectedSpreadsheet)
                 {
                     SheetName = zDialog.SelectedSheet
                 };
-                var tnReference = AddReferenceNode(
-                    treeView.SelectedNode,
-                    zGoogleSpreadsheetReference.generateFullReference(),
-                    bNewDefault,
-                    zLayout);
-                if (null == tnReference)
-                {
-                    MessageBox.Show(this, "The specified reference is already associated with this layout.", "Reference Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-                if (bNewDefault)
-                {
-                    tnReference.Parent.Expand();
-                    LayoutManager.Instance.RefreshActiveLayout();
-                    LayoutManager.Instance.FireLayoutUpdatedEvent(true);
-                }
-                ProjectManager.Instance.FireProjectUpdated(true);            
+                tryToAddReferenceNode(zGoogleSpreadsheetReference.generateFullReference());
             }
         }
 
