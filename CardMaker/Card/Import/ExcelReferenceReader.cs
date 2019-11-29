@@ -41,7 +41,21 @@ namespace CardMaker.Card.Import
 
         public ExcelReferenceReader(ProjectLayoutReference zReference)
         {
-            // TODO: Parse the file referenced, and load the necessary data
+            // Taken from CSV reader
+            var previousCurrentDirectory = Directory.GetCurrentDirectory();
+
+            if (null != ProjectManager.Instance.ProjectPath && Directory.Exists(ProjectManager.Instance.ProjectPath))
+            {
+                Directory.SetCurrentDirectory(ProjectManager.Instance.ProjectPath);
+                ReferencePath = (File.Exists(zReference.RelativePath)
+                                ? Path.GetFullPath(zReference.RelativePath)
+                                : ProjectManager.Instance.ProjectPath + zReference.RelativePath);
+            }
+            else
+            {
+                ReferencePath = File.Exists(zReference.RelativePath) ? Path.GetFullPath(zReference.RelativePath) : zReference.RelativePath;
+            }
+            Directory.SetCurrentDirectory(previousCurrentDirectory);
         }
 
         public void FinalizeReferenceLoad() { }
