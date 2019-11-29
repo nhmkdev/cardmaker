@@ -209,6 +209,8 @@
     <Compile Include="Card\IInlineBackgroundElementProcessor.cs" />
     <Compile Include="Card\ImageCache.cs" />
     <Compile Include="Card\Import\CSVReferenceReader.cs" />
+    <Compile Include="Card\Import\ExcelReferenceReader.cs" />
+    <Compile Include="Card\Import\ExcelSpreadSheetReference.cs" />
     <Compile Include="Card\Import\GoogleReferenceReader.cs" />
     <Compile Include="Card\Import\GoogleSpreadsheetReference.cs" />
     <Compile Include="Card\Import\ReferenceReader.cs" />
