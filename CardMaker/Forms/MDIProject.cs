@@ -361,6 +361,11 @@ namespace CardMaker.Forms
                 xlApp.Quit();
 
                 // TODO: Show a dialog that lists sheet to pick from
+                ExcelSheetSelectionDialog dialog = new ExcelSheetSelectionDialog(sheets);
+                if(dialog.ShowDialog() == DialogResult.OK)
+                {
+                    Console.WriteLine("Selected " + dialog.GetSelectedSheet());
+                }
             }
         }
 

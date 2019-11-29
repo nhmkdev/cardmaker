@@ -263,6 +263,12 @@
     <Compile Include="Forms\CardMakerMDI.Designer.cs">
       <DependentUpon>CardMakerMDI.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\Dialogs\ExcelSheetSelectionDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Dialogs\ExcelSheetSelectionDialog.Designer.cs">
+      <DependentUpon>ExcelSheetSelectionDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Dialogs\ProjectSettingsDialog.cs" />
     <Compile Include="Forms\FormUtils.cs" />
     <Compile Include="Forms\GoogleCredentialsDialog.cs">
@@ -383,6 +389,9 @@
     <EmbeddedResource Include="Forms\CardMakerMDI.resx">
       <SubType>Designer</SubType>
       <DependentUpon>CardMakerMDI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Dialogs\ExcelSheetSelectionDialog.resx">
+      <DependentUpon>ExcelSheetSelectionDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\GoogleCredentialsDialog.resx">
       <DependentUpon>GoogleCredentialsDialog.cs</DependentUpon>
