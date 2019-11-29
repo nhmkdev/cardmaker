@@ -26,47 +26,46 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
-using Google.GData.Client;
-using Google.GData.Spreadsheets;
 using Support.IO;
 using Support.UI;
 
-namespace Support.Google
+namespace Support.Google.Sheets
 {
     public partial class GoogleSpreadsheetBrowser : Form
     {
         private readonly bool m_bRequireSheetSelect;
-        private AtomEntryCollection m_zAllEntries;
-        private readonly SpreadsheetsService m_zSpreadsheetsService;
 
-        public AtomEntry SelectedSpreadsheet => listViewSpreadsheets.SelectedItems.Count == 0 ? null : (AtomEntry)listViewSpreadsheets.SelectedItems[0].Tag;
+        private List<GoogleSheetInfo> m_listGoogleSheets;
+        private GoogleSpreadsheet m_zGoogleSpreadsheet;
+        public GoogleSheetInfo SelectedSpreadsheet => listViewSpreadsheets.SelectedItems.Count == 0 ? null : (GoogleSheetInfo)listViewSpreadsheets.SelectedItems[0].Tag;
+        public string SelectedSheet => listViewSheets.SelectedItems.Count == 0 ? null : (string)listViewSheets.SelectedItems[0].Tag;
 
-        public AtomEntry SelectedSheet => listViewSheets.SelectedItems.Count == 0 ? null : (AtomEntry)listViewSheets.SelectedItems[0].Tag;
-
-        public GoogleSpreadsheetBrowser(string sAppName, string sClientId, string sGoogleAccessToken, bool bRequireSheetSelect)
+        public GoogleSpreadsheetBrowser(GoogleSpreadsheet zGoogleSpreadsheet, bool bRequireSheetSelect)
         {
+            m_zGoogleSpreadsheet = zGoogleSpreadsheet;
             m_bRequireSheetSelect = bRequireSheetSelect;
             InitializeComponent();
             listViewSheets.Visible = m_bRequireSheetSelect;
             lblSheets.Visible = m_bRequireSheetSelect;
-            m_zSpreadsheetsService = GoogleSpreadsheet.GetSpreadsheetsService(sAppName, sClientId, sGoogleAccessToken);
         }
 
         private void txtFilter_TextChanged(object sender, EventArgs e)
         {
             var listNewItems = new List<ListViewItem>();
-            foreach (var entry in m_zAllEntries)
+
+            foreach (var entry in m_listGoogleSheets)
             {
-                if (-1 == entry.Title.Text.IndexOf(txtFilter.Text, StringComparison.OrdinalIgnoreCase))
+                if (-1 == entry.Name.IndexOf(txtFilter.Text, StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }
-                var zLvi = new ListViewItem(entry.Title.Text)
+                var zLvi = new ListViewItem(entry.Name)
                 {
                     Tag = entry
                 };
                 listNewItems.Add(zLvi);
             }
+
             listViewSpreadsheets.Items.Clear();
             listViewSpreadsheets.Items.AddRange(listNewItems.ToArray());
             listViewSheets.Items.Clear();
@@ -77,11 +76,11 @@ namespace Support.Google
             var zWait = new WaitDialog(1,
                 () =>
                 {
-                    AtomEntryCollection zSheetAtomCollection = getAtomEntryCollection(
-                        () => GoogleSpreadsheet.GetSpreadsheetList(m_zSpreadsheetsService),
+                    var listGoogleSheets = PerformSpreadsheetRetrieve(
+                        () => m_zGoogleSpreadsheet.GetSpreadsheetList(),
                         () => listViewSpreadsheets.InvokeAction(() => listViewSpreadsheets.Clear()));
 
-                    if (null == zSheetAtomCollection)
+                    if (null == listGoogleSheets)
                     {
                         this.InvokeAction(
                             () => MessageBox.Show(this, "Failed to access Google Spreadsheets", "Access Failed", MessageBoxButtons.OK, MessageBoxIcon.Error));
@@ -90,11 +89,11 @@ namespace Support.Google
                         return;
                     }
 
-                    m_zAllEntries = zSheetAtomCollection;
+                    m_listGoogleSheets = listGoogleSheets;
                     var listNewItems = new List<ListViewItem>();
-                    foreach (var entry in zSheetAtomCollection)
+                    foreach (var entry in listGoogleSheets)
                     {
-                        var zLvi = new ListViewItem(entry.Title.Text)
+                        var zLvi = new ListViewItem(entry.Name)
                         {
                             Tag = entry
                         };
@@ -104,6 +103,7 @@ namespace Support.Google
                     {
                         listViewSpreadsheets.Items.AddRange(listNewItems.ToArray());
                     });
+
                     WaitDialog.Instance.CloseWaitDialog();
                 },
                 "Getting Google Spreadsheets...",
@@ -134,21 +134,21 @@ namespace Support.Google
 
                     var zLvi = listViewSpreadsheets.InvokeFunc(getCurrentSelectedtem);
 
-                    AtomEntryCollection zSheetAtomCollection = getAtomEntryCollection(
-                        () => GoogleSpreadsheet.GetSheetNames(m_zSpreadsheetsService, ((AtomEntry) zLvi.Tag)),
+                    var listSheets = PerformSpreadsheetRetrieve(
+                        () => m_zGoogleSpreadsheet.GetSheetNames(((GoogleSheetInfo)zLvi.Tag).Id),
                         () => listViewSheets.InvokeAction(() => listViewSheets.Clear()));
 
-                    if (null == zSheetAtomCollection)
+                    if (null == listSheets)
                     {
                         return;
                     }
 
                     var listNewItems = new List<ListViewItem>();
-                    foreach (var entry in zSheetAtomCollection)
+                    foreach (var sSheetName in listSheets)
                     {
-                        var zNewLvi = new ListViewItem(entry.Title.Text)
+                        var zNewLvi = new ListViewItem(sSheetName)
                         {
-                            Tag = entry
+                            Tag = sSheetName
                         };
                         listNewItems.Add(zNewLvi);
                     }
@@ -185,22 +185,19 @@ namespace Support.Google
             DialogResult = DialogResult.OK;
         }
 
-        private AtomEntryCollection getAtomEntryCollection(Func<AtomEntryCollection> zGetter, Action actionOnException)
+        private T PerformSpreadsheetRetrieve<T>(Func<T> zRetriever, Action actionOnException)
         {
             try
             {
-                return zGetter();
+                return zRetriever();
             }
-            catch (InvalidCredentialsException ex)
-            {
-                Logger.AddLogLine("Credentials exception: " + ex.Message);
-            }
+#warning What is the credentials exception for google now?
             catch (Exception ex)
             {
                 Logger.AddLogLine("General exception: " + ex.Message);
             }
             actionOnException?.Invoke();
-            return null;
+            return default(T);
         }
 
         private void listViewSheets_Resize(object sender, EventArgs e)

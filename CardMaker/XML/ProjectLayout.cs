@@ -22,7 +22,9 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Xml.Serialization;
 using Support.IO;
 
@@ -54,6 +56,8 @@ namespace CardMaker.XML
 
         public float zoom { get; set; } = 1;
 
+        public string exportCropDefinition { get; set; }
+
         [XmlAttribute]
         public bool combineReferences { get; set; }
 
@@ -79,6 +83,25 @@ namespace CardMaker.XML
         public bool drawBorder { get; set; }
 
         #endregion
+
+        public Rectangle getExportCropDefinition()
+        {
+            if(string.IsNullOrWhiteSpace(exportCropDefinition))
+                return Rectangle.Empty;
+            var entries = exportCropDefinition.Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries);
+            if (entries.Length == 4)
+            {
+                int x, y, width, height;
+                if (int.TryParse(entries[0], out x)
+                    && int.TryParse(entries[1], out y)
+                    && int.TryParse(entries[2], out width)
+                    && int.TryParse(entries[3], out height))
+                {
+                    return new Rectangle(x, y, width, height);
+                }
+            }
+            return Rectangle.Empty;
+        }
 
         public ProjectLayout()
         {
@@ -108,6 +131,7 @@ namespace CardMaker.XML
             drawBorder = zLayout.drawBorder;
             buffer = zLayout.buffer;
             zoom = zLayout.zoom;
+            exportCropDefinition = zLayout.exportCropDefinition;
             combineReferences = zLayout.combineReferences;
             exportNameFormat = zLayout.exportNameFormat;
             exportRotation = zLayout.exportRotation;

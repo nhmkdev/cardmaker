@@ -34,6 +34,8 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -58,20 +60,47 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BouncyCastle.Crypto, Version=1.7.4137.9688, Culture=neutral, PublicKeyToken=a4292a325f69b123, processorArchitecture=MSIL">
+      <HintPath>..\packages\BouncyCastle.1.7.0\lib\Net40-Client\BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
     <Reference Include="ClearScript">
       <HintPath>..\3rdParty\ClearScript\ClearScript.dll</HintPath>
     </Reference>
-    <Reference Include="Google.GData.Client, Version=2.2.0.0, Culture=neutral, PublicKeyToken=04a59ca9b0273830, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\3rdParty\GoogleDataAPI\Google.GData.Client.dll</HintPath>
+    <Reference Include="Google.Apis, Version=1.10.0.25332, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Apis.1.10.0\lib\net40\Google.Apis.dll</HintPath>
     </Reference>
-    <Reference Include="Google.GData.Extensions, Version=2.2.0.0, Culture=neutral, PublicKeyToken=0b4c5df2ebf20876, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\3rdParty\GoogleDataAPI\Google.GData.Extensions.dll</HintPath>
+    <Reference Include="Google.Apis.Auth, Version=1.10.0.25333, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Apis.Auth.1.10.0\lib\net40\Google.Apis.Auth.dll</HintPath>
     </Reference>
-    <Reference Include="Google.GData.Spreadsheets, Version=2.2.0.0, Culture=neutral, PublicKeyToken=3f77feb76ff0d9a1, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\3rdParty\GoogleDataAPI\Google.GData.Spreadsheets.dll</HintPath>
+    <Reference Include="Google.Apis.Auth.PlatformServices, Version=1.10.0.25333, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Apis.Auth.1.10.0\lib\net40\Google.Apis.Auth.PlatformServices.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Apis.Core, Version=1.10.0.25331, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Apis.Core.1.10.0\lib\portable-net40+sl50+win+wpa81+wp80\Google.Apis.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Apis.Drive.v3, Version=1.41.1.1729, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Apis.Drive.v3.1.41.1.1729\lib\net40\Google.Apis.Drive.v3.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Apis.PlatformServices, Version=1.10.0.25332, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Apis.1.10.0\lib\net40\Google.Apis.PlatformServices.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Apis.Sheets.v4, Version=1.41.1.1732, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Apis.Sheets.v4.1.41.1.1732\lib\net40\Google.Apis.Sheets.v4.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks.Extensions, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks.Extensions.Desktop, Version=1.0.168.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PdfSharp">
       <HintPath>..\3rdParty\PDFsharp\GDI+\PdfSharp.dll</HintPath>
@@ -83,11 +112,36 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO, Version=2.6.10.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.1.1.10\lib\net40\System.IO.dll</HintPath>
+    </Reference>
     <Reference Include="System.Management" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Net.Http, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net40\System.Net.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Extensions, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net40\System.Net.Http.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net40\System.Net.Http.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net40\System.Net.Http.WebRequest.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime, Version=2.6.10.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.1.1.10\lib\net40\System.Runtime.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Threading.Tasks, Version=2.6.10.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.1.1.10\lib\net40\System.Threading.Tasks.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="Zlib.Portable, Version=1.11.0.0, Culture=neutral, PublicKeyToken=431cba815f6a8b5b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Zlib.Portable.Signed.1.11.0\lib\portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid\Zlib.Portable.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CardMakerBuild.cs" />
@@ -156,6 +210,7 @@
     <Compile Include="Card\ImageCache.cs" />
     <Compile Include="Card\Import\CSVReferenceReader.cs" />
     <Compile Include="Card\Import\GoogleReferenceReader.cs" />
+    <Compile Include="Card\Import\GoogleSpreadsheetReference.cs" />
     <Compile Include="Card\Import\ReferenceReader.cs" />
     <Compile Include="Card\Import\ReferenceReaderFactory.cs" />
     <Compile Include="Card\InlineBackgroundElementProcessor.cs" />
@@ -194,6 +249,7 @@
     <Compile Include="Events\Args\LayoutElementNumericAdjustEventArgs.cs" />
     <Compile Include="Events\Args\LayoutEventArgs.cs" />
     <Compile Include="Events\Args\ProjectEventArgs.cs" />
+    <Compile Include="Events\Managers\AutoSaveManager.cs" />
     <Compile Include="Events\Managers\ExportManager.cs" />
     <Compile Include="Events\Managers\GoogleAuthManager.cs" />
     <Compile Include="Forms\CardMakerMDI.cs">
@@ -270,11 +326,13 @@
     <Compile Include="Support\3rdParty\PhotoshopFile\Thumbnail.cs" />
     <Compile Include="Support\3rdParty\SimpleJson\SimpleJson.cs" />
     <Compile Include="Support\Google\GoogleApi.cs" />
-    <Compile Include="Support\Google\GoogleSpreadsheet.cs" />
-    <Compile Include="Support\Google\GoogleSpreadsheetBrowser.cs">
+    <Compile Include="Support\Google\GoogleInitializerFactory.cs" />
+    <Compile Include="Support\Google\Sheets\GoogleSheetInfo.cs" />
+    <Compile Include="Support\Google\Sheets\GoogleSpreadsheet.cs" />
+    <Compile Include="Support\Google\Sheets\GoogleSpreadsheetBrowser.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Support\Google\GoogleSpreadsheetBrowser.Designer.cs">
+    <Compile Include="Support\Google\Sheets\GoogleSpreadsheetBrowser.Designer.cs">
       <DependentUpon>GoogleSpreadsheetBrowser.cs</DependentUpon>
     </Compile>
     <Compile Include="Support\IO\CSVFile.cs" />
@@ -365,13 +423,14 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="Support\Google\GoogleSpreadsheetBrowser.resx">
+    <EmbeddedResource Include="Support\Google\Sheets\GoogleSpreadsheetBrowser.resx">
       <DependentUpon>GoogleSpreadsheetBrowser.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Support\UI\RGBColorSelectDialog.resx">
       <DependentUpon>RGBColorSelectDialog.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.config" />
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -441,12 +500,24 @@
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
-    <PostBuildEvent>DEL "$(SolutionDir)$(OutDir)*.zip"
-COPY "$(SolutionDir)\3rdParty\GoogleDataAPI\GData-LICENSE-2.0.txt" "$(TargetDir)\Licenses"
-COPY "$(SolutionDir)\3rdParty\PDFSharp\PDFSharp-License.txt" "$(TargetDir)\Licenses"
-COPY "$(SolutionDir)\3rdParty\ClearScript\*.license" "$(TargetDir)\Licenses"
-COPY "$(SolutionDir)\3rdParty\ClearScript\ClearScriptV8*" "$(TargetDir)"
-COPY "$(SolutionDir)\3rdParty\ClearScript\v8*" "$(TargetDir)"
-"C:\Program Files\7-Zip\7z" a "$(TargetDir)CardMaker_X.X.X.X.zip" "$(TargetDir)CardMaker.exe" "$(TargetDir)CardMaker_Mono.exe" "$(TargetDir)*.dll" "$(TargetDir)Card_Maker.pdf" "$(TargetDir)Card_Maker_Basic_Project.pdf"  "$(TargetDir)Card_Maker_JavaScript.pdf" "$(TargetDir)Sample" "$(TargetDir)Readme.txt" "$(TargetDir)History.txt" "$(TargetDir)Licenses" "$(TargetDir)images" "$(TargetDir)templates" -tzip -mx5</PostBuildEvent>
+    <PostBuildEvent>IF $(ConfigurationName) == Release (
+    DEL "$(SolutionDir)$(OutDir)*.zip"
+    COPY /Y $(SolutionDir)\3rdParty\GoogleDataAPI\GData-LICENSE-2.0.txt $(TargetDir)\Licenses
+    COPY /Y $(SolutionDir)\3rdParty\PDFSharp\PDFSharp-License.txt $(TargetDir)\Licenses
+    COPY /Y $(SolutionDir)\3rdParty\ClearScript\*.license $(TargetDir)\Licenses
+    COPY /Y $(SolutionDir)\3rdParty\ClearScript\ClearScriptV8* $(TargetDir)
+    COPY /Y $(SolutionDir)\3rdParty\ClearScript\v8* $(TargetDir)
+    "C:\Program Files\7-Zip\7z" a "$(TargetDir)CardMaker_X.X.X.X.zip" "$(TargetDir)CardMaker.ex*" "$(TargetDir)CardMaker_Mono.ex*" "$(TargetDir)*.dll" "$(TargetDir)Card_Maker.pdf"     "$(TargetDir)Card_Maker_Basic_Project.pdf"  "$(TargetDir)Card_Maker_JavaScript.pdf" "$(TargetDir)Sample" "$(TargetDir)Readme.txt" "$(TargetDir)History.txt" "$(TargetDir)Licenses"     "$(TargetDir)images" "$(TargetDir)templates" -tzip -mx5
+) ELSE (
+  echo "Debug Build. Nothing to do!"
+)
+</PostBuildEvent>
   </PropertyGroup>
+  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
+  </Target>
 </Project>

@@ -160,16 +160,30 @@ namespace CardMaker.Card
             }
 
             DrawLayoutDividers(zGraphics, bExport);
-
-            // draw the card border
-            if ((bExport && CardMakerSettings.PrintLayoutBorder) 
-                || (!bExport && CurrentDeck.CardLayout.drawBorder))
-            {
-                // note that the border is inclusive in the width/height consuming 2 pixels (0 to total-1)
-                zGraphics.DrawRectangle(Pens.Black, nX, nY, CurrentDeck.CardLayout.width - 1, CurrentDeck.CardLayout.height - 1);
-            }
+            DrawBorder(zGraphics, nX, nY, CurrentDeck.CardLayout.width, CurrentDeck.CardLayout.height, CurrentDeck.CardLayout.drawBorder, bExport);
 
             zGraphics.Transform = matrixOriginal;
+        }
+
+        /// <summary>
+        /// Draws a single pixel border using the specified inputs
+        /// </summary>
+        /// <param name="zGraphics">Graphics to draw on</param>
+        /// <param name="nX">x position</param>
+        /// <param name="nY">y position</param>
+        /// <param name="nWidth">width</param>
+        /// <param name="nHeight">height</param>
+        /// <param name="bLayoutDrawBorder">Flag indicating if the layout has the draw border flag set</param>
+        /// <param name="bExport">Flag indicating if this is an export</param>
+        public static void DrawBorder(Graphics zGraphics, int nX, int nY, int nWidth, int nHeight, bool bLayoutDrawBorder, bool bExport)
+        {
+            // draw the card border
+            if ((bExport && CardMakerSettings.PrintLayoutBorder && bLayoutDrawBorder)
+                || (!bExport && bLayoutDrawBorder))
+            {
+                // note that the border is inclusive in the width/height consuming 2 pixels (0 to total-1)
+                zGraphics.DrawRectangle(Pens.Black, nX, nY, nWidth - 1, nHeight - 1);
+            }
         }
 
         /// <summary>

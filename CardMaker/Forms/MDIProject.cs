@@ -36,7 +36,7 @@ using CardMaker.Events.Managers;
 using CardMaker.Forms.Dialogs;
 using CardMaker.Properties;
 using CardMaker.XML;
-using Support.Google;
+using Support.Google.Sheets;
 using Support.IO;
 using Support.UI;
 using LayoutEventArgs = CardMaker.Events.Args.LayoutEventArgs;
@@ -351,17 +351,18 @@ namespace CardMaker.Forms
                 return;
             }
 
-            var zDialog = new GoogleSpreadsheetBrowser(GoogleReferenceReader.APP_NAME, GoogleReferenceReader.CLIENT_ID,
-                CardMakerInstance.GoogleAccessToken, true);
+            var zDialog = new GoogleSpreadsheetBrowser(new GoogleSpreadsheet(CardMakerInstance.GoogleInitializerFactory), true);
             if (DialogResult.OK == zDialog.ShowDialog(this))
             {
                 var bNewDefault = 0 == treeView.SelectedNode.Nodes.Count;
                 var zLayout = (ProjectLayout)treeView.SelectedNode.Tag;
+                var zGoogleSpreadsheetReference = new GoogleSpreadsheetReference(zDialog.SelectedSpreadsheet)
+                {
+                    SheetName = zDialog.SelectedSheet
+                };
                 var tnReference = AddReferenceNode(
                     treeView.SelectedNode,
-                    CardMakerConstants.GOOGLE_REFERENCE + CardMakerConstants.GOOGLE_REFERENCE_SPLIT_CHAR +
-                    zDialog.SelectedSpreadsheet.Title.Text + CardMakerConstants.GOOGLE_REFERENCE_SPLIT_CHAR +
-                    zDialog.SelectedSheet.Title.Text,
+                    zGoogleSpreadsheetReference.generateFullReference(),
                     bNewDefault,
                     zLayout);
                 if (null == tnReference)
@@ -439,6 +440,7 @@ namespace CardMaker.Forms
             const string ROTATION = "ROTATION";
             const string EXPORT_WIDTH = "EXPORT_WIDTH";
             const string EXPORT_HEIGHT = "EXPORT_HEIGHT";
+            const string EXPORT_CROP = "EXPORT_CROP";
             const string EXPORT_TRANSPARENT = "EXPORT_TRANSPARENT";
             const string EXPORT_PDF_AS_PAGE_BACK = "EXPORT_PDF_AS_PAGE_BACK";
 
@@ -487,6 +489,9 @@ namespace CardMaker.Forms
                     0, 65536, EXPORT_WIDTH);
                 var numericExportHeight = zQuery.AddNumericBox("Export Height", zProjectLayout.exportHeight,
                     0, 65536, EXPORT_HEIGHT);
+
+                zQuery.AddTextBox("Export Crop Definition", zProjectLayout.exportCropDefinition, false, EXPORT_CROP);
+
                 zQuery.AddCheckBox("Export Transparent Background", zProjectLayout.exportTransparentBackground,
                     EXPORT_TRANSPARENT);
 
@@ -518,6 +523,7 @@ namespace CardMaker.Forms
                     zProjectLayout.exportRotation = int.Parse(zQuery.GetString(ROTATION));
                     zProjectLayout.exportWidth = int.Parse(zQuery.GetString(EXPORT_WIDTH));
                     zProjectLayout.exportHeight = int.Parse(zQuery.GetString(EXPORT_HEIGHT));
+                    zProjectLayout.exportCropDefinition = zQuery.GetString(EXPORT_CROP);
                     zProjectLayout.exportTransparentBackground = zQuery.GetBool(EXPORT_TRANSPARENT);
                     zProjectLayout.exportPDFAsPageBack = zQuery.GetBool(EXPORT_PDF_AS_PAGE_BACK);
                 }
@@ -585,7 +591,7 @@ namespace CardMaker.Forms
             });
         }
 
-        #endregion
+#endregion
 
         /// <summary>
         /// Updates the selected layout node color (if applicable)

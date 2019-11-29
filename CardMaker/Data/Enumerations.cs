@@ -78,13 +78,16 @@ namespace CardMaker.Data
         PrintPageHorizontalMargin,
         PrintAutoCenterLayout,
         PrintLayoutBorder,
+        AutoSaveEnabled,
+        AutoSaveIntervalMinutes,
         LastImageExportFormat,
         PrintLayoutsOnNewPage,
         EnableGoogleCache,
         DefaultTranslator,
         ExportSkipStitchIndex,
         DefineTranslatePrimitiveCharacters,
-        LogInceptTranslation
+        LogInceptTranslation,
+        ShowCanvasXY
     }
 
     public enum ExportType

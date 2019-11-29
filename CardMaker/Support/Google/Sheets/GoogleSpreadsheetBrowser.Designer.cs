@@ -22,7 +22,7 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace Support.Google
+namespace Support.Google.Sheets
 {
     partial class GoogleSpreadsheetBrowser
     {

@@ -100,8 +100,11 @@ namespace CardMaker.Card.FormattedText.Markup
             return true;
         }
 
-        public static RectangleF MeasureDisplayStringWidth(Graphics graphics, string text, Font font)
+        public static RectangleF MeasureDisplayStringWidth(Graphics zGraphics, string text, Font font)
         {
+            // measurements should be performed at the reset transform
+            var matrixOriginalTransform = zGraphics.Transform;
+            zGraphics.ResetTransform();
             var zFormat = new StringFormat
             {
                 Alignment = StringAlignment.Near,
@@ -113,9 +116,9 @@ namespace CardMaker.Card.FormattedText.Markup
 
             zFormat.SetMeasurableCharacterRanges(ranges);
 
-            regions = graphics.MeasureCharacterRanges(text, font, rect, zFormat);
-            rect = regions[0].GetBounds(graphics);
-
+            regions = zGraphics.MeasureCharacterRanges(text, font, rect, zFormat);
+            rect = regions[0].GetBounds(zGraphics);
+            zGraphics.Transform = matrixOriginalTransform;
             return rect;
         }
 

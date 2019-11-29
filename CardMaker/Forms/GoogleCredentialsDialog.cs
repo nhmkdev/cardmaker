@@ -47,6 +47,11 @@ namespace CardMaker.Forms
             DialogResult = DialogResult.OK;
         }
 
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            DialogResult = DialogResult.Cancel;
+        }
+
         private void btnBrowse_Click(object sender, EventArgs e)
         {
             Process.Start(GOOGLE_AUTH_URL);

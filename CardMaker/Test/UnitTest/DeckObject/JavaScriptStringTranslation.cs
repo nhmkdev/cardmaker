@@ -163,7 +163,7 @@ namespace UnitTest.DeckObject
             return _testDeck.CardCount;
         }
 
-        [TestCase("'\\\\c'", ExpectedResult=",")]
+        [TestCase("'\\\\c'", ExpectedResult = ",")]
         [TestCase("'\\\\q'", ExpectedResult = "\"")]
         [TestCase("'&gt;'", ExpectedResult = ">")]
         [TestCase("'&lt;'", ExpectedResult = "<")]

@@ -28,7 +28,7 @@ using CardMaker.Card.Import;
 using CardMaker.Data;
 using CardMaker.Events.Managers;
 using CardMaker.Properties;
-using Support.Google;
+using Support.Google.Sheets;
 using Support.UI;
 
 namespace CardMaker.Forms.Dialogs
@@ -63,12 +63,15 @@ namespace CardMaker.Forms.Dialogs
                 {
                     if (GoogleAuthManager.CheckGoogleCredentials(parentForm))
                     {
-                        return new GoogleSpreadsheetBrowser(GoogleReferenceReader.APP_NAME, GoogleReferenceReader.CLIENT_ID,
-                            CardMakerInstance.GoogleAccessToken, false);
+                        return new GoogleSpreadsheetBrowser(new GoogleSpreadsheet(CardMakerInstance.GoogleInitializerFactory), false);
                     }
                     return null;
                 },
-                (zGoogleSpreadsheetBrowser, txtOverride) => { txtOverride.Text = zGoogleSpreadsheetBrowser.SelectedSpreadsheet.Title.Text; },
+                (zGoogleSpreadsheetBrowser, txtOverride) =>
+                {
+                    txtOverride.Text = new GoogleSpreadsheetReference(zGoogleSpreadsheetBrowser.SelectedSpreadsheet)
+                        .generateSpreadsheetReference();
+                },
                 OVERRIDE_DEFINE_REFRENCE_NAME);
 
             zQuery.ChangeToTab("Javascript");

@@ -45,7 +45,7 @@ namespace Support.UI
 
 	    public string LoadedFile => m_sLoadedFile;
 
-	    protected bool Dirty { get; private set; }
+	    public bool Dirty { get; private set; }
 
 		/// <summary>
 		/// This method should have an override that performs the save of the data to the file.
@@ -127,7 +127,7 @@ namespace Support.UI
 		/// <summary>
 		/// Initializes the Open process via the OpenFileDialog
 		/// </summary>
-		protected void InitOpen()
+		public void InitOpen()
 		{
             if(IsOpenCanceledByDirty()) return;
 
@@ -163,7 +163,7 @@ namespace Support.UI
 		/// </summary>
 		/// <param name="sFileName">The file to open the data from</param>
 		/// <returns>true on success, false otherwise</returns>
-		protected bool InitOpen(string sFileName)
+		public bool InitOpen(string sFileName)
 		{
 		    if (IsOpenCanceledByDirty()) return false;
 
@@ -221,7 +221,7 @@ namespace Support.UI
         /// Initializes the Save / Save As dialog
         /// </summary>
         /// <param name="bForceSaveAs"></param>
-		protected void InitSave(bool bForceSaveAs)
+		public void InitSave(bool bForceSaveAs)
 		{
 
             if (string.IsNullOrEmpty(m_sLoadedFile) || bForceSaveAs)

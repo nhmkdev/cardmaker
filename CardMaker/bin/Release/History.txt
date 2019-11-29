@@ -1,5 +1,14 @@
 Card Maker Version History
 --------------------------
+1.1.0.0
+- Changed border functionality on export to apply if both border is enabled on the layout and border export is enabled in the general settings
+- Added support for the non-deprecated Google Sheets API
+- Added support for AutoSave (Disabled by default, can toggle with Ctrl+T)
+
+1.0.1.0
+- Added Crop Export Definition (for PDF to start with) allowing for cropped outputs.
+- Added an optional x/y display to the Canvas form.
+
 1.0.0.2
 - Updated handling for outlines and opacity.
 - Fixed a old bug related to the properties field and the shape element definition

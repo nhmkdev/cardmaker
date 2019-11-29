@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System.Xml.Serialization;
+using CardMaker.Card.Import;
 using CardMaker.Data;
 
 namespace CardMaker.XML
@@ -64,7 +65,7 @@ namespace CardMaker.XML
                     continue;
                 foreach (var zReference in zLayout.Reference)
                 {
-                    if (zReference.RelativePath.StartsWith(CardMakerConstants.GOOGLE_REFERENCE))
+                    if (zReference.RelativePath.StartsWith(GoogleSpreadsheetReference.GOOGLE_REFERENCE))
                     {
                         return true;
                     }

@@ -26,7 +26,7 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using CardMaker.Card;
+using Support.Google;
 
 namespace CardMaker.Data
 {
@@ -88,7 +88,16 @@ namespace CardMaker.Data
         /// <summary>
         /// The current Google access token
         /// </summary>
-        public static string GoogleAccessToken { get; set; }
+        public static string GoogleAccessToken
+        {
+            get => GoogleInitializerFactory.AccessToken;
+            set => GoogleInitializerFactory.AccessToken = value;
+        }
+
+        /// <summary>
+        /// The GoogleInitializerFactory
+        /// </summary>
+        public static GoogleInitializerFactory GoogleInitializerFactory { get; set; }
 
         /// <summary>
         /// The project file indicated on the command line (first argument)
@@ -138,6 +147,7 @@ namespace CardMaker.Data
             DrawSelectedElementGuides = true;
             DrawSelectedElementRotationBounds = true;
             GoogleCredentialsInvalid = false;
+            GoogleInitializerFactory = new GoogleInitializerFactory(CardMakerConstants.APPLICATION_NAME, CardMakerConstants.GOOGLE_CLIENT_ID, CardMakerConstants.GOOGLE_SCOPES);
             GoogleAccessToken = null;
             ProcessingUserAction = false;
             Random = new Random();

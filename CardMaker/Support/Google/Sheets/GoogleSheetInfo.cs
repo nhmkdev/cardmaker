@@ -22,28 +22,11 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Drawing;
-using System.Text;
-using Google.Apis.Drive.v3;
-using Google.Apis.Sheets.v4;
-
-namespace CardMaker.Data
+namespace Support.Google.Sheets
 {
-    public static class CardMakerConstants
+    public class GoogleSheetInfo
     {
-        public const string APPLICATION_NAME = "CardMaker";
-        public static readonly Encoding XML_ENCODING = Encoding.UTF8;
-        public const string VISIBLE_SETTING = ".visible";
-        public const char CHAR_FILE_SPLIT = '|';
-        public const int MAX_RECENT_PROJECTS = 10;
-        public const string GOOGLE_CACHE_FILE = ".CardMakerGoogleCache.dat";
-        public static readonly Color NoColor = Color.FromArgb(0, 0, 0, 0);
-
-        // Google connectivity constants
-        public const string GOOGLE_CLIENT_ID = "455195524701-cmdvv6fl5ru9uftin99kjmhojt36mnm9.apps.googleusercontent.com";
-
-        public static readonly string[] GOOGLE_SCOPES = new string[]
-            {SheetsService.Scope.SpreadsheetsReadonly, DriveService.Scope.DriveReadonly};
-
+        public string Name { get; set; }
+        public string Id { get; set; }
     }
 }

@@ -114,7 +114,7 @@ namespace UnitTest.DeckObject
         [TestCase("#(if a == a then word else word2)#", ExpectedResult = "word")]
         [TestCase("#(if a == b then word else word2)#", ExpectedResult = "word2")]
         [TestCase("#(if a == b then word else word2)# midword #(if c == d then chowder)#", ExpectedResult = "word2 midword ")]
-        [TestCase("#(if 2 > 0 then Deploy Roll: +2)# Deploy Success: +1pt#(switch;+1;+1;;-1;;#default;s)##(if DBA == then #nodraw)#", ExpectedResult= "Deploy Roll: +2 Deploy Success: +1pt")]
+        [TestCase("#(if 2 > 0 then Deploy Roll: +2)# Deploy Success: +1pt#(switch;+1;+1;;-1;;#default;s)##(if DBA == then #nodraw)#", ExpectedResult = "Deploy Roll: +2 Deploy Success: +1pt")]
         [TestCase("#(if 1.000 > 1 then A else B)#", ExpectedResult = "B")]
         [TestCase("#(if 1,000 > 1 then A else B)#", ExpectedResult = "B")]
         [TestCase("#(if 1.100 > 1 then A else B)#", ExpectedResult = "A")]
@@ -314,7 +314,7 @@ namespace UnitTest.DeckObject
             return _testDeck.CardCount;
         }
 
-        [TestCase("\\c", ExpectedResult=",")]
+        [TestCase("\\c", ExpectedResult = ",")]
         [TestCase("\\q", ExpectedResult = "\"")]
         [TestCase("&gt;", ExpectedResult = ">")]
         [TestCase("&lt;", ExpectedResult = "<")]

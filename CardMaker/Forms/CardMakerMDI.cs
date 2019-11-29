@@ -32,7 +32,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using CardMaker.Card;
 using CardMaker.Card.Export;
 using CardMaker.Card.Shapes;
 using CardMaker.Card.Translation;
@@ -56,6 +55,9 @@ namespace CardMaker.Forms
         private string m_sPdfExportLastFile = "";
         private bool m_bPdfExportLastOpen;
         private int m_nPdfExportLastOrientationIndex;
+
+        // forms
+        private MDICanvas m_zMDICanvas;
 
         public CardMakerMDI()
         {
@@ -91,12 +93,14 @@ namespace CardMaker.Forms
 
             ExportManager.Instance.ExportRequested += Export_Requested;
 
+            AutoSaveManager.Instance.Init(this);
+
             // Same handler for both events
             GoogleAuthManager.Instance.GoogleAuthUpdateRequested += GoogleAuthUpdate_Requested;
             GoogleAuthManager.Instance.GoogleAuthCredentialsError += GoogleAuthUpdate_Requested;
 
             // Setup all the child dialogs
-            var zCanvasForm = SetupMDIForm(new MDICanvas(), true);
+            m_zMDICanvas = SetupMDIForm(new MDICanvas(), true);
             var zElementForm = SetupMDIForm(new MDIElementControl(), true);
             var zLayoutForm = SetupMDIForm(new MDILayoutControl(), true);
             var zProjectForm = SetupMDIForm(new MDIProject(), true);
@@ -170,8 +174,8 @@ namespace CardMaker.Forms
             {
                 Logger.AddLogLine("Restored default form layout.");
 #if MONO_BUILD
-                zCanvasForm.Size = new Size(457, 300);
-                zCanvasForm.Location = new Point(209, 5);
+                m_zMDICanvas.Size = new Size(457, 300);
+                m_zMDICanvas.Location = new Point(209, 5);
                 zElementForm.Size = new Size(768, 379);
                 zElementForm.Location = new Point(3, 310);
                 zLayoutForm.Size = new Size(300, 352);
@@ -181,8 +185,8 @@ namespace CardMaker.Forms
                 zLoggerForm.Size = new Size(403, 117);
                 zLoggerForm.Location = new Point(789, 571);
 #else
-                zCanvasForm.Size = new Size(557, 300);
-                zCanvasForm.Location = new Point(209, 5);
+                m_zMDICanvas.Size = new Size(557, 300);
+                m_zMDICanvas.Location = new Point(209, 5);
                 zElementForm.Size = new Size(756, 339);
                 zElementForm.Location = new Point(3, 310);
                 zLayoutForm.Size = new Size(300, 352);
@@ -367,6 +371,12 @@ namespace CardMaker.Forms
             redoToolStripMenuItem.Enabled = 0 < UserAction.RedoCount;
         }
 
+        private void toggleAutoSaveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AutoSaveManager.Instance.ToggleAutoSave();
+            m_zMDICanvas.UpdateFormText();
+        }
+
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var zQuery = new QueryPanelDialog(
@@ -390,6 +400,7 @@ namespace CardMaker.Forms
                 new string[] { TranslatorType.Incept.ToString(), TranslatorType.JavaScript.ToString() }, (int)CardMakerSettings.DefaultTranslatorType, IniSettings.DefaultTranslator);
             zQuery.AddCheckBox("Log Incept Translation", CardMakerSettings.LogInceptTranslation,
                 IniSettings.LogInceptTranslation);
+            zQuery.AddCheckBox("Show Canvas Mouse Location", CardMakerSettings.ShowCanvasXY, IniSettings.ShowCanvasXY);
 
 #if !MONO_BUILD
             zQuery.AddTab("PDF Export");
@@ -404,6 +415,11 @@ namespace CardMaker.Forms
             zQuery.AddNumericBox("Page Vertical Margin", CardMakerSettings.PrintPageVerticalMargin, 0, 1024, 0.01m, 2, IniSettings.PrintPageVerticalMargin);
             zQuery.AddCheckBox("Auto-Center Layouts on Page", CardMakerSettings.PrintAutoHorizontalCenter, IniSettings.PrintAutoCenterLayout);
             zQuery.AddCheckBox("Print Layouts On New Page", CardMakerSettings.PrintLayoutsOnNewPage, IniSettings.PrintLayoutsOnNewPage);
+
+            zQuery.AddTab("AutoSave");
+            zQuery.AddCheckBox("Enable AutoSave", CardMakerSettings.AutoSaveEnabled, IniSettings.AutoSaveEnabled);
+            zQuery.AddNumericBox("AutoSave Interval (Minutes)", CardMakerSettings.AutoSaveIntervalMinutes, 1, 60, 1, 0, IniSettings.AutoSaveIntervalMinutes);
+
             zQuery.SetIcon(Icon);
 
             if (DialogResult.OK == zQuery.ShowDialog(this))
@@ -418,6 +434,9 @@ namespace CardMaker.Forms
                 CardMakerSettings.PrintLayoutsOnNewPage = zQuery.GetBool(IniSettings.PrintLayoutsOnNewPage);
                 CardMakerSettings.DefaultTranslatorType = (TranslatorType)zQuery.GetIndex(IniSettings.DefaultTranslator);
                 CardMakerSettings.LogInceptTranslation = zQuery.GetBool(IniSettings.LogInceptTranslation);
+                CardMakerSettings.ShowCanvasXY = zQuery.GetBool(IniSettings.ShowCanvasXY);
+                CardMakerSettings.AutoSaveIntervalMinutes = (int)zQuery.GetDecimal(IniSettings.AutoSaveIntervalMinutes);
+                AutoSaveManager.Instance.EnableAutoSave(zQuery.GetBool(IniSettings.AutoSaveEnabled));
 
                 var bWasGoogleCacheEnabled = CardMakerSettings.EnableGoogleCache;
                 CardMakerSettings.EnableGoogleCache = zQuery.GetBool(IniSettings.EnableGoogleCache);
@@ -853,7 +872,7 @@ namespace CardMaker.Forms
             }
         }
 
-        private Form SetupMDIForm(Form zForm, bool bDefaultShow)
+        private T SetupMDIForm<T>(T zForm, bool bDefaultShow) where T : Form
         {
             zForm.MdiParent = this;
             bool bShow;
