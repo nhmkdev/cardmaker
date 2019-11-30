@@ -121,6 +121,10 @@ namespace CardMaker.Card.Import
                     {
                         rowData.Add(cell.Value2.ToString());
                     }
+                    else
+                    {
+                        rowData.Add("");
+                    }
                 }
                 listExcelData.Add(rowData);
             }
@@ -154,23 +158,14 @@ namespace CardMaker.Card.Import
                 return;
             }
 
-            GetData(GetDefinesReference(), listDefineData, true);
+            ExcelSpreadsheetReference zExcelSpreadSheetReference = ExcelSpreadsheetReference.parse(zReference.RelativePath);
+            zExcelSpreadSheetReference.SheetName = DEFAULT_DEFINES_SHEET_NAME;
+            GetData(zExcelSpreadSheetReference, listDefineData, true);
         }
 
         public void GetReferenceData(ProjectLayoutReference zReference, List<List<string>> listReferenceData)
         {
             GetData(ExcelSpreadsheetReference.parse(ReferencePath), listReferenceData, false);
-        }
-
-        private static ExcelSpreadsheetReference GetDefinesReference()
-        {
-            var zExcelSpreadSheetReference = ExcelSpreadsheetReference.parseSpreadsheetOnlyReference(
-                (string.IsNullOrEmpty(ProjectManager.Instance.LoadedProject.overrideDefineReferenceName)
-                    ? Path.GetFileNameWithoutExtension(ProjectManager.Instance.ProjectFilePath)
-                    : ProjectManager.Instance.LoadedProject.overrideDefineReferenceName)
-            );
-            zExcelSpreadSheetReference.SheetName = DEFAULT_DEFINES_SHEET_NAME;
-            return zExcelSpreadSheetReference;
         }
     }
 }
