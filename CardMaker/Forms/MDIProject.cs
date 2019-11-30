@@ -365,6 +365,7 @@ namespace CardMaker.Forms
                 }
                 xlApp.Quit();
 
+                // Let the user select a sheet from the spreadsheet they selected
                 ExcelSheetSelectionDialog dialog = new ExcelSheetSelectionDialog(sheets);
                 if(dialog.ShowDialog() == DialogResult.OK)
                 {

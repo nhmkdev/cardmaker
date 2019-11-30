@@ -44,6 +44,7 @@ namespace CardMaker.Card.Import
             // Taken from CSV reader
             var previousCurrentDirectory = Directory.GetCurrentDirectory();
 
+            // TODO: May need to parse the reference properly first, and store that information
             if (null != ProjectManager.Instance.ProjectPath && Directory.Exists(ProjectManager.Instance.ProjectPath))
             {
                 Directory.SetCurrentDirectory(ProjectManager.Instance.ProjectPath);
