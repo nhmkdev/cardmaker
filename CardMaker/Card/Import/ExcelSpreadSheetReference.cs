@@ -17,6 +17,10 @@ namespace CardMaker.Card.Import
         public string SheetName { get; set; }
 
         public ExcelSpreadsheetReference() { }
+        public ExcelSpreadsheetReference(string sFilename)
+        {
+            SpreadsheetFile = sFilename;
+        }
         public ExcelSpreadsheetReference(string sFilename, string sSheet)
         {
             SpreadsheetFile = sFilename;
@@ -36,6 +40,19 @@ namespace CardMaker.Card.Import
             }
 
             throw new Exception("Unable to read invalid Excel Spreadsheet reference.");
+        }
+
+        public static ExcelSpreadsheetReference parseSpreadsheetOnlyReference(string sInput)
+        {
+            if (string.IsNullOrWhiteSpace(sInput))
+                throw new Exception("Unable to read empty Excel Spreadsheet reference.");
+
+            var arrayComponents = sInput.Split(EXCEL_REFERENCE_SPLIT_CHAR);
+            if (arrayComponents.Length == 1)
+            {
+                return new ExcelSpreadsheetReference(arrayComponents[(int)ExcelSpreadsheetOnlyReferenceIndex.SpreadsheetFile]);
+            }
+            throw new Exception("Unable to read invalid Google Spreadsheet reference.");
         }
 
         public static string generateFullReference(string sSpreadsheetFile, string sSheetName)
