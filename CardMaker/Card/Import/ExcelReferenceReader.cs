@@ -27,9 +27,9 @@ using System.Collections.Generic;
 using System.IO;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
+using ClosedXML.Excel;
 using Support.IO;
 using System.Runtime.InteropServices;
-using ClosedXML.Excel;
 
 namespace CardMaker.Card.Import
 {
