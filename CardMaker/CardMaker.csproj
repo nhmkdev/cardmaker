@@ -66,6 +66,18 @@
     <Reference Include="ClearScript">
       <HintPath>..\3rdParty\ClearScript\ClearScript.dll</HintPath>
     </Reference>
+    <Reference Include="ClosedXML, Version=0.94.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ClosedXML.0.94.2\lib\net40\ClosedXML.dll</HintPath>
+    </Reference>
+    <Reference Include="DocumentFormat.OpenXml, Version=2.7.2.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocumentFormat.OpenXml.2.7.2\lib\net40\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
+    <Reference Include="ExcelNumberFormat, Version=1.0.3.0, Culture=neutral, PublicKeyToken=23c6f5d73be07eca, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelNumberFormat.1.0.3\lib\net20\ExcelNumberFormat.dll</HintPath>
+    </Reference>
+    <Reference Include="FastMember, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FastMember.1.3.0\lib\net40\FastMember.dll</HintPath>
+    </Reference>
     <Reference Include="Google.Apis, Version=1.10.0.25332, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Apis.1.10.0\lib\net40\Google.Apis.dll</HintPath>
     </Reference>
@@ -91,9 +103,6 @@
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Office.Interop.Excel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </Reference>
     <Reference Include="Microsoft.Threading.Tasks, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.dll</HintPath>
     </Reference>
@@ -143,6 +152,7 @@
     </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
     <Reference Include="Zlib.Portable, Version=1.11.0.0, Culture=neutral, PublicKeyToken=431cba815f6a8b5b, processorArchitecture=MSIL">
       <HintPath>..\packages\Zlib.Portable.Signed.1.11.0\lib\portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid\Zlib.Portable.dll</HintPath>
     </Reference>
@@ -445,7 +455,9 @@
       <DependentUpon>RGBColorSelectDialog.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.config" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -517,11 +529,11 @@
     </PreBuildEvent>
     <PostBuildEvent>IF $(ConfigurationName) == Release (
     DEL "$(SolutionDir)$(OutDir)*.zip"
-    COPY "$(SolutionDir)\3rdParty\GoogleDataAPI\GData-LICENSE-2.0.txt" "$(TargetDir)\Licenses"
-    COPY "$(SolutionDir)\3rdParty\PDFSharp\PDFSharp-License.txt" "$(TargetDir)\Licenses"
-    COPY "$(SolutionDir)\3rdParty\ClearScript\*.license" "$(TargetDir)\Licenses"
-    COPY "$(SolutionDir)\3rdParty\ClearScript\ClearScriptV8*" "$(TargetDir)"
-    COPY "$(SolutionDir)\3rdParty\ClearScript\v8*" "$(TargetDir)"
+    COPY /Y "$(SolutionDir)\3rdParty\GoogleDataAPI\GData-LICENSE-2.0.txt" "$(TargetDir)\Licenses"
+    COPY /Y "$(SolutionDir)\3rdParty\PDFSharp\PDFSharp-License.txt" "$(TargetDir)\Licenses"
+    COPY /Y "$(SolutionDir)\3rdParty\ClearScript\*.license" "$(TargetDir)\Licenses"
+    COPY /Y "$(SolutionDir)\3rdParty\ClearScript\ClearScriptV8*" "$(TargetDir)"
+    COPY /Y "$(SolutionDir)\3rdParty\ClearScript\v8*" "$(TargetDir)"
     "C:\Program Files\7-Zip\7z" a "$(TargetDir)CardMaker_X.X.X.X.zip" "$(TargetDir)CardMaker.ex*" "$(TargetDir)CardMaker_Mono.ex*" "$(TargetDir)*.dll" "$(TargetDir)Card_Maker.pdf"     "$(TargetDir)Card_Maker_Basic_Project.pdf"  "$(TargetDir)Card_Maker_JavaScript.pdf" "$(TargetDir)Sample" "$(TargetDir)Readme.txt" "$(TargetDir)History.txt" "$(TargetDir)Licenses"     "$(TargetDir)images" "$(TargetDir)templates" -tzip -mx5
 ) ELSE (
   echo "Debug Build. Nothing to do!"

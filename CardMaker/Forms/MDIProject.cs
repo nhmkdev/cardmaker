@@ -36,7 +36,7 @@ using CardMaker.Events.Managers;
 using CardMaker.Forms.Dialogs;
 using CardMaker.Properties;
 using CardMaker.XML;
-using Excel = Microsoft.Office.Interop.Excel;
+using ClosedXML.Excel;
 using Support.Google.Sheets;
 using Support.IO;
 using Support.UI;
@@ -355,15 +355,15 @@ namespace CardMaker.Forms
             var sFile = FormUtils.FileOpenHandler("Excel files (*.xlsx)|*.xlsx|All files (*.*)|*.*", null, true);
             if (null != sFile)
             {
+                // Open File
+                var workbook = new XLWorkbook(sFile);
+
                 // Grab all the sheet names
-                Excel.Application xlApp = new Excel.Application();
-                Excel.Workbook xlWorkbook = xlApp.Workbooks.Open(sFile);
                 List<string> sheets = new List<string>();
-                foreach(Excel.Worksheet sheet in xlWorkbook.Worksheets)
+                foreach(IXLWorksheet sheet in workbook.Worksheets)
                 {
                     sheets.Add(sheet.Name);
                 }
-                xlApp.Quit();
 
                 // Let the user select a sheet from the spreadsheet they selected
                 ExcelSheetSelectionDialog dialog = new ExcelSheetSelectionDialog(sheets);

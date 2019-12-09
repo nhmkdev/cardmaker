@@ -27,9 +27,9 @@ using System.Collections.Generic;
 using System.IO;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
-using Excel = Microsoft.Office.Interop.Excel;
 using Support.IO;
 using System.Runtime.InteropServices;
+using ClosedXML.Excel;
 
 namespace CardMaker.Card.Import
 {
@@ -51,33 +51,6 @@ namespace CardMaker.Card.Import
 
         public void FinalizeReferenceLoad() { }
 
-        private void CleanUpExcel(Excel.Application xlApp, Excel.Workbook xlWorkbook, Excel.Worksheet xlWorksheet, Excel.Range xlRange)
-        {
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-
-            if (xlRange != null)
-            {
-                Marshal.ReleaseComObject(xlRange);
-            }
-
-            if (xlWorksheet != null)
-            {
-                Marshal.ReleaseComObject(xlWorksheet);
-            }
-
-            //close and release
-            if (xlWorkbook != null)
-            {
-                xlWorkbook.Close();
-                Marshal.ReleaseComObject(xlWorkbook);
-            }
-
-            //quit and release
-            xlApp.Quit();
-            Marshal.ReleaseComObject(xlApp);
-        }
-        
         public void GetData(ExcelSpreadsheetReference zReference, List<List<string>> listData, bool bRemoveFirstRow, string sNameAppend = "")
         {
             var sSpreadsheetName = zReference.SpreadsheetFile;
@@ -89,42 +62,36 @@ namespace CardMaker.Card.Import
                 return;
             }
 
-            Excel.Application xlApp = new Excel.Application();
-            Excel.Workbook xlWorkbook = xlApp.Workbooks.Open(sSpreadsheetName);
+            // Open the workbook
+            var workbook = new XLWorkbook(sSpreadsheetName);
 
-            Excel.Worksheet xlWorksheet = null;
-            foreach(Excel.Worksheet sheet in xlWorkbook.Worksheets)
+            // Get all worksheets and find the one referenced
+            IXLWorksheet worksheet = null;
+            foreach (IXLWorksheet sheet in workbook.Worksheets)
             {
                 if (sheet.Name == sSheetName)
                 {
-                    xlWorksheet = sheet;
+                    worksheet = sheet;
                     break;
                 }
             }
-            if (xlWorksheet == null)
+
+            if (worksheet == null)
             {
                 Logger.AddLogLine("Missing sheet from Excel Spreadsheet." + "[" + sSpreadsheetName + "," + sSheetName + "]");
-                CleanUpExcel(xlApp, xlWorkbook, null, null);
                 return;
             }
 
+            // Get all data for the given worksheet
+            // For empty rows put an empty string
             List<List<string>> listExcelData = new List<List<string>>();
-            Excel.Range xlUsedRange = xlWorksheet.UsedRange;
-
-            foreach(Excel.Range row in xlUsedRange.Rows)
+            IXLRange usedRange = worksheet.RangeUsed();
+            foreach (IXLRangeRow row in usedRange.Rows())
             {
                 List<string> rowData = new List<string>();
-                for (int colIdx = 0; colIdx < row.Columns.Count; colIdx++)
+                foreach(IXLCell cell in row.Cells())
                 {
-                    var cell = row.Cells[1, colIdx + 1];
-                    if (cell.Value2 != null)
-                    {
-                        rowData.Add(cell.Value2.ToString());
-                    }
-                    else
-                    {
-                        rowData.Add("");
-                    }
+                    rowData.Add(cell.Value.ToString());
                 }
                 listExcelData.Add(rowData);
             }
@@ -142,8 +109,6 @@ namespace CardMaker.Card.Import
 
                 listData.AddRange(listExcelData);
             }
-
-            CleanUpExcel(xlApp, xlWorkbook, xlWorksheet, xlUsedRange);
         }
 
         public void GetDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData)
