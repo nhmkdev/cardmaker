@@ -36,6 +36,7 @@ using CardMaker.Events.Managers;
 using CardMaker.Forms.Dialogs;
 using CardMaker.Properties;
 using CardMaker.XML;
+using ClosedXML.Excel;
 using Support.Google.Sheets;
 using Support.IO;
 using Support.UI;
@@ -321,11 +322,8 @@ namespace CardMaker.Forms
             LayoutManager.ShowAdjustLayoutSettingsDialog(true, (ProjectLayout)treeView.SelectedNode.Tag, this);
         }
 
-        private void addReferenceToolStripMenuItem_Click(object sender, EventArgs e)
+        private void tryToAddReferenceNode(string sFile)
         {
-            var sFile = FormUtils.FileOpenHandler("CSV files (*.csv)|*.csv|All files (*.*)|*.*", null, true);
-            if (null != sFile)
-            {
                 var zLayout = (ProjectLayout)treeView.SelectedNode.Tag;
                 var bNewDefault = 0 == treeView.SelectedNode.Nodes.Count;
                 var tnReference = AddReferenceNode(treeView.SelectedNode, sFile, bNewDefault, zLayout);
@@ -338,9 +336,41 @@ namespace CardMaker.Forms
                 {
                     tnReference.Parent.Expand();
                     LayoutManager.Instance.RefreshActiveLayout();
-
+                    LayoutManager.Instance.FireLayoutUpdatedEvent(true);
                 }
                 ProjectManager.Instance.FireProjectUpdated(true);
+        }
+
+        private void addReferenceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var sFile = FormUtils.FileOpenHandler("CSV files (*.csv)|*.csv|All files (*.*)|*.*", null, true);
+            if (null != sFile)
+            {
+                tryToAddReferenceNode(sFile);
+            }
+        }
+
+        private void addExcelReferenceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var sFile = FormUtils.FileOpenHandler("Excel files (*.xlsx)|*.xlsx|All files (*.*)|*.*", null, true);
+            if (null != sFile)
+            {
+                // Open File
+                var workbook = new XLWorkbook(sFile);
+
+                // Grab all the sheet names
+                List<string> sheets = new List<string>();
+                foreach(IXLWorksheet sheet in workbook.Worksheets)
+                {
+                    sheets.Add(sheet.Name);
+                }
+
+                // Let the user select a sheet from the spreadsheet they selected
+                ExcelSheetSelectionDialog dialog = new ExcelSheetSelectionDialog(sheets);
+                if(dialog.ShowDialog() == DialogResult.OK)
+                {
+                    tryToAddReferenceNode(ExcelSpreadsheetReference.generateFullReference(sFile, dialog.GetSelectedSheet()));
+                }
             }
         }
 
@@ -354,29 +384,11 @@ namespace CardMaker.Forms
             var zDialog = new GoogleSpreadsheetBrowser(new GoogleSpreadsheet(CardMakerInstance.GoogleInitializerFactory), true);
             if (DialogResult.OK == zDialog.ShowDialog(this))
             {
-                var bNewDefault = 0 == treeView.SelectedNode.Nodes.Count;
-                var zLayout = (ProjectLayout)treeView.SelectedNode.Tag;
                 var zGoogleSpreadsheetReference = new GoogleSpreadsheetReference(zDialog.SelectedSpreadsheet)
                 {
                     SheetName = zDialog.SelectedSheet
                 };
-                var tnReference = AddReferenceNode(
-                    treeView.SelectedNode,
-                    zGoogleSpreadsheetReference.generateFullReference(),
-                    bNewDefault,
-                    zLayout);
-                if (null == tnReference)
-                {
-                    MessageBox.Show(this, "The specified reference is already associated with this layout.", "Reference Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-                if (bNewDefault)
-                {
-                    tnReference.Parent.Expand();
-                    LayoutManager.Instance.RefreshActiveLayout();
-                    LayoutManager.Instance.FireLayoutUpdatedEvent(true);
-                }
-                ProjectManager.Instance.FireProjectUpdated(true);            
+                tryToAddReferenceNode(zGoogleSpreadsheetReference.generateFullReference());
             }
         }
 

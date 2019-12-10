@@ -41,6 +41,12 @@ namespace CardMaker.Card.Import
                 var zReader = new GoogleReferenceReader(zReference);
                 return CardMakerInstance.GoogleCredentialsInvalid ? null : zReader;
             }
+
+            if (zReference.RelativePath.StartsWith(ExcelSpreadsheetReference.EXCEL_REFERENCE +
+                                                           ExcelSpreadsheetReference.EXCEL_REFERENCE_SPLIT_CHAR))
+            {
+                return new ExcelReferenceReader(zReference);
+            }
             return new CSVReferenceReader(zReference);
         }
 
@@ -52,6 +58,8 @@ namespace CardMaker.Card.Import
                     return new CSVReferenceReader();
                 case ReferenceType.Google:
                     return new GoogleReferenceReader();
+                case ReferenceType.Excel:
+                    return new ExcelReferenceReader();
             }
             return null;
         }            

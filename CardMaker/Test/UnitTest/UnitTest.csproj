@@ -118,8 +118,10 @@
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>COPY /Y $(SolutionDir)\3rdParty\ClearScript\ClearScriptV8* $(TargetDir)
-COPY /Y $(SolutionDir)\3rdParty\ClearScript\v8* $(TargetDir)</PostBuildEvent>
+    <PostBuildEvent>
+    COPY "$(SolutionDir)\3rdParty\ClearScript\ClearScriptV8*" "$(TargetDir)"
+COPY "$(SolutionDir)\3rdParty\ClearScript\v8*" "$(TargetDir)"
+</PostBuildEvent>
   </PropertyGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

@@ -107,6 +107,7 @@ namespace CardMaker.Data
     public enum ReferenceType
     {
         CSV = 0,
-        Google = 1
+        Google = 1,
+        Excel = 2
     }
 }
