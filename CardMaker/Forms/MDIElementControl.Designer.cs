@@ -338,7 +338,7 @@ namespace CardMaker.Forms
             // 
             // checkFontAutoScale
             // 
-            this.checkFontAutoScale.Location = new System.Drawing.Point(344, 32);
+            this.checkFontAutoScale.Location = new System.Drawing.Point(627, 30);
             this.checkFontAutoScale.Name = "checkFontAutoScale";
             this.checkFontAutoScale.Size = new System.Drawing.Size(97, 20);
             this.checkFontAutoScale.TabIndex = 45;

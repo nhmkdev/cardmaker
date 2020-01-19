@@ -4,6 +4,8 @@ Card Maker Version History
 - Changed border functionality on export to apply if both border is enabled on the layout and border export is enabled in the general settings
 - Added support for the non-deprecated Google Sheets API
 - Added support for AutoSave (Disabled by default, can toggle with Ctrl+T)
+- Support for loading excel files! (TheMikaus)
+- Added basic implementation of FormattedText auto-scale (only applies to main font size)
 
 1.0.1.0
 - Added Crop Export Definition (for PDF to start with) allowing for cropped outputs.

@@ -769,7 +769,7 @@ namespace CardMaker.Forms
                     break;
                 case ElementType.FormattedText:
                     tabControl.TabPages.Add(tabPageFont);
-                    checkFontAutoScale.Visible = false;
+                    checkFontAutoScale.Visible = true;
                     lblWordSpacing.Visible = true;
                     numericWordSpace.Visible = true;
                     numericLineSpace.Visible = true;
@@ -845,6 +845,9 @@ namespace CardMaker.Forms
                 LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElement.name));
 
             m_dictionaryControlActions.Add(checkJustifiedText, zElement =>
+                LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElement.name));
+
+            m_dictionaryControlActions.Add(checkFontAutoScale, zElement =>
                 LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElement.name));
         }
 
@@ -953,20 +956,37 @@ namespace CardMaker.Forms
         {
             if (null != zElement)
             {
+                var listControlsChanges = new List<Control>();
                 m_bFireElementChangeEvents = false;
-                numericElementX.Value = zElement.x;
-                numericElementY.Value = zElement.y;
-                numericElementW.Value = zElement.width;
-                numericElementH.Value = zElement.height;
-                numericElementRotation.Value = (decimal)zElement.rotation;
+                if (AssignNumericIfDifferent(numericElementX, zElement.x)) listControlsChanges.Add(numericElementX);
+                if (AssignNumericIfDifferent(numericElementY, zElement.y)) listControlsChanges.Add(numericElementY);
+                if (AssignNumericIfDifferent(numericElementW, zElement.width)) listControlsChanges.Add(numericElementW);
+                if (AssignNumericIfDifferent(numericElementH, zElement.height)) listControlsChanges.Add(numericElementH);
+                if (AssignNumericIfDifferent(numericElementRotation, (decimal)zElement.rotation)) listControlsChanges.Add(numericElementRotation);
                 m_bFireElementChangeEvents = true;
 
                 // TODO: if the value does not actually change this applies an update for no specific reason... (tbd)
-                PerformControlChangeActions(zElement, numericElementX, numericElementY, numericElementW, numericElementH, numericElementRotation);
+                PerformControlChangeActions(zElement, listControlsChanges.ToArray());
             }
             LayoutManager.Instance.FireLayoutUpdatedEvent(true);
         }
-        
+
+        /// <summary>
+        /// Assigns the specified value to the numeric if the numeric does not already have the value
+        /// </summary>
+        /// <param name="numericControl">The numeric to update</param>
+        /// <param name="nValue">The value to set on the numeric</param>
+        /// <returns>true if the value changed, false otherwise</returns>
+        private bool AssignNumericIfDifferent(NumericUpDown numericControl, decimal nValue)
+        {
+            if (numericControl.Value != nValue)
+            {
+                numericControl.Value = nValue;
+                return true;
+            }
+            return false;
+        }
+
         /// <summary>
         /// Perform any actions associated with the specified control using the element as a parameter
         /// </summary>
@@ -1038,7 +1058,7 @@ namespace CardMaker.Forms
                         checkJustifiedText.Visible = false;
                         break;
                     case ElementType.FormattedText:
-                        checkFontAutoScale.Visible = false;
+                        checkFontAutoScale.Visible = true;
                         lblWordSpacing.Visible = true;
                         numericWordSpace.Visible = true;
                         checkJustifiedText.Visible = true;
