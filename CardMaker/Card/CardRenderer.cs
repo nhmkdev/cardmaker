@@ -22,6 +22,7 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -178,12 +179,61 @@ namespace CardMaker.Card
         public static void DrawBorder(Graphics zGraphics, int nX, int nY, int nWidth, int nHeight, bool bLayoutDrawBorder, bool bExport)
         {
             // draw the card border
-            if ((bExport && CardMakerSettings.PrintLayoutBorder && bLayoutDrawBorder)
-                || (!bExport && bLayoutDrawBorder))
+            if (bExport
+                && CardMakerSettings.PrintLayoutBorder 
+                && bLayoutDrawBorder)
             {
-                // note that the border is inclusive in the width/height consuming 2 pixels (0 to total-1)
-                zGraphics.DrawRectangle(Pens.Black, nX, nY, nWidth - 1, nHeight - 1);
+                if (CardMakerSettings.PrintLayoutBorderCrossSize == 0)
+                {
+                    DrawSolidBorder(zGraphics, nX, nY, nWidth, nHeight);
+                }
+                else
+                {
+                    DrawBorderEdges(zGraphics, nX, nY, nWidth, nHeight);
+                }
             }
+            else if(!bExport && bLayoutDrawBorder)
+            {
+                DrawSolidBorder(zGraphics, nX, nY, nWidth, nHeight);
+            }
+        }
+
+        private static void DrawSolidBorder(Graphics zGraphics, int nX, int nY, int nWidth, int nHeight)
+        {
+            var nLastHorizontalPixel = nWidth - 1;
+            var nLastVerticalPixel = nHeight - 1;
+            zGraphics.DrawRectangle(Pens.Black, nX, nY, nLastHorizontalPixel, nLastVerticalPixel);
+        }
+
+        private static void DrawBorderEdges(Graphics zGraphics, int nX, int nY, int nWidth, int nHeight)
+        {
+            var nLastHorizontalPixel = nWidth - 1;
+            var nLastVerticalPixel = nHeight - 1;
+            var nDesiredLineEdgeSize = CardMakerSettings.PrintLayoutBorderCrossSize;
+
+            // UL
+            zGraphics.DrawLine(Pens.Black, nX, nY, Math.Min(nDesiredLineEdgeSize, nLastHorizontalPixel), nY);
+            zGraphics.DrawLine(Pens.Black, nX, nY, nX, Math.Min(nDesiredLineEdgeSize, nLastVerticalPixel));
+
+            // LL
+            zGraphics.DrawLine(Pens.Black, nX, nY + nLastVerticalPixel,
+                Math.Min(nDesiredLineEdgeSize, nLastHorizontalPixel), nY + nLastVerticalPixel);
+            zGraphics.DrawLine(Pens.Black, nX, nY + nLastVerticalPixel, nX,
+                nY + nLastVerticalPixel - Math.Min(nDesiredLineEdgeSize, nLastVerticalPixel));
+
+            // UR
+            zGraphics.DrawLine(Pens.Black, nX + nLastHorizontalPixel, nY,
+                nX + nLastHorizontalPixel - Math.Min(nDesiredLineEdgeSize, nLastVerticalPixel), nY);
+            zGraphics.DrawLine(Pens.Black, nX + nLastHorizontalPixel, nY, nX + nLastHorizontalPixel,
+                nY + Math.Min(nDesiredLineEdgeSize, nLastVerticalPixel));
+
+            // LR
+            zGraphics.DrawLine(Pens.Black, nX + nLastHorizontalPixel, nY + nLastVerticalPixel,
+                nX + nLastHorizontalPixel,
+                nY + nLastVerticalPixel - Math.Min(nDesiredLineEdgeSize, nLastVerticalPixel));
+            zGraphics.DrawLine(Pens.Black, nX + nLastHorizontalPixel, nY + nLastVerticalPixel,
+                nX + nLastHorizontalPixel - Math.Min(nDesiredLineEdgeSize, nLastHorizontalPixel),
+                nY + nLastVerticalPixel);
         }
 
         /// <summary>

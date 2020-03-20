@@ -1,6 +1,7 @@
 Card Maker Version History
 --------------------------
 1.1.0.0
+- Added ability to export with only crosses in the corners with layouts
 - Changed border functionality on export to apply if both border is enabled on the layout and border export is enabled in the general settings
 - Added support for the non-deprecated Google Sheets API
 - Added support for AutoSave (Disabled by default, can toggle with Ctrl+T)

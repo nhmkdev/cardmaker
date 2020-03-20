@@ -78,6 +78,7 @@ namespace CardMaker.Data
         PrintPageHorizontalMargin,
         PrintAutoCenterLayout,
         PrintLayoutBorder,
+        PrintLayoutBorderCrossSize,
         AutoSaveEnabled,
         AutoSaveIntervalMinutes,
         LastImageExportFormat,
