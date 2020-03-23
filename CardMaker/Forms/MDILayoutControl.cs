@@ -34,6 +34,7 @@ using CardMaker.Data;
 using CardMaker.Events.Args;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
+using Support.IO;
 using Support.UI;
 using LayoutEventArgs = CardMaker.Events.Args.LayoutEventArgs;
 
@@ -405,6 +406,49 @@ namespace CardMaker.Forms
         {
             if (0 < m_listClipboardElements.Count)
             {
+                Dictionary<string, ProjectLayoutElement> dictionaryExistingElements = null;
+                if (null != LayoutManager.Instance.ActiveLayout.Element)
+                {
+                    dictionaryExistingElements = LayoutManager.Instance.ActiveLayout.Element.ToDictionary(x => x.name);
+                }
+
+                if (dictionaryExistingElements != null)
+                {
+                    if (m_listClipboardElements.Exists(
+                        zElement => dictionaryExistingElements.ContainsKey(zElement.name)))
+                    {
+                        const string ELEMENT_NAMES = "ELEMENT_NAMES";
+                        var zQuery = new QueryPanelDialog("Duplicate Elements Rename", 400, false);
+                        zQuery.SetIcon(Properties.Resources.CardMakerIcon);
+                        zQuery.AddLabel("Each line has the name of an element to be pasted.", 24);
+                        zQuery.AddLabel("Duplicated element names are marked with *", 24);
+                        zQuery.AddMultiLineTextBox("Element Name(s)", 
+                            string.Join(Environment.NewLine, m_listClipboardElements.Select(zElement =>
+                            {
+                                return zElement.name + (dictionaryExistingElements.ContainsKey(zElement.name) ? "*" : "");
+                            }).ToList()), 
+                            200, 
+                            ELEMENT_NAMES);
+
+                        if (DialogResult.OK == zQuery.ShowDialog(this))
+                        {
+                            var arrayNames = zQuery.GetString(ELEMENT_NAMES)
+                                .Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+                            if (arrayNames.Length != m_listClipboardElements.Count)
+                            {
+                                MessageBox.Show(zQuery.Form,
+                                    "The number of elements names does not match the clipboard. Cancelling paste.", "", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                                return;
+                            }
+
+                            for (var nIdx = 0; nIdx < m_listClipboardElements.Count; nIdx++)
+                            {
+                                AddElements(new string[] { arrayNames [nIdx] }, m_listClipboardElements[nIdx]);
+                            }
+                        }
+                        return;
+                    }
+                }
                 m_listClipboardElements.ForEach(x => AddElements(new string[] { x.name }, x));
             }
         }
@@ -583,6 +627,7 @@ namespace CardMaker.Forms
                 string sTrimmed = sName.Trim();
                 if (m_dictionaryItems.ContainsKey(sTrimmed)) // no duplicates!
                 {
+                    Logger.AddLogLine("Unable to add duplicated element: {0}".FormatString(sTrimmed));
                     continue;
                 }
                 var zCardElement = new ProjectLayoutElement(sTrimmed);
