@@ -86,14 +86,19 @@ namespace CardMaker.Card.Import
             // For empty rows put an empty string
             List<List<string>> listExcelData = new List<List<string>>();
             IXLRange usedRange = worksheet.RangeUsed();
-            foreach (IXLRangeRow row in usedRange.Rows())
+            // empty sheets just return null
+            if (usedRange != null)
             {
-                List<string> rowData = new List<string>();
-                foreach(IXLCell cell in row.Cells())
+                foreach (IXLRangeRow row in usedRange.Rows())
                 {
-                    rowData.Add(cell.Value.ToString());
+                    List<string> rowData = new List<string>();
+                    foreach (IXLCell cell in row.Cells())
+                    {
+                        rowData.Add(cell.Value.ToString());
+                    }
+
+                    listExcelData.Add(rowData);
                 }
-                listExcelData.Add(rowData);
             }
 
             if (listExcelData.Count == 0)
