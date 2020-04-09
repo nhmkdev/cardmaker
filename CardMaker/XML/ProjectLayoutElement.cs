@@ -264,8 +264,14 @@ namespace CardMaker.XML
         /// <returns>The color, or Color.Black by default</returns>
         public static Color TranslateColorString(string sColor, int defaultAlpha = 255)
         {
+            var bSucceeded = false;
+            return TranslateColorString(sColor, defaultAlpha, out bSucceeded);
+        }
+        public static Color TranslateColorString(string sColor, int defaultAlpha, out bool bSucceeded)
+        {
             if (string.IsNullOrEmpty(sColor))
             {
+                bSucceeded = false;
                 return Color.Black;
             }
 
@@ -279,15 +285,17 @@ namespace CardMaker.XML
             // no named color will be set this way
             if (colorByName.A != 0)
             {
+                bSucceeded = true;
                 return colorByName;
             }
 
+            var colorResult = Color.Black;
             try
             {
                 switch (sColor.Length)
                 {
                     case 6: //0xRGB (hex RGB)
-                        return Color.FromArgb(
+                        colorResult = Color.FromArgb(
                             defaultAlpha,
                             Math.Min(255,
                                 Int32.Parse(sColor.Substring(0, 2), System.Globalization.NumberStyles.HexNumber)),
@@ -295,8 +303,9 @@ namespace CardMaker.XML
                                 Int32.Parse(sColor.Substring(2, 2), System.Globalization.NumberStyles.HexNumber)),
                             Math.Min(255,
                                 Int32.Parse(sColor.Substring(4, 2), System.Globalization.NumberStyles.HexNumber)));
+                        break;
                     case 8: //0xRGBA (hex RGBA)
-                        return Color.FromArgb(
+                        colorResult = Color.FromArgb(
                             Math.Min(255,
                                 Int32.Parse(sColor.Substring(6, 2), System.Globalization.NumberStyles.HexNumber)),
                             Math.Min(255,
@@ -305,25 +314,35 @@ namespace CardMaker.XML
                                 Int32.Parse(sColor.Substring(2, 2), System.Globalization.NumberStyles.HexNumber)),
                             Math.Min(255,
                                 Int32.Parse(sColor.Substring(4, 2), System.Globalization.NumberStyles.HexNumber)));
+                        break;
                     case 9: //RGB (int RGB)
-                        return Color.FromArgb(
+                        colorResult = Color.FromArgb(
                             defaultAlpha,
                             Math.Min(255, Int32.Parse(sColor.Substring(0, 3))),
                             Math.Min(255, Int32.Parse(sColor.Substring(3, 3))),
                             Math.Min(255, Int32.Parse(sColor.Substring(6, 3))));
+                        break;
                     case 12: //RGBA (int RGBA)
-                        return Color.FromArgb(
+                        colorResult = Color.FromArgb(
                             Math.Min(255, Int32.Parse(sColor.Substring(9, 3))),
                             Math.Min(255, Int32.Parse(sColor.Substring(0, 3))),
                             Math.Min(255, Int32.Parse(sColor.Substring(3, 3))),
                             Math.Min(255, Int32.Parse(sColor.Substring(6, 3))));
+                        break;
+                    default:
+                        bSucceeded = false;
+                        return colorResult;
                 }
+                bSucceeded = true;
+                return colorResult;
+
             }
             catch (Exception)
             {
                 Logger.AddLogLine("Unsupported color string found: " + sColor);
+                bSucceeded = false;
             }
-            return Color.Black;
+            return colorResult;
         }
 
         /// <summary>

@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using CardMaker.XML;
 
 namespace Support.UI
 {
@@ -165,14 +166,17 @@ namespace Support.UI
         }
 #endif
 
-        public void UpdateColorBox(Color colorCurrent)
+        public void UpdateColorBox(Color colorCurrent, object sender = null)
         {
             m_bEventsEnabled = false;
             numericRed.Value = colorCurrent.R;
             numericGreen.Value = colorCurrent.G;
             numericBlue.Value = colorCurrent.B;
             m_lastColor = colorCurrent;
-            UpdateColorHexText();
+            if (sender != txtHexColor)
+            {
+                UpdateColorHexText();
+            }
             panelColor.BackColor = colorCurrent;
 
             m_bEventsEnabled = true;
@@ -387,6 +391,18 @@ namespace Support.UI
             checkBoxAddZeroX.Checked = s_bZeroXChecked;
         }
 
+        private void txtHexColor_TextChanged(object sender, EventArgs e)
+        {
+            if (m_bEventsEnabled)
+            {
+                var bSucceeded = false;
+                var zColor = ProjectLayoutElement.TranslateColorString(txtHexColor.Text, 255, out bSucceeded);
+                if (bSucceeded)
+                {
+                    UpdateColorBox(zColor, txtHexColor);
+                }
+            }
+        }
     }
 
     class PictureBoxSelectable : PictureBox

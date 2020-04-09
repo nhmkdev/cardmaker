@@ -188,9 +188,9 @@ namespace Support.UI
             // 
             this.txtHexColor.Location = new System.Drawing.Point(85, 327);
             this.txtHexColor.Name = "txtHexColor";
-            this.txtHexColor.ReadOnly = true;
             this.txtHexColor.Size = new System.Drawing.Size(150, 20);
             this.txtHexColor.TabIndex = 15;
+            this.txtHexColor.TextChanged += new System.EventHandler(this.txtHexColor_TextChanged);
             // 
             // pictureYellowToRed
             // 
@@ -322,7 +322,7 @@ namespace Support.UI
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(466, 367);
+            this.ClientSize = new System.Drawing.Size(456, 353);
             this.Controls.Add(this.checkBoxAddZeroX);
             this.Controls.Add(this.txtHexColor);
             this.Controls.Add(this.panelPreviousColors);
