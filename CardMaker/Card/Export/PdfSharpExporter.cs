@@ -179,7 +179,7 @@ namespace CardMaker.Card.Export
                         CardRenderer.DrawPrintLineToGraphics(Graphics.FromImage(zBuffer), -rectCrop.X, -rectCrop.Y, true);
                         // if cropping the border needs to be drawn to the cropped size
                         if (rectCrop != Rectangle.Empty)
-                            CardRenderer.DrawBorder(Graphics.FromImage(zBuffer), 0, 0, zBuffer.Width, zBuffer.Height, CurrentDeck.CardLayout.drawBorder, true);
+                            CardRenderer.DrawBorder(Graphics.FromImage(zBuffer), 0, 0, zBuffer.Width, zBuffer.Height, CurrentDeck.CardLayout, true);
                     }
 
                     // apply any export rotation

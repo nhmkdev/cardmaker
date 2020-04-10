@@ -455,9 +455,11 @@ namespace CardMaker.Forms
             const string EXPORT_CROP = "EXPORT_CROP";
             const string EXPORT_TRANSPARENT = "EXPORT_TRANSPARENT";
             const string EXPORT_PDF_AS_PAGE_BACK = "EXPORT_PDF_AS_PAGE_BACK";
+            const string EXPORT_BORDER = "EXPORT_BORDER";
+            const string EXPORT_BORDER_CROSS_SIZE = "EXPORT_BORDER_CROSS_SIZE";
 
             Type typeObj = treeView.SelectedNode.Tag.GetType();
-            string sExistingFormat = string.Empty;
+            var sExistingFormat = string.Empty;
             var zQuery = new QueryPanelDialog("Configure Layout Export", 550, 300, false);
             zQuery.SetIcon(Resources.CardMakerIcon);
 
@@ -507,6 +509,9 @@ namespace CardMaker.Forms
                 zQuery.AddCheckBox("Export Transparent Background", zProjectLayout.exportTransparentBackground,
                     EXPORT_TRANSPARENT);
 
+                zQuery.AddCheckBox("Print/Export Layout Border", zProjectLayout.exportLayoutBorder, EXPORT_BORDER);
+                zQuery.AddNumericBox("Print/Export Layout Border Cross Size", zProjectLayout.exportLayoutBorderCrossSize, 0, int.MaxValue, 1, 0, EXPORT_BORDER_CROSS_SIZE);
+
                 numericColumns.ValueChanged += (o, args) =>
                 {
                     numericExportWidth.Value = (zProjectLayout.width * numericColumns.Value) + 
@@ -518,6 +523,7 @@ namespace CardMaker.Forms
                     numericExportHeight.Value = (zProjectLayout.height * numericRows.Value) +
                         Math.Max(0, (numericRows.Value - 1) * zProjectLayout.buffer);
                 };
+
             }
 
             zQuery.AddTextBox("Name Format", sExistingFormat ?? string.Empty, false, NAME);
@@ -538,6 +544,8 @@ namespace CardMaker.Forms
                     zProjectLayout.exportCropDefinition = zQuery.GetString(EXPORT_CROP);
                     zProjectLayout.exportTransparentBackground = zQuery.GetBool(EXPORT_TRANSPARENT);
                     zProjectLayout.exportPDFAsPageBack = zQuery.GetBool(EXPORT_PDF_AS_PAGE_BACK);
+                    zProjectLayout.exportLayoutBorder = zQuery.GetBool(EXPORT_BORDER);
+                    zProjectLayout.exportLayoutBorderCrossSize = (int)zQuery.GetDecimal(EXPORT_BORDER_CROSS_SIZE);
                 }
                 ProjectManager.Instance.FireProjectUpdated(true);
             }

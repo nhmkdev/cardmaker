@@ -130,26 +130,6 @@ namespace CardMaker.Data
             set { s_zIniManager.SetValue(IniSettings.PrintAutoCenterLayout, value.ToString(CultureInfo.CurrentCulture)); }
         }
 
-        public static bool PrintLayoutBorder
-        {
-            get { return s_zIniManager.GetValue(IniSettings.PrintLayoutBorder, bool.TrueString).Equals(bool.TrueString); }
-            set { s_zIniManager.SetValue(IniSettings.PrintLayoutBorder, value.ToString(CultureInfo.CurrentCulture)); }
-        }
-
-        public static int PrintLayoutBorderCrossSize
-        {
-            get
-            {
-                int nValue;
-                if (int.TryParse(s_zIniManager.GetValue(IniSettings.PrintLayoutBorderCrossSize, "0"), out nValue))
-                {
-                    return nValue;
-                }
-                return 0;
-            }
-            set { s_zIniManager.SetValue(IniSettings.PrintLayoutBorderCrossSize, value.ToString()); }
-        }
-
         public static bool PrintLayoutsOnNewPage
         {
             get { return s_zIniManager.GetValue(IniSettings.PrintLayoutsOnNewPage, bool.FalseString).Equals(bool.TrueString); }

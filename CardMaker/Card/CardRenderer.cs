@@ -161,7 +161,7 @@ namespace CardMaker.Card
             }
 
             DrawLayoutDividers(zGraphics, bExport);
-            DrawBorder(zGraphics, nX, nY, CurrentDeck.CardLayout.width, CurrentDeck.CardLayout.height, CurrentDeck.CardLayout.drawBorder, bExport);
+            DrawBorder(zGraphics, nX, nY, CurrentDeck.CardLayout.width, CurrentDeck.CardLayout.height, CurrentDeck.CardLayout, bExport);
 
             zGraphics.Transform = matrixOriginal;
         }
@@ -176,23 +176,23 @@ namespace CardMaker.Card
         /// <param name="nHeight">height</param>
         /// <param name="bLayoutDrawBorder">Flag indicating if the layout has the draw border flag set</param>
         /// <param name="bExport">Flag indicating if this is an export</param>
-        public static void DrawBorder(Graphics zGraphics, int nX, int nY, int nWidth, int nHeight, bool bLayoutDrawBorder, bool bExport)
+        public static void DrawBorder(Graphics zGraphics, int nX, int nY, int nWidth, int nHeight, ProjectLayout zLayout, bool bExport)
         {
             // draw the card border
             if (bExport
-                && CardMakerSettings.PrintLayoutBorder 
-                && bLayoutDrawBorder)
+                && zLayout.exportLayoutBorder
+                && zLayout.drawBorder)
             {
-                if (CardMakerSettings.PrintLayoutBorderCrossSize == 0)
+                if (zLayout.exportLayoutBorderCrossSize == 0)
                 {
                     DrawSolidBorder(zGraphics, nX, nY, nWidth, nHeight);
                 }
                 else
                 {
-                    DrawBorderEdges(zGraphics, nX, nY, nWidth, nHeight);
+                    DrawBorderEdges(zGraphics, nX, nY, nWidth, nHeight, zLayout.exportLayoutBorderCrossSize);
                 }
             }
-            else if(!bExport && bLayoutDrawBorder)
+            else if(!bExport && zLayout.drawBorder)
             {
                 DrawSolidBorder(zGraphics, nX, nY, nWidth, nHeight);
             }
@@ -205,11 +205,11 @@ namespace CardMaker.Card
             zGraphics.DrawRectangle(Pens.Black, nX, nY, nLastHorizontalPixel, nLastVerticalPixel);
         }
 
-        private static void DrawBorderEdges(Graphics zGraphics, int nX, int nY, int nWidth, int nHeight)
+        private static void DrawBorderEdges(Graphics zGraphics, int nX, int nY, int nWidth, int nHeight, int nBorderCrossSize)
         {
             var nLastHorizontalPixel = nWidth - 1;
             var nLastVerticalPixel = nHeight - 1;
-            var nDesiredLineEdgeSize = CardMakerSettings.PrintLayoutBorderCrossSize;
+            var nDesiredLineEdgeSize = nBorderCrossSize;
 
             // UL
             zGraphics.DrawLine(Pens.Black, nX, nY, Math.Min(nDesiredLineEdgeSize, nLastHorizontalPixel), nY);

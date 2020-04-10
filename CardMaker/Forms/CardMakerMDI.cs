@@ -395,8 +395,6 @@ namespace CardMaker.Forms
             zQuery.AddTab("General");
 #endif
             zQuery.AddCheckBox("Enable Google Cache", CardMakerSettings.EnableGoogleCache, IniSettings.EnableGoogleCache);
-            zQuery.AddCheckBox("Print/Export Layout Border", CardMakerSettings.PrintLayoutBorder, IniSettings.PrintLayoutBorder);
-            zQuery.AddNumericBox("Print/Export Layout Border Cross Size", CardMakerSettings.PrintLayoutBorderCrossSize, 0, int.MaxValue, 1, 0, IniSettings.PrintLayoutBorderCrossSize);
             zQuery.AddPullDownBox("Default Translator Type",
                 new string[] { TranslatorType.Incept.ToString(), TranslatorType.JavaScript.ToString() }, (int)CardMakerSettings.DefaultTranslatorType, IniSettings.DefaultTranslator);
             zQuery.AddCheckBox("Log Incept Translation", CardMakerSettings.LogInceptTranslation,
@@ -431,8 +429,6 @@ namespace CardMaker.Forms
                 CardMakerSettings.PrintPageHorizontalMargin = zQuery.GetDecimal(IniSettings.PrintPageHorizontalMargin);
                 CardMakerSettings.PrintPageVerticalMargin = zQuery.GetDecimal(IniSettings.PrintPageVerticalMargin);
                 CardMakerSettings.PrintAutoHorizontalCenter = zQuery.GetBool(IniSettings.PrintAutoCenterLayout);
-                CardMakerSettings.PrintLayoutBorder = zQuery.GetBool(IniSettings.PrintLayoutBorder);
-                CardMakerSettings.PrintLayoutBorderCrossSize = (int)zQuery.GetDecimal(IniSettings.PrintLayoutBorderCrossSize);
                 CardMakerSettings.PrintLayoutsOnNewPage = zQuery.GetBool(IniSettings.PrintLayoutsOnNewPage);
                 CardMakerSettings.DefaultTranslatorType = (TranslatorType)zQuery.GetIndex(IniSettings.DefaultTranslator);
                 CardMakerSettings.LogInceptTranslation = zQuery.GetBool(IniSettings.LogInceptTranslation);

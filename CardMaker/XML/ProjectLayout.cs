@@ -56,6 +56,10 @@ namespace CardMaker.XML
 
         public float zoom { get; set; } = 1;
 
+        public bool exportLayoutBorder { get; set; }
+
+        public int exportLayoutBorderCrossSize { get; set; }
+
         public string exportCropDefinition { get; set; }
 
         [XmlAttribute]
