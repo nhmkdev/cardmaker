@@ -37,6 +37,7 @@ namespace CardMaker.XML
     public class ProjectLayoutElement
     {
         private const string COLOR_HEX_STR = "0x";
+        private const string DEFAULT_COLOR_STRING = COLOR_HEX_STR + "00000000";
         private static readonly List<PropertyInfo> s_listPropertyInfos;
 
         #region Properties
@@ -138,6 +139,7 @@ namespace CardMaker.XML
 
         public ProjectLayoutElement(string sName)
         {
+            
             // actual values
             verticalalign = (int)StringAlignment.Near;
             horizontalalign = (int)StringAlignment.Near;
@@ -147,12 +149,12 @@ namespace CardMaker.XML
             height = 40;
             borderthickness = 0;
             outlinethickness = 0;
-            outlinecolor = "0x000000000";
+            outlinecolor = DEFAULT_COLOR_STRING;
             rotation = 0;
-            bordercolor = "0x000000000";
+            bordercolor = DEFAULT_COLOR_STRING;
             font = string.Empty;
-            elementcolor = "0x000000000";
-            backgroundcolor = "0x00000000";
+            elementcolor = DEFAULT_COLOR_STRING;
+            backgroundcolor = DEFAULT_COLOR_STRING;
             type = ElementType.Text.ToString();
             lineheight = 0;
             wordspace = 0;

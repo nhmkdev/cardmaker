@@ -63,6 +63,9 @@ namespace Support.UI
             this.panelPreviousColors = new System.Windows.Forms.Panel();
             this.toolTipPreviouscolor = new System.Windows.Forms.ToolTip(this.components);
             this.txtHexColor = new System.Windows.Forms.TextBox();
+            this.checkBoxAddZeroX = new System.Windows.Forms.CheckBox();
+            this.numericAlpha = new System.Windows.Forms.NumericUpDown();
+            this.panelColorBG = new System.Windows.Forms.Panel();
             this.pictureYellowToRed = new Support.UI.PictureBoxSelectable();
             this.pictureGreenToYellow = new Support.UI.PictureBoxSelectable();
             this.pictureTealToGreen = new Support.UI.PictureBoxSelectable();
@@ -70,10 +73,11 @@ namespace Support.UI
             this.picturePurpleToBlue = new Support.UI.PictureBoxSelectable();
             this.pictureRedToPurple = new Support.UI.PictureBoxSelectable();
             this.pictureColorHue = new Support.UI.PictureBoxSelectable();
-            this.checkBoxAddZeroX = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.numericRed)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericBlue)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericGreen)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericAlpha)).BeginInit();
+            this.panelColorBG.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureYellowToRed)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureGreenToYellow)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureTealToGreen)).BeginInit();
@@ -86,9 +90,9 @@ namespace Support.UI
             // panelColor
             // 
             this.panelColor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panelColor.Location = new System.Drawing.Point(12, 300);
+            this.panelColor.Location = new System.Drawing.Point(2, 2);
             this.panelColor.Name = "panelColor";
-            this.panelColor.Size = new System.Drawing.Size(64, 59);
+            this.panelColor.Size = new System.Drawing.Size(58, 53);
             this.panelColor.TabIndex = 3;
             // 
             // btnOK
@@ -191,6 +195,42 @@ namespace Support.UI
             this.txtHexColor.Size = new System.Drawing.Size(150, 20);
             this.txtHexColor.TabIndex = 15;
             this.txtHexColor.TextChanged += new System.EventHandler(this.txtHexColor_TextChanged);
+            // 
+            // checkBoxAddZeroX
+            // 
+            this.checkBoxAddZeroX.Checked = true;
+            this.checkBoxAddZeroX.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxAddZeroX.Location = new System.Drawing.Point(242, 327);
+            this.checkBoxAddZeroX.Name = "checkBoxAddZeroX";
+            this.checkBoxAddZeroX.Size = new System.Drawing.Size(72, 20);
+            this.checkBoxAddZeroX.TabIndex = 16;
+            this.checkBoxAddZeroX.Text = "Add 0x";
+            this.checkBoxAddZeroX.UseVisualStyleBackColor = true;
+            this.checkBoxAddZeroX.CheckedChanged += new System.EventHandler(this.checkBoxAddZeroX_CheckedChanged);
+            // 
+            // numericAlpha
+            // 
+            this.numericAlpha.BackColor = System.Drawing.Color.White;
+            this.numericAlpha.Location = new System.Drawing.Point(242, 300);
+            this.numericAlpha.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.numericAlpha.Name = "numericAlpha";
+            this.numericAlpha.Size = new System.Drawing.Size(46, 20);
+            this.numericAlpha.TabIndex = 17;
+            this.numericAlpha.ValueChanged += new System.EventHandler(this.numeric_ValueChanged);
+            // 
+            // panelColorBG
+            // 
+            this.panelColorBG.BackColor = System.Drawing.Color.White;
+            this.panelColorBG.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelColorBG.Controls.Add(this.panelColor);
+            this.panelColorBG.Location = new System.Drawing.Point(12, 300);
+            this.panelColorBG.Name = "panelColorBG";
+            this.panelColorBG.Size = new System.Drawing.Size(64, 59);
+            this.panelColorBG.TabIndex = 4;
             // 
             // pictureYellowToRed
             // 
@@ -304,18 +344,6 @@ namespace Support.UI
             this.pictureColorHue.MouseLeave += new System.EventHandler(this.pictureColor_MouseLeave);
             this.pictureColorHue.MouseMove += new System.Windows.Forms.MouseEventHandler(this.HandleMouseHueColor);
             // 
-            // checkBoxAddZeroX
-            // 
-            this.checkBoxAddZeroX.Checked = true;
-            this.checkBoxAddZeroX.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxAddZeroX.Location = new System.Drawing.Point(242, 327);
-            this.checkBoxAddZeroX.Name = "checkBoxAddZeroX";
-            this.checkBoxAddZeroX.Size = new System.Drawing.Size(72, 20);
-            this.checkBoxAddZeroX.TabIndex = 16;
-            this.checkBoxAddZeroX.Text = "Add 0x";
-            this.checkBoxAddZeroX.UseVisualStyleBackColor = true;
-            this.checkBoxAddZeroX.CheckedChanged += new System.EventHandler(this.checkBoxAddZeroX_CheckedChanged);
-            // 
             // RGBColorSelectDialog
             // 
             this.AcceptButton = this.btnOK;
@@ -323,6 +351,8 @@ namespace Support.UI
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(456, 353);
+            this.Controls.Add(this.panelColorBG);
+            this.Controls.Add(this.numericAlpha);
             this.Controls.Add(this.checkBoxAddZeroX);
             this.Controls.Add(this.txtHexColor);
             this.Controls.Add(this.panelPreviousColors);
@@ -337,7 +367,6 @@ namespace Support.UI
             this.Controls.Add(this.numericRed);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOK);
-            this.Controls.Add(this.panelColor);
             this.Controls.Add(this.pictureRedToPurple);
             this.Controls.Add(this.pictureColorHue);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -352,6 +381,8 @@ namespace Support.UI
             ((System.ComponentModel.ISupportInitialize)(this.numericRed)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericBlue)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericGreen)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericAlpha)).EndInit();
+            this.panelColorBG.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureYellowToRed)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureGreenToYellow)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureTealToGreen)).EndInit();
@@ -384,5 +415,7 @@ namespace Support.UI
         private System.Windows.Forms.ToolTip toolTipPreviouscolor;
         private System.Windows.Forms.TextBox txtHexColor;
         private System.Windows.Forms.CheckBox checkBoxAddZeroX;
+        private System.Windows.Forms.NumericUpDown numericAlpha;
+        private System.Windows.Forms.Panel panelColorBG;
     }
 }

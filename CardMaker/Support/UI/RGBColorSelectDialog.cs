@@ -117,6 +117,7 @@ namespace Support.UI
             }
 
             UpdateHue(Color.Red);
+            UpdateColorBox(m_lastColor);
         }
 
 #if false
@@ -172,13 +173,14 @@ namespace Support.UI
             numericRed.Value = colorCurrent.R;
             numericGreen.Value = colorCurrent.G;
             numericBlue.Value = colorCurrent.B;
+            numericAlpha.Value = colorCurrent.A;
             m_lastColor = colorCurrent;
             if (sender != txtHexColor)
             {
                 UpdateColorHexText();
             }
-            panelColor.BackColor = colorCurrent;
 
+            panelColor.BackColor = colorCurrent;
             m_bEventsEnabled = true;
             PreviewEvent?.Invoke(this, colorCurrent);
         }
@@ -189,16 +191,16 @@ namespace Support.UI
                 (checkBoxAddZeroX.Checked ? "0x" : string.Empty) +
                 m_lastColor.R.ToString("X").PadLeft(2, '0') +
                 m_lastColor.G.ToString("X").PadLeft(2, '0') +
-                m_lastColor.B.ToString("X").PadLeft(2, '0');            
+                m_lastColor.B.ToString("X").PadLeft(2, '0') +
+                m_lastColor.A.ToString("X").PadLeft(2, '0');            
         }
 
-        public Color Color => Color.FromArgb((int)numericRed.Value, (int)numericGreen.Value, (int)numericBlue.Value);
+        public Color Color => Color.FromArgb((int)numericAlpha.Value, (int)numericRed.Value, (int)numericGreen.Value, (int)numericBlue.Value);
 
         public void SetHueColor()
         {
-            UpdateColorBox(m_BitmapHue.GetPixel(pictureColorHue.Xposition, pictureColorHue.Yposition));
+            UpdateColorBox(Color.FromArgb((int)numericAlpha.Value, m_BitmapHue.GetPixel(pictureColorHue.Xposition, pictureColorHue.Yposition)));
         }
-
 
         private void GenerateColorBar(Bitmap zBmp, Color colorFrom, Color colorTo)
         {
@@ -262,8 +264,7 @@ namespace Support.UI
         {
             if(m_bEventsEnabled)
             {
-                Color zColor = Color.FromArgb((int)numericRed.Value, (int)numericGreen.Value, (int)numericBlue.Value);
-                UpdateColorBox(zColor);
+                UpdateColorBox(Color.FromArgb((int)numericAlpha.Value, (int)numericRed.Value, (int)numericGreen.Value, (int)numericBlue.Value));
             }
         }
 
@@ -282,7 +283,7 @@ namespace Support.UI
             switch (e.Button)
             {
                 case MouseButtons.Left:
-                    UpdateColorBox(m_BitmapHue.GetPixel(pictureColorHue.Xposition, pictureColorHue.Yposition));
+                    UpdateColorBox(Color.FromArgb((int)numericAlpha.Value, m_BitmapHue.GetPixel(pictureColorHue.Xposition, pictureColorHue.Yposition)));
                     break;
             }
         }
@@ -316,7 +317,7 @@ namespace Support.UI
         private void btnOK_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.OK;
-            Color colorSelected = Color.FromArgb((int)numericRed.Value, (int)numericGreen.Value, (int)numericBlue.Value);
+            Color colorSelected = Color.FromArgb((int)numericAlpha.Value, (int)numericRed.Value, (int)numericGreen.Value, (int)numericBlue.Value);
             int nMaxPreviousColors = panelPreviousColors.Width / PREVIOUS_COLOR_WIDTH;
 
             if (0 == s_listPreviousColors.Count || 
@@ -353,6 +354,7 @@ namespace Support.UI
             if (m_nPreviousColorIndex < s_listPreviousColors.Count)
             {
                 UpdateColorBox(Color.FromArgb(
+                    s_listPreviousColors[m_nPreviousColorIndex].A,
                     s_listPreviousColors[m_nPreviousColorIndex].R,
                     s_listPreviousColors[m_nPreviousColorIndex].G,
                     s_listPreviousColors[m_nPreviousColorIndex].B));
@@ -370,6 +372,7 @@ namespace Support.UI
             if (m_nPreviousColorIndex < s_listPreviousColors.Count)
             {
                 toolTipPreviouscolor.SetToolTip(panelPreviousColors,
+                    "A:" + s_listPreviousColors[m_nPreviousColorIndex].A.ToString("000") + " " +
                     "R:" + s_listPreviousColors[m_nPreviousColorIndex].R.ToString("000") + " " +
                     "G:" + s_listPreviousColors[m_nPreviousColorIndex].G.ToString("000") + " " +
                     "B:" + s_listPreviousColors[m_nPreviousColorIndex].B.ToString("000"));
