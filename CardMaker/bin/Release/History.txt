@@ -1,6 +1,7 @@
 Card Maker Version History
 --------------------------
 1.1.0.0
+- Additional override for background shapes allowing for custom opacity
 - Added ability to select alpha in the color selection dialog.
 - Border render on exports is now controlled per layout instead of at the application level.
 - Updated Color dialog to allow typing/pasting of hex values.

@@ -37,7 +37,6 @@ namespace CardMaker.XML
     public class ProjectLayoutElement
     {
         private const string COLOR_HEX_STR = "0x";
-        private const string DEFAULT_COLOR_STRING = COLOR_HEX_STR + "00000000";
         private static readonly List<PropertyInfo> s_listPropertyInfos;
 
         #region Properties
@@ -149,12 +148,12 @@ namespace CardMaker.XML
             height = 40;
             borderthickness = 0;
             outlinethickness = 0;
-            outlinecolor = DEFAULT_COLOR_STRING;
+            outlinecolor = GetElementColorString(m_colorOutline);
             rotation = 0;
-            bordercolor = DEFAULT_COLOR_STRING;
+            bordercolor = GetElementColorString(m_colorBorder);
             font = string.Empty;
-            elementcolor = DEFAULT_COLOR_STRING;
-            backgroundcolor = DEFAULT_COLOR_STRING;
+            elementcolor = GetElementColorString(m_colorElement);
+            backgroundcolor = GetElementColorString(m_colorBackground);
             type = ElementType.Text.ToString();
             lineheight = 0;
             wordspace = 0;
@@ -282,13 +281,15 @@ namespace CardMaker.XML
             {
                 sColor = sColor.Remove(0, 2);
             }
-
-            Color colorByName = Color.FromName(sColor);
-            // no named color will be set this way
-            if (colorByName.A != 0)
+            else
             {
-                bSucceeded = true;
-                return colorByName;
+                Color colorByName = Color.FromName(sColor);
+                // no named color will be set this way
+                if (colorByName.A != 0)
+                {
+                    bSucceeded = true;
+                    return colorByName;
+                }
             }
 
             var colorResult = Color.Black;

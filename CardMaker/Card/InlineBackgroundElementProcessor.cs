@@ -23,12 +23,16 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Text.RegularExpressions;
 using CardMaker.Card.Shapes;
 using CardMaker.Data;
 using CardMaker.XML;
+using DocumentFormat.OpenXml.Office2010.ExcelAc;
 using Support.Util;
+
+#warning these methods need a lot of cleanup... so much goofy duplication
 
 namespace CardMaker.Card
 {
@@ -43,107 +47,187 @@ namespace CardMaker.Card
         //                                                        1          2    3  4    5
         private static readonly Regex regexShapeBG = new Regex(@"(#bgshape::)(.+?)(::)(.+?)(#)", RegexOptions.Compiled);
 
-        //                                                                1          2    3  4    5  6    7  8    9  10   11 12   13 14   15 16   17
+        //                                                                1           2    3   4    5   6    7   8    9   10   11  12   13  14   15  16   17
         private static readonly Regex regexShapeExtendedBG = new Regex(@"(#bgshape::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(#)", RegexOptions.Compiled);
+
+        //                                                                       1           2    3   4    5   6    7   8    9   10   11  12   13  14   15  16   17  18   19
+        private static readonly Regex regexShapeExtendedOpacityBG = new Regex(@"(#bgshape::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(#)", RegexOptions.Compiled);
+
+        // TODO: lists of prioritized matches with methods to call for each match
+        private List<KeyValuePair<Regex, Action<Match, ProjectLayoutElement, ProjectLayoutElement, PointOffset>>> listGraphicProcessingPairs =
+            new List<KeyValuePair<Regex, Action<Match, ProjectLayoutElement, ProjectLayoutElement, PointOffset>>>()
+            {
+                // extended
+                // #bggraphic:[image path]:[x offset]:[y offset]:[width adjust]:[height adjust]:[lock aspect ratio]:[tile size]:[horizontal align]:[vertical align]#
+                new KeyValuePair<Regex, Action<Match, ProjectLayoutElement, ProjectLayoutElement, PointOffset>>(
+                    //           1             2    3   4    5   6    7   8    9   10   11  12   13  14   15  16   17  18   19
+                    new Regex(@"(#bggraphic::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(#)", RegexOptions.Compiled),
+                    (zMatch, zBgGraphicElement, zElement, pointOffset) =>
+                    {
+                        pointOffset.X = ParseUtil.ParseDefault(zMatch.Groups[4].Value, 0);
+                        pointOffset.Y = ParseUtil.ParseDefault(zMatch.Groups[6].Value, 0);
+                        zBgGraphicElement.width = zElement.width + ParseUtil.ParseDefault(zMatch.Groups[8].Value, 0);
+                        zBgGraphicElement.height = zElement.height + ParseUtil.ParseDefault(zMatch.Groups[10].Value, 0);
+                        zBgGraphicElement.opacity = zElement.opacity;
+                        zBgGraphicElement.lockaspect = ParseUtil.ParseDefault(zMatch.Groups[12].Value, false);
+                        zBgGraphicElement.tilesize = zMatch.Groups[14].Value;
+                        zBgGraphicElement.horizontalalign = ParseUtil.ParseDefault(zMatch.Groups[16].Value, 0);
+                        zBgGraphicElement.verticalalign = ParseUtil.ParseDefault(zMatch.Groups[18].Value, 0);
+                        zBgGraphicElement.variable = zMatch.Groups[2].Value;
+                        zBgGraphicElement.type = ElementType.Graphic.ToString();
+                    }),
+                // simple
+                new KeyValuePair<Regex, Action<Match, ProjectLayoutElement, ProjectLayoutElement, PointOffset>>(
+                    //           1             2    3
+                    new Regex(@"(#bggraphic::)(.+?)(#)", RegexOptions.Compiled),
+                    (zMatch, zBgGraphicElement, zElement, pointOffset) =>
+                    {
+                        zBgGraphicElement.width = zElement.width;
+                        zBgGraphicElement.height = zElement.height;
+                        zBgGraphicElement.opacity = zElement.opacity;
+                        zBgGraphicElement.variable = zMatch.Groups[2].Value;
+                        zBgGraphicElement.type = ElementType.Graphic.ToString();
+                    })
+            };
+
+
+        private List<KeyValuePair<Regex, Action<Match, ProjectLayoutElement, ProjectLayoutElement, PointOffset>>> listShapeProcessingPairs =
+            new List<KeyValuePair<Regex, Action<Match, ProjectLayoutElement, ProjectLayoutElement, PointOffset>>>()
+            {
+                // extended + opacity
+                new KeyValuePair<Regex, Action<Match, ProjectLayoutElement, ProjectLayoutElement, PointOffset>>(
+                    //           1           2    3   4    5   6    7   8    9   10   11  12   13  14   15  16   17  18   19
+                    new Regex(@"(#bgshape::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(#)", RegexOptions.Compiled),
+                    (zMatch, zBgShapeElement, zElement, pointOffset) =>
+                    {
+                        pointOffset.X = ParseUtil.ParseDefault(zMatch.Groups[6].Value, 0);
+                        pointOffset.Y = ParseUtil.ParseDefault(zMatch.Groups[8].Value, 0);
+                        zBgShapeElement.x = zElement.x;
+                        zBgShapeElement.y = zElement.y;
+                        zBgShapeElement.width =
+                            zElement.width + ParseUtil.ParseDefault(zMatch.Groups[10].Value, 0);
+                        zBgShapeElement.height =
+                            zElement.height + ParseUtil.ParseDefault(zMatch.Groups[12].Value, 0);
+                        zBgShapeElement.outlinethickness = ParseUtil.ParseDefault(zMatch.Groups[14].Value, 0);
+                        zBgShapeElement.outlinecolor = zMatch.Groups[16].Value;
+                        zBgShapeElement.elementcolor = zMatch.Groups[4].Value;
+                        zBgShapeElement.opacity = ParseUtil.ParseDefault(zMatch.Groups[18].Value, 255);
+                        zBgShapeElement.variable = zMatch.Groups[2].Value;
+                        zBgShapeElement.type = ElementType.Shape.ToString();
+                    }),
+                // extended
+                new KeyValuePair<Regex, Action<Match, ProjectLayoutElement, ProjectLayoutElement, PointOffset>>(
+                    //           1           2    3   4    5   6    7   8    9   10   11  12   13  14   15  16   17
+                    new Regex(@"(#bgshape::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(#)", RegexOptions.Compiled),
+                    (zMatch, zBgShapeElement, zElement, pointOffset) =>
+                    {
+                        pointOffset.X = ParseUtil.ParseDefault(zMatch.Groups[6].Value, 0);
+                        pointOffset.Y = ParseUtil.ParseDefault(zMatch.Groups[8].Value, 0);
+                        zBgShapeElement.x = zElement.x;
+                        zBgShapeElement.y = zElement.y;
+                        zBgShapeElement.width = zElement.width + ParseUtil.ParseDefault(zMatch.Groups[10].Value, 0);
+                        zBgShapeElement.height = zElement.height + ParseUtil.ParseDefault(zMatch.Groups[12].Value, 0);
+                        zBgShapeElement.outlinethickness = ParseUtil.ParseDefault(zMatch.Groups[14].Value, 0);
+                        zBgShapeElement.outlinecolor = zMatch.Groups[16].Value;
+                        zBgShapeElement.elementcolor = zMatch.Groups[4].Value;
+                        zBgShapeElement.variable = zMatch.Groups[2].Value;
+                        zBgShapeElement.type = ElementType.Shape.ToString();
+                    }),
+                // simple
+                new KeyValuePair<Regex, Action<Match, ProjectLayoutElement, ProjectLayoutElement, PointOffset>>(
+                    //           1           2    3   4    5
+                    new Regex(@"(#bgshape::)(.+?)(::)(.+?)(#)", RegexOptions.Compiled),
+                    (zMatch, zBgShapeElement, zElement, pointOffset) =>
+                    {
+                        zBgShapeElement.x = zElement.x;
+                        zBgShapeElement.y = zElement.y;
+                        zBgShapeElement.width = zElement.width;
+                        zBgShapeElement.height = zElement.height;
+                        zBgShapeElement.elementcolor = zMatch.Groups[4].Value;
+                        zBgShapeElement.variable = zMatch.Groups[2].Value;
+                        zBgShapeElement.type = ElementType.Shape.ToString();
+                    })
+            };
 
         public string ProcessInlineBackgroundGraphic(IDrawGraphic zDrawGraphic, Graphics zGraphics, ProjectLayoutElement zElement, string sInput)
         {
-            var zExtendedMatch = regexGraphicExtendedBG.Match(sInput);
+            var kvpMatchedProcessor = new KeyValuePair<Regex, Action<Match, ProjectLayoutElement, ProjectLayoutElement, PointOffset>>();
             Match zMatch = null;
-            if (!zExtendedMatch.Success)
+            foreach (var kvpGraphicProcessor in listGraphicProcessingPairs)
             {
-                zMatch = regexGraphicBG.Match(sInput);
-                if (!zMatch.Success)
+                zMatch = kvpGraphicProcessor.Key.Match(sInput);
+                if (zMatch.Success)
                 {
-                    return sInput;
+                    kvpMatchedProcessor = kvpGraphicProcessor;
+                    break;
                 }
             }
 
-            var sToReplace = String.Empty;
+            if (kvpMatchedProcessor.Key == null
+                || zMatch == null
+                || !zMatch.Success)
+                return sInput;
 
+            var sToReplace = zMatch.Groups[0].Value;
+            var pointOffset = new PointOffset();
             var zBgGraphicElement = new ProjectLayoutElement(Guid.NewGuid().ToString());
-            var nXOffset = 0;
-            var nYOffset = 0;
-            if (zExtendedMatch.Success)
-            {
-                nXOffset = ParseUtil.ParseDefault(zExtendedMatch.Groups[4].Value, 0);
-                nYOffset = ParseUtil.ParseDefault(zExtendedMatch.Groups[6].Value, 0);
-                zBgGraphicElement.width = zElement.width + ParseUtil.ParseDefault(zExtendedMatch.Groups[8].Value, 0);
-                zBgGraphicElement.height = zElement.height + ParseUtil.ParseDefault(zExtendedMatch.Groups[10].Value, 0);
-                zBgGraphicElement.opacity = zElement.opacity;
-                zBgGraphicElement.lockaspect = ParseUtil.ParseDefault(zExtendedMatch.Groups[12].Value, false);
-                zBgGraphicElement.tilesize = zExtendedMatch.Groups[14].Value;
-                zBgGraphicElement.horizontalalign = ParseUtil.ParseDefault(zExtendedMatch.Groups[16].Value, 0);
-                zBgGraphicElement.verticalalign = ParseUtil.ParseDefault(zExtendedMatch.Groups[18].Value, 0);
-                zBgGraphicElement.variable = zExtendedMatch.Groups[2].Value;
-                zBgGraphicElement.type = ElementType.Graphic.ToString();
-                sToReplace = zExtendedMatch.Groups[0].Value;
-            }
-            else if (zMatch.Success)
-            {
-                zBgGraphicElement.width = zElement.width;
-                zBgGraphicElement.height = zElement.height;
-                zBgGraphicElement.opacity = zElement.opacity;
-                zBgGraphicElement.variable = zMatch.Groups[2].Value;
-                zBgGraphicElement.type = ElementType.Graphic.ToString();
-                sToReplace = zMatch.Groups[0].Value;
-            }
+            zBgGraphicElement.opacity = -1;
 
-            zDrawGraphic.DrawGraphicFile(zGraphics, zBgGraphicElement.variable, zBgGraphicElement, nXOffset, nYOffset);
+            kvpMatchedProcessor.Value(zMatch, zBgGraphicElement, zElement, pointOffset);
+
+            zDrawGraphic.DrawGraphicFile(zGraphics, zBgGraphicElement.variable, zBgGraphicElement, pointOffset.X, pointOffset.Y);
 
             return sInput.Replace(sToReplace, string.Empty);
         }
 
         public string ProcessInlineShape(IShapeRenderer zShapeRenderer, Graphics zGraphics, ProjectLayoutElement zElement, string sInput)
         {
-            var zExtendedMatch = regexShapeExtendedBG.Match(sInput);
+            var kvpMatchedProcessor = new KeyValuePair<Regex, Action<Match, ProjectLayoutElement, ProjectLayoutElement, PointOffset>>();
             Match zMatch = null;
-            if (!zExtendedMatch.Success)
+            foreach (var kvpShapeProcessor in listShapeProcessingPairs)
             {
-                zMatch = regexShapeBG.Match(sInput);
-                if (!zMatch.Success)
+                zMatch = kvpShapeProcessor.Key.Match(sInput);
+                if (zMatch.Success)
                 {
-                    return sInput;
+                    kvpMatchedProcessor = kvpShapeProcessor;
+                    break;
                 }
             }
 
-            var sToReplace = String.Empty;
-            int nXOffset = 0, nYOffset = 0;
+            if (kvpMatchedProcessor.Key == null
+                || zMatch == null 
+                || !zMatch.Success)
+                return sInput;
 
+            var sToReplace = zMatch.Groups[0].Value;
+            var pointOffset = new PointOffset();
             var zBgShapeElement = new ProjectLayoutElement(Guid.NewGuid().ToString());
-            if (zExtendedMatch.Success)
-            {
-                nXOffset = ParseUtil.ParseDefault(zExtendedMatch.Groups[6].Value, 0);
-                nYOffset = ParseUtil.ParseDefault(zExtendedMatch.Groups[8].Value, 0);
-                zBgShapeElement.x = zElement.x;
-                zBgShapeElement.y = zElement.y;
-                zBgShapeElement.width = zElement.width + ParseUtil.ParseDefault(zExtendedMatch.Groups[10].Value, 0);
-                zBgShapeElement.height = zElement.height + ParseUtil.ParseDefault(zExtendedMatch.Groups[12].Value, 0);
-                zBgShapeElement.outlinethickness = ParseUtil.ParseDefault(zExtendedMatch.Groups[14].Value, 0);
-                zBgShapeElement.outlinecolor = zExtendedMatch.Groups[16].Value;
-                zBgShapeElement.elementcolor = zExtendedMatch.Groups[4].Value;
-                zBgShapeElement.variable = zExtendedMatch.Groups[2].Value;
-                zBgShapeElement.type = ElementType.Shape.ToString();
-                sToReplace = zExtendedMatch.Groups[0].Value;
-            }
-            else if (zMatch.Success)
-            {
-                zBgShapeElement.x = zElement.x;
-                zBgShapeElement.y = zElement.y;
-                zBgShapeElement.width = zElement.width;
-                zBgShapeElement.height = zElement.height;
-                zBgShapeElement.elementcolor = zMatch.Groups[4].Value;
-                zBgShapeElement.variable = zMatch.Groups[2].Value;
-                zBgShapeElement.type = ElementType.Shape.ToString();
-                sToReplace = zMatch.Groups[0].Value;
-            }
+            zBgShapeElement.opacity = -1;
+
+            kvpMatchedProcessor.Value(zMatch, zBgShapeElement, zElement, pointOffset);
 
             zBgShapeElement.InitializeTranslatedFields();
-            zBgShapeElement.opacity = zBgShapeElement.GetElementColor().A;
 
-            zShapeRenderer.HandleShapeRender(zGraphics, zBgShapeElement.variable, zBgShapeElement, nXOffset, nYOffset);
+            // the processor method didn't tweak the opacity, default to the element color alpha channel
+            if(zBgShapeElement.opacity == -1)
+                zBgShapeElement.opacity = zBgShapeElement.GetElementColor().A;
+
+            zShapeRenderer.HandleShapeRender(zGraphics, zBgShapeElement.variable, zBgShapeElement, pointOffset.X, pointOffset.Y);
 
             return sInput.Replace(sToReplace, string.Empty);
+        }
+    }
+
+    class PointOffset
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+        public PointOffset()
+        { }
+        public PointOffset(int x, int y)
+        {
+            X = x;
+            Y = y;
         }
     }
 }
