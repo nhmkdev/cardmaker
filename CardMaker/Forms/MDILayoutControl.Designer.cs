@@ -222,27 +222,27 @@ namespace CardMaker.Forms
             this.pasteSettingsToolStripMenuItem});
             this.contextMenuElements.Name = "contextMenuElements";
             this.contextMenuElements.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.contextMenuElements.Size = new System.Drawing.Size(156, 70);
+            this.contextMenuElements.Size = new System.Drawing.Size(157, 70);
             this.contextMenuElements.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuElements_Opening);
             // 
             // copyToolStripMenuItem
             // 
             this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-            this.copyToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.copyToolStripMenuItem.Text = "Copy";
             this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
             // 
             // pasteToolStripMenuItem
             // 
             this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
-            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.pasteToolStripMenuItem.Text = "Paste";
             this.pasteToolStripMenuItem.Click += new System.EventHandler(this.pasteToolStripMenuItem_Click);
             // 
             // pasteSettingsToolStripMenuItem
             // 
             this.pasteSettingsToolStripMenuItem.Name = "pasteSettingsToolStripMenuItem";
-            this.pasteSettingsToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.pasteSettingsToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.pasteSettingsToolStripMenuItem.Text = "Paste Settings...";
             this.pasteSettingsToolStripMenuItem.Click += new System.EventHandler(this.pasteSettingsToolStripMenuItem_Click);
             // 
@@ -260,7 +260,7 @@ namespace CardMaker.Forms
             // 
             this.numericCardSetDPI.Location = new System.Drawing.Point(195, 16);
             this.numericCardSetDPI.Maximum = new decimal(new int[] {
-            600,
+            6000,
             0,
             0,
             0});
