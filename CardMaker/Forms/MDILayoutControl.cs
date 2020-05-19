@@ -107,7 +107,7 @@ namespace CardMaker.Forms
 
         void Element_Selected(object sender, ElementEventArgs args)
         {
-            if (null != args.Elements && args.Elements.Count == 1)
+            if (null != args.Elements && args.Elements.Count == 1 && args.Elements[0] != null)
             {
                 ChangeSelectedElement(args.Elements[0].name);
             }

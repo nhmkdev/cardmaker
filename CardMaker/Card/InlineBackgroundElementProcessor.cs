@@ -29,7 +29,6 @@ using System.Text.RegularExpressions;
 using CardMaker.Card.Shapes;
 using CardMaker.Data;
 using CardMaker.XML;
-using DocumentFormat.OpenXml.Office2010.ExcelAc;
 using Support.Util;
 
 #warning these methods need a lot of cleanup... so much goofy duplication
@@ -38,22 +37,6 @@ namespace CardMaker.Card
 {
     public class InlineBackgroundElementProcessor : IInlineBackgroundElementProcessor
     {
-        //                                                        1          2    3
-        private static readonly Regex regexGraphicBG = new Regex(@"(#bggraphic::)(.+?)(#)", RegexOptions.Compiled);
-        //                        #bggraphic:[image path]:[x offset]:[y offset]:[width adjust]:[height adjust]:[lock aspect ratio]:[tile size]:[horizontal align]:[vertical align]#
-        //                                                                1          2    3  4    5  6    7  8    9  10   11 12   13 14   15 16      17
-        private static readonly Regex regexGraphicExtendedBG = new Regex(@"(#bggraphic::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(#)", RegexOptions.Compiled);
-
-        //                                                        1          2    3  4    5
-        private static readonly Regex regexShapeBG = new Regex(@"(#bgshape::)(.+?)(::)(.+?)(#)", RegexOptions.Compiled);
-
-        //                                                                1           2    3   4    5   6    7   8    9   10   11  12   13  14   15  16   17
-        private static readonly Regex regexShapeExtendedBG = new Regex(@"(#bgshape::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(#)", RegexOptions.Compiled);
-
-        //                                                                       1           2    3   4    5   6    7   8    9   10   11  12   13  14   15  16   17  18   19
-        private static readonly Regex regexShapeExtendedOpacityBG = new Regex(@"(#bgshape::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(::)(.+?)(#)", RegexOptions.Compiled);
-
-        // TODO: lists of prioritized matches with methods to call for each match
         private List<KeyValuePair<Regex, Action<Match, ProjectLayoutElement, ProjectLayoutElement, PointOffset>>> listGraphicProcessingPairs =
             new List<KeyValuePair<Regex, Action<Match, ProjectLayoutElement, ProjectLayoutElement, PointOffset>>>()
             {

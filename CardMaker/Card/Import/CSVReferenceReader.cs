@@ -34,8 +34,6 @@ namespace CardMaker.Card.Import
 {
     public class CSVReferenceReader : ReferenceReader
     {
-        public string ReferencePath { get; }
-
         public CSVReferenceReader() { }
 
         public CSVReferenceReader(ProjectLayoutReference zReference)

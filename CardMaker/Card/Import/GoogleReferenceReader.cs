@@ -50,8 +50,6 @@ namespace CardMaker.Card.Import
 
         private bool m_bCacheUpdated;
 
-        public string ReferencePath { get; }
-
         public GoogleReferenceReader()
         {
             LoadCache();

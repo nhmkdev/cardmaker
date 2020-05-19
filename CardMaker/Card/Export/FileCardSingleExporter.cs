@@ -28,12 +28,10 @@ using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using CardMaker.Data;
-using Support.IO;
 using Support.UI;
 
 namespace CardMaker.Card.Export
 {
-#warning Can this share with FileCardExporter? Seems like a likely dupe...
     public class FileCardSingleExporter : CardExportBase
     {
         private readonly string m_sExportFolder;

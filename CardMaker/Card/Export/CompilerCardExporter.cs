@@ -49,7 +49,6 @@ namespace CardMaker.Card.Export
             {
                 IssueManager.Instance.FireChangeCardInfoEvent(nIdx, 1);
                 IssueManager.Instance.FireChangeElementEvent(string.Empty);
-#warning there's no progress reporter
                 ChangeExportLayoutIndex(nIdx);
                 ProgressReporter.ProgressReset(progressCardIdx, 0, CurrentDeck.CardCount, 0);
 

@@ -30,7 +30,7 @@ namespace CardMaker.Card.Import
 {
     public abstract class ReferenceReader
     {
-        public string ReferencePath { get; }
+        public string ReferencePath { get; protected set; }
         public IProgressReporter ProgressReporter { get; set; }
 
         public abstract void GetReferenceData(ProjectLayoutReference zReference, List<List<string>> listReferenceData);

@@ -22,14 +22,11 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
 using ClosedXML.Excel;
-using Support.IO;
-using System.Runtime.InteropServices;
 
 namespace CardMaker.Card.Import
 {
@@ -39,8 +36,6 @@ namespace CardMaker.Card.Import
 
         // SheetName to Variables
         private readonly Dictionary<string, List<List<string>>> m_dictionaryDataCache = new Dictionary<string, List<List<string>>>();
-
-        public string ReferencePath { get; }
 
         public ExcelReferenceReader() { /* Intentionally do nothing */ }
 
