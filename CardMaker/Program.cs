@@ -26,10 +26,9 @@ using System;
 using System.Windows.Forms;
 using CardMaker.Card.CommandLine;
 using CardMaker.Card.Shapes;
-using CardMaker.Card.Translation;
 using CardMaker.Data;
 using CardMaker.Forms;
-using Support.IO;
+using Support.UI;
 using Support.Util;
 
 namespace CardMaker
@@ -49,6 +48,9 @@ namespace CardMaker
             var commandLineProcessor = new CommandLineProcessor(new CommandLineParser().Parse(args));
             if (!commandLineProcessor.Process())
             {
+#if !MONO_BUILD
+                Win32.ShowConsole(Application.ExecutablePath, false);
+#endif
                 Application.Run(new CardMakerMDI());
             }
         }

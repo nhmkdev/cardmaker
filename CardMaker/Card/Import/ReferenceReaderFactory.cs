@@ -76,11 +76,11 @@ namespace CardMaker.Card.Import
                     break;
             }
 
-            if (zReferenceReader == null)
+            if (zReferenceReader != null)
             {
                 zReferenceReader.ProgressReporter = zProgressReporter;
             }
-            return null;
+            return zReferenceReader;
         }            
     }
 }
