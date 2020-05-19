@@ -102,7 +102,6 @@ namespace CardMaker.Events.Managers
             {
                 case DialogResult.OK:
                     CardMakerInstance.GoogleAccessToken = zDialog.GoogleAccessToken;
-                    Logger.AddLogLine("Updated Google Credentials");
                     zSuccessAction?.Invoke();
                     break;
                 default:

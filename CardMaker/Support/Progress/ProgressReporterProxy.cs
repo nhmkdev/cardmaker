@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////////////////////
+﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
 // Copyright (c) 2019 Tim Stair
@@ -22,54 +22,41 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Windows.Forms;
-using CardMaker.Card.CommandLine;
-using CardMaker.Card.Shapes;
-using CardMaker.Card.Translation;
-using CardMaker.Data;
-using CardMaker.Forms;
-using Support.IO;
-using Support.Util;
-
-namespace CardMaker
+namespace Support.Progress
 {
-    static class Program
+    /// <summary>
+    /// Wrapper for a ProgressReporter narrowed to a single Progress Index.
+    /// Allows for nested ProgressReporting
+    /// </summary>
+    public class ProgressReporterProxy
     {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        static void Main(string[] args)
-        {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+        public int ProgressIndex { get; set; }
+        public IProgressReporter ProgressReporter { get; set; }
+        public bool ProxyOwnsReporter { get; set; }
 
-            Initialize();
-            var commandLineProcessor = new CommandLineProcessor(new CommandLineParser().Parse(args));
-            if (!commandLineProcessor.Process())
-            {
-                Application.Run(new CardMakerMDI());
-            }
+        public void ProgressReset(int nMin, int nMax, int nStartVal)
+        {
+            ProgressReporter.ProgressReset(ProgressIndex, nMin, nMax, nStartVal);
+        }
+
+        public void AddIssue(string sIssue)
+        {
+            ProgressReporter.AddIssue(sIssue);
+        }
+
+        public void ProgressStep()
+        {
+            ProgressReporter.ProgressStep(ProgressIndex);
         }
 
         /// <summary>
-        /// Cross application initialization of components.
+        /// Shuts down the underlying ProgressReporter if this is the owner
         /// </summary>
-        static void Initialize()
+        public void Shutdown()
         {
-            ShapeManager.Init();
-            CardMakerMDI.RestoreReplacementChars();
-
-            var zForm = new Form();
-            var zGraphics = zForm.CreateGraphics();
-            try
+            if (ProxyOwnsReporter)
             {
-                CardMakerInstance.ApplicationDPI = zGraphics.DpiX;
-            }
-            finally
-            {
-                zGraphics.Dispose();
+                ProgressReporter.Shutdown();
             }
         }
     }

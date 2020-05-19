@@ -29,6 +29,8 @@ using System;
 using System.Collections.Generic;
 using CardMaker.Data;
 using CardMaker.Events.Managers;
+using Moq;
+using Support.Progress;
 
 namespace UnitTest.DeckObject
 {
@@ -42,13 +44,16 @@ namespace UnitTest.DeckObject
         private TestDeck _testDeck;
         private DeckLine _testLine;
         private ProjectLayoutElement _testElement;
+        private Mock<ProgressReporterProxy> _mockProgressReporterProxy;
 
         [SetUp]
         public void Setup()
         {
             // JavaScriptTranslator uses a few settings from the project file
             ProjectManager.Instance.OpenProject(null);
+            _mockProgressReporterProxy = new Mock<ProgressReporterProxy>();
             _testDeck = new TestDeck(new JavaScriptTranslatorFactory());
+            _testDeck.SetProgressReporterProxy(_mockProgressReporterProxy.Object);
             _testLine = new DeckLine(new List<string>());
             _testElement = new ProjectLayoutElement(TEST_ELEMENT_NAME);
         }

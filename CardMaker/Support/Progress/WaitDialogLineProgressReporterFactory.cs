@@ -22,27 +22,32 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Collections.Generic;
-using CardMaker.XML;
-using Support.Progress;
+using System.Threading;
+using Support.UI;
 
-namespace CardMaker.Card.Import
+namespace Support.Progress
 {
-    public abstract class ReferenceReader
+    /// <summary>
+    /// WaitDialog based Progress Reporter factory.
+    /// </summary>
+    public class WaitDialogProgressReporterFactory : ProgressReporterFactory
     {
-        public string ReferencePath { get; }
-        public IProgressReporter ProgressReporter { get; set; }
+        public int Width { get; set; }
 
-        public abstract void GetReferenceData(ProjectLayoutReference zReference, List<List<string>> listReferenceData);
-        public abstract void GetProjectDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData);
-        public abstract void GetDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData);
-
-        /// <summary>
-        /// Called to signify that all references have been loaded
-        /// </summary>
-        public virtual void FinalizeReferenceLoad()
+        public WaitDialogProgressReporterFactory()
         {
+            Width = 400;
+        }
 
+        public IProgressReporter CreateReporter(string sTitle, string[] arrayDescriptions, ThreadStart zThreadStart)
+        {
+            return new WaitDialog(arrayDescriptions.Length, zThreadStart, sTitle, arrayDescriptions, Width);
+        }
+
+        public IProgressReporter CreateReporter(string sTitle, string[] arrayDescriptions,
+            ParameterizedThreadStart zThreadStart, object zParamObject)
+        {
+            return new WaitDialog(arrayDescriptions.Length, zThreadStart, zParamObject, sTitle, arrayDescriptions, Width);
         }
     }
 }

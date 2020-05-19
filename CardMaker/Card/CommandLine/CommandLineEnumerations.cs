@@ -22,27 +22,17 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Collections.Generic;
-using CardMaker.XML;
-using Support.Progress;
-
-namespace CardMaker.Card.Import
+namespace CardMaker.Card.CommandLine
 {
-    public abstract class ReferenceReader
+    public enum CommandLineArg
     {
-        public string ReferencePath { get; }
-        public IProgressReporter ProgressReporter { get; set; }
-
-        public abstract void GetReferenceData(ProjectLayoutReference zReference, List<List<string>> listReferenceData);
-        public abstract void GetProjectDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData);
-        public abstract void GetDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData);
-
-        /// <summary>
-        /// Called to signify that all references have been loaded
-        /// </summary>
-        public virtual void FinalizeReferenceLoad()
-        {
-
-        }
+        CardIndices,
+        ExportFormat,
+        ExportPath,
+        GoogleCredential,
+        LayoutNames,
+        LayoutIndices,
+        PageOrientation,
+        ProjectPath
     }
 }

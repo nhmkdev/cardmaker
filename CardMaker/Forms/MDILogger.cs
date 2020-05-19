@@ -30,7 +30,7 @@ using Support.UI;
 
 namespace CardMaker.Forms
 {
-    public partial class MDILogger : Form, LoggerI
+    public partial class MDILogger : Form, ILogger
     {
         public MDILogger()
         {
@@ -80,7 +80,7 @@ namespace CardMaker.Forms
 
         #endregion
 
-        #region LoggerI
+        #region ILogger
 
         public void AddLogLines(string[] arrayLines)
         {

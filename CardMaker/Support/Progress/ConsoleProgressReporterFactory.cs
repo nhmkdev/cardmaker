@@ -22,27 +22,21 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Collections.Generic;
-using CardMaker.XML;
-using Support.Progress;
+using System.Threading;
 
-namespace CardMaker.Card.Import
+namespace Support.Progress
 {
-    public abstract class ReferenceReader
+    public class ConsoleProgressReporterFactory : ProgressReporterFactory
     {
-        public string ReferencePath { get; }
-        public IProgressReporter ProgressReporter { get; set; }
-
-        public abstract void GetReferenceData(ProjectLayoutReference zReference, List<List<string>> listReferenceData);
-        public abstract void GetProjectDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData);
-        public abstract void GetDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData);
-
-        /// <summary>
-        /// Called to signify that all references have been loaded
-        /// </summary>
-        public virtual void FinalizeReferenceLoad()
+        public IProgressReporter CreateReporter(string sTitle, string[] arrayDescriptions, ThreadStart zThreadStart)
         {
+            return new ConsoleProgressReporter(sTitle, arrayDescriptions, zThreadStart);
+        }
 
+        public IProgressReporter CreateReporter(string sTitle, string[] arrayDescriptions,
+            ParameterizedThreadStart zThreadStart, object zParamObject)
+        {
+            return new ConsoleProgressReporter(sTitle, arrayDescriptions, zThreadStart, zParamObject);
         }
     }
 }

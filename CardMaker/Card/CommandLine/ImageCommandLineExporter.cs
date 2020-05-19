@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////////////////////
+﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
 // Copyright (c) 2019 Tim Stair
@@ -23,53 +23,42 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Windows.Forms;
-using CardMaker.Card.CommandLine;
-using CardMaker.Card.Shapes;
-using CardMaker.Card.Translation;
+using CardMaker.Card.Export;
 using CardMaker.Data;
-using CardMaker.Forms;
 using Support.IO;
-using Support.Util;
+using Support.UI;
 
-namespace CardMaker
+namespace CardMaker.Card.CommandLine
 {
-    static class Program
+    public class ImageCommandLineExporter : CommandLineExporterBase
     {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        static void Main(string[] args)
+        public override bool Validate()
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-
-            Initialize();
-            var commandLineProcessor = new CommandLineProcessor(new CommandLineParser().Parse(args));
-            if (!commandLineProcessor.Process())
-            {
-                Application.Run(new CardMakerMDI());
-            }
+            return true;
         }
 
-        /// <summary>
-        /// Cross application initialization of components.
-        /// </summary>
-        static void Initialize()
+        public override bool Export()
         {
-            ShapeManager.Init();
-            CardMakerMDI.RestoreReplacementChars();
-
-            var zForm = new Form();
-            var zGraphics = zForm.CreateGraphics();
+            var sExportPath = GetExportPath(true);
+#warning is page orientation saved on the layout?
+            var zFileCardExporter = new FileCardExporter(GetLayoutIndices(), sExportPath, null, 0, GetImageFormat())
+            {
+                ExportCardIndices = GetCardIndices()
+            };
+            zFileCardExporter.ProgressReporter = CardMakerInstance.ProgressReporterFactory.CreateReporter(
+                "PDF Export - {0}".FormatString(sExportPath),
+                new string[] { ProgressName.LAYOUT, ProgressName.REFERENCE_DATA , ProgressName.CARD },
+                zFileCardExporter.ExportThread);
             try
             {
-                CardMakerInstance.ApplicationDPI = zGraphics.DpiX;
+                zFileCardExporter.ProgressReporter.StartProcessing(null);
+                return true;
             }
-            finally
+            catch (Exception e)
             {
-                zGraphics.Dispose();
+                Logger.AddLogLine(e.Message);
+                Logger.AddLogLine(e.StackTrace);
+                return false;
             }
         }
     }

@@ -31,12 +31,15 @@ using CardMaker.Data;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
 using Support.IO;
+using Support.Progress;
 using Support.UI;
 
 namespace CardMaker.Forms
 {
     public partial class ProjectManagerUI : Form
     {
+        private IProgressReporter m_zProgressReporter;
+
         public ProjectManagerUI()
         {
             InitializeComponent();
@@ -84,8 +87,8 @@ namespace CardMaker.Forms
         {
             if (Directory.Exists(txtFolder.Text))
             {
-                var zWait = new WaitDialog(0, UpdateThread, "Scanning Directory", new string[] { string.Empty }, 300);
-                zWait.ShowDialog(this);
+                m_zProgressReporter = CardMakerInstance.ProgressReporterFactory.CreateReporter("Scanning Directory", new string[] { string.Empty }, UpdateThread);
+                m_zProgressReporter.StartProcessing(this);
             }
         }
 
@@ -94,7 +97,7 @@ namespace CardMaker.Forms
         /// </summary>
         private void UpdateThread()
         {
-            WaitDialog.Instance.SetStatusText("Scanning for Projects...");
+            m_zProgressReporter.SetStatusText("Scanning for Projects...");
             var arrayProjects = Directory.GetFiles(txtFolder.Text, "*.cmp", SearchOption.AllDirectories);
             foreach (string sProject in arrayProjects)
             {
@@ -114,8 +117,8 @@ namespace CardMaker.Forms
                     listViewProjects.InvokeAction(() => listViewProjects.Items.Add(zItem));
                 }
             }
-            WaitDialog.Instance.ThreadSuccess = true;
-            WaitDialog.Instance.CloseWaitDialog();
+            m_zProgressReporter.ThreadSuccess = true;
+            m_zProgressReporter.Shutdown();
         }
     }
 }

@@ -22,27 +22,29 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Collections.Generic;
-using CardMaker.XML;
-using Support.Progress;
+using System.Threading;
 
-namespace CardMaker.Card.Import
+namespace Support.Progress
 {
-    public abstract class ReferenceReader
+    public interface ProgressReporterFactory
     {
-        public string ReferencePath { get; }
-        public IProgressReporter ProgressReporter { get; set; }
-
-        public abstract void GetReferenceData(ProjectLayoutReference zReference, List<List<string>> listReferenceData);
-        public abstract void GetProjectDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData);
-        public abstract void GetDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData);
+        /// <summary>
+        /// Creates a progress reporter.
+        /// </summary>
+        /// <param name="sTitle">The title of the process to report</param>
+        /// <param name="arrayDescriptions">Descriptions of the sub statuses</param>
+        /// <param name="zThreadStart">The thread entry point to execute</param>
+        /// <returns>The progress reporter</returns>
+        IProgressReporter CreateReporter(string sTitle, string[] arrayDescriptions, ThreadStart zThreadStart);
 
         /// <summary>
-        /// Called to signify that all references have been loaded
+        /// Creates a progress reporter.
         /// </summary>
-        public virtual void FinalizeReferenceLoad()
-        {
-
-        }
+        /// <param name="sTitle">The title of the process to report</param>
+        /// <param name="arrayDescriptions">Descriptions of the sub statuses</param>
+        /// <param name="zThreadStart">The thread entry point to execute</param>
+        /// <param name="zParamObject">The parameter to pass into the thread for execution</param>
+        /// <returns>The progress reporter</returns>
+        IProgressReporter CreateReporter(string sTitle, string[] arrayDescriptions, ParameterizedThreadStart zThreadStart, object zParamObject);
     }
 }

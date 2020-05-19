@@ -26,6 +26,7 @@ using CardMaker.Card;
 using CardMaker.XML;
 using System.Collections.Generic;
 using CardMaker.Card.Translation;
+using Support.Progress;
 
 namespace UnitTest.DeckObject
 {
@@ -69,6 +70,11 @@ namespace UnitTest.DeckObject
         public void SetDisallowedCharReplacement(char c, string replacement)
         {
             FilenameTranslator.CharReplacement[c] = replacement;
+        }
+
+        public void SetProgressReporterProxy(ProgressReporterProxy zProgressReporterProxy)
+        {
+            m_zReporterProxy = zProgressReporterProxy;
         }
     }
 }

@@ -23,25 +23,29 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System.Drawing;
+using System.Linq;
+using CardMaker.Data;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
+using Support.Progress;
 
 namespace CardMaker.Card.Export
 {
     public abstract class CardExportBase
     {
         protected Bitmap m_zExportCardBuffer;
-        protected ProjectLayout m_zLastLayout = null;
-
-        protected int ExportLayoutStartIndex { get; private set; }
-        protected int ExportLayoutEndIndex { get; private set; }
-        
+        protected int[] ExportLayoutIndices { get; private set; }
         protected CardRenderer CardRenderer { get; }
+        
+        public IProgressReporter ProgressReporter { get; set; }
 
-        protected CardExportBase(int nLayoutStartIndex, int nLayoutEndIndex)
+        protected CardExportBase(int nLayoutStartIndex, int nLayoutEndIndex) : this(Enumerable.Range(nLayoutStartIndex, nLayoutEndIndex - nLayoutStartIndex).ToArray())
         {
-            ExportLayoutStartIndex = nLayoutStartIndex;
-            ExportLayoutEndIndex = nLayoutEndIndex;
+        }
+
+        protected CardExportBase(int[] arrayExportLayoutIndices)
+        {
+            ExportLayoutIndices = arrayExportLayoutIndices;
             CardRenderer = new CardRenderer
             {
                 CurrentDeck = new Deck()
@@ -56,7 +60,13 @@ namespace CardMaker.Card.Export
         {
             // based on the currently loaded project get the layout based on the index
             var zLayout = ProjectManager.Instance.LoadedProject.Layout[nIdx];
-            CurrentDeck.SetAndLoadLayout(zLayout ?? CurrentDeck.CardLayout, true);
+            CurrentDeck.SetAndLoadLayout(zLayout ?? CurrentDeck.CardLayout, true, 
+                new ProgressReporterProxy()
+                {
+                    ProgressIndex = ProgressReporter.GetProgressIndex(ProgressName.REFERENCE_DATA),
+                    ProgressReporter = ProgressReporter,
+                    ProxyOwnsReporter = false
+                });
         }
 
         protected Deck CurrentDeck => CardRenderer.CurrentDeck;
@@ -101,5 +111,10 @@ namespace CardMaker.Card.Export
                     break;
             }
         }
+
+        /// <summary>
+        /// The primary entry point for the export processing
+        /// </summary>
+        public abstract void ExportThread();
     }
 }

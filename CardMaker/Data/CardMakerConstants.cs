@@ -46,4 +46,11 @@ namespace CardMaker.Data
             {SheetsService.Scope.SpreadsheetsReadonly, DriveService.Scope.DriveReadonly};
 
     }
+
+    public static class ProgressName
+    {
+        public const string REFERENCE_DATA = "Reference Data";
+        public const string LAYOUT = "Layout";
+        public const string CARD = "Card";
+    }
 }

@@ -27,6 +27,7 @@ using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
 using CardMaker.Card.Export;
+using CardMaker.Data;
 using CardMaker.Events.Args;
 using CardMaker.Events.Managers;
 using Support.UI;
@@ -57,13 +58,13 @@ namespace CardMaker.Forms
             ClearIssues();
             m_bTrackIssues = true;
 
-            var zWait = new WaitDialog(
-                2,
-                new CompilerCardExporter(0, ProjectManager.Instance.LoadedProject.Layout.Length).ExportThread,
+            var compilerExporter = new CompilerCardExporter(0, ProjectManager.Instance.LoadedProject.Layout.Length);
+            var progressReporter = CardMakerInstance.ProgressReporterFactory.CreateReporter(
                 "Compile",
-                new string[] { "Layout", "Card" },
-                450);
-            zWait.ShowDialog(ParentForm);
+                new string[] { ProgressName.LAYOUT, ProgressName.REFERENCE_DATA, ProgressName.CARD },
+                compilerExporter.ExportThread);
+            compilerExporter.ProgressReporter = progressReporter;
+            progressReporter.StartProcessing(ParentForm);
 
             m_bTrackIssues = false;
             Show();

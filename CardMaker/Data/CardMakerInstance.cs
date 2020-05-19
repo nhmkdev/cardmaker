@@ -27,6 +27,7 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using Support.Google;
+using Support.Progress;
 
 namespace CardMaker.Data
 {
@@ -100,6 +101,11 @@ namespace CardMaker.Data
         public static GoogleInitializerFactory GoogleInitializerFactory { get; set; }
 
         /// <summary>
+        /// General ProgressReporterFactory
+        /// </summary>
+        public static ProgressReporterFactory ProgressReporterFactory { get; set; }
+
+        /// <summary>
         /// The project file indicated on the command line (first argument)
         /// </summary>
         public static string CommandLineProjectFile { get; set; }
@@ -149,6 +155,7 @@ namespace CardMaker.Data
             GoogleCredentialsInvalid = false;
             GoogleInitializerFactory = new GoogleInitializerFactory(CardMakerConstants.APPLICATION_NAME, CardMakerConstants.GOOGLE_CLIENT_ID, CardMakerConstants.GOOGLE_SCOPES);
             GoogleAccessToken = null;
+            ProgressReporterFactory = new WaitDialogProgressReporterFactory();
             ProcessingUserAction = false;
             Random = new Random();
         }

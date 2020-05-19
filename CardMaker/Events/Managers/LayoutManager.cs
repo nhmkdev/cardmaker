@@ -172,7 +172,7 @@ namespace CardMaker.Events.Managers
             {
                 ActiveDeck = new Deck();
 
-                ActiveDeck.SetAndLoadLayout(ActiveLayout, false);
+                ActiveDeck.SetAndLoadLayout(ActiveLayout, false, null);
             }
 
             LayoutLoaded?.Invoke(this, new LayoutEventArgs(ActiveLayout, ActiveDeck));

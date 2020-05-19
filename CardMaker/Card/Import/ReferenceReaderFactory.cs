@@ -24,42 +24,61 @@
 
 using CardMaker.Data;
 using CardMaker.XML;
+using Support.Progress;
 
 namespace CardMaker.Card.Import
 {
     public static class ReferenceReaderFactory
     {
-        public static ReferenceReader GetReader(ProjectLayoutReference zReference)
+#warning unify these lookups in both methods... static type dictionary or something... this is bleh
+        public static ReferenceReader GetReader(ProjectLayoutReference zReference, IProgressReporter zProgressReporter)
         {
             if (zReference == null)
             {
                 return null;
             }
+
+            ReferenceReader zReader = null;
+
             if (zReference.RelativePath.StartsWith(GoogleSpreadsheetReference.GOOGLE_REFERENCE +
                                                            GoogleSpreadsheetReference.GOOGLE_REFERENCE_SPLIT_CHAR))
             {
-                var zReader = new GoogleReferenceReader(zReference);
-                return CardMakerInstance.GoogleCredentialsInvalid ? null : zReader;
+                zReader = new GoogleReferenceReader(zReference);
             }
-
             if (zReference.RelativePath.StartsWith(ExcelSpreadsheetReference.EXCEL_REFERENCE +
                                                            ExcelSpreadsheetReference.EXCEL_REFERENCE_SPLIT_CHAR))
             {
-                return new ExcelReferenceReader(zReference);
+                zReader = new ExcelReferenceReader(zReference);
             }
-            return new CSVReferenceReader(zReference);
+
+            if (zReader == null)
+            {
+                zReader = new CSVReferenceReader(zReference);
+            }
+
+            zReader.ProgressReporter = zProgressReporter;
+            return zReader;
         }
 
-        public static ReferenceReader GetDefineReader(ReferenceType eReferenceType)
+        public static ReferenceReader GetDefineReader(ReferenceType eReferenceType, IProgressReporter zProgressReporter)
         {
+            ReferenceReader zReferenceReader = null;
             switch (eReferenceType)
             {
                 case ReferenceType.CSV:
-                    return new CSVReferenceReader();
+                    zReferenceReader = new CSVReferenceReader();
+                    break;
                 case ReferenceType.Google:
-                    return new GoogleReferenceReader();
+                    zReferenceReader = new GoogleReferenceReader();
+                    break;
                 case ReferenceType.Excel:
-                    return new ExcelReferenceReader();
+                    zReferenceReader = new ExcelReferenceReader();
+                    break;
+            }
+
+            if (zReferenceReader == null)
+            {
+                zReferenceReader.ProgressReporter = zProgressReporter;
             }
             return null;
         }            

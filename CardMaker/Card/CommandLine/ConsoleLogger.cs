@@ -22,10 +22,24 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace CardMaker.Card.Export
+using System;
+using Support.IO;
+
+namespace CardMaker.Card.CommandLine
 {
-    public interface ICardExporter
+    public class ConsoleLogger : ILogger
     {
-        void ExportThread();
+        public void AddLogLines(string[] arrayLines)
+        {
+            foreach (var sLine in arrayLines)
+            {
+                Console.WriteLine(sLine);
+            }
+        }
+
+        public void ClearLog()
+        {
+            // no opp
+        }
     }
 }

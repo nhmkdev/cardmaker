@@ -32,6 +32,7 @@ using CardMaker.Data;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
 using Support.IO;
+using Support.Progress;
 using Support.UI;
 
 #if MONO_BUILD
@@ -40,10 +41,12 @@ using System.Threading;
 
 namespace CardMaker.Card
 {
+#warning Create Deck Reader so the progress and loading isn't in this class
     public class Deck
     {
         public const string DEFINES_DATA_POSTFIX = "_defines";
 
+        protected ProgressReporterProxy m_zReporterProxy;
         protected int m_nCardIndex = -1;
         protected int m_nCardPrintIndex;
 
@@ -120,9 +123,9 @@ namespace CardMaker.Card
             }
             catch (Exception ex)
             {
-                Logger.AddLogLine("Failed to read data file(s). " + ex.Message);
-                WaitDialog.Instance.ThreadSuccess = false;
-                WaitDialog.Instance.CloseWaitDialog();
+                ReadDataCore(null);
+                m_zReporterProxy.AddIssue("Failed to read data file(s). " + ex.Message);
+                m_zReporterProxy.Shutdown();
             }
         }
 
@@ -141,18 +144,18 @@ namespace CardMaker.Card
             }
             else
             {
-                WaitDialog.Instance.ProgressReset(0, 0, zReferenceData.Length * 2 + 1, 0);
+                m_zReporterProxy.ProgressReset(0, zReferenceData.Length * 2 + 1, 0);
 
                 for(int nIdx = 0; nIdx < zReferenceData.Length; nIdx++)
                 {
                     var zReference = zReferenceData[nIdx];
                     var listRefLines = new List<List<string>>();
-                    zRefReader = ReferenceReaderFactory.GetReader(zReference);
+                    zRefReader = ReferenceReaderFactory.GetReader(zReference, m_zReporterProxy.ProgressReporter);
 
                     if (zRefReader == null)
                     {
                         listLines.Clear();
-                        Logger.AddLogLine($"Failed to load reference: {zReference.RelativePath}");
+                        m_zReporterProxy.AddIssue($"Failed to load reference: {zReference.RelativePath}");
                         break;
                     }
                     // 0 index is always the default reference in the case of multi load
@@ -163,16 +166,14 @@ namespace CardMaker.Card
                             zRefReader.GetProjectDefineData(zReference, listDefineLines);
                             if (listDefineLines.Count == 0)
                             {
-                                Logger.AddLogLine(
-                                    "No defines found for project file: {0}".FormatString(
-                                        ProjectManager.Instance.ProjectFilePath));
+                                m_zReporterProxy.AddIssue("No defines found for project file: {0}".FormatString(ProjectManager.Instance.ProjectFilePath));
                             }
                         }
                         else
                         {
-                            Logger.AddLogLine("No defines loaded for project -- project not yet saved.");
+                            m_zReporterProxy.AddIssue("No defines loaded for project -- project not yet saved.");
                         }
-                        WaitDialog.Instance.ProgressStep(0);
+                        m_zReporterProxy.ProgressStep();
                     }
 
                     zRefReader.GetReferenceData(zReference, listRefLines);
@@ -182,18 +183,17 @@ namespace CardMaker.Card
                         listRefLines.RemoveAt(0);
                     }
                     listLines.AddRange(listRefLines);
-                    WaitDialog.Instance.ProgressStep(0);
+                    m_zReporterProxy.ProgressStep();
 
                     var nPriorCount = listDefineLines.Count;
                     zRefReader.GetDefineData(zReference, listDefineLines);
                     if (listDefineLines.Count == nPriorCount)
                     {
-                        Logger.AddLogLine(
-                            "No defines found for reference: {0}".FormatString(zReference.RelativePath));
+                        m_zReporterProxy.AddIssue("No defines found for reference: {0}".FormatString(zReference.RelativePath));
                     }
 
                     zRefReader.FinalizeReferenceLoad();
-                    WaitDialog.Instance.ProgressStep(0);                       
+                    m_zReporterProxy.ProgressStep();                       
                 }
             }
 
@@ -234,7 +234,7 @@ namespace CardMaker.Card
                     else
                     {
                         IssueManager.Instance.FireAddIssueEvent("Duplicate column found in: " + sReferencePath + "::" + "Column [" + nIdx + "]: " + sKey);
-                        Logger.AddLogLine("Duplicate column found in: " + sReferencePath + "::" + "Column [" + nIdx + "]: " + sKey);
+                        m_zReporterProxy.AddIssue("Duplicate column found in: " + sReferencePath + "::" + "Column [" + nIdx + "]: " + sKey);
                     }
                 }
 
@@ -262,7 +262,7 @@ namespace CardMaker.Card
                             Dictionary<string, int> dictionaryOverrides = dictionaryElementOverrides[sElementName];
                             if (dictionaryOverrides.ContainsKey(sElementItemOverride))
                             {
-                                Logger.AddLogLine("Duplicate override found: {0}".FormatString(sElementItemOverride));
+                                m_zReporterProxy.AddIssue("Duplicate override found: {0}".FormatString(sElementItemOverride));
                             }
                             dictionaryOverrides[sElementItemOverride] = dictionaryColumnNames[sKey];
                         }
@@ -392,15 +392,15 @@ namespace CardMaker.Card
                         string sVal;
                         if (dictionaryDefines.TryGetValue(sKey.ToLower(), out sVal))
                         {
-                            string sMsg = "Duplicate define found: " + sKey;
+                            var sMsg = "Duplicate define found: " + sKey;
                             IssueManager.Instance.FireAddIssueEvent(sMsg);
-                            Logger.AddLogLine(sMsg);
+                            m_zReporterProxy.AddIssue(sMsg);
                         }
                         else if (dictionaryColumnNames.TryGetValue(sKey.ToLower(), out nIdx))
                         {
-                            string sMsg = "Overlapping column name and define found in: " + sReferencePath + "::" + "Column [" + nIdx + "]: " + sKey;
+                            var sMsg = "Overlapping column name and define found in: " + sReferencePath + "::" + "Column [" + nIdx + "]: " + sKey;
                             IssueManager.Instance.FireAddIssueEvent(sMsg);
-                            Logger.AddLogLine(sMsg);
+                            m_zReporterProxy.AddIssue(sMsg);
                         }
                         else
                         {
@@ -415,8 +415,7 @@ namespace CardMaker.Card
 #if MONO_BUILD
             Thread.Sleep(100);
 #endif
-            WaitDialog.Instance.ThreadSuccess = true;
-            WaitDialog.Instance.CloseWaitDialog();
+            m_zReporterProxy.Shutdown();
         }
 
         /// <summary>
@@ -425,21 +424,21 @@ namespace CardMaker.Card
         /// <param name="listDefineLines"></param>
         private void ReadDefaultProjectDefinitions(List<List<string>> listDefineLines)
         {
-            WaitDialog.Instance.ProgressReset(0, 0, 2, 0);
+            m_zReporterProxy.ProgressReset(0, 2, 0);
             ReferenceReader zRefReader;
             if (ReferenceType.Google == ProjectManager.Instance.LoadedProjectDefaultDefineReferenceType)
             {
-                zRefReader = ReferenceReaderFactory.GetDefineReader(ReferenceType.Google);
+                zRefReader = ReferenceReaderFactory.GetDefineReader(ReferenceType.Google, m_zReporterProxy.ProgressReporter);
                 zRefReader?.GetProjectDefineData(null, listDefineLines);
             }
-            WaitDialog.Instance.ProgressStep(0);
+            m_zReporterProxy.ProgressStep();
             // always attempt to load the local if nothing was pulled from google
             if (0 == listDefineLines.Count)
             {
-                zRefReader = ReferenceReaderFactory.GetDefineReader(ReferenceType.CSV);
+                zRefReader = ReferenceReaderFactory.GetDefineReader(ReferenceType.CSV, m_zReporterProxy.ProgressReporter);
                 zRefReader?.GetProjectDefineData(null, listDefineLines);
             }
-            WaitDialog.Instance.ProgressStep(0);
+            m_zReporterProxy.ProgressStep();
         }
 
         public ElementString TranslateString(string sRawString, DeckLine zDeckLine, ProjectLayoutElement zElement, bool bPrint, string sCacheSuffix = "")
@@ -527,7 +526,6 @@ namespace CardMaker.Card
         #endregion
 
         #region Markup Cache
-
         public void AddCachedMarkup(string sElementName, FormattedTextDataCache zFormattedData)
         {
             m_zTranslator.AddCachedMarkup(sElementName, zFormattedData);
@@ -539,22 +537,18 @@ namespace CardMaker.Card
         }
         #endregion
 
-
         #region Layout Set
-        public void SetAndLoadLayout(ProjectLayout zLayout, bool bExporting)
+        public void SetAndLoadLayout(ProjectLayout zLayout, bool bExporting, ProgressReporterProxy zReporterProxy)
         {
             EmptyReference = false;
 
             CardLayout = zLayout;
 
             ResetPrintCardIndex();
-
-            var bReferenceFound = false;
+            ProjectLayoutReference[] zReferenceData = null;
 
             if (null != CardLayout.Reference)
             {
-                ProjectLayoutReference[] zReferenceData = null;
-
                 if (CardLayout.combineReferences)
                 {
                     var listReferences = new List<ProjectLayoutReference>();
@@ -588,41 +582,43 @@ namespace CardMaker.Card
                         }
                     }
                 }
-                var zWait = new WaitDialog(
-                    1,
-                    ReadData,
-                    zReferenceData,
-                    "Loading Data",
-                    null,
-                    400);
-#warning this needs to be pulled into a deck loader
-                CardMakerInstance.ApplicationForm.InvokeAction(() => zWait.ShowDialog(CardMakerInstance.ApplicationForm));
-                if (!bExporting)
-                {
-                    if (CardMakerInstance.GoogleCredentialsInvalid)
-                    {
-                        CardMakerInstance.GoogleCredentialsInvalid = false;
-                        GoogleAuthManager.Instance.FireGoogleAuthCredentialsErrorEvent(
-                            () => LayoutManager.Instance.InitializeActiveLayout());
-                    }
-                }
-                bReferenceFound = zWait.ThreadSuccess;
             }
+            InitiateReferenceRead(zReporterProxy, zReferenceData);
 
-            if (!bReferenceFound)
+            if (!bExporting)
             {
-                // setup the placeholder single card
-                var zWait = new WaitDialog(
-                    1,
-                    ReadData,
-                    null,
-                    "Loading Data",
-                    null,
-                    400)
+                if (CardMakerInstance.GoogleCredentialsInvalid)
                 {
-                    CancelButtonVisibile = false
+                    CardMakerInstance.GoogleCredentialsInvalid = false;
+                    GoogleAuthManager.Instance.FireGoogleAuthCredentialsErrorEvent(
+                        () => LayoutManager.Instance.InitializeActiveLayout());
+                }
+            }
+        }
+
+        private void InitiateReferenceRead(ProgressReporterProxy zReporterProxy, ProjectLayoutReference[] arrayProjectLayoutReferences)
+        {
+            if (zReporterProxy != null)
+            {
+                m_zReporterProxy = zReporterProxy;
+                ReadData(arrayProjectLayoutReferences);
+            }
+            else
+            {
+                var zProgressReporter = CardMakerInstance.ProgressReporterFactory.CreateReporter(
+                    "Loading Reference Data",
+                    new string[] { ProgressName.REFERENCE_DATA },
+                    ReadData,
+                    arrayProjectLayoutReferences
+                );
+                zProgressReporter.CancelButtonVisible = false;
+                m_zReporterProxy = new ProgressReporterProxy()
+                {
+                    ProgressIndex = 0, // known from above
+                    ProgressReporter = zProgressReporter,
+                    ProxyOwnsReporter = true
                 };
-                CardMakerInstance.ApplicationForm.InvokeAction(() => zWait.ShowDialog(CardMakerInstance.ApplicationForm));
+                CardMakerInstance.ApplicationForm.InvokeAction(() => zProgressReporter.StartProcessing(CardMakerInstance.ApplicationForm));
             }
         }
 

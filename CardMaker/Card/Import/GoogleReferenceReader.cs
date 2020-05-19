@@ -101,7 +101,7 @@ namespace CardMaker.Card.Import
             }
             else
             {
-                Logger.AddLogLine("Failed to read cache file: {0}".FormatString(sLocalCacheFile));
+                ProgressReporter.AddIssue("Failed to read cache file: {0}".FormatString(sLocalCacheFile));
             }
         }
 
@@ -118,7 +118,7 @@ namespace CardMaker.Card.Import
             List<List<string>> listCacheData;
             if (!CardMakerInstance.ForceDataCacheRefresh && m_dictionaryDataCache.TryGetValue(sCacheKey, out listCacheData))
             {
-                Logger.AddLogLine("Loading {0} from local cache".FormatString(sCacheKey));
+                ProgressReporter.AddIssue("Loading {0} from local cache".FormatString(sCacheKey));
                 listData.AddRange(listCacheData);
                 return;
             }
@@ -134,7 +134,7 @@ namespace CardMaker.Card.Import
                 var zGoogleSpreadsheet = new GoogleSpreadsheet(CardMakerInstance.GoogleInitializerFactory);
                 if (string.IsNullOrWhiteSpace(zReference.SpreadsheetId))
                 {
-                    Logger.AddLogLine("WARNING: The reference {0}.{1} is missing the Spreadsheet ID. Please reconfigure this reference."
+                    ProgressReporter.AddIssue("WARNING: The reference {0}.{1} is missing the Spreadsheet ID. Please reconfigure this reference."
                         .FormatString(zReference.SpreadsheetName, zReference.SheetName));
                     listGoogleData = zGoogleSpreadsheet.GetSheetContentsBySpreadsheetName(sSpreadsheetName, sSheetName);
                 }
@@ -145,17 +145,17 @@ namespace CardMaker.Card.Import
             }
             catch (GoogleApiException e)
             {
-                Logger.AddLogLine("Google Spreadsheet access exception: " + e.Message);
+                ProgressReporter.AddIssue("Google Spreadsheet access exception: " + e.Message);
                 bAuthorizationError = GoogleApi.IsAuthorizationError(e);
             }
             catch (Exception e)
             {
-                Logger.AddLogLine("General exception: " + e.Message);
+                ProgressReporter.AddIssue("General exception: " + e.Message);
                 listGoogleData = null;
             }
             if (null == listGoogleData)
             {
-                Logger.AddLogLine("Failed to load any data from Google Spreadsheet." + "[" + sSpreadsheetName + "," + sSheetName + "]" + (bAuthorizationError ? " Google reported a problem with your credentials." : String.Empty));
+                ProgressReporter.AddIssue("Failed to load any data from Google Spreadsheet." + "[" + sSpreadsheetName + "," + sSheetName + "]" + (bAuthorizationError ? " Google reported a problem with your credentials." : String.Empty));
             }
             else
             {
@@ -174,12 +174,12 @@ namespace CardMaker.Card.Import
             }
         }
 
-        public void GetReferenceData(ProjectLayoutReference zReference, List<List<string>> listReferenceData)
+        public override void GetReferenceData(ProjectLayoutReference zReference, List<List<string>> listReferenceData)
         {
             GetData(GoogleSpreadsheetReference.parse(ReferencePath), listReferenceData, false);
         }
 
-        public void GetProjectDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData)
+        public override void GetProjectDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData)
         {
             if (null == ProjectManager.Instance.ProjectFilePath)
             {
@@ -189,7 +189,7 @@ namespace CardMaker.Card.Import
             GetData(GetDefinesReference(), listDefineData, true);
         }
 
-        public void GetDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData)
+        public override void GetDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData)
         {
             GetData(GoogleSpreadsheetReference.parse(ReferencePath), listDefineData, true, Deck.DEFINES_DATA_POSTFIX);
         }
@@ -210,7 +210,7 @@ namespace CardMaker.Card.Import
             return sReference + "::" + sNameAppend;
         }
 
-        public void FinalizeReferenceLoad()
+        public override void FinalizeReferenceLoad()
         {
             if (!m_bCacheUpdated || !CardMakerSettings.EnableGoogleCache)
             {
@@ -233,7 +233,7 @@ namespace CardMaker.Card.Import
                 listCacheItems,
                 CardMakerConstants.XML_ENCODING))
             {
-                Logger.AddLogLine("Failed to write cache file: {0}".FormatString(sLocalCacheFile));
+                ProgressReporter.AddIssue("Failed to write cache file: {0}".FormatString(sLocalCacheFile));
             }
         }
     }

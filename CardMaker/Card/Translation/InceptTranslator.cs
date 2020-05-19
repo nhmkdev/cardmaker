@@ -458,7 +458,7 @@ namespace CardMaker.Card.Translation
         private static void LogTranslation(ProjectLayoutElement zElement, string sOut)
         {
             var sLog = "Translate[{0}] {1}".FormatString(zElement.name, sOut);
-#if DEBUG
+#if DEBUG && FALSE
             System.Diagnostics.Debug.WriteLine(sLog);
 #else
             if (CardMakerSettings.LogInceptTranslation)

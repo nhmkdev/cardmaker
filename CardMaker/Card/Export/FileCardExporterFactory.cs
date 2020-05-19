@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
@@ -46,7 +47,7 @@ namespace CardMaker.Card.Export
             StitchSkipIndex,
     }
 
-        private static readonly ImageFormat[] s_arrayAllowedFormats =
+        public static readonly ImageFormat[] AllowedImageFormats =
         {
             ImageFormat.Bmp,
             ImageFormat.Emf,
@@ -59,14 +60,17 @@ namespace CardMaker.Card.Export
             ImageFormat.Wmf
         };
 
-        private static readonly string[] s_arrayAllowedFormatNames = s_arrayAllowedFormats.Select(zFormat => zFormat.ToString()).ToArray();
+        public static readonly string[] AllowedImageFormatNames = AllowedImageFormats.Select(zFormat => zFormat.ToString()).ToArray();
 
-        public static ICardExporter BuildFileCardExporter(bool bExportAllLayouts)
+        public static readonly Dictionary<string, ImageFormat> AllowedImageFormatDictionary =
+            AllowedImageFormats.ToDictionary(zFormat => zFormat.ToString().ToUpper(), zFormat => zFormat);
+
+        public static CardExportBase BuildFileCardExporter(bool bExportAllLayouts)
         {
             return bExportAllLayouts ? BuildProjectExporter() : BuildLayoutExporter();
         }
 
-        private static ICardExporter BuildProjectExporter()
+        private static CardExportBase BuildProjectExporter()
         {
             var zQuery = new QueryPanelDialog("Export to Images", 750, false);
             zQuery.SetIcon(Properties.Resources.CardMakerIcon);
@@ -74,7 +78,7 @@ namespace CardMaker.Card.Export
             var sDefinition = ProjectManager.Instance.LoadedProject.exportNameFormat; // default to the project level definition
             var nDefaultFormatIndex = GetLastFormatIndex();
 
-            zQuery.AddPullDownBox("Format", s_arrayAllowedFormatNames, nDefaultFormatIndex, ExportOptionKey.Format);
+            zQuery.AddPullDownBox("Format", AllowedImageFormatNames, nDefaultFormatIndex, ExportOptionKey.Format);
             zQuery.AddCheckBox("Override Layout File Name Formats", false, ExportOptionKey.NameFormatOverride);
             zQuery.AddNumericBox("Stitch Skip Index", CardMakerSettings.ExportStitchSkipIndex, 0, 65535, 1, 0, ExportOptionKey.StitchSkipIndex);
             zQuery.AddTextBox("File Name Format (optional)", sDefinition ?? string.Empty, false, ExportOptionKey.NameFormat);
@@ -100,18 +104,18 @@ namespace CardMaker.Card.Export
 
             ProjectManager.Instance.LoadedProject.lastExportPath = sFolder;
             var nStartLayoutIdx = 0;
-            var nEndLayoutIdx = ProjectManager.Instance.LoadedProject.Layout.Length;
+            var nEndLayoutIdx = ProjectManager.Instance.LoadedProject.Layout.Length - 1;
             var bOverrideLayout = false;
             bOverrideLayout = zQuery.GetBool(ExportOptionKey.NameFormatOverride);
 
-            CardMakerSettings.IniManager.SetValue(IniSettings.LastImageExportFormat, s_arrayAllowedFormatNames[zQuery.GetIndex(ExportOptionKey.Format)]);
+            CardMakerSettings.IniManager.SetValue(IniSettings.LastImageExportFormat, AllowedImageFormatNames[zQuery.GetIndex(ExportOptionKey.Format)]);
             CardMakerSettings.ExportStitchSkipIndex = (int)zQuery.GetDecimal(ExportOptionKey.StitchSkipIndex);
 
             return new FileCardExporter(nStartLayoutIdx, nEndLayoutIdx, sFolder, bOverrideLayout ? zQuery.GetString(ExportOptionKey.NameFormat) : null,
-                CardMakerSettings.ExportStitchSkipIndex, s_arrayAllowedFormats[zQuery.GetIndex(ExportOptionKey.Format)]);
+                CardMakerSettings.ExportStitchSkipIndex, AllowedImageFormats[zQuery.GetIndex(ExportOptionKey.Format)]);
         }
 
-        private static ICardExporter BuildLayoutExporter()
+        private static CardExportBase BuildLayoutExporter()
         {
             var zQuery = new QueryPanelDialog("Export to Images", 750, false);
             zQuery.SetIcon(Properties.Resources.CardMakerIcon);
@@ -120,7 +124,7 @@ namespace CardMaker.Card.Export
             var nDefaultFormatIndex = GetLastFormatIndex();
 
 
-            zQuery.AddPullDownBox("Format", s_arrayAllowedFormatNames, nDefaultFormatIndex, ExportOptionKey.Format);
+            zQuery.AddPullDownBox("Format", AllowedImageFormatNames, nDefaultFormatIndex, ExportOptionKey.Format);
             zQuery.AddNumericBox("Stitch Skip Index", CardMakerSettings.ExportStitchSkipIndex, 0, 65535, 1, 0, ExportOptionKey.StitchSkipIndex);
             zQuery.AddTextBox("File Name Format (optional)", sDefinition ?? string.Empty, false, ExportOptionKey.NameFormat);
             zQuery.AddFolderBrowseBox("Output Folder", 
@@ -150,14 +154,14 @@ namespace CardMaker.Card.Export
                 return null;
             }
 
-            CardMakerSettings.IniManager.SetValue(IniSettings.LastImageExportFormat, s_arrayAllowedFormatNames[zQuery.GetIndex(ExportOptionKey.Format)]);
+            CardMakerSettings.IniManager.SetValue(IniSettings.LastImageExportFormat, AllowedImageFormatNames[zQuery.GetIndex(ExportOptionKey.Format)]);
             CardMakerSettings.ExportStitchSkipIndex = (int)zQuery.GetDecimal(ExportOptionKey.StitchSkipIndex);
 
-            return new FileCardExporter(nLayoutIndex, nLayoutIndex + 1, sFolder, zQuery.GetString(ExportOptionKey.NameFormat),
-                CardMakerSettings.ExportStitchSkipIndex, s_arrayAllowedFormats[zQuery.GetIndex(ExportOptionKey.Format)]);
+            return new FileCardExporter(nLayoutIndex, nLayoutIndex, sFolder, zQuery.GetString(ExportOptionKey.NameFormat),
+                CardMakerSettings.ExportStitchSkipIndex, AllowedImageFormats[zQuery.GetIndex(ExportOptionKey.Format)]);
         }
 
-        public static ICardExporter BuildImageExporter()
+        public static CardExportBase BuildImageExporter()
         {
             var zQuery = new QueryPanelDialog("Export Image", 750, false);
             zQuery.SetIcon(Properties.Resources.CardMakerIcon);
@@ -165,7 +169,7 @@ namespace CardMaker.Card.Export
             var sDefinition = LayoutManager.Instance.ActiveLayout.exportNameFormat;
             var nDefaultFormatIndex = GetLastFormatIndex();
 
-            zQuery.AddPullDownBox("Format", s_arrayAllowedFormatNames, nDefaultFormatIndex, ExportOptionKey.Format);
+            zQuery.AddPullDownBox("Format", AllowedImageFormatNames, nDefaultFormatIndex, ExportOptionKey.Format);
             zQuery.AddTextBox("File Name Format (optional)", sDefinition ?? string.Empty, false, ExportOptionKey.NameFormat);
             zQuery.AddFolderBrowseBox("Output Folder",
                 Directory.Exists(ProjectManager.Instance.LoadedProject.lastExportPath) ? ProjectManager.Instance.LoadedProject.lastExportPath : string.Empty,
@@ -194,13 +198,13 @@ namespace CardMaker.Card.Export
                 return null;
             }
 
-            CardMakerSettings.IniManager.SetValue(IniSettings.LastImageExportFormat, s_arrayAllowedFormatNames[zQuery.GetIndex(ExportOptionKey.Format)]);
+            CardMakerSettings.IniManager.SetValue(IniSettings.LastImageExportFormat, AllowedImageFormatNames[zQuery.GetIndex(ExportOptionKey.Format)]);
 
             return new FileCardSingleExporter(nLayoutIndex, nLayoutIndex + 1, sFolder, zQuery.GetString(ExportOptionKey.NameFormat),
-                s_arrayAllowedFormats[zQuery.GetIndex(ExportOptionKey.Format)], LayoutManager.Instance.ActiveDeck.CardIndex);
+                AllowedImageFormats[zQuery.GetIndex(ExportOptionKey.Format)], LayoutManager.Instance.ActiveDeck.CardIndex);
         }
 
-        public static ICardExporter BuildImageClipboardExporter()
+        public static CardExportBase BuildImageClipboardExporter()
         {
             var nLayoutIndex = ProjectManager.Instance.GetLayoutIndex(LayoutManager.Instance.ActiveLayout);
             if (-1 == nLayoutIndex)
@@ -217,9 +221,9 @@ namespace CardMaker.Card.Export
 
             if (lastImageFormat != string.Empty)
             {
-                for (var nIdx = 0; nIdx < s_arrayAllowedFormatNames.Length; nIdx++)
+                for (var nIdx = 0; nIdx < AllowedImageFormatNames.Length; nIdx++)
                 {
-                    if (s_arrayAllowedFormatNames[nIdx].Equals(lastImageFormat))
+                    if (AllowedImageFormatNames[nIdx].Equals(lastImageFormat))
                     {
                         return nIdx;
                     }

@@ -26,7 +26,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
+using CardMaker.Data;
 using Support.IO;
+using Support.Progress;
 using Support.UI;
 
 namespace Support.Google.Sheets
@@ -35,6 +37,7 @@ namespace Support.Google.Sheets
     {
         private readonly bool m_bRequireSheetSelect;
 
+        private IProgressReporter m_zProgressReporter;
         private List<GoogleSheetInfo> m_listGoogleSheets;
         private GoogleSpreadsheet m_zGoogleSpreadsheet;
         public GoogleSheetInfo SelectedSpreadsheet => listViewSpreadsheets.SelectedItems.Count == 0 ? null : (GoogleSheetInfo)listViewSpreadsheets.SelectedItems[0].Tag;
@@ -73,43 +76,44 @@ namespace Support.Google.Sheets
 
         private void GoogleSpreadsheetBrowser_Load(object sender, EventArgs e)
         {
-            var zWait = new WaitDialog(1,
-                () =>
-                {
-                    var listGoogleSheets = PerformSpreadsheetRetrieve(
-                        () => m_zGoogleSpreadsheet.GetSpreadsheetList(),
-                        () => listViewSpreadsheets.InvokeAction(() => listViewSpreadsheets.Clear()));
-
-                    if (null == listGoogleSheets)
-                    {
-                        this.InvokeAction(
-                            () => MessageBox.Show(this, "Failed to access Google Spreadsheets", "Access Failed", MessageBoxButtons.OK, MessageBoxIcon.Error));
-                        this.InvokeAction(Close);
-                        WaitDialog.Instance.CloseWaitDialog();
-                        return;
-                    }
-
-                    m_listGoogleSheets = listGoogleSheets;
-                    var listNewItems = new List<ListViewItem>();
-                    foreach (var entry in listGoogleSheets)
-                    {
-                        var zLvi = new ListViewItem(entry.Name)
-                        {
-                            Tag = entry
-                        };
-                        listNewItems.Add(zLvi);
-                    }
-                    listViewSpreadsheets.InvokeAction(() =>
-                    {
-                        listViewSpreadsheets.Items.AddRange(listNewItems.ToArray());
-                    });
-
-                    WaitDialog.Instance.CloseWaitDialog();
-                },
+            m_zProgressReporter = CardMakerInstance.ProgressReporterFactory.CreateReporter(
                 "Getting Google Spreadsheets...",
-                null,
-                400);
-            zWait.ShowDialog(this);
+                new string[] {""}, 
+                PerformSheetLookup);
+            m_zProgressReporter.StartProcessing(this);
+        }
+
+        protected void PerformSheetLookup()
+        {
+            var listGoogleSheets = PerformSpreadsheetRetrieve(
+                () => m_zGoogleSpreadsheet.GetSpreadsheetList(),
+                () => listViewSpreadsheets.InvokeAction(() => listViewSpreadsheets.Clear()));
+
+            if (null == listGoogleSheets)
+            {
+                this.InvokeAction(
+                    () => MessageBox.Show(this, "Failed to access Google Spreadsheets", "Access Failed", MessageBoxButtons.OK, MessageBoxIcon.Error));
+                this.InvokeAction(Close);
+                m_zProgressReporter.Shutdown();
+                return;
+            }
+
+            m_listGoogleSheets = listGoogleSheets;
+            var listNewItems = new List<ListViewItem>();
+            foreach (var entry in listGoogleSheets)
+            {
+                var zLvi = new ListViewItem(entry.Name)
+                {
+                    Tag = entry
+                };
+                listNewItems.Add(zLvi);
+            }
+            listViewSpreadsheets.InvokeAction(() =>
+            {
+                listViewSpreadsheets.Items.AddRange(listNewItems.ToArray());
+            });
+
+            m_zProgressReporter.Shutdown();
         }
 
         private void listViewSpreadsheets_Resize(object sender, EventArgs e)

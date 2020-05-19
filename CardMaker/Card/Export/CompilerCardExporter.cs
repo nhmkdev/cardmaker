@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System.Drawing;
+using CardMaker.Data;
 using CardMaker.Events.Managers;
 using Support.UI;
 
@@ -31,22 +32,26 @@ namespace CardMaker.Card.Export
     /// <summary>
     /// This is an exporter used to scan the project for errors
     /// </summary>
-    public class CompilerCardExporter : CardExportBase, ICardExporter
+    public class CompilerCardExporter : CardExportBase
     {
         public CompilerCardExporter(int nLayoutStartIndex, int nLayoutEndIndex)
             : base(nLayoutStartIndex, nLayoutEndIndex)
         {
         }
 
-        public void ExportThread()
+        public override void ExportThread()
         {
-            WaitDialog zWait = WaitDialog.Instance;
-            for (int nIdx = ExportLayoutStartIndex; nIdx < ExportLayoutEndIndex; nIdx++)
+            var progressLayoutIdx = ProgressReporter.GetProgressIndex(ProgressName.LAYOUT);
+            var progressCardIdx = ProgressReporter.GetProgressIndex(ProgressName.CARD);
+
+            ProgressReporter.ProgressReset(progressLayoutIdx, 0, ExportLayoutIndices.Length, 0);
+            foreach (var nIdx in ExportLayoutIndices)
             {
                 IssueManager.Instance.FireChangeCardInfoEvent(nIdx, 1);
                 IssueManager.Instance.FireChangeElementEvent(string.Empty);
+#warning there's no progress reporter
                 ChangeExportLayoutIndex(nIdx);
-                zWait.ProgressReset(1, 0, CurrentDeck.CardCount, 0);
+                ProgressReporter.ProgressReset(progressCardIdx, 0, CurrentDeck.CardCount, 0);
 
                 UpdateBufferBitmap(CurrentDeck.CardLayout.width, CurrentDeck.CardLayout.height);
                 var zGraphics = Graphics.FromImage(m_zExportCardBuffer);
@@ -56,12 +61,12 @@ namespace CardMaker.Card.Export
                     IssueManager.Instance.FireChangeCardInfoEvent(nIdx, nCardIdx + 1);
                     CurrentDeck.CardPrintIndex = nCardIdx;
                     CardRenderer.DrawPrintLineToGraphics(zGraphics);
-                    zWait.ProgressStep(1);
+                    ProgressReporter.ProgressStep(progressCardIdx);
                 }
-                zWait.ProgressStep(0);
+                ProgressReporter.ProgressStep(progressLayoutIdx);
             }
-            zWait.ThreadSuccess = true;
-            zWait.CloseWaitDialog();
+            ProgressReporter.ThreadSuccess = true;
+            ProgressReporter.Shutdown();
         }
     }
 }
