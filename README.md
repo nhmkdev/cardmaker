@@ -4,6 +4,8 @@ CardMaker is an application that generates graphics via data sources. It has a g
 
 This application was created to help me generate components for a board game. You can put all of your variable data into a CSV or Google Spreadsheet and then create layouts in CardMaker. This separates your layout and data so you do not have to manually re-create each card. 
 
+Command line based export support is in development (coming soon!). Soon you will be able to build CardMaker into a workflow!
+
 ## Download
 
 Latest stable (I hope) release binary: [Download 1.0.0.2](https://github.com/nhmkdev/cardmaker/releases/tag/v.1.0.0.2)
