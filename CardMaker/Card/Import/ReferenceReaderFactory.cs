@@ -30,36 +30,45 @@ namespace CardMaker.Card.Import
 {
     public static class ReferenceReaderFactory
     {
-#warning unify these lookups in both methods... static type dictionary or something... this is bleh
+        /// <summary>
+        /// Gets the reference reader based on the reference relative path.
+        /// NOTE: this uses a constructor that passes in the reference
+        /// </summary>
+        /// <param name="zReference">The reference to get the reader for</param>
+        /// <param name="zProgressReporter">ProgressReporter for the Reader to use</param>
+        /// <returns>Reference reader (defaults to CSV)</returns>
         public static ReferenceReader GetReader(ProjectLayoutReference zReference, IProgressReporter zProgressReporter)
         {
             if (zReference == null)
             {
                 return null;
             }
-
-            ReferenceReader zReader = null;
-
+            ReferenceReader zReferenceReader = null;
             if (zReference.RelativePath.StartsWith(GoogleSpreadsheetReference.GOOGLE_REFERENCE +
                                                            GoogleSpreadsheetReference.GOOGLE_REFERENCE_SPLIT_CHAR))
             {
-                zReader = new GoogleReferenceReader(zReference);
+                zReferenceReader = new GoogleReferenceReader(zReference);
             }
             if (zReference.RelativePath.StartsWith(ExcelSpreadsheetReference.EXCEL_REFERENCE +
                                                            ExcelSpreadsheetReference.EXCEL_REFERENCE_SPLIT_CHAR))
             {
-                zReader = new ExcelReferenceReader(zReference);
+                zReferenceReader = new ExcelReferenceReader(zReference);
             }
-
-            if (zReader == null)
+            if (null == zReferenceReader)
             {
-                zReader = new CSVReferenceReader(zReference);
+                zReferenceReader = new CSVReferenceReader(zReference);
             }
 
-            zReader.ProgressReporter = zProgressReporter;
-            return zReader;
+            zReferenceReader.ProgressReporter = zProgressReporter;
+            return zReferenceReader;
         }
 
+        /// <summary>
+        /// Gets the reference reader based on the type
+        /// </summary>
+        /// <param name="eReferenceType">The type of reference to get the reader for</param>
+        /// <param name="zProgressReporter">ProgressReporter for the Reader to use</param>
+        /// <returns>Reference reader (defaults to null)</returns>
         public static ReferenceReader GetDefineReader(ReferenceType eReferenceType, IProgressReporter zProgressReporter)
         {
             ReferenceReader zReferenceReader = null;

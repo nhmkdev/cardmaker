@@ -37,6 +37,8 @@ namespace CardMaker.Card.CommandLine
 {
     public class CommandLineProcessor
     {
+        public CommandLineUtil CommandLineUtil { get; set; }
+
         private static readonly Dictionary<string, Type> dictionaryExporterType = new Dictionary<string, Type>()
         {
             { "PDF", typeof(PDFCommandLineExporter) },
@@ -50,6 +52,11 @@ namespace CardMaker.Card.CommandLine
             {
                 dictionaryExporterType.Add(sImageFormatName.ToUpper(), typeof(ImageCommandLineExporter));
             }
+        }
+
+        protected CommandLineProcessor()
+        {
+            CommandLineUtil = new CommandLineUtil();
         }
 
         /// <summary>
@@ -97,13 +104,13 @@ namespace CardMaker.Card.CommandLine
             {
                 var zExporter = (CommandLineExporterBase) Activator.CreateInstance(typeExporter);
                 zExporter.CommandLineParser = m_zCommandLineParser;
-                if (!zExporter.Validate())
-                {
-                    return false;
-                }
+                zExporter.CommandLineUtil = CommandLineUtil;
                 zExporter.ConfigureGoogleCredential();
-
                 return zExporter.Export();
+            }
+            else
+            {
+                CommandLineUtil.ExitWithError("Invalid export format specified: " + sExportFormat);
             }
 
             return false;
@@ -116,14 +123,18 @@ namespace CardMaker.Card.CommandLine
         private bool LoadProject()
         {
             CardMakerInstance.CommandLineProjectFile = m_zCommandLineParser.GetStringArg(CommandLineArg.ProjectPath); ;
+            if (!File.Exists(CardMakerInstance.CommandLineProjectFile))
+            {
+                CommandLineUtil.ExitWithError("Project file does not exist: " + CardMakerInstance.CommandLineProjectFile);
+            }
+
             try
             {
                 ProjectManager.Instance.OpenProject(CardMakerInstance.CommandLineProjectFile);
             }
             catch (Exception ex)
             {
-                Logger.AddLogLine("Failed to load project: {0}".FormatString(CardMakerInstance.CommandLineProjectFile));
-                Logger.AddLogLine(ex.ToString());
+                Logger.AddLogLine("Failed to load project: {0}--{1}".FormatString(CardMakerInstance.CommandLineProjectFile, ex.ToString()));
                 return false;
             }
             return true;

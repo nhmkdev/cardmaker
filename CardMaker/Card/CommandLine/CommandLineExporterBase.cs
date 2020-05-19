@@ -30,6 +30,7 @@ using CardMaker.Card.Export;
 using CardMaker.Data;
 using CardMaker.Events.Managers;
 using PdfSharp;
+using Support.UI;
 using Support.Util;
 
 namespace CardMaker.Card.CommandLine
@@ -37,9 +38,33 @@ namespace CardMaker.Card.CommandLine
     public abstract class CommandLineExporterBase
     {
         public CommandLineParser CommandLineParser { get; set; }
-        
-        public abstract bool Validate();
-        public abstract bool Export();
+        public CommandLineUtil CommandLineUtil { get; set; }
+        protected string Description { get; set; }
+
+        public abstract CardExportBase CreateExporter();
+
+        /// <summary>
+        /// Performs the export action
+        /// </summary>
+        /// <returns>true on success, false otherwise</returns>
+        public bool Export()
+        {
+            var zFileCardExporter = CreateExporter();
+            zFileCardExporter.ProgressReporter = CardMakerInstance.ProgressReporterFactory.CreateReporter(
+                Description,
+                new string[] { ProgressName.LAYOUT, ProgressName.REFERENCE_DATA, ProgressName.CARD },
+                zFileCardExporter.ExportThread);
+            try
+            {
+                zFileCardExporter.ProgressReporter.StartProcessing(null);
+                return true;
+            }
+            catch (Exception e)
+            {
+                CommandLineUtil.ExitWithError("Export failed. " + e);
+                return false;
+            }
+        }
 
         /// <summary>
         /// Gets the layout indices
@@ -54,7 +79,12 @@ namespace CardMaker.Card.CommandLine
                 var idx = 0;
                 var dictionaryLayoutNameToLayout = 
                     ProjectManager.Instance.LoadedProject.Layout.ToDictionary(layout => layout.Name.ToUpper(), layout => idx++);
-#warning Might be nice to alert/log if they specify a bad layout name
+                var listMissingLayout = arrayLayoutNames
+                    .Where(sLayoutName => !dictionaryLayoutNameToLayout.ContainsKey(sLayoutName.ToUpper())).ToList();
+                if (listMissingLayout.Count > 0)
+                {
+                    CommandLineUtil.ExitWithError("Invalid layout names specified: " + string.Join(",", listMissingLayout.ToArray()));
+                }
                 return arrayLayoutNames
                     .Where(sLayoutName => dictionaryLayoutNameToLayout.ContainsKey(sLayoutName.ToUpper()))
                     .Select(sLayoutName => dictionaryLayoutNameToLayout[sLayoutName.ToUpper()]).ToArray();
@@ -90,7 +120,7 @@ namespace CardMaker.Card.CommandLine
                             }
                             else
                             {
-#warning should error
+                                CommandLineUtil.ExitWithError("Invalid Card Index: " + sRange);
                             }
                             break;
                         case 2:
@@ -100,12 +130,11 @@ namespace CardMaker.Card.CommandLine
                             }
                             else
                             {
-#warning should error
+                                CommandLineUtil.ExitWithError("Invalid Card Index Range: " + sRange);
                             }
                             break;
                         default:
-#warning should error
-                            // error
+                            CommandLineUtil.ExitWithError("Invalid Card Index Range: " + sRange);
                             break;
                     }
                 }

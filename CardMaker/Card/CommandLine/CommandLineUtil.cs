@@ -1,4 +1,4 @@
-﻿////////////////////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
 // Copyright (c) 2020 Tim Stair
@@ -22,18 +22,20 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using CardMaker.Card.Export;
-using Support.UI;
+using System;
 
 namespace CardMaker.Card.CommandLine
 {
-    class PDFCommandLineExporter : CommandLineExporterBase
+    public class CommandLineUtil
     {
-        public override CardExportBase CreateExporter()
+        /// <summary>
+        /// Exits the application with the error specified
+        /// </summary>
+        /// <param name="sError">The error to report on exit</param>
+        public void ExitWithError(string sError)
         {
-            var sExportPath = GetExportPath(false);
-            Description = "PDF Export - {0}".FormatString(sExportPath);
-            return new PdfSharpExporter(GetLayoutIndices(), sExportPath, GetPageOrientation());
+            Console.WriteLine(sError);
+            Environment.Exit(1);
         }
     }
 }

@@ -167,6 +167,7 @@
     <Compile Include="Card\CommandLine\CommandLineEnumerations.cs" />
     <Compile Include="Card\CommandLine\CommandLineExporterBase.cs" />
     <Compile Include="Card\CommandLine\CommandLineProcessor.cs" />
+    <Compile Include="Card\CommandLine\CommandLineUtil.cs" />
     <Compile Include="Card\CommandLine\ConsoleLogger.cs" />
     <Compile Include="Card\CommandLine\ImageCommandLineExporter.cs" />
     <Compile Include="Card\CommandLine\PDFCommandLineExporter.cs" />

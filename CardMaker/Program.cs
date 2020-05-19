@@ -45,7 +45,10 @@ namespace CardMaker
             Application.SetCompatibleTextRenderingDefault(false);
 
             Initialize();
-            var commandLineProcessor = new CommandLineProcessor(new CommandLineParser().Parse(args));
+            var commandLineProcessor = new CommandLineProcessor(new CommandLineParser().Parse(args))
+            {
+                CommandLineUtil = new CommandLineUtil()
+            };
             if (!commandLineProcessor.Process())
             {
 #if !MONO_BUILD

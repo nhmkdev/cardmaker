@@ -22,44 +22,22 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using CardMaker.Card.Export;
-using CardMaker.Data;
-using Support.IO;
 using Support.UI;
 
 namespace CardMaker.Card.CommandLine
 {
     public class ImageCommandLineExporter : CommandLineExporterBase
     {
-        public override bool Validate()
-        {
-            return true;
-        }
-
-        public override bool Export()
+        public override CardExportBase CreateExporter()
         {
             var sExportPath = GetExportPath(true);
-#warning is page orientation saved on the layout?
-            var zFileCardExporter = new FileCardExporter(GetLayoutIndices(), sExportPath, null, 0, GetImageFormat())
+            var eImageFormat = GetImageFormat();
+            Description = "{0} Export - {1}".FormatString(eImageFormat.ToString(), sExportPath);
+            return new FileCardExporter(GetLayoutIndices(), sExportPath, null, 0, eImageFormat)
             {
                 ExportCardIndices = GetCardIndices()
             };
-            zFileCardExporter.ProgressReporter = CardMakerInstance.ProgressReporterFactory.CreateReporter(
-                "PDF Export - {0}".FormatString(sExportPath),
-                new string[] { ProgressName.LAYOUT, ProgressName.REFERENCE_DATA , ProgressName.CARD },
-                zFileCardExporter.ExportThread);
-            try
-            {
-                zFileCardExporter.ProgressReporter.StartProcessing(null);
-                return true;
-            }
-            catch (Exception e)
-            {
-                Logger.AddLogLine(e.Message);
-                Logger.AddLogLine(e.StackTrace);
-                return false;
-            }
         }
     }
 }

@@ -29,7 +29,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using CardMaker.Data;
-using CardMaker.XML;
 using Support.IO;
 
 namespace CardMaker.Card.Export
