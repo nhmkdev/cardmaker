@@ -24,6 +24,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using CardMaker.Card.FormattedText;
 using CardMaker.Card.Import;
@@ -135,6 +137,7 @@ namespace CardMaker.Card
 
             var listLines = new List<List<string>>();
             var listDefineLines = new List<List<string>>();
+            var listReferenceDefineLines = new List<List<string>>();
 
             ReferenceReader zRefReader = null;
 
@@ -144,6 +147,7 @@ namespace CardMaker.Card
             }
             else
             {
+                // 2 per reference + 1 for the project wide defines
                 m_zReporterProxy.ProgressReset(0, zReferenceData.Length * 2 + 1, 0);
 
                 for(int nIdx = 0; nIdx < zReferenceData.Length; nIdx++)
@@ -158,44 +162,63 @@ namespace CardMaker.Card
                         m_zReporterProxy.AddIssue($"Failed to load reference: {zReference.RelativePath}");
                         break;
                     }
-                    // 0 index is always the default reference in the case of multi load
+
+                    var listReferenceActions = new List<Task>();
+
+                    // 0 index is always the default project reference in the case of multi load
+                    // only load it once
                     if (nIdx == 0)
                     {
-                        if (!string.IsNullOrEmpty(ProjectManager.Instance.ProjectFilePath))
-                        {
-                            zRefReader.GetProjectDefineData(zReference, listDefineLines);
-                            if (listDefineLines.Count == 0)
+                        listReferenceActions.Add(Task.Factory.StartNew(
+                            () =>
                             {
-                                m_zReporterProxy.AddIssue("No defines found for project file: {0}".FormatString(ProjectManager.Instance.ProjectFilePath));
-                            }
-                        }
-                        else
-                        {
-                            m_zReporterProxy.AddIssue("No defines loaded for project -- project not yet saved.");
-                        }
-                        m_zReporterProxy.ProgressStep();
+                                if (!string.IsNullOrEmpty(ProjectManager.Instance.ProjectFilePath))
+                                {
+                                    zRefReader.GetProjectDefineData(zReference, listDefineLines);
+                                    if (listDefineLines.Count == 0)
+                                    {
+                                        m_zReporterProxy.AddIssue("No defines found for project file: {0}".FormatString(ProjectManager.Instance.ProjectFilePath));
+                                    }
+                                }
+                                else
+                                {
+                                    m_zReporterProxy.AddIssue("No defines loaded for project -- project not yet saved.");
+                                }
+                                m_zReporterProxy.ProgressStep();
+
+                            }));
                     }
 
-                    zRefReader.GetReferenceData(zReference, listRefLines);
+                    listReferenceActions.Add(Task.Factory.StartNew(
+                        () =>
+                        {
+                            zRefReader.GetReferenceData(zReference, listRefLines);
+                            m_zReporterProxy.ProgressStep();
+                        }));
+
+                    listReferenceActions.Add(Task.Factory.StartNew(
+                        () =>
+                        {
+                            zRefReader.GetDefineData(zReference, listReferenceDefineLines);
+                            m_zReporterProxy.ProgressStep();
+                        }));
+
+                    Task.WaitAll(listReferenceActions.ToArray());
+
+                    // check if there are existing lines (from prior references) and remove the column header from the latest ref data
                     if (listLines.Count > 0 && listRefLines.Count > 0)
                     {
-                        // remove the columns row from any non-zero index references
                         listRefLines.RemoveAt(0);
                     }
                     listLines.AddRange(listRefLines);
-                    m_zReporterProxy.ProgressStep();
-
-                    var nPriorCount = listDefineLines.Count;
-                    zRefReader.GetDefineData(zReference, listDefineLines);
-                    if (listDefineLines.Count == nPriorCount)
-                    {
-                        m_zReporterProxy.AddIssue("No defines found for reference: {0}".FormatString(zReference.RelativePath));
-                    }
 
                     zRefReader.FinalizeReferenceLoad();
                     m_zReporterProxy.ProgressStep();                       
                 }
             }
+
+            // Note: the readers trim out the first line for defines data
+            listDefineLines.AddRange(listReferenceDefineLines);
 
             ProcessLines(
                 listLines, 
@@ -456,14 +479,14 @@ namespace CardMaker.Card
             m_zTranslator.ResetTranslationCache(zElement);
         }
 
-        #region Cache
+#region Cache
 
         public FormattedTextDataCache GetCachedMarkup(string sElementName)
         {
             return m_zTranslator.GetCachedMarkup(sElementName);
         }
 
-        #endregion
+#endregion
 
         public ProjectLayoutElement GetOverrideElement(ProjectLayoutElement zElement, DeckLine zDeckLine, bool bExport)
         {
@@ -510,7 +533,7 @@ namespace CardMaker.Card
             }
         }
 
-        #region Cache General
+#region Cache General
 
         public void ResetDeckCache()
         {
@@ -523,9 +546,9 @@ namespace CardMaker.Card
             m_zTranslator.ResetMarkupCache();
         }
 
-        #endregion
+#endregion
 
-        #region Markup Cache
+#region Markup Cache
         public void AddCachedMarkup(string sElementName, FormattedTextDataCache zFormattedData)
         {
             m_zTranslator.AddCachedMarkup(sElementName, zFormattedData);
@@ -535,9 +558,9 @@ namespace CardMaker.Card
         {
             m_zTranslator.ResetMarkupCache(sElementName);
         }
-        #endregion
+#endregion
 
-        #region Layout Set
+#region Layout Set
         public void SetAndLoadLayout(ProjectLayout zLayout, bool bExporting, ProgressReporterProxy zReporterProxy)
         {
             EmptyReference = false;

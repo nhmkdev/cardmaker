@@ -33,8 +33,23 @@ namespace CardMaker.Card.Import
         public string ReferencePath { get; protected set; }
         public IProgressReporter ProgressReporter { get; set; }
 
+        /// <summary>
+        /// Reads the reference data into the specified list
+        /// </summary>
+        /// <param name="zReference">The reference meta data</param>
+        /// <param name="listReferenceData">The list to append</param>
         public abstract void GetReferenceData(ProjectLayoutReference zReference, List<List<string>> listReferenceData);
+        /// <summary>
+        /// Reads the project define data into the specified list
+        /// </summary>
+        /// <param name="zReference">The reference meta data</param>
+        /// <param name="listReferenceData">The list to append</param>
         public abstract void GetProjectDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData);
+        /// <summary>
+        /// Reads the reference define data into the specified list
+        /// </summary>
+        /// <param name="zReference">The reference meta data</param>
+        /// <param name="listReferenceData">The list to append</param>
         public abstract void GetDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData);
 
         /// <summary>
