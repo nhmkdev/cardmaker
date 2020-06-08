@@ -31,6 +31,9 @@ namespace CardMaker.Card.FormattedText.Markup
 {
     public class SpaceMarkup : MarkupValueBase
     {
+        private float m_fXOffset;
+        private float m_fYOffset;
+
         public bool Optional { get; }
 
         public override bool Aligns => true;
@@ -50,6 +53,9 @@ namespace CardMaker.Card.FormattedText.Markup
 
         protected override bool ProcessMarkupHandler(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
+            m_fXOffset = zProcessData.CurrentXOffset;
+            m_fYOffset = zProcessData.CurrentYOffset;
+
             int nSpaces;
             if (!int.TryParse(m_sVariable, out nSpaces))
             {
@@ -87,11 +93,7 @@ namespace CardMaker.Card.FormattedText.Markup
 
         public override bool Render(ProjectLayoutElement zElement, Graphics zGraphics)
         {
-            // draw border (debugging)
-            if (CardMakerInstance.DrawFormattedTextBorder)
-            {
-                zGraphics.FillRectangle(Optional ? Brushes.DarkBlue : Brushes.DeepSkyBlue, TargetRect.X, TargetRect.Y, TargetRect.Width, TargetRect.Height);
-            }
+            RenderDebugBackground(zGraphics, Optional ? Brushes.DarkBlue : Brushes.DeepSkyBlue, m_fXOffset, m_fYOffset);
             return true;
         }
     }

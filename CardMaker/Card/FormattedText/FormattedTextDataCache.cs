@@ -37,6 +37,8 @@ namespace CardMaker.Card.FormattedText
             typeof(BackgroundColorMarkup),
             typeof(BackgroundImageMarkup),
             typeof(ImageMarkup),
+            typeof(PushMarkup),
+            typeof(PixelMarkup),
             typeof(SpaceMarkup),
             typeof(TextMarkup)
         };

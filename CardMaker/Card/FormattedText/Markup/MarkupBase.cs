@@ -92,6 +92,12 @@ namespace CardMaker.Card.FormattedText.Markup
 
         public virtual void CloseMarkup(FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics) { }
 
+        /// <summary>
+        /// Renders the given markup
+        /// </summary>
+        /// <param name="zElement">The element being rendered</param>
+        /// <param name="zGraphics">The Graphics to draw to</param>
+        /// <returns>true if the markup was rendered, false if not (due to space or other issues)</returns>
         public virtual bool Render(ProjectLayoutElement zElement, Graphics zGraphics)
         {
             return true;

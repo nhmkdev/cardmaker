@@ -23,6 +23,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
+using System.Drawing;
+using CardMaker.Data;
+
 namespace CardMaker.Card.FormattedText.Markup
 {
     public abstract class MarkupValueBase : MarkupBase
@@ -33,6 +36,15 @@ namespace CardMaker.Card.FormattedText.Markup
         protected MarkupValueBase(string sVariable)
         {
             m_sVariable = sVariable;
+        }
+
+        protected void RenderDebugBackground(Graphics zGraphics, Brush zBrush, float fXOffset, float fYOffset)
+        {
+            // draw border (debugging)
+            if (CardMakerInstance.DrawFormattedTextBorder)
+            {
+                zGraphics.FillRectangle(zBrush, TargetRect.X + fXOffset, TargetRect.Y + fYOffset, TargetRect.Width, TargetRect.Height);
+            }
         }
     }
 }
