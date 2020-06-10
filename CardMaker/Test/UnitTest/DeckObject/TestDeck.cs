@@ -1,7 +1,7 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Tim Stair
+// Copyright (c) 2020 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@ using CardMaker.Card;
 using CardMaker.XML;
 using System.Collections.Generic;
 using CardMaker.Card.Translation;
+using Support.Progress;
 
 namespace UnitTest.DeckObject
 {
@@ -69,6 +70,11 @@ namespace UnitTest.DeckObject
         public void SetDisallowedCharReplacement(char c, string replacement)
         {
             FilenameTranslator.CharReplacement[c] = replacement;
+        }
+
+        public void SetProgressReporterProxy(ProgressReporterProxy zProgressReporterProxy)
+        {
+            m_zReporterProxy = zProgressReporterProxy;
         }
     }
 }

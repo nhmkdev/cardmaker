@@ -120,6 +120,19 @@
     <exportLayoutBorder>false</exportLayoutBorder>
     <exportLayoutBorderCrossSize>0</exportLayoutBorderCrossSize>
   </Layout>
+  <Layout combineReferences="false" width="600" height="600" buffer="0" Name="FormattedTextSamples" defaultCount="1" dpi="300" drawBorder="true">
+    <Element variable="&lt;xo=24&gt;&lt;push=20&gt;This&lt;push=30;10&gt;is an example&lt;push=10;15&gt;of the use of some of the tags that tweak the location of text" type="FormattedText" x="304" y="15" width="249" height="144" borderthickness="0" autoscalefont="false" lockaspect="false" keeporiginalsize="false" outlinethickness="0" rotation="0" horizontalalign="0" verticalalign="0" opacity="255" tilesize="" lineheight="20" wordspace="0" justifiedtext="false" name="Push" font="Arial;12;0;0;0;0" elementcolor="0x000000FF" bordercolor="0x000000FF" backgroundcolor="0x00000000" enabled="true" outlinecolor="0x000000FF" />
+    <Element variable="&lt;xo=24&gt;&lt;px=20;-1&gt;This&lt;px=79;10&gt;is an example&lt;px=185;25&gt;of the use of some of the tags that tweak the location of text" type="FormattedText" x="15" y="16" width="249" height="144" borderthickness="0" autoscalefont="false" lockaspect="false" keeporiginalsize="false" outlinethickness="0" rotation="0" horizontalalign="0" verticalalign="0" opacity="255" tilesize="" lineheight="20" wordspace="0" justifiedtext="false" name="Pixel" font="Arial;12;0;0;0;0" elementcolor="0x000000FF" bordercolor="0x000000FF" backgroundcolor="0x00000000" enabled="true" outlinecolor="0x000000FF" />
+    <Element variable="&lt;xo=100&gt;This is an example of the use of some of the tags that tweak the location of text" type="FormattedText" x="15" y="183" width="249" height="144" borderthickness="0" autoscalefont="false" lockaspect="false" keeporiginalsize="false" outlinethickness="0" rotation="0" horizontalalign="0" verticalalign="0" opacity="255" tilesize="" lineheight="20" wordspace="0" justifiedtext="false" name="XOffset" font="Arial;12;0;0;0;0" elementcolor="0x000000FF" bordercolor="0x000000FF" backgroundcolor="0x00000000" enabled="true" outlinecolor="0x000000FF" />
+    <exportRotation>0</exportRotation>
+    <exportTransparentBackground>false</exportTransparentBackground>
+    <exportPDFAsPageBack>false</exportPDFAsPageBack>
+    <exportWidth>0</exportWidth>
+    <exportHeight>0</exportHeight>
+    <zoom>1</zoom>
+    <exportLayoutBorder>false</exportLayoutBorder>
+    <exportLayoutBorderCrossSize>0</exportLayoutBorderCrossSize>
+  </Layout>
   <translatorName>Incept</translatorName>
   <lastExportPath>C:\</lastExportPath>
   <exportNameFormat>##_#L</exportNameFormat>

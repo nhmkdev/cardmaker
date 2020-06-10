@@ -1,7 +1,7 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Tim Stair
+// Copyright (c) 2020 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -50,8 +50,6 @@ namespace CardMaker.Card.FormattedText.Markup
 
             var fMarkupXOffset = 0f;
             var fMarkupYOffset = 0f;
-            var fMarkupHeightAdjust = 0f;
-            var fMarkupYWidthAdjust = 0f;
             m_fAdditionalVerticalPixels = 0f;
 
             if (arrayComponents.Length > 0)

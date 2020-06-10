@@ -102,6 +102,7 @@
     <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Threading.Tasks, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.dll</HintPath>
     </Reference>
@@ -151,6 +152,7 @@
     </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
     <Reference Include="Zlib.Portable, Version=1.11.0.0, Culture=neutral, PublicKeyToken=431cba815f6a8b5b, processorArchitecture=MSIL">
       <HintPath>..\packages\Zlib.Portable.Signed.1.11.0\lib\portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid\Zlib.Portable.dll</HintPath>
     </Reference>
@@ -162,6 +164,13 @@
     </Compile>
     <Compile Include="Card\CardPathUtil.cs" />
     <Compile Include="Card\CardRenderer.cs" />
+    <Compile Include="Card\CommandLine\CommandLineEnumerations.cs" />
+    <Compile Include="Card\CommandLine\CommandLineExporterBase.cs" />
+    <Compile Include="Card\CommandLine\CommandLineProcessor.cs" />
+    <Compile Include="Card\CommandLine\CommandLineUtil.cs" />
+    <Compile Include="Card\CommandLine\ConsoleLogger.cs" />
+    <Compile Include="Card\CommandLine\ImageCommandLineExporter.cs" />
+    <Compile Include="Card\CommandLine\PDFCommandLineExporter.cs" />
     <Compile Include="Card\Deck.cs" />
     <Compile Include="Card\DeckLine.cs" />
     <Compile Include="Card\DrawFormattedText.cs" />
@@ -195,7 +204,6 @@
     <Compile Include="Card\IDrawText.cs" />
     <Compile Include="Card\ElementString.cs" />
     <Compile Include="Card\Export\CardExportBase.cs" />
-    <Compile Include="Card\Export\ICardExporter.cs" />
     <Compile Include="Card\Export\PdfSharpExporter.cs" />
     <Compile Include="Card\FormattedText\Markup\BackgroundColorMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\BackgroundImageMarkup.cs" />
@@ -275,7 +283,9 @@
     <Compile Include="Forms\Dialogs\ExcelSheetSelectionDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Dialogs\ExcelSheetSelectionDialog.Designer.cs" />
+    <Compile Include="Forms\Dialogs\ExcelSheetSelectionDialog.Designer.cs">
+      <DependentUpon>ExcelSheetSelectionDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Dialogs\ProjectSettingsDialog.cs" />
     <Compile Include="Forms\FormUtils.cs" />
     <Compile Include="Forms\GoogleCredentialsDialog.cs">
@@ -358,6 +368,12 @@
     <Compile Include="Support\IO\IOUtils.cs" />
     <Compile Include="Support\IO\Logger.cs" />
     <Compile Include="Support\IO\SerializationUtils.cs" />
+    <Compile Include="Support\Progress\ConsoleProgressReporter.cs" />
+    <Compile Include="Support\Progress\ProgressReporterProxy.cs" />
+    <Compile Include="Support\Progress\WaitDialogLineProgressReporterFactory.cs" />
+    <Compile Include="Support\Progress\ConsoleProgressReporterFactory.cs" />
+    <Compile Include="Support\Progress\ProgressReporterFactory.cs" />
+    <Compile Include="Support\Progress\IProgressReporter.cs" />
     <Compile Include="Support\UI\AbstractDirtyForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -383,6 +399,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Support\UI\Win32.cs" />
+    <Compile Include="Support\Util\CommandLineParser.cs" />
     <Compile Include="Support\Util\ParseUtil.cs" />
     <Compile Include="Support\Util\TimeMeasure.cs" />
     <Compile Include="Events\Managers\ElementManager.cs" />
@@ -397,7 +414,9 @@
       <SubType>Designer</SubType>
       <DependentUpon>CardMakerMDI.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Dialogs\ExcelSheetSelectionDialog.resx" />
+    <EmbeddedResource Include="Forms\Dialogs\ExcelSheetSelectionDialog.resx">
+      <DependentUpon>ExcelSheetSelectionDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\GoogleCredentialsDialog.resx">
       <DependentUpon>GoogleCredentialsDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -449,7 +468,9 @@
       <DependentUpon>RGBColorSelectDialog.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.config" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

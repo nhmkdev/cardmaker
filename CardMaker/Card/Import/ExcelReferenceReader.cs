@@ -1,7 +1,7 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Tim Stair
+// Copyright (c) 2020 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,14 +22,11 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
 using ClosedXML.Excel;
-using Support.IO;
-using System.Runtime.InteropServices;
 
 namespace CardMaker.Card.Import
 {
@@ -40,16 +37,12 @@ namespace CardMaker.Card.Import
         // SheetName to Variables
         private readonly Dictionary<string, List<List<string>>> m_dictionaryDataCache = new Dictionary<string, List<List<string>>>();
 
-        public string ReferencePath { get; }
-
         public ExcelReferenceReader() { /* Intentionally do nothing */ }
 
         public ExcelReferenceReader(ProjectLayoutReference zReference)
         {
             ReferencePath = zReference.RelativePath;
         }
-
-        public void FinalizeReferenceLoad() { }
 
         public void GetData(ExcelSpreadsheetReference zReference, List<List<string>> listData, bool bRemoveFirstRow, string sNameAppend = "")
         {
@@ -78,7 +71,7 @@ namespace CardMaker.Card.Import
 
             if (worksheet == null)
             {
-                Logger.AddLogLine("Missing sheet from Excel Spreadsheet." + "[" + sSpreadsheetName + "," + sSheetName + "]");
+                ProgressReporter.AddIssue("Missing sheet from Excel Spreadsheet." + "[" + sSpreadsheetName + "," + sSheetName + "]");
                 return;
             }
 
@@ -103,7 +96,7 @@ namespace CardMaker.Card.Import
 
             if (listExcelData.Count == 0)
             {
-                Logger.AddLogLine("Failed to load any data from Excel Spreadsheet." + "[" + sSpreadsheetName + "," + sSheetName + "]");
+                ProgressReporter.AddIssue("Failed to load any data from Excel Spreadsheet." + "[" + sSpreadsheetName + "," + sSheetName + "]");
             }
             else
             {
@@ -116,12 +109,12 @@ namespace CardMaker.Card.Import
             }
         }
 
-        public void GetDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData)
+        public override void GetDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData)
         {
             GetData(ExcelSpreadsheetReference.parse(ReferencePath), listDefineData, true, Deck.DEFINES_DATA_POSTFIX);
         }
 
-        public void GetProjectDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData)
+        public override void GetProjectDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData)
         {
             if (null == ProjectManager.Instance.ProjectFilePath)
             {
@@ -133,7 +126,7 @@ namespace CardMaker.Card.Import
             GetData(zExcelSpreadSheetReference, listDefineData, true);
         }
 
-        public void GetReferenceData(ProjectLayoutReference zReference, List<List<string>> listReferenceData)
+        public override void GetReferenceData(ProjectLayoutReference zReference, List<List<string>> listReferenceData)
         {
             GetData(ExcelSpreadsheetReference.parse(ReferencePath), listReferenceData, false);
         }

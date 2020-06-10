@@ -1,7 +1,7 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Tim Stair
+// Copyright (c) 2020 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -35,6 +35,9 @@ using Support.UI;
 
 namespace CardMaker.Card
 {
+    /// <summary>
+    /// This is an UNUSED renderer
+    /// </summary>
     public class DrawTextTextRenderer : IDrawText
     {
         public void DrawText(Graphics zGraphics, ProjectLayoutElement zElement, string sInput)
@@ -175,8 +178,8 @@ namespace CardMaker.Card
 
                             // TODO: https://stackoverflow.com/questions/18838037/drawing-text-to-a-bitmap-with-textrenderer
 
-#warning too bad this makes the font look terrible
 #if false
+// too bad this makes the font look terrible
                             var image = new Bitmap(zElement.width, zElement.height, PixelFormat.Format32bppArgb);
 
                             // create memory buffer from desktop handle that supports alpha channel

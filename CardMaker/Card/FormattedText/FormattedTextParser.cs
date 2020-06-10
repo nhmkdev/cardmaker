@@ -1,7 +1,7 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Tim Stair
+// Copyright (c) 2020 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -115,7 +115,7 @@ namespace CardMaker.Card.FormattedText
                             var zMarkupTypeToSeek = MarkupUtil.GetMarkupType(sTagName);
                             if (null != zMarkupTypeToSeek)
                             {
-#warning no markup stack support... 
+                                // NOTE: There is no support for nested stacked markups like <b>asdas<b></b></b> (if this matters...)
                                 for (int nMarkup = listMarkups.Count - 1; nMarkup > -1; nMarkup--)
                                 {
                                     if (listMarkups[nMarkup].GetType() == zMarkupTypeToSeek)

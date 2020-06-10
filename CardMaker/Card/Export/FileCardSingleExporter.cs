@@ -1,7 +1,7 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Tim Stair
+// Copyright (c) 2020 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,12 +28,11 @@ using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using CardMaker.Data;
-using Support.IO;
 using Support.UI;
 
 namespace CardMaker.Card.Export
 {
-    public class FileCardSingleExporter : CardExportBase, ICardExporter
+    public class FileCardSingleExporter : CardExportBase
     {
         private readonly string m_sExportFolder;
         private readonly string m_sOverrideStringFormat;
@@ -55,14 +54,15 @@ namespace CardMaker.Card.Export
             m_nImageExportIndex = nImageExportIndex;
         }
 
-        public void ExportThread()
+        public override void ExportThread()
         {
-            var zWait = WaitDialog.Instance;
+            var progressLayoutIdx = ProgressReporter.GetProgressIndex(ProgressName.LAYOUT);
+            var progressCardIdx = ProgressReporter.GetProgressIndex(ProgressName.CARD);
 
-            zWait.ProgressReset(0, 0, ExportLayoutEndIndex - ExportLayoutStartIndex, 0);
-            ChangeExportLayoutIndex(ExportLayoutStartIndex);
+            ProgressReporter.ProgressReset(progressLayoutIdx, 0, ExportLayoutIndices.Length, 0);
+            ChangeExportLayoutIndex(ExportLayoutIndices[0]);
             var nPadSize = CurrentDeck.CardCount.ToString(CultureInfo.InvariantCulture).Length;
-            zWait.ProgressReset(1, 0, CurrentDeck.CardCount, 0);
+            ProgressReporter.ProgressReset(progressCardIdx, 0, CurrentDeck.CardCount, 0);
 
             UpdateBufferBitmap(CurrentDeck.CardLayout.width, CurrentDeck.CardLayout.height);
 
@@ -76,7 +76,7 @@ namespace CardMaker.Card.Export
             CardRenderer.DrawPrintLineToGraphics(zGraphics, 0, 0, !CurrentDeck.CardLayout.exportTransparentBackground);
             m_zExportCardBuffer.SetResolution(CurrentDeck.CardLayout.dpi, CurrentDeck.CardLayout.dpi);
 
-            zWait.ProgressStep(1);
+            ProgressReporter.ProgressStep(progressCardIdx);
 
             string sFileName;
 
@@ -105,18 +105,18 @@ namespace CardMaker.Card.Export
                     m_eImageFormat);
                 ProcessRotateExport(m_zExportCardBuffer, CurrentDeck.CardLayout, true);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                Logger.AddLogLine("Invalid Filename or IO error: " + sFileName);
-                zWait.ThreadSuccess = false;
-                zWait.CloseWaitDialog();
+                ProgressReporter.AddIssue("Invalid Filename or IO error: {0} {1}".FormatString(sFileName, e.Message));
+                ProgressReporter.ThreadSuccess = false;
+                ProgressReporter.Shutdown();
                 return;
             }
 
-            zWait.ProgressStep(0);
+            ProgressReporter.ProgressStep(progressLayoutIdx);
 
-            zWait.ThreadSuccess = true;
-            zWait.CloseWaitDialog();
+            ProgressReporter.ThreadSuccess = true;
+            ProgressReporter.Shutdown();
         }
     }
 }

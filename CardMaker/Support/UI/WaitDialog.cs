@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Tim Stair
+// Copyright (c) 2020 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,13 +23,16 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
+using Support.IO;
+using Support.Progress;
 
 namespace Support.UI
 {
-    class WaitDialog : Form
+    class WaitDialog : Form, IProgressReporter
     {
         private static WaitDialog m_zWaitDialog;
         private Thread m_zThread;
@@ -38,6 +41,7 @@ namespace Support.UI
         private readonly object m_zParamObject;
         private ProgressBar[] m_arrayProgressBars;
         private string[] m_arrayDescriptions;
+        private Dictionary<string, int> m_dictionaryProgressIndex = new Dictionary<string, int>();
 
         private Button btnCancel;
         private Label lblStatus;
@@ -80,7 +84,18 @@ namespace Support.UI
         /// <summary>
         /// Flag indicating the cancel state of the WaitDialog
         /// </summary>
-        public bool Canceled { get; private set; }
+        public bool Canceled { get; set; }
+
+        public int GetProgressCount()
+        {
+            return m_arrayDescriptions.Length;
+        }
+
+        public int GetProgressIndex(string sProgressName)
+        {
+            int nIdx;
+            return m_dictionaryProgressIndex.TryGetValue(sProgressName, out nIdx) ? nIdx : -1;
+        }
 
         /// <summary>
         /// Sets up the basic controls
@@ -95,7 +110,12 @@ namespace Support.UI
             if (nProgressBarCount == arrayDescriptions?.Length)
             {
                 m_arrayDescriptions = arrayDescriptions;
+                for (var nIdx = 0; nIdx < arrayDescriptions.Length; nIdx++)
+                {
+                    m_dictionaryProgressIndex[arrayDescriptions[nIdx]] = nIdx;
+                }
             }
+
             m_zWaitDialog = this;
 
             // 
@@ -195,7 +215,7 @@ namespace Support.UI
         /// <summary>
         /// Controls the visibility of the cancel button
         /// </summary>
-        public bool CancelButtonVisibile
+        public bool CancelButtonVisible
         {
             get { return btnCancel.Visible; }
             set { btnCancel.Visible = value; }
@@ -289,6 +309,28 @@ namespace Support.UI
         {
             if (m_arrayProgressBars.Length <= nProgressBar) { return -1; }
             return m_arrayProgressBars[nProgressBar].Value;
+        }
+
+        public void StartProcessing(object initializationObject)
+        {
+            if (initializationObject is IWin32Window)
+            {
+                ShowDialog((IWin32Window) initializationObject);
+            }
+            else
+            {
+                throw new Exception("The input parameter must be of type IWin32Window.");    
+            }
+        }
+
+        public void AddIssue(string sIssue)
+        {
+            Logger.AddLogLine(sIssue);
+        }
+
+        public void Shutdown()
+        {
+            CloseWaitDialog();
         }
 
         /// <summary>

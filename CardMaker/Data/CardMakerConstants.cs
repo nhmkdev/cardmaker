@@ -1,7 +1,7 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Tim Stair
+// Copyright (c) 2020 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -45,5 +45,12 @@ namespace CardMaker.Data
         public static readonly string[] GOOGLE_SCOPES = new string[]
             {SheetsService.Scope.SpreadsheetsReadonly, DriveService.Scope.DriveReadonly};
 
+    }
+
+    public static class ProgressName
+    {
+        public const string REFERENCE_DATA = "Reference Data";
+        public const string LAYOUT = "Layout";
+        public const string CARD = "Card";
     }
 }

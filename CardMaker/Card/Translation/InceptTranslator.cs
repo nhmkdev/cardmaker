@@ -1,7 +1,7 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Tim Stair
+// Copyright (c) 2020 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -458,7 +458,7 @@ namespace CardMaker.Card.Translation
         private static void LogTranslation(ProjectLayoutElement zElement, string sOut)
         {
             var sLog = "Translate[{0}] {1}".FormatString(zElement.name, sOut);
-#if DEBUG
+#if DEBUG && FALSE
             System.Diagnostics.Debug.WriteLine(sLog);
 #else
             if (CardMakerSettings.LogInceptTranslation)

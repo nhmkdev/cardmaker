@@ -1,7 +1,7 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Tim Stair
+// Copyright (c) 2020 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,7 @@ using Support.UI;
 
 namespace CardMaker.Card.Export
 {
-    public class FileCardClipboardExporter : CardExportBase, ICardExporter
+    public class FileCardClipboardExporter : CardExportBase
     {
         private readonly int m_nImageExportIndex;
 
@@ -42,13 +42,14 @@ namespace CardMaker.Card.Export
             m_nImageExportIndex = nImageExportIndex;
         }
 
-        public void ExportThread()
+        public override void ExportThread()
         {
-            var zWait = WaitDialog.Instance;
+            var progressLayoutIdx = ProgressReporter.GetProgressIndex(ProgressName.LAYOUT);
+            var progressCardIdx = ProgressReporter.GetProgressIndex(ProgressName.CARD);
 
-            zWait.ProgressReset(0, 0, ExportLayoutEndIndex - ExportLayoutStartIndex, 0);
-            ChangeExportLayoutIndex(ExportLayoutStartIndex);
-            zWait.ProgressReset(1, 0, CurrentDeck.CardCount, 0);
+            ProgressReporter.ProgressReset(progressLayoutIdx, 0, ExportLayoutIndices.Length, 0);
+            ChangeExportLayoutIndex(ExportLayoutIndices[0]);
+            ProgressReporter.ProgressReset(progressCardIdx, 0, CurrentDeck.CardCount, 0);
 
             UpdateBufferBitmap(CurrentDeck.CardLayout.width, CurrentDeck.CardLayout.height);
 
@@ -62,7 +63,7 @@ namespace CardMaker.Card.Export
             CardRenderer.DrawPrintLineToGraphics(zGraphics, 0, 0, !CurrentDeck.CardLayout.exportTransparentBackground);
             m_zExportCardBuffer.SetResolution(CurrentDeck.CardLayout.dpi, CurrentDeck.CardLayout.dpi);
 
-            zWait.ProgressStep(1);
+            ProgressReporter.ProgressStep(progressLayoutIdx);
 
             try
             {
@@ -75,15 +76,15 @@ namespace CardMaker.Card.Export
             catch (Exception)
             {
                 Logger.AddLogLine("Error copying layout image to clipboard.");
-                zWait.ThreadSuccess = false;
-                zWait.CloseWaitDialog();
+                ProgressReporter.ThreadSuccess = false;
+                ProgressReporter.Shutdown();
                 return;
             }
 
-            zWait.ProgressStep(0);
+            ProgressReporter.ProgressStep(progressCardIdx);
 
-            zWait.ThreadSuccess = true;
-            zWait.CloseWaitDialog();
+            ProgressReporter.ThreadSuccess = true;
+            ProgressReporter.Shutdown();
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Tim Stair
+// Copyright (c) 2020 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -43,7 +43,8 @@ namespace CardMaker.Card.Translation
                 eTranslator = TranslatorType.Incept;
             }
 
-            Logger.AddLogLine("Deck Translator: {0}".FormatString(eTranslator.ToString()));
+            // not a critical log message...
+            //Logger.AddLogLine("Deck Translator: {0}".FormatString(eTranslator.ToString()));
 
             switch (eTranslator)
             {

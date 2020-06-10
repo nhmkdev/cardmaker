@@ -1,7 +1,7 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Tim Stair
+// Copyright (c) 2020 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,7 @@ namespace CardMaker
         public static string GetBuildSuffix()
         {
 #if UNSTABLE
-            return "[UNSTABLE] V.A10";
+            return "[UNSTABLE] V.A11-2";
 #else
             return string.Empty;
 #endif

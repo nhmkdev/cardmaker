@@ -1,7 +1,7 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Tim Stair
+// Copyright (c) 2020 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,44 +24,72 @@
 
 using CardMaker.Data;
 using CardMaker.XML;
+using Support.Progress;
 
 namespace CardMaker.Card.Import
 {
     public static class ReferenceReaderFactory
     {
-        public static ReferenceReader GetReader(ProjectLayoutReference zReference)
+        /// <summary>
+        /// Gets the reference reader based on the reference relative path.
+        /// NOTE: this uses a constructor that passes in the reference
+        /// </summary>
+        /// <param name="zReference">The reference to get the reader for</param>
+        /// <param name="zProgressReporter">ProgressReporter for the Reader to use</param>
+        /// <returns>Reference reader (defaults to CSV)</returns>
+        public static ReferenceReader GetReader(ProjectLayoutReference zReference, IProgressReporter zProgressReporter)
         {
             if (zReference == null)
             {
                 return null;
             }
+            ReferenceReader zReferenceReader = null;
             if (zReference.RelativePath.StartsWith(GoogleSpreadsheetReference.GOOGLE_REFERENCE +
                                                            GoogleSpreadsheetReference.GOOGLE_REFERENCE_SPLIT_CHAR))
             {
-                var zReader = new GoogleReferenceReader(zReference);
-                return CardMakerInstance.GoogleCredentialsInvalid ? null : zReader;
+                zReferenceReader = new GoogleReferenceReader(zReference);
             }
-
             if (zReference.RelativePath.StartsWith(ExcelSpreadsheetReference.EXCEL_REFERENCE +
                                                            ExcelSpreadsheetReference.EXCEL_REFERENCE_SPLIT_CHAR))
             {
-                return new ExcelReferenceReader(zReference);
+                zReferenceReader = new ExcelReferenceReader(zReference);
             }
-            return new CSVReferenceReader(zReference);
+            if (null == zReferenceReader)
+            {
+                zReferenceReader = new CSVReferenceReader(zReference);
+            }
+
+            zReferenceReader.ProgressReporter = zProgressReporter;
+            return zReferenceReader;
         }
 
-        public static ReferenceReader GetDefineReader(ReferenceType eReferenceType)
+        /// <summary>
+        /// Gets the reference reader based on the type
+        /// </summary>
+        /// <param name="eReferenceType">The type of reference to get the reader for</param>
+        /// <param name="zProgressReporter">ProgressReporter for the Reader to use</param>
+        /// <returns>Reference reader (defaults to null)</returns>
+        public static ReferenceReader GetDefineReader(ReferenceType eReferenceType, IProgressReporter zProgressReporter)
         {
+            ReferenceReader zReferenceReader = null;
             switch (eReferenceType)
             {
                 case ReferenceType.CSV:
-                    return new CSVReferenceReader();
+                    zReferenceReader = new CSVReferenceReader();
+                    break;
                 case ReferenceType.Google:
-                    return new GoogleReferenceReader();
+                    zReferenceReader = new GoogleReferenceReader();
+                    break;
                 case ReferenceType.Excel:
-                    return new ExcelReferenceReader();
+                    zReferenceReader = new ExcelReferenceReader();
+                    break;
             }
-            return null;
+
+            if (zReferenceReader != null)
+            {
+                zReferenceReader.ProgressReporter = zProgressReporter;
+            }
+            return zReferenceReader;
         }            
     }
 }

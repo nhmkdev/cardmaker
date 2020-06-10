@@ -1,7 +1,7 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Tim Stair
+// Copyright (c) 2020 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,20 +24,40 @@
 
 using System.Collections.Generic;
 using CardMaker.XML;
+using Support.Progress;
 
 namespace CardMaker.Card.Import
 {
-    public interface ReferenceReader
+    public abstract class ReferenceReader
     {
-        string ReferencePath { get; }
+        public string ReferencePath { get; protected set; }
+        public IProgressReporter ProgressReporter { get; set; }
 
-        void GetReferenceData(ProjectLayoutReference zReference, List<List<string>> listReferenceData);
-        void GetProjectDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData);
-        void GetDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData);
+        /// <summary>
+        /// Reads the reference data into the specified list
+        /// </summary>
+        /// <param name="zReference">The reference meta data</param>
+        /// <param name="listReferenceData">The list to append</param>
+        public abstract void GetReferenceData(ProjectLayoutReference zReference, List<List<string>> listReferenceData);
+        /// <summary>
+        /// Reads the project define data into the specified list
+        /// </summary>
+        /// <param name="zReference">The reference meta data</param>
+        /// <param name="listReferenceData">The list to append</param>
+        public abstract void GetProjectDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData);
+        /// <summary>
+        /// Reads the reference define data into the specified list
+        /// </summary>
+        /// <param name="zReference">The reference meta data</param>
+        /// <param name="listReferenceData">The list to append</param>
+        public abstract void GetDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData);
 
         /// <summary>
         /// Called to signify that all references have been loaded
         /// </summary>
-        void FinalizeReferenceLoad();
+        public virtual void FinalizeReferenceLoad()
+        {
+
+        }
     }
 }

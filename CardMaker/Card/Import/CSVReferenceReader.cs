@@ -1,7 +1,7 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Tim Stair
+// Copyright (c) 2020 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -34,8 +34,6 @@ namespace CardMaker.Card.Import
 {
     public class CSVReferenceReader : ReferenceReader
     {
-        public string ReferencePath { get; }
-
         public CSVReferenceReader() { }
 
         public CSVReferenceReader(ProjectLayoutReference zReference)
@@ -67,7 +65,7 @@ namespace CardMaker.Card.Import
                 if (bLogNotFound)
                 {
                     var sMsg = "CSV File not found: " + sCombinedPath;
-                    Logger.AddLogLine(sMsg);
+                    ProgressReporter.AddIssue(sMsg);
                     IssueManager.Instance.FireAddIssueEvent(sMsg);
                 }
                 return;
@@ -96,12 +94,12 @@ namespace CardMaker.Card.Import
             }
         }
 
-        public void GetReferenceData(ProjectLayoutReference zReference, List<List<string>> listReferenceData)
+        public override void GetReferenceData(ProjectLayoutReference zReference, List<List<string>> listReferenceData)
         {
             GetData(ReferencePath, listReferenceData, true, 0);
         }
 
-        public void GetProjectDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData)
+        public override void GetProjectDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData)
         {
             if (null == ProjectManager.Instance.ProjectFilePath)
             {
@@ -117,14 +115,9 @@ namespace CardMaker.Card.Import
             GetData(sReferencePath, listDefineData, false, 1, Deck.DEFINES_DATA_POSTFIX);
         }
 
-        public void GetDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData)
+        public override void GetDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData)
         {
             GetData(ReferencePath, listDefineData, false, 1, Deck.DEFINES_DATA_POSTFIX);
-        }
-
-        public void FinalizeReferenceLoad()
-        {
-
         }
     }
 }

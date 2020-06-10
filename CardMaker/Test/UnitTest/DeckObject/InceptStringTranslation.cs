@@ -1,7 +1,7 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Tim Stair
+// Copyright (c) 2020 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,8 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using CardMaker.Data;
+using Moq;
+using Support.Progress;
 using Support.UI;
 
 namespace UnitTest.DeckObject
@@ -41,11 +43,14 @@ namespace UnitTest.DeckObject
         private TestDeck _testDeck;
         private DeckLine _testLine;
         private ProjectLayoutElement _testElement;
+        private Mock<ProgressReporterProxy> _mockProgressReporterProxy;
 
         [SetUp]
         public void Setup()
         {
+            _mockProgressReporterProxy = new Mock<ProgressReporterProxy>();
             _testDeck = new TestDeck();
+            _testDeck.SetProgressReporterProxy(_mockProgressReporterProxy.Object);
             _testLine = new DeckLine(new List<string>());
             _testElement = new ProjectLayoutElement(TEST_ELEMENT_NAME);
         }

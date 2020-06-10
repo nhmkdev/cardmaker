@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Tim Stair
+// Copyright (c) 2020 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,33 +23,72 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.IO;
 using System.Windows.Forms;
+using CardMaker.Card.CommandLine;
+using CardMaker.Card.Shapes;
 using CardMaker.Data;
 using CardMaker.Forms;
+using Support.Progress;
+using Support.UI;
+using Support.Util;
 
 namespace CardMaker
 {
-    static class Program
+    public static class Program
     {
+        // this is primarily here for the functional tests of the command line (repeating them breaks things)
+        static Program()
+        {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Initialize();
+        }
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            // load the project file if it is specified as the first argument
-            if (null != args && 0 < args.Length)
+            MainEntry(new ConsoleProgressReporterFactory(), args);
+        }
+
+        public static void MainEntry(ProgressReporterFactory zProgressReporterFactory,
+            string[] args)
+        {
+            var commandLineProcessor = new CommandLineProcessor(
+                new CommandLineParser().Parse(args),
+                zProgressReporterFactory)
             {
-                string sFullPath = Path.GetFullPath(args[0]);
-                if (File.Exists(sFullPath))
-                {
-                    CardMakerInstance.CommandLineProjectFile = sFullPath;
-                }
+                CommandLineUtil = new CommandLineUtil()
+            };
+            if (!commandLineProcessor.Process())
+            {
+#if !MONO_BUILD
+                Win32.ShowConsole(Application.ExecutablePath, false);
+#endif
+                Application.Run(new CardMakerMDI());
             }
-            Application.Run(new CardMakerMDI());
+        }
+
+        /// <summary>
+        /// Cross application initialization of components.
+        /// </summary>
+        static void Initialize()
+        {
+            ShapeManager.Init();
+            CardMakerMDI.RestoreReplacementChars();
+
+            var zForm = new Form();
+            var zGraphics = zForm.CreateGraphics();
+            try
+            {
+                CardMakerInstance.ApplicationDPI = zGraphics.DpiX;
+            }
+            finally
+            {
+                zGraphics.Dispose();
+            }
         }
     }
 }

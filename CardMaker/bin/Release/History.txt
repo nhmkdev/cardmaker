@@ -1,6 +1,8 @@
 Card Maker Version History
 --------------------------
 1.1.0.0
+- When adding a Google reference the prompt will not disrupt the add reference process.
+- Reference loading is now multi-threaded so you don't have to wait as long!
 - Additional override for background shapes allowing for custom opacity
 - Added ability to select alpha in the color selection dialog.
 - Border render on exports is now controlled per layout instead of at the application level.

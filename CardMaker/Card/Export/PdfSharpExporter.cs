@@ -1,7 +1,7 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Tim Stair
+// Copyright (c) 2020 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using CardMaker.Data;
 using CardMaker.XML;
@@ -61,9 +62,13 @@ namespace CardMaker.Card.Export
 
         private readonly PageOrientation m_ePageOrientation = PageOrientation.Portrait;
 
-        public PdfSharpExporter(int nLayoutStartIndex, int nLayoutEndIndex, string sExportFile, string sPageOrientation) : base(nLayoutStartIndex, nLayoutEndIndex)
+        public PdfSharpExporter(int nLayoutStartIndex, int nLayoutEndIndex, string sExportFile, string sPageOrientation) : 
+            this(Enumerable.Range(nLayoutStartIndex, nLayoutEndIndex - nLayoutStartIndex).ToArray(), sExportFile, sPageOrientation)
         {
-            
+        }
+
+        public PdfSharpExporter(int[] arrayLayoutIndices, string sExportFile, string sPageOrientation) : base(arrayLayoutIndices)
+        {
             m_sExportFile = sExportFile;
             try
             {
@@ -71,16 +76,22 @@ namespace CardMaker.Card.Export
             }
             catch (Exception)
             {
-                Logger.AddLogLine(sPageOrientation + " is an unknow page orientation.");
+                ProgressReporter.AddIssue(sPageOrientation + " is an unknow page orientation.");
             }
             m_zDocument = new PdfDocument();
             AddPage();
         }
 
-        public void ExportThread()
+        public PdfSharpExporter(int[] arrayLayoutIndices, string sExportFile, PageOrientation ePageOrientation) : base(arrayLayoutIndices)
         {
-            var zWait = WaitDialog.Instance;
+            m_sExportFile = sExportFile;
+            m_ePageOrientation = ePageOrientation;
+            m_zDocument = new PdfDocument();
+            AddPage();
+        }
 
+        public override void ExportThread()
+        {
             if (File.Exists(m_sExportFile))
             {
                 try
@@ -89,13 +100,13 @@ namespace CardMaker.Card.Export
                 }
                 catch (Exception)
                 {
-                    Logger.AddLogLine("Failed to delete PDF before export.");
+                    ProgressReporter.AddIssue("Failed to delete PDF before export: {0}".FormatString(m_sExportFile));
                 }
 
                 if (File.Exists(m_sExportFile))
                 {
-                    DisplayError(zWait.Owner);
-                    zWait.CloseWaitDialog();
+                    DisplayError();
+                    ProgressReporter.Shutdown();
                     return;
                 }
             }
@@ -104,18 +115,21 @@ namespace CardMaker.Card.Export
             Bitmap zBuffer = null;
 #endif
 
-            zWait.ProgressReset(0, 0, ExportLayoutEndIndex - ExportLayoutStartIndex, 0);
-            for (var nIdx = ExportLayoutStartIndex; nIdx < ExportLayoutEndIndex; nIdx++)
+            var progressLayoutIdx = ProgressReporter.GetProgressIndex(ProgressName.LAYOUT);
+            var progressCardIdx = ProgressReporter.GetProgressIndex(ProgressName.CARD);
+
+            ProgressReporter.ProgressReset(progressLayoutIdx, 0, ExportLayoutIndices.Length, 0);
+            foreach (var nIdx in ExportLayoutIndices)
             {
                 ChangeExportLayoutIndex(nIdx);
                 if (CurrentDeck.EmptyReference)
                 {
                     // empty reference layouts are not exported
-                    zWait.ProgressStep(0);
+                    ProgressReporter.ProgressStep(progressLayoutIdx);
                     continue;
                 }
 
-                zWait.ProgressReset(1, 0, CurrentDeck.CardCount, 0);
+                ProgressReporter.ProgressReset(progressCardIdx, 0, CurrentDeck.CardCount, 0);
 
                 var rectCrop = CurrentDeck.CardLayout.getExportCropDefinition();
 
@@ -201,9 +215,10 @@ namespace CardMaker.Card.Export
 
                     nNextExportIndex++;
 
-                    zWait.ProgressStep(1);
+                    ProgressReporter.ProgressStep(progressCardIdx);
                 }
-                zWait.ProgressStep(0);
+                ProgressReporter.ProgressSet(progressCardIdx, 0);
+                ProgressReporter.ProgressStep(progressLayoutIdx);
             }
 
 #if !MONO_BUILD
@@ -213,16 +228,15 @@ namespace CardMaker.Card.Export
             try
             {
                 m_zDocument.Save(m_sExportFile);
-                zWait.ThreadSuccess = true;
+                ProgressReporter.ThreadSuccess = true;
             }
             catch (Exception ex)
             {
-                Logger.AddLogLine("Error saving PDF (is it open?) " + ex.Message);
-                DisplayError(zWait.Owner, ex.Message);
-                zWait.ThreadSuccess = false;
+                DisplayError(ex.Message);
+                ProgressReporter.ThreadSuccess = false;
             }
 
-            zWait.CloseWaitDialog();
+            ProgressReporter.Shutdown();
         }
 
         /// <summary>
@@ -472,12 +486,25 @@ namespace CardMaker.Card.Export
         /// <summary>
         /// Shows the read-only error (assumes the file is open in a viewer)
         /// </summary>
-        private void DisplayError(Form zWaitForm, string extraMessage = "")
+        private void DisplayError(string extraMessage = "")
         {
-            zWaitForm.InvokeAction(() =>
+            var sMsg = "{0}The destination file may be open in a PDF viewer. Please close it before exporting."
+                .FormatString(
+                    (string.IsNullOrWhiteSpace(extraMessage)
+                        ? ""
+                        : extraMessage + " -- "
+                    ));
+            if (null != CardMakerInstance.ApplicationForm)
             {
-                MessageBox.Show(zWaitForm.Owner, extraMessage + Environment.NewLine + "The destination file may be open in a PDF viewer. Please close it before exporting.", "PDF Write Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            });
+                CardMakerInstance.ApplicationForm.InvokeAction(() =>
+                {
+                    MessageBox.Show(CardMakerInstance.ApplicationForm, sMsg, "PDF Write Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                });
+            }
+            else
+            {
+                ProgressReporter.AddIssue(sMsg);
+            }
         }
     }
 }

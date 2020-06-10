@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Tim Stair
+// Copyright (c) 2020 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -31,9 +31,9 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 using CardMaker.Card.Export;
-using CardMaker.Card.Shapes;
 using CardMaker.Card.Translation;
 using CardMaker.Data;
 using CardMaker.Events.Args;
@@ -42,6 +42,7 @@ using CardMaker.Forms.Dialogs;
 using CardMaker.XML;
 using PdfSharp;
 using Support.IO;
+using Support.Progress;
 using Support.UI;
 using LayoutEventArgs = CardMaker.Events.Args.LayoutEventArgs;
 
@@ -82,9 +83,6 @@ namespace CardMaker.Forms
             // logger should be available before the other dialogs
             var zLoggerForm = SetupMDIForm(new MDILogger(), true);
 
-            // always before any dialogs
-            ShapeManager.Init();
-
             ProjectManager.Instance.ProjectOpened += Project_Opened;
             ProjectManager.Instance.ProjectUpdated += Project_Updated;
 
@@ -106,7 +104,6 @@ namespace CardMaker.Forms
             var zProjectForm = SetupMDIForm(new MDIProject(), true);
             SetupMDIForm(new MDIIssues(), false);
             SetupMDIForm(new MDIDefines(), false);
-
 
             // populate the windows menu
             foreach (var zChild in MdiChildren)
@@ -207,19 +204,6 @@ namespace CardMaker.Forms
                 }
             }
             LayoutTemplateManager.Instance.LoadLayoutTemplates(CardMakerInstance.StartupPath);
-
-            RestoreReplacementChars();
-
-            var zGraphics = CreateGraphics();
-            try
-            {
-                CardMakerInstance.ApplicationDPI = zGraphics.DpiX;
-            }
-            finally
-            {
-                zGraphics.Dispose();
-            }
-
 
             // load the specified project from the command line
             if (!string.IsNullOrEmpty(CardMakerInstance.CommandLineProjectFile))
@@ -814,15 +798,13 @@ namespace CardMaker.Forms
             }
 
             var zFileCardExporter = new PdfSharpExporter(nStartLayoutIdx, nEndLayoutIdx, m_sPdfExportLastFile, zQuery.GetString(ORIENTATION));
-
-            var zWait = new WaitDialog(
-                2,
-                zFileCardExporter.ExportThread,
+            var zWait = CardMakerInstance.ProgressReporterFactory.CreateReporter(
                 "Export",
-                new string[] { "Layout", "Card" },
-                450);
+                new string[] { ProgressName.LAYOUT, ProgressName.REFERENCE_DATA, ProgressName.CARD },
+                zFileCardExporter.ExportThread);
 #if true
-            zWait.ShowDialog(this);
+            zFileCardExporter.ProgressReporter = zWait;
+            zWait.StartProcessing(this);
 #else
             zFileCardExporter.ExportThread();
 #endif
@@ -835,7 +817,7 @@ namespace CardMaker.Forms
             }
         }
 
-        private void ExportImages(ICardExporter zFileCardExporter)
+        private void ExportImages(CardExportBase zFileCardExporter)
         {
             if (null == zFileCardExporter)
             {
@@ -843,21 +825,19 @@ namespace CardMaker.Forms
             }
 
 #if true
-            var zWait = new WaitDialog(
-                2,
-                zFileCardExporter.ExportThread,
+            var zWait = CardMakerInstance.ProgressReporterFactory.CreateReporter(
                 "Export",
-                new string[] { "Layout", "Card" },
-                450);
-            zWait.ShowDialog(this);
+                new string[] { ProgressName.LAYOUT, ProgressName.REFERENCE_DATA, ProgressName.CARD },
+                zFileCardExporter.ExportThread);
+            zFileCardExporter.ProgressReporter = zWait;
+            zWait.StartProcessing(this);
 #else // non threaded
             zFileCardExporter.ExportThread();
 #endif
         }
 
-
-
-        private void RestoreReplacementChars()
+#warning move to a more central location
+        public static void RestoreReplacementChars()
         {
             string[] arrayReplacementChars = CardMakerSettings.IniManager.GetValue(IniSettings.ReplacementChars, string.Empty).Split(new char[] { CardMakerConstants.CHAR_FILE_SPLIT });
             if (arrayReplacementChars.Length == FilenameTranslator.DISALLOWED_FILE_CHARS_ARRAY.Length)

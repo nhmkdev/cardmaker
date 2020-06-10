@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Tim Stair
+// Copyright (c) 2020 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -538,9 +538,15 @@ namespace CardMaker.Forms
                 }
                 if (null != zBmp)
                 {
-#warning -- this is 2 events, not 1 (in the case of undo)
-                    numericElementW.Value = zBmp.Width;
-                    numericElementH.Value = zBmp.Height;
+                    var nWidth = zElement.width;
+                    var nHeight = zElement.height;
+                    Action<bool> actionResizeImage = bRedo =>
+                    {
+                        zElement.width = bRedo ? zBmp.Width : nWidth;
+                        zElement.height = bRedo ? zBmp.Height : nHeight;
+                        LayoutManager.Instance.FireLayoutUpdatedEvent(true);
+                    };
+                    UserAction.PushAction(actionResizeImage, true);
                 }
             }
         }
@@ -560,13 +566,13 @@ namespace CardMaker.Forms
                         m_zContextMenu.Items.Add("Add Reference to [" + columnText + "] column", null,
                             (osender, ea) =>
                             {
+                                // TODO: move this logic into the translator classes and get the current translator from the current deck object
                                 if (TranslatorType.Incept == ProjectManager.Instance.LoadedProjectTranslatorType)
                                 {
                                     InsertVariableText("@[" + columnText + "]");
                                 }
                                 else if(TranslatorType.JavaScript == ProjectManager.Instance.LoadedProjectTranslatorType)
                                 {
-#warning this is a bit of a hack, this kind of logic should be handled by the translator
                                     InsertVariableText(columnText.StartsWith("~") ? columnText.Substring(1) : columnText);
                                 }
                             });

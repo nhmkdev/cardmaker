@@ -1,7 +1,7 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Tim Stair
+// Copyright (c) 2020 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using CardMaker.XML;
 
@@ -30,6 +31,11 @@ namespace CardMaker.Card.FormattedText.Markup
 {
     public class PixelMarkup : MarkupValueBase
     {
+        private float m_fXOffset;
+        private float m_fYOffset;
+
+        public override bool Aligns => true;
+
         private PixelMarkup()
         {
         }
@@ -40,6 +46,9 @@ namespace CardMaker.Card.FormattedText.Markup
 
         protected override bool ProcessMarkupHandler(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
+            m_fXOffset = zProcessData.CurrentXOffset;
+            m_fYOffset = zProcessData.CurrentYOffset;
+
             var arrayComponents = m_sVariable.Split(new char[] { ';' });
             if (1 > arrayComponents.Length)
             {
@@ -69,9 +78,27 @@ namespace CardMaker.Card.FormattedText.Markup
                 }
             }
 
-            zProcessData.CurrentX = Math.Max(0, Math.Min(nX, zElement.width));
-            zProcessData.CurrentY = Math.Max(0, Math.Min(nY, zElement.height));
-            return false;
+            nX = Math.Max(0, Math.Min(nX, zElement.width));
+            nY = Math.Max(0, Math.Min(nY, zElement.height));
+
+            TargetRect = new RectangleF(zProcessData.CurrentX, zProcessData.CurrentY,
+                Math.Max(0, nX - zProcessData.CurrentX),
+                Math.Max(0, nY - zProcessData.CurrentY));
+
+            zProcessData.CurrentX = nX;
+            zProcessData.CurrentY = nY;
+            return true;
+        }
+
+        public override bool PostProcessMarkupRectangle(ProjectLayoutElement zElement, List<MarkupBase> listAllMarkups, int nMarkup)
+        {
+            return true;
+        }
+
+        public override bool Render(ProjectLayoutElement zElement, Graphics zGraphics)
+        {
+            RenderDebugBackground(zGraphics, Brushes.DeepSkyBlue, m_fXOffset, m_fYOffset);
+            return true;
         }
     }
 }

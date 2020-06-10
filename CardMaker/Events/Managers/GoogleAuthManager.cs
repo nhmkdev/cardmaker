@@ -1,7 +1,7 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Tim Stair
+// Copyright (c) 2020 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -71,7 +71,7 @@ namespace CardMaker.Events.Managers
         #endregion
 
         /// <summary>
-        /// Checks if the google credentials are set.
+        /// Checks if the google credentials are set. This will result in a prompt for the user (via event).
         /// </summary>
         /// <returns>true if the credentials are set, false otherwise</returns>
         public static bool CheckGoogleCredentials(Form parentForm)
@@ -87,7 +87,7 @@ namespace CardMaker.Events.Managers
                     return false;
                 }
                 Instance.FireGoogleAuthUpdateRequestedEvent();
-                return false;
+                return !string.IsNullOrEmpty(CardMakerInstance.GoogleAccessToken);
             }
             return true;
         }
@@ -102,7 +102,6 @@ namespace CardMaker.Events.Managers
             {
                 case DialogResult.OK:
                     CardMakerInstance.GoogleAccessToken = zDialog.GoogleAccessToken;
-                    Logger.AddLogLine("Updated Google Credentials");
                     zSuccessAction?.Invoke();
                     break;
                 default:

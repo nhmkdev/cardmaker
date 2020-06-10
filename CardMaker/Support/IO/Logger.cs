@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Tim Stair
+// Copyright (c) 2020 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,7 @@ using System.Windows.Forms;
 
 namespace Support.IO
 {
-    public interface LoggerI
+    public interface ILogger
     {
         void AddLogLines(string[] arrayLines);
         void ClearLog();
@@ -36,7 +36,7 @@ namespace Support.IO
 
     public static class Logger
     {
-        private static LoggerI s_iLogger;
+        private static ILogger s_iLogger;
         private static readonly string s_sLogFile = Application.StartupPath + Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(Application.ExecutablePath) + ".log";
         private static bool m_bLogToFile;
 
@@ -47,9 +47,9 @@ namespace Support.IO
         /// <summary>
         /// The logger must be initialized through this method.
         /// </summary>
-        /// <param name="iLogger">An object implementing the LoggerI interface.</param>
+        /// <param name="iLogger">An object implementing the ILogger interface.</param>
         /// <param name="bLogToFile">Flag indicating whether to log the output or not.</param>
-        public static void InitLogger(LoggerI iLogger, bool bLogToFile)
+        public static void InitLogger(ILogger iLogger, bool bLogToFile)
         {
             s_iLogger = iLogger;
             m_bLogToFile = bLogToFile;

@@ -1,7 +1,7 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Tim Stair
+// Copyright (c) 2020 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,10 +22,29 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace CardMaker.Card.Export
+using System.Threading;
+
+namespace Support.Progress
 {
-    public interface ICardExporter
+    public interface ProgressReporterFactory
     {
-        void ExportThread();
+        /// <summary>
+        /// Creates a progress reporter.
+        /// </summary>
+        /// <param name="sTitle">The title of the process to report</param>
+        /// <param name="arrayDescriptions">Descriptions of the sub statuses</param>
+        /// <param name="zThreadStart">The thread entry point to execute</param>
+        /// <returns>The progress reporter</returns>
+        IProgressReporter CreateReporter(string sTitle, string[] arrayDescriptions, ThreadStart zThreadStart);
+
+        /// <summary>
+        /// Creates a progress reporter.
+        /// </summary>
+        /// <param name="sTitle">The title of the process to report</param>
+        /// <param name="arrayDescriptions">Descriptions of the sub statuses</param>
+        /// <param name="zThreadStart">The thread entry point to execute</param>
+        /// <param name="zParamObject">The parameter to pass into the thread for execution</param>
+        /// <returns>The progress reporter</returns>
+        IProgressReporter CreateReporter(string sTitle, string[] arrayDescriptions, ParameterizedThreadStart zThreadStart, object zParamObject);
     }
 }

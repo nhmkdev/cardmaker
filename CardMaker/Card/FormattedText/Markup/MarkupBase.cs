@@ -1,7 +1,7 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Tim Stair
+// Copyright (c) 2020 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -92,6 +92,12 @@ namespace CardMaker.Card.FormattedText.Markup
 
         public virtual void CloseMarkup(FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics) { }
 
+        /// <summary>
+        /// Renders the given markup
+        /// </summary>
+        /// <param name="zElement">The element being rendered</param>
+        /// <param name="zGraphics">The Graphics to draw to</param>
+        /// <returns>true if the markup was rendered, false if not (due to space or other issues)</returns>
         public virtual bool Render(ProjectLayoutElement zElement, Graphics zGraphics)
         {
             return true;

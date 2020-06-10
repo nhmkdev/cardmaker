@@ -1,7 +1,7 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2019 Tim Stair
+// Copyright (c) 2020 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,22 +27,29 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using CardMaker.Data;
 using Support.IO;
-using Support.UI;
 
 namespace CardMaker.Card.Export
 {
-    public class FileCardExporter : CardExportBase, ICardExporter
+    public class FileCardExporter : CardExportBase
     {
         private readonly string m_sExportFolder;
         private readonly string m_sOverrideStringFormat;
         private readonly ImageFormat m_eImageFormat;
         private readonly int m_nSkipStitchIndex;
+        public int[] ExportCardIndices { get; set; }
 
-        public FileCardExporter(int nLayoutStartIndex, int nLayoutEndIdx, string sExportFolder, string sOverrideStringFormat, int
-            nSkipStitchIndex, System.Drawing.Imaging.ImageFormat eImageFormat)
-            : base(nLayoutStartIndex, nLayoutEndIdx)
+        public FileCardExporter(int nLayoutStartIndex, int nLayoutEndIdx, string sExportFolder, string sOverrideStringFormat, int nSkipStitchIndex, ImageFormat eImageFormat) 
+            : this(Enumerable.Range(nLayoutStartIndex, (nLayoutEndIdx - nLayoutStartIndex) + 1).ToArray(), sExportFolder, sOverrideStringFormat, nSkipStitchIndex, eImageFormat)
+        {
+
+        }
+
+        public FileCardExporter(int[] arrayExportLayoutIndices, string sExportFolder, string sOverrideStringFormat, int
+            nSkipStitchIndex, ImageFormat eImageFormat)
+            : base(arrayExportLayoutIndices)
         {
             if (!sExportFolder.EndsWith(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture)))
             {
@@ -56,22 +63,23 @@ namespace CardMaker.Card.Export
             m_eImageFormat = eImageFormat;
         }
 
-        public void ExportThread()
+        public override void ExportThread()
         {
-            var zWait = WaitDialog.Instance;
+            var progressLayoutIdx = ProgressReporter.GetProgressIndex(ProgressName.LAYOUT);
+            var progressCardIdx = ProgressReporter.GetProgressIndex(ProgressName.CARD);
 
-            zWait.ProgressReset(0, 0, ExportLayoutEndIndex - ExportLayoutStartIndex, 0);
-            for (var nIdx = ExportLayoutStartIndex; nIdx < ExportLayoutEndIndex; nIdx++)
+            ProgressReporter.ProgressReset(progressLayoutIdx, 0, ExportLayoutIndices.Length, 0);
+            foreach (var nIdx in ExportLayoutIndices)
             {
                 ChangeExportLayoutIndex(nIdx);
                 if (CurrentDeck.EmptyReference)
                 {
                     // empty reference layouts are not exported
-                    zWait.ProgressStep(0);
+                    ProgressReporter.ProgressStep(progressLayoutIdx);
                     continue;
                 }
                 var nPadSize = CurrentDeck.CardCount.ToString(CultureInfo.InvariantCulture).Length;
-                zWait.ProgressReset(1, 0, CurrentDeck.CardCount, 0);
+                ProgressReporter.ProgressReset(progressCardIdx, 0, CurrentDeck.CardCount, 0);
 
                 var exportWidth = CurrentDeck.CardLayout.exportWidth == 0
                     ? CurrentDeck.CardLayout.width : CurrentDeck.CardLayout.exportWidth;
@@ -89,9 +97,10 @@ namespace CardMaker.Card.Export
 
                 UpdateBufferBitmap(exportWidth, exportHeight);
                 var zGraphics = Graphics.FromImage(m_zExportCardBuffer);
-                var nCardIdx = 0;
-                do
+                var arrayCardIndices = GetCardIndicesArray(CurrentDeck);
+                for(var nCardArrayIdx = 0; nCardArrayIdx < arrayCardIndices.Length; nCardArrayIdx++)
                 {
+                    var nCardId = arrayCardIndices[nCardArrayIdx];
                     var nX = 0;
                     var nY = 0;
                     var nCardsExportedInImage = 0;
@@ -101,12 +110,13 @@ namespace CardMaker.Card.Export
                     do
                     {
                         CurrentDeck.ResetDeckCache();
-                        CurrentDeck.CardPrintIndex = nCardIdx++;
+                        // HACK - the printcard index is 0 based but all other uses of nCardId are 1 based (so ++ it!)
+                        CurrentDeck.CardPrintIndex = nCardId++;
                         nCardsExportedInImage++;
                         CardRenderer.DrawPrintLineToGraphics(zGraphics, nX, nY, !CurrentDeck.CardLayout.exportTransparentBackground);
                         m_zExportCardBuffer.SetResolution(CurrentDeck.CardLayout.dpi, CurrentDeck.CardLayout.dpi);
 
-                        zWait.ProgressStep(1);
+                        ProgressReporter.ProgressStep(progressCardIdx);
 
                         int nMoveCount = 1;
                         if (m_nSkipStitchIndex > 0)
@@ -140,25 +150,25 @@ namespace CardMaker.Card.Export
                         {
                             break;
                         }
-                    } while (nCardIdx < CurrentDeck.CardCount);
+                    } while (nCardArrayIdx < CurrentDeck.CardCount);
 
                     string sFileName;
 
-                    // NOTE: nCardIdx at this point is 1 more than the actual index ... how convenient for export file names...
+                    // NOTE: nCardId at this point is 1 more than the actual index ... how convenient for export file names...
 
                     if (!string.IsNullOrEmpty(m_sOverrideStringFormat))
                     {
                         // check for the super override
-                        sFileName = CurrentDeck.TranslateFileNameString(m_sOverrideStringFormat, nCardIdx, nPadSize);
+                        sFileName = CurrentDeck.TranslateFileNameString(m_sOverrideStringFormat, nCardId, nPadSize);
                     }
                     else if (!string.IsNullOrEmpty(CurrentDeck.CardLayout.exportNameFormat))
                     {
                         // check for the per layout override
-                        sFileName = CurrentDeck.TranslateFileNameString(CurrentDeck.CardLayout.exportNameFormat, nCardIdx, nPadSize);
+                        sFileName = CurrentDeck.TranslateFileNameString(CurrentDeck.CardLayout.exportNameFormat, nCardId, nPadSize);
                     }
                     else // default
                     {
-                        sFileName = CurrentDeck.CardLayout.Name + "_" + (nCardIdx).ToString(CultureInfo.InvariantCulture).PadLeft(nPadSize, '0');
+                        sFileName = CurrentDeck.CardLayout.Name + "_" + (nCardId).ToString(CultureInfo.InvariantCulture).PadLeft(nPadSize, '0');
                     }
                     try
                     {
@@ -169,20 +179,42 @@ namespace CardMaker.Card.Export
                             m_eImageFormat);
                         ProcessRotateExport(m_zExportCardBuffer, CurrentDeck.CardLayout, true);
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
-                        Logger.AddLogLine("Invalid Filename or IO error: " + sFileName);
-                        zWait.ThreadSuccess = false;
-                        zWait.CloseWaitDialog();
+                        ProgressReporter.AddIssue("Invalid Filename or IO error: " + sFileName + " :: " + ex.Message);
+                        ProgressReporter.ThreadSuccess = false;
+                        ProgressReporter.Shutdown();
                         return;
                     }
-
-                } while (nCardIdx < CurrentDeck.CardCount);
-                zWait.ProgressStep(0);
+                }
+                ProgressReporter.ProgressSet(progressCardIdx, 0);
+                ProgressReporter.ProgressStep(progressLayoutIdx);
             }
 
-            zWait.ThreadSuccess = true;
-            zWait.CloseWaitDialog();
+            ProgressReporter.ThreadSuccess = true;
+            ProgressReporter.Shutdown();
+        }
+
+        /// <summary>
+        /// Gets the array of indices to export
+        /// </summary>
+        /// <param name="zDeck">The deck to use if no indices are specified</param>
+        /// <returns>Array of card indices to export</returns>
+        private int[] GetCardIndicesArray(Deck zDeck)
+        {
+            if (ExportCardIndices != null)
+            {
+                if (ExportCardIndices.Any(i => i >= zDeck.CardCount || i < 0))
+                {
+                    throw new Exception("Invalid card indices specified.");
+                }
+
+                return ExportCardIndices;
+            }
+            else
+            {
+                return Enumerable.Range(0, zDeck.CardCount).ToArray();
+            }
         }
 
         /// <summary>
