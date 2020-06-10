@@ -28,15 +28,24 @@ namespace Support.Progress
 {
     public class ConsoleProgressReporterFactory : ProgressReporterFactory
     {
+        public bool WriteToConsole { get; set; }
+
         public IProgressReporter CreateReporter(string sTitle, string[] arrayDescriptions, ThreadStart zThreadStart)
         {
-            return new ConsoleProgressReporter(sTitle, arrayDescriptions, zThreadStart);
+            return new ConsoleProgressReporter(sTitle, arrayDescriptions, zThreadStart)
+            {
+                WriteToConsole = WriteToConsole
+            };
         }
 
         public IProgressReporter CreateReporter(string sTitle, string[] arrayDescriptions,
             ParameterizedThreadStart zThreadStart, object zParamObject)
         {
-            return new ConsoleProgressReporter(sTitle, arrayDescriptions, zThreadStart, zParamObject);
+            return new ConsoleProgressReporter(sTitle, arrayDescriptions, zThreadStart, zParamObject)
+            {
+                WriteToConsole = WriteToConsole
+            };
+
         }
     }
 }

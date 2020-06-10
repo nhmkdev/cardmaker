@@ -33,6 +33,8 @@ namespace Support.Progress
     /// </summary>
     class ConsoleProgressReporter : IProgressReporter
     {
+        public bool WriteToConsole { get; set; }
+
         private const int PROGRESS_WIDTH = 20;
         private readonly ThreadStart m_zThreadStart;
         private readonly ParameterizedThreadStart m_zParameterizedThreadStart;
@@ -151,6 +153,8 @@ namespace Support.Progress
         /// </summary>
         private void Render()
         {
+            if(!WriteToConsole) return;
+
             if (m_bRendered)
             {
                 // clear all the lines starting with the render point

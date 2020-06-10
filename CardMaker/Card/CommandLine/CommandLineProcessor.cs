@@ -39,6 +39,8 @@ namespace CardMaker.Card.CommandLine
     {
         public CommandLineUtil CommandLineUtil { get; set; }
 
+        private ProgressReporterFactory m_zProgressReporterFactory;
+
         private static readonly Dictionary<string, Type> dictionaryExporterType = new Dictionary<string, Type>()
         {
             { "PDF", typeof(PDFCommandLineExporter) },
@@ -63,25 +65,27 @@ namespace CardMaker.Card.CommandLine
         /// 
         /// </summary>
         /// <param name="zCommandLineParser">The parser to use within this processor</param>
-        public CommandLineProcessor(CommandLineParser zCommandLineParser)
+        public CommandLineProcessor(CommandLineParser zCommandLineParser, ProgressReporterFactory zProgressReporterFactory)
         {
             m_zCommandLineParser = zCommandLineParser;
+            m_zProgressReporterFactory = zProgressReporterFactory;
         }
 
         /// <summary>
         /// Processes the command line
         /// </summary>
-        /// <param name="args"></param>
         /// <returns>true if the command line was processed, false otherwise (load the UI)</returns>
         public bool Process()
         {
             // detect if just a project file path is specified (normal UI load)
-            if (IsProjectLoadOnly())
+            if (ShouldLaunchGUI())
             {
                 return false;
             }
             // Switch all progress reporting over to the command line
-            CardMakerInstance.ProgressReporterFactory = new ConsoleProgressReporterFactory();
+            CardMakerInstance.ProgressReporterFactory = m_zProgressReporterFactory == null
+                ? new ConsoleProgressReporterFactory()
+                : m_zProgressReporterFactory;
             Logger.InitLogger(new ConsoleLogger(), false);
 
             if (!LoadProject() || !PerformExport())
@@ -144,7 +148,7 @@ namespace CardMaker.Card.CommandLine
         /// Determines if the command line consists only of a project file path
         /// </summary>
         /// <returns>true if this is a project only command line, false otherwise</returns>
-        private bool IsProjectLoadOnly()
+        private bool ShouldLaunchGUI()
         {
             if (m_zCommandLineParser.GetArgCount() == 1)
             {

@@ -28,24 +28,37 @@ using CardMaker.Card.CommandLine;
 using CardMaker.Card.Shapes;
 using CardMaker.Data;
 using CardMaker.Forms;
+using Support.Progress;
 using Support.UI;
 using Support.Util;
 
 namespace CardMaker
 {
-    static class Program
+    public static class Program
     {
+        // this is primarily here for the functional tests of the command line (repeating them breaks things)
+        static Program()
+        {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Initialize();
+        }
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+            MainEntry(new ConsoleProgressReporterFactory(), args);
+        }
 
-            Initialize();
-            var commandLineProcessor = new CommandLineProcessor(new CommandLineParser().Parse(args))
+        public static void MainEntry(ProgressReporterFactory zProgressReporterFactory,
+            string[] args)
+        {
+            var commandLineProcessor = new CommandLineProcessor(
+                new CommandLineParser().Parse(args),
+                zProgressReporterFactory)
             {
                 CommandLineUtil = new CommandLineUtil()
             };

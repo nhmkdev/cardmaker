@@ -43,7 +43,8 @@ namespace CardMaker.Card.Translation
                 eTranslator = TranslatorType.Incept;
             }
 
-            Logger.AddLogLine("Deck Translator: {0}".FormatString(eTranslator.ToString()));
+            // not a critical log message...
+            //Logger.AddLogLine("Deck Translator: {0}".FormatString(eTranslator.ToString()));
 
             switch (eTranslator)
             {
