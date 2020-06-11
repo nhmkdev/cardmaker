@@ -28,13 +28,23 @@ namespace Support.Progress
 {
     public class ConsoleProgressReporterFactory : ProgressReporterFactory
     {
-        public bool WriteToConsole { get; set; }
+        private bool m_bWriteToConsole = true;
+
+        public ConsoleProgressReporterFactory() : this(true)
+        {
+
+        }
+
+        public ConsoleProgressReporterFactory(bool bWriteToConsole)
+        {
+            m_bWriteToConsole = bWriteToConsole;
+        }
 
         public IProgressReporter CreateReporter(string sTitle, string[] arrayDescriptions, ThreadStart zThreadStart)
         {
             return new ConsoleProgressReporter(sTitle, arrayDescriptions, zThreadStart)
             {
-                WriteToConsole = WriteToConsole
+                WriteToConsole = m_bWriteToConsole
             };
         }
 
@@ -43,7 +53,7 @@ namespace Support.Progress
         {
             return new ConsoleProgressReporter(sTitle, arrayDescriptions, zThreadStart, zParamObject)
             {
-                WriteToConsole = WriteToConsole
+                WriteToConsole = m_bWriteToConsole
             };
 
         }

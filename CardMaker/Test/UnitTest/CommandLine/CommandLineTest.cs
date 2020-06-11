@@ -53,12 +53,7 @@ namespace UnitTest.CommandLine
                 "-exportFormat", "pdf",
                 "-exportPath", sPdfExport
             };
-            Program.MainEntry(
-                new ConsoleProgressReporterFactory()
-                {
-                    WriteToConsole = false
-                },
-                args);
+            Program.MainEntry(new ConsoleProgressReporterFactory(false), args);
             Assert.IsTrue(File.Exists(sPdfExport));
         }
 
@@ -72,12 +67,7 @@ namespace UnitTest.CommandLine
                 "-exportFormat", "png",
                 "-exportPath", m_sTestTemp
             };
-            Program.MainEntry(
-                new ConsoleProgressReporterFactory()
-                {
-                    WriteToConsole = false
-                },
-                args);
+            Program.MainEntry(new ConsoleProgressReporterFactory(false), args);
             // just verifying the first layout
             AssertFileRangeExistence(m_sTestTemp, "Default_", ".png", 1, 18);
         }
@@ -94,12 +84,7 @@ namespace UnitTest.CommandLine
                 "-layoutNames", "Default",
                 "-cardIndices", "3-10"
             };
-            Program.MainEntry(
-                new ConsoleProgressReporterFactory()
-                {
-                    WriteToConsole = false
-                },
-                args);
+            Program.MainEntry(new ConsoleProgressReporterFactory(false), args);
             // just verifying the first layout
             AssertFileRangeExistence(m_sTestTemp, "Default_", ".png", 3, 10);
         }

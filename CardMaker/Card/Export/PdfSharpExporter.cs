@@ -217,7 +217,6 @@ namespace CardMaker.Card.Export
 
                     ProgressReporter.ProgressStep(progressCardIdx);
                 }
-                ProgressReporter.ProgressSet(progressCardIdx, 0);
                 ProgressReporter.ProgressStep(progressLayoutIdx);
             }
 

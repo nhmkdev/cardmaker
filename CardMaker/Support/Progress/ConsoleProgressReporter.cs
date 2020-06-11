@@ -40,6 +40,8 @@ namespace Support.Progress
         private readonly ParameterizedThreadStart m_zParameterizedThreadStart;
         private readonly object m_zParamObject;
         private readonly string m_sTitle;
+        private object m_zStepLockObject = new object();
+        private object m_zRenderLockObject = new object();
         private List<ProgressLine> m_listProgressLines;
         private List<string> m_listIssues = new List<string>();
         private Dictionary<string, int> m_dictionaryProgressIndex = new Dictionary<string, int>();
@@ -99,7 +101,12 @@ namespace Support.Progress
 
         public void ProgressStep(int nProgressBar)
         {
-            m_listProgressLines[nProgressBar].Value = Math.Min(m_listProgressLines[nProgressBar].Max, m_listProgressLines[nProgressBar].Value + 1);
+            lock (m_zStepLockObject)
+            {
+                m_listProgressLines[nProgressBar].Value = Math.Min(m_listProgressLines[nProgressBar].Max,
+                    m_listProgressLines[nProgressBar].Value + 1);
+            }
+
             Render();
         }
 
@@ -154,29 +161,38 @@ namespace Support.Progress
         private void Render()
         {
             if(!WriteToConsole) return;
-
-            if (m_bRendered)
+            lock (m_zRenderLockObject)
             {
-                // clear all the lines starting with the render point
-                for (var nConsoleLine = m_nConsoleRenderLine; nConsoleLine < m_listProgressLines.Count + 1; nConsoleLine++)
+#warning can definitely improve the flickering by reducing what is erased/redrawn
+                if (m_bRendered)
                 {
-                    Console.SetCursorPosition(0, nConsoleLine);
-                    Console.Write("".PadRight(Console.WindowWidth));
+                    // clear all the lines starting with the render point
+                    for (var nConsoleLine = m_nConsoleRenderLine;
+                        nConsoleLine < m_listProgressLines.Count + 1;
+                        nConsoleLine++)
+                    {
+                        Console.SetCursorPosition(0, nConsoleLine);
+                        Console.Write("".PadRight(Console.WindowWidth));
+                    }
+
+                    Console.SetCursorPosition(0, m_nConsoleRenderLine);
                 }
-                Console.SetCursorPosition(0, m_nConsoleRenderLine);
+                else
+                {
+                    m_nConsoleRenderLine = Console.CursorTop;
+                    m_bRendered = true;
+                }
+
+                //Thread.Sleep(500);
+                Console.WriteLine(m_sTitle.PadRight(Console.WindowWidth, ' '));
+                m_listProgressLines.ForEach(zLine =>
+                {
+                    var nScaledValue = (int) ((((float) zLine.Value - (float) zLine.Min) / (float) zLine.Max) *
+                                              (float) PROGRESS_WIDTH);
+                    Console.WriteLine("[" + ("".PadRight(nScaledValue, '+')).PadRight(PROGRESS_WIDTH, ' ') + "] " +
+                                      zLine.Description);
+                });
             }
-            else
-            {
-                m_nConsoleRenderLine = Console.CursorTop;
-                m_bRendered = true;
-            }
-            //Thread.Sleep(500);
-            Console.WriteLine(m_sTitle.PadRight(Console.WindowWidth, ' '));
-            m_listProgressLines.ForEach(zLine =>
-            {
-                var nScaledValue = (int)((((float)zLine.Value - (float)zLine.Min) / (float)zLine.Max) * (float)PROGRESS_WIDTH);
-                Console.WriteLine("[" + ("".PadRight(nScaledValue, '+')).PadRight(PROGRESS_WIDTH, ' ') + "] " + zLine.Description);
-            });
         }
     }
 
