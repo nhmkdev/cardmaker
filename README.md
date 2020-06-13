@@ -35,7 +35,7 @@ Note: The code that is submitted may not match the latest binary.
 
 ## Code Status
 
-Compiles with Visual Studio Express Desktop Edition / Visual Studio 2012
+Compiles with Visual Studio Community Edition 2019
 
 See more details in the [Developers Section](https://github.com/nhmkdev/cardmaker/wiki/developers)
 
