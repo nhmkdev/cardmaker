@@ -65,6 +65,13 @@ CardMaker played some role in the development of these games (prototyping or oth
 | [Cave Paintings](http://rnrgames.com/cave-paintings) |
 | [Iliad: Heroes of Troy](http://www.escapevelocitygames.com/iliad/)<br/> |
 | [Town Builder: Coevorden](https://boardgamegeek.com/boardgame/255633/town-builder-coevorden) & [(Publisher page)](http://www.firstfishgames.com/our-games/town-builder-coevorden/) |
+| [NEVO](https://www.thegamecrafter.com/games/nevo) |
+| [COBRA](https://www.thegamecrafter.com/games/cobra1) |
+| [Context Switch](https://www.thegamecrafter.com/games/context-switch) |
+| [Executive Shuffle](https://www.thegamecrafter.com/games/executive-shuffle) |
+| [Fairness](https://www.thegamecrafter.com/games/fairness) |
+| [Root Cause Analysis Team](https://www.thegamecrafter.com/games/root-cause-analysis-team) |
+| [Hard Stop](https://www.thegamecrafter.com/games/hard-stop) |
 
 ## History
 
