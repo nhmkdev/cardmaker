@@ -195,7 +195,6 @@ namespace Support.Google.Sheets
             {
                 return zRetriever();
             }
-#warning What is the credentials exception for google now?
             catch (Exception ex)
             {
                 Logger.AddLogLine("General exception: " + ex.Message);

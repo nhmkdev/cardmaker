@@ -425,7 +425,7 @@ namespace CardMaker.Card.Translation
                     var zMatch = zKeyValue.Key.Match(sOutput);
                     if (zMatch.Success)
                     {
-#warning PREFERS RIGHT MOST using group 2
+                        // NOTE: Prefers right-most using group 2
                         if (null != zCurrentMatch &&
                             zCurrentMatch.Groups[2].Index > zMatch.Groups[2].Index)
                         {
