@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 
 namespace Support.Progress
@@ -35,7 +36,7 @@ namespace Support.Progress
     {
         public bool WriteToConsole { get; set; }
 
-        private const int PROGRESS_WIDTH = 20;
+        private const int PROGRESS_WIDTH = 30;
         private readonly ThreadStart m_zThreadStart;
         private readonly ParameterizedThreadStart m_zParameterizedThreadStart;
         private readonly object m_zParamObject;
@@ -47,6 +48,7 @@ namespace Support.Progress
         private Dictionary<string, int> m_dictionaryProgressIndex = new Dictionary<string, int>();
         private bool m_bRendered = false;
         private int m_nConsoleRenderLine;
+        private StringBuilder m_zOutputBuilder = new StringBuilder();
 
         public ConsoleProgressReporter(string sTitle, string[] arrayDescriptions, ThreadStart zThreadStart)
         {
@@ -163,9 +165,11 @@ namespace Support.Progress
             if(!WriteToConsole) return;
             lock (m_zRenderLockObject)
             {
-#warning can definitely improve the flickering by reducing what is erased/redrawn
+                m_zOutputBuilder.Clear();
+                Console.CursorVisible = false;
                 if (m_bRendered)
                 {
+#if false // this introduced flicker (don't need that!)
                     // clear all the lines starting with the render point
                     for (var nConsoleLine = m_nConsoleRenderLine;
                         nConsoleLine < m_listProgressLines.Count + 1;
@@ -174,7 +178,7 @@ namespace Support.Progress
                         Console.SetCursorPosition(0, nConsoleLine);
                         Console.Write("".PadRight(Console.WindowWidth));
                     }
-
+#endif
                     Console.SetCursorPosition(0, m_nConsoleRenderLine);
                 }
                 else
@@ -183,15 +187,18 @@ namespace Support.Progress
                     m_bRendered = true;
                 }
 
-                //Thread.Sleep(500);
-                Console.WriteLine(m_sTitle.PadRight(Console.WindowWidth, ' '));
+                m_zOutputBuilder.AppendLine(m_sTitle.PadRight(Console.WindowWidth, ' '));
+
                 m_listProgressLines.ForEach(zLine =>
                 {
                     var nScaledValue = (int) ((((float) zLine.Value - (float) zLine.Min) / (float) zLine.Max) *
                                               (float) PROGRESS_WIDTH);
-                    Console.WriteLine("[" + ("".PadRight(nScaledValue, '+')).PadRight(PROGRESS_WIDTH, ' ') + "] " +
-                                      zLine.Description);
+                    m_zOutputBuilder.AppendLine("[" + ("".PadRight(nScaledValue, '+')).PadRight(PROGRESS_WIDTH, ' ') + "] " +
+                                                zLine.Description);
                 });
+                Console.WriteLine(m_zOutputBuilder.ToString());
+                //Thread.Sleep(500);
+                Console.CursorVisible = true;
             }
         }
     }
