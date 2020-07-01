@@ -249,7 +249,10 @@ namespace CardMaker.Card
         private void DrawElement(Graphics zGraphics, Deck zDeck, ProjectLayoutElement zElement,
             int nX, int nY, string sInput, bool bExport)
         {
-            s_listElementRenderProcessors.ForEach(zRenderProcessor => sInput = zRenderProcessor.Render(zGraphics, zElement, zDeck, sInput, nX, nY, bExport));
+            foreach (var zRenderProcessor in s_listElementRenderProcessors)
+            {
+                sInput = zRenderProcessor.Render(zGraphics, zElement, zDeck, sInput, nX, nY, bExport);
+            }
 
             // always reset the transform
             zGraphics.ResetTransform();
