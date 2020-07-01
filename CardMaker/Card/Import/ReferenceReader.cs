@@ -53,6 +53,14 @@ namespace CardMaker.Card.Import
         public abstract void GetDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData);
 
         /// <summary>
+        /// Post constructor initialization
+        /// </summary>
+        public virtual ReferenceReader Initialize()
+        {
+            return this;
+        }
+
+        /// <summary>
         /// Called to signify that all references have been loaded
         /// </summary>
         public virtual void FinalizeReferenceLoad()

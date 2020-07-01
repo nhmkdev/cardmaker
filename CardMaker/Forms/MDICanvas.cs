@@ -310,7 +310,7 @@ namespace CardMaker.Forms
         private void contextmenuOpening_Handler(object sender, CancelEventArgs e)
         {
             m_zContextMenu.Items.Clear();
-            if (null != LayoutManager.Instance.ActiveDeck.CardLayout.Element)
+            if (null != LayoutManager.Instance.ActiveDeck && null != LayoutManager.Instance.ActiveDeck.CardLayout.Element)
             {
                 Point pointMouse = m_zCardCanvas.PointToClient(MousePosition);
                 // add only the items that the mouse is within the rectangle of

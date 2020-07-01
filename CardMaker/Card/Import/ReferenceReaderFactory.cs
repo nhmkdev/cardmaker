@@ -60,7 +60,7 @@ namespace CardMaker.Card.Import
             }
 
             zReferenceReader.ProgressReporter = zProgressReporter;
-            return zReferenceReader;
+            return zReferenceReader.Initialize();
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace CardMaker.Card.Import
             {
                 zReferenceReader.ProgressReporter = zProgressReporter;
             }
-            return zReferenceReader;
+            return zReferenceReader.Initialize();
         }            
     }
 }

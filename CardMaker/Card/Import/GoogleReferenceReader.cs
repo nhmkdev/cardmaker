@@ -22,9 +22,6 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
-using System.IO;
 using CardMaker.Data;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
@@ -33,6 +30,9 @@ using Support.Google;
 using Support.Google.Sheets;
 using Support.IO;
 using Support.UI;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace CardMaker.Card.Import
 {
@@ -52,6 +52,11 @@ namespace CardMaker.Card.Import
 
         public GoogleReferenceReader()
         {
+
+        }
+
+        public override ReferenceReader Initialize()
+        {
             LoadCache();
 
             if (!IsAllDataCached() || CardMakerInstance.ForceDataCacheRefresh)
@@ -70,6 +75,8 @@ namespace CardMaker.Card.Import
                     }
                 }
             }
+
+            return this;
         }
 
         public GoogleReferenceReader(ProjectLayoutReference zReference) : this()
@@ -125,6 +132,7 @@ namespace CardMaker.Card.Import
             var sSheetName = zReference.SheetName + sNameAppend;
 
             var bAuthorizationError = false;
+            var bError = false;
 
             List<List<string>> listGoogleData = null;
             try
@@ -140,6 +148,12 @@ namespace CardMaker.Card.Import
                 {
                     listGoogleData = zGoogleSpreadsheet.GetSheetContentsBySpreadsheetId(zReference.SpreadsheetId, sSheetName);
                 }
+
+                // blank data just means an empty or non-existent sheet (generally okay)
+                if (listGoogleData == null)
+                {
+                    listGoogleData = new List<List<string>>();
+                }
             }
             catch (GoogleApiException e)
             {
@@ -150,8 +164,9 @@ namespace CardMaker.Card.Import
             {
                 ProgressReporter.AddIssue("General exception: " + e.Message);
                 listGoogleData = null;
+                bError = true;
             }
-            if (null == listGoogleData)
+            if (bAuthorizationError || bError || listGoogleData == null)
             {
                 ProgressReporter.AddIssue("Failed to load any data from Google Spreadsheet." + "[" + sSpreadsheetName + "," + sSheetName + "]" + (bAuthorizationError ? " Google reported a problem with your credentials." : String.Empty));
             }
