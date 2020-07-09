@@ -30,6 +30,7 @@ using CardMaker.Data;
 using CardMaker.Events.Args;
 using CardMaker.XML;
 using Support.IO;
+using Support.UI;
 
 namespace CardMaker.Events.Managers
 {
@@ -65,11 +66,37 @@ namespace CardMaker.Events.Managers
         /// </summary>
         public event LayoutAdded LayoutAdded;
 
+        /// <summary>
+        /// Fired when a layout is renamed
+        /// </summary>
+        public event LayoutRenamed LayoutRenamed;
+
+        /// <summary>
+        /// Fired when an element is renamed
+        /// </summary>
+        public event ElementRenamed ElementRenamed;
+
+        /// <summary>
+        /// Fired when an element is added
+        /// </summary>
+        public event ElementsAdded ElementsAdded;
+
+        /// <summary>
+        /// Fired when an element is removed
+        /// </summary>
+        public event ElementsRemoved ElementsRemoved;
+
         public static ProjectManager Instance => m_zInstance ?? (m_zInstance = new ProjectManager());
+
+        private Dictionary<string, ProjectLayout> m_zProjectLayoutDictionary = new Dictionary<string, ProjectLayout>();
 
         public ProjectManager()
         {
             ProjectUpdated += (sender, e) => UpdateSettings();
+            LayoutRenamed += OnLayoutRenamed;
+            ElementRenamed += OnElementRenamed;
+            ElementsRemoved += OnElementsRemoved;
+            ProjectOpened += (sender, e) => InitializeLookups(true);
         }
 
         #region Event Triggers
@@ -80,6 +107,102 @@ namespace CardMaker.Events.Managers
         public void FireProjectUpdated(bool bDataChange)
         {
             ProjectUpdated?.Invoke(this, new ProjectEventArgs(LoadedProject, ProjectFilePath, bDataChange));
+        }
+
+        /// <summary>
+        /// Fires the FireLayoutRenamed event
+        /// </summary>
+        public void FireLayoutRenamed(ProjectLayout zLayout, string sOldName)
+        {
+            LayoutRenamed?.Invoke(this, new LayoutRenamedEventArgs(zLayout, sOldName));
+        }
+
+        /// <summary>
+        /// Fires the ElementRenamed event
+        /// </summary>
+        public void FireElementRenamed(ProjectLayoutElement zElement, string sOldName)
+        {
+            ElementRenamed?.Invoke(this, new ElementRenamedEventArgs(zElement, sOldName));
+        }
+
+        /// <summary>
+        /// Fires the ElementsAdded event
+        /// </summary>
+        public void FireElementsAdded(List<ProjectLayoutElement> listAddedElements)
+        {
+            ElementsAdded?.Invoke(this, new ElementEventArgs(listAddedElements));
+        }
+
+        /// <summary>
+        /// Fires the ElementsRemoved event
+        /// </summary>
+        public void FireElementsRemoved(List<ProjectLayoutElement> listRemovedElements)
+        {
+            ElementsRemoved?.Invoke(this, new ElementEventArgs(listRemovedElements));
+        }
+
+        #endregion
+
+        #region Events
+
+        private void OnLayoutRenamed(object sender, LayoutRenamedEventArgs e)
+        {
+            InitializeLookups(false);
+
+            // update all nested reference elements to match the name
+            if (LoadedProject == null) return;
+            foreach (var zLayout in LoadedProject.Layout)
+            {
+                if (zLayout.Element == null) continue;
+                foreach (var zElement in zLayout.Element)
+                {
+                    if (string.Equals(zElement.layoutreference, e.OldName))
+                    {
+                        zElement.layoutreference = e.Layout.Name;
+                    }
+                }
+            }
+        }
+
+        private void OnElementRenamed(object sender, ElementRenamedEventArgs e)
+        {
+            // update all nested reference elements to match the name
+            if (LoadedProject == null) return;
+            foreach (var zLayout in LoadedProject.Layout)
+            {
+                if(zLayout.Element == null) continue;
+                foreach (var zElement in zLayout.Element)
+                {
+                    if (string.Equals(zElement.elementreference, e.OldName))
+                    {
+                        zElement.elementreference = e.Element.name;
+                        zElement.name = e.Element.name;
+                    }
+                }
+            }
+        }
+
+        private void OnElementsRemoved(object sender, ElementEventArgs e)
+        {
+            // update all nested reference elements to detach (deep copy)
+            if (LoadedProject == null) return;
+            var sLayoutName = LayoutManager.Instance.ActiveDeck.CardLayout.Name;
+            foreach (var zLayout in LoadedProject.Layout)
+            {
+                if (zLayout.Element == null) continue;
+                foreach (var zElement in zLayout.Element)
+                {
+                    foreach (var zRemovedElement in e.Elements)
+                    {
+                        if (string.Equals(zElement.layoutreference, sLayoutName)
+                            && string.Equals(zElement.elementreference, zRemovedElement.name))
+                        {
+                            zElement.DeepCopy(zRemovedElement, true);
+                            Logger.AddLogLine("Detached reference: {0}:{1}".FormatString(sLayoutName, zRemovedElement.name));
+                        }
+                    }
+                }
+            }
         }
 
         #endregion
@@ -157,7 +280,7 @@ namespace CardMaker.Events.Managers
         private void SetLoadedProjectFile(string sProjectFile)
         {
             ProjectFilePath = sProjectFile;
-            ProjectPath = String.IsNullOrEmpty(ProjectFilePath) ? null : (Path.GetDirectoryName(sProjectFile) + Path.DirectorySeparatorChar);
+            ProjectPath = string.IsNullOrEmpty(ProjectFilePath) ? null : (Path.GetDirectoryName(sProjectFile) + Path.DirectorySeparatorChar);
         }
 
         /// <summary>
@@ -180,10 +303,40 @@ namespace CardMaker.Events.Managers
             return -1;
         }
 
+        private void InitializeLookups(bool bInitializeElementLookup = true)
+        {
+            m_zProjectLayoutDictionary.Clear();
+            if(LoadedProject == null) return;
+            foreach (var zLayout in LoadedProject.Layout)
+            {
+                m_zProjectLayoutDictionary[zLayout.Name] = zLayout;
+                if (bInitializeElementLookup)
+                {
+                    zLayout.InitializeElementLookup();
+                }
+            }
+        }
+
         private void UpdateSettings()
         {
             LoadedProjectTranslatorType = GetTranslatorTypeFromString(LoadedProject.translatorName);
             LoadedProjectDefaultDefineReferenceType = GetReferenceTypeFromString(LoadedProject.defaultDefineReferenceType);
+        }
+
+        public ProjectLayoutElement LookupElementReference(ProjectLayoutElement zElement)
+        {
+            var zReferenceElement =
+                LookupLayoutByName(zElement.layoutreference)?.LookupElement(zElement.elementreference);
+            return null == zReferenceElement
+                ? zElement
+                : zReferenceElement;
+        }
+
+        public ProjectLayout LookupLayoutByName(string sLayoutName)
+        {
+            return null != sLayoutName && m_zProjectLayoutDictionary.ContainsKey(sLayoutName)
+                ? m_zProjectLayoutDictionary[sLayoutName]
+                : null;
         }
 
         public static TranslatorType GetTranslatorTypeFromString(string sInput)

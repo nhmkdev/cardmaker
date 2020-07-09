@@ -151,7 +151,7 @@ namespace CardMaker.Card
                     // draw all selections and element borders after everything else
                     for (var nIdx = CurrentDeck.CardLayout.Element.Length - 1; nIdx > -1; nIdx--)
                     {
-                        ProjectLayoutElement zElement = CurrentDeck.CardLayout.Element[nIdx];
+                        var zElement = ProjectManager.Instance.LookupElementReference(CurrentDeck.CardLayout.Element[nIdx]);
                         if (zElement.enabled) // only add enabled items to draw
                         {
                             DrawElementDebugBorder(zGraphics, zElement, nX, nY, ElementManager.Instance.GetSelectedElement() == zElement);

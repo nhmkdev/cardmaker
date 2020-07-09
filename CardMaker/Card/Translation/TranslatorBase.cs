@@ -26,9 +26,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using CardMaker.Card.FormattedText;
 using CardMaker.Data;
+using CardMaker.Events.Managers;
 using CardMaker.XML;
 using Support.IO;
 using Support.UI;
@@ -116,6 +118,8 @@ namespace CardMaker.Card.Translation
             Dictionary<string, int> dictionaryOverrideColumns;
 
             DictionaryElementToFieldColumnOverrides.TryGetValue(zElement.name.ToLower(), out dictionaryOverrideColumns);
+
+            zElement = ProjectManager.Instance.LookupElementReference(zElement);
 
             var zOverrideElement = new ProjectLayoutElement();
             zOverrideElement.DeepCopy(zElement, false);

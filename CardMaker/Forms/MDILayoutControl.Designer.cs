@@ -65,6 +65,8 @@ namespace CardMaker.Forms
             this.contextMenuElements = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pasteReferenceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.detachReferenceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pasteSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.checkCardSetDrawBorder = new System.Windows.Forms.CheckBox();
             this.numericCardSetDPI = new System.Windows.Forms.NumericUpDown();
@@ -189,6 +191,7 @@ namespace CardMaker.Forms
             this.listViewElements.HideSelection = false;
             this.listViewElements.Location = new System.Drawing.Point(6, 89);
             this.listViewElements.Name = "listViewElements";
+            this.listViewElements.ShowItemToolTips = true;
             this.listViewElements.Size = new System.Drawing.Size(310, 184);
             this.listViewElements.TabIndex = 30;
             this.listViewElements.UseCompatibleStateImageBehavior = false;
@@ -219,30 +222,46 @@ namespace CardMaker.Forms
             this.contextMenuElements.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.copyToolStripMenuItem,
             this.pasteToolStripMenuItem,
+            this.pasteReferenceToolStripMenuItem,
+            this.detachReferenceToolStripMenuItem,
             this.pasteSettingsToolStripMenuItem});
             this.contextMenuElements.Name = "contextMenuElements";
             this.contextMenuElements.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.contextMenuElements.Size = new System.Drawing.Size(157, 70);
+            this.contextMenuElements.Size = new System.Drawing.Size(180, 114);
             this.contextMenuElements.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuElements_Opening);
             // 
             // copyToolStripMenuItem
             // 
             this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-            this.copyToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
             this.copyToolStripMenuItem.Text = "Copy";
             this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
             // 
             // pasteToolStripMenuItem
             // 
             this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
-            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
             this.pasteToolStripMenuItem.Text = "Paste";
             this.pasteToolStripMenuItem.Click += new System.EventHandler(this.pasteToolStripMenuItem_Click);
+            // 
+            // pasteReferenceToolStripMenuItem
+            // 
+            this.pasteReferenceToolStripMenuItem.Name = "pasteReferenceToolStripMenuItem";
+            this.pasteReferenceToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.pasteReferenceToolStripMenuItem.Text = "Paste Reference(s)";
+            this.pasteReferenceToolStripMenuItem.Click += new System.EventHandler(this.pasteReferenceToolStripMenuItem_Click);
+            // 
+            // detachReferenceToolStripMenuItem
+            // 
+            this.detachReferenceToolStripMenuItem.Name = "detachReferenceToolStripMenuItem";
+            this.detachReferenceToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.detachReferenceToolStripMenuItem.Text = "Detach Reference(s)";
+            this.detachReferenceToolStripMenuItem.Click += new System.EventHandler(this.detachReferenceToolStripMenuItem_Click);
             // 
             // pasteSettingsToolStripMenuItem
             // 
             this.pasteSettingsToolStripMenuItem.Name = "pasteSettingsToolStripMenuItem";
-            this.pasteSettingsToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.pasteSettingsToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
             this.pasteSettingsToolStripMenuItem.Text = "Paste Settings...";
             this.pasteSettingsToolStripMenuItem.Click += new System.EventHandler(this.pasteSettingsToolStripMenuItem_Click);
             // 
@@ -583,5 +602,7 @@ namespace CardMaker.Forms
         private System.Windows.Forms.CheckBox checkLoadAllReferences;
         private System.Windows.Forms.ToolStripMenuItem pasteSettingsToolStripMenuItem;
         private System.Windows.Forms.Button btnConfigureSize;
+        private System.Windows.Forms.ToolStripMenuItem pasteReferenceToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem detachReferenceToolStripMenuItem;
     }
 }

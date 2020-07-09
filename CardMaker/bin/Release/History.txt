@@ -1,6 +1,7 @@
 Card Maker Version History
 --------------------------
 1.1.0.0
+- Added ability to create reference elements (an element owned by a layout but accessible in others)
 - When adding a Google reference the prompt will not disrupt the add reference process.
 - Reference loading is now multi-threaded so you don't have to wait as long!
 - Additional override for background shapes allowing for custom opacity

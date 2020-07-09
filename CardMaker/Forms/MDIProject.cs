@@ -173,7 +173,9 @@ namespace CardMaker.Forms
             if (typeof(ProjectLayout) == treeView.SelectedNode.Tag.GetType() && null != e.Label)
             {
                 var zLayout = (ProjectLayout)treeView.SelectedNode.Tag;
+                var sOldName = zLayout.Name;
                 zLayout.Name = e.Label;
+                ProjectManager.Instance.FireLayoutRenamed(zLayout, sOldName);
                 ProjectManager.Instance.FireProjectUpdated(true);
             }
         }

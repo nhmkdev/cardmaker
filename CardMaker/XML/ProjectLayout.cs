@@ -26,7 +26,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Xml.Serialization;
-using Support.IO;
 
 namespace CardMaker.XML
 {
@@ -34,6 +33,8 @@ namespace CardMaker.XML
     {
         public static readonly string[] AllowedExportRotations = { "0", "90", "-90" };
         
+        private Dictionary<string, ProjectLayoutElement> m_dictionaryElements = new Dictionary<string, ProjectLayoutElement>();
+
         #region Properties
 
         [XmlElement("Element")]
@@ -121,6 +122,31 @@ namespace CardMaker.XML
             drawBorder = true;
         }
 
+        public void InitializeElementLookup()
+        {
+            m_dictionaryElements.Clear();
+            if (null != Element)
+            {
+                foreach (var zElement in Element)
+                {
+                    m_dictionaryElements[zElement.name] = zElement;
+                }
+            }
+        }
+
+        public void ReInitializeElementLookup(ProjectLayoutElement zElement, string sOldName)
+        {
+            m_dictionaryElements.Remove(sOldName);
+            m_dictionaryElements[zElement.name] = zElement;
+        }
+
+        public ProjectLayoutElement LookupElement(string sElementName)
+        {
+            return sElementName != null && m_dictionaryElements.ContainsKey(sElementName)
+                ? m_dictionaryElements[sElementName]
+                : null;
+        }
+
         /// <summary>
         /// Performs a partial deepy copy based on the input element, the name field is left unchanged
         /// </summary>
@@ -164,6 +190,8 @@ namespace CardMaker.XML
                 }
                 Reference = listReferences.ToArray();
             }
+
+            InitializeElementLookup();
         }
 
     }

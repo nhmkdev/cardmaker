@@ -85,6 +85,8 @@ namespace CardMaker.Forms
 
             ProjectManager.Instance.ProjectOpened += Project_Opened;
             ProjectManager.Instance.ProjectUpdated += Project_Updated;
+            ProjectManager.Instance.ElementRenamed += LayoutManager.Instance.HandleLayoutElementNameChange;
+            ProjectManager.Instance.ElementsAdded += (o, args) => LayoutManager.Instance.ActiveLayout.InitializeElementLookup();
 
             LayoutManager.Instance.LayoutUpdated += Layout_Updated;
             LayoutManager.Instance.LayoutLoaded += Layout_Loaded;

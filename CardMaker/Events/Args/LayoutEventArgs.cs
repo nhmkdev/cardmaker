@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
+using System;
 using CardMaker.Card;
 using CardMaker.XML;
 
@@ -37,6 +38,8 @@ namespace CardMaker.Events.Args
     public delegate void LayoutUpdated(object sender, LayoutEventArgs args);
 
     public delegate void LayoutAdded(object sender, LayoutEventArgs args);
+
+    public delegate void LayoutRenamed(object sender, LayoutRenamedEventArgs args);
 
     public class LayoutEventArgs
     {
@@ -61,6 +64,18 @@ namespace CardMaker.Events.Args
             : this(zLayout, null, false)
         {
 
+        }
+    }
+
+    public class LayoutRenamedEventArgs
+    {
+        public ProjectLayout Layout { get; private set; }
+        public string OldName { get; private set; }
+
+        public LayoutRenamedEventArgs(ProjectLayout zLayout, string oldName)
+        {
+            Layout = zLayout;
+            OldName = oldName;
         }
     }
 }

@@ -230,6 +230,11 @@ namespace CardMaker.Events.Managers
             Logger.AddLogLine("Cleared Image Cache");
         }
 
+        public void HandleLayoutElementNameChange(object sender, ElementRenamedEventArgs e)
+        {
+            ActiveDeck.CardLayout.ReInitializeElementLookup(e.Element, e.OldName);
+        }
+
         /// <summary>
         /// Displays the adjust layout dialog (for scaling primarily)
         /// </summary>

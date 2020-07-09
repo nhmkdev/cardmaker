@@ -48,6 +48,12 @@ namespace CardMaker.XML
         public string type { get; set; }
 
         [XmlAttribute]
+        public string layoutreference { get; set; }
+        
+        [XmlAttribute]
+        public string elementreference { get; set; }
+
+        [XmlAttribute]
         public int x { get; set; }
 
         [XmlAttribute]
@@ -163,6 +169,8 @@ namespace CardMaker.XML
             keeporiginalsize = false;
             variable = string.Empty;
             name = sName;
+            layoutreference = null;
+            elementreference = null;
             opacity = 255;
             enabled = true;
             justifiedtext = false;
@@ -251,6 +259,8 @@ namespace CardMaker.XML
             wordspace = zElement.wordspace;
             tilesize = zElement.tilesize;
             justifiedtext = zElement.justifiedtext;
+            layoutreference = zElement.layoutreference;
+            elementreference = zElement.elementreference;
 
             if (bInitializeTranslatedFields)
             {

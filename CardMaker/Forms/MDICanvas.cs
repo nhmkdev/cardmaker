@@ -314,14 +314,15 @@ namespace CardMaker.Forms
             {
                 Point pointMouse = m_zCardCanvas.PointToClient(MousePosition);
                 // add only the items that the mouse is within the rectangle of
-                foreach (ProjectLayoutElement zElement in LayoutManager.Instance.ActiveDeck.CardLayout.Element)
+                for(var nIdx = 0; nIdx < LayoutManager.Instance.ActiveDeck.CardLayout.Element.Length; nIdx++)
                 {
+                    var zElement = ProjectManager.Instance.LookupElementReference(LayoutManager.Instance.ActiveDeck.CardLayout.Element[nIdx]);
+
                     if (!zElement.enabled)
                     {
                         continue;
                     }
-                    var zRect = new RectangleF(zElement.x*m_fZoom, zElement.y*m_fZoom, zElement.width*m_fZoom,
-                        zElement.height*m_fZoom);
+                    var zRect = new RectangleF(zElement.x*m_fZoom, zElement.y*m_fZoom, zElement.width*m_fZoom, zElement.height*m_fZoom);
                     if (zRect.Contains(pointMouse))
                     {
                         var zItem = m_zContextMenu.Items.Add(zElement.name, null, contextmenuClick_Handler);
