@@ -100,7 +100,7 @@ namespace CardMaker.Card.Export
                 var arrayCardIndices = GetCardIndicesArray(CurrentDeck);
                 for(var nCardArrayIdx = 0; nCardArrayIdx < arrayCardIndices.Length; nCardArrayIdx++)
                 {
-                    var nCardId = arrayCardIndices[nCardArrayIdx];
+                    int nCardId;
                     var nX = 0;
                     var nY = 0;
                     var nCardsExportedInImage = 0;
@@ -109,6 +109,8 @@ namespace CardMaker.Card.Export
                         Color.White);
                     do
                     {
+                        // NOTE: If this loops to create a multi-card image the cardId needs to be updated
+                        nCardId = arrayCardIndices[nCardArrayIdx];
                         CurrentDeck.ResetDeckCache();
                         // HACK - the printcard index is 0 based but all other uses of nCardId are 1 based (so ++ it!)
                         CurrentDeck.CardPrintIndex = nCardId++;
@@ -150,7 +152,9 @@ namespace CardMaker.Card.Export
                         {
                             break;
                         }
-                    } while (nCardArrayIdx < CurrentDeck.CardCount);
+                        // increment and continue to add cards to this buffer
+                        nCardArrayIdx++;
+                    } while (nCardArrayIdx < arrayCardIndices.Length);
 
                     string sFileName;
 
