@@ -493,7 +493,7 @@ namespace CardMaker.Forms
 
                 if (zProjectLayout.exportHeight > 0)
                 {
-                    var nHeight = zProjectLayout.width + zProjectLayout.buffer;
+                    var nHeight = zProjectLayout.height + zProjectLayout.buffer;
                     nRows = zProjectLayout.exportHeight / nHeight;
                 }
 
