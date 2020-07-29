@@ -407,8 +407,6 @@ namespace CardMaker.Card
                 // if a ref reader had an issue handle it (google for example due to auth)
                 m_zErrorReferenceReader?.HandleInvalid();
             }
-
-            Logger.AddLogLine("InitiateReferenceRead complete");
         }
     }
 }
