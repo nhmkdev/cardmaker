@@ -32,6 +32,8 @@ namespace UnitTest.DeckObject
 {
     internal class TestDeck : Deck
     {
+        protected ProgressReporterProxy m_zReporterProxy;
+
         public TestDeck()
         {
             CardLayout = new ProjectLayout()
@@ -58,13 +60,13 @@ namespace UnitTest.DeckObject
             List<List<string>> listDefineLines,
             string sReferencePath)
         {
-            ProcessLines(listLines, listDefineLines, false, "unittestref");
+            new DeckReader(this, m_zReporterProxy).ProcessLines(listLines, listDefineLines, false, "unittestref");
         }
 
         public string GetDefine(string key)
         {
             string value;
-            return m_zTranslator.DictionaryDefines.TryGetValue(key, out value) ? value : null;
+            return Translator.DictionaryDefines.TryGetValue(key, out value) ? value : null;
         }
 
         public void SetDisallowedCharReplacement(char c, string replacement)

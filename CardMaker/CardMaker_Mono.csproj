@@ -173,6 +173,7 @@
     <Compile Include="Card\CommandLine\PDFCommandLineExporter.cs" />
     <Compile Include="Card\Deck.cs" />
     <Compile Include="Card\DeckLine.cs" />
+    <Compile Include="Card\DeckReader.cs" />
     <Compile Include="Card\DrawFormattedText.cs" />
     <Compile Include="Card\DrawGraphic.cs" />
     <Compile Include="Card\DrawTextGraphics.cs" />

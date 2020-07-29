@@ -67,5 +67,22 @@ namespace CardMaker.Card.Import
         {
 
         }
+
+        /// <summary>
+        /// Used to indicate the reader is in a valid state
+        /// </summary>
+        /// <returns></returns>
+        public virtual bool IsValid()
+        {
+            return true;
+        }
+
+        /// <summary>
+        /// Used to handle an invalid reference reader
+        /// </summary>
+        public virtual void HandleInvalid()
+        {
+
+        }
     }
 }

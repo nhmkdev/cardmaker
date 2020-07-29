@@ -79,6 +79,21 @@ namespace CardMaker.Card.Import
             return this;
         }
 
+        public override bool IsValid()
+        {
+            return !CardMakerInstance.GoogleCredentialsInvalid;
+        }
+
+        public override void HandleInvalid()
+        {
+            if (CardMakerInstance.GoogleCredentialsInvalid)
+            {
+                CardMakerInstance.GoogleCredentialsInvalid = false;
+                GoogleAuthManager.Instance.FireGoogleAuthCredentialsErrorEvent(
+                    () => LayoutManager.Instance.InitializeActiveLayout());
+            }
+        }
+
         public GoogleReferenceReader(ProjectLayoutReference zReference) : this()
         {
             // Google references are stored in the relative path just like a local CSV would be
