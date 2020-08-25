@@ -37,7 +37,6 @@ using System.Threading;
 
 namespace CardMaker.Card
 {
-#warning Create Deck Reader so the progress and loading isn't in this class
     public class Deck
     {
         public const string DEFINES_DATA_POSTFIX = "_defines";

@@ -31,10 +31,12 @@ using CardMaker.Data;
 using CardMaker.XML;
 using Support.Util;
 
-#warning these methods need a lot of cleanup... so much goofy duplication
-
 namespace CardMaker.Card
 {
+    /// <summary>
+    /// This is a brutal collection of regexes intended for inline background images/shapes
+    /// The lists are in order of preference (basically most params to least params)
+    /// </summary>
     public class InlineBackgroundElementProcessor : IInlineBackgroundElementProcessor
     {
         private List<KeyValuePair<Regex, Action<Match, ProjectLayoutElement, ProjectLayoutElement, PointOffset>>> listGraphicProcessingPairs =

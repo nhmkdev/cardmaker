@@ -275,6 +275,7 @@
     <Compile Include="Events\Managers\AutoSaveManager.cs" />
     <Compile Include="Events\Managers\ExportManager.cs" />
     <Compile Include="Events\Managers\GoogleAuthManager.cs" />
+    <Compile Include="Events\Managers\InitializationManager.cs" />
     <Compile Include="Forms\CardMakerMDI.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -27,6 +27,7 @@ using System.Windows.Forms;
 using CardMaker.Card.CommandLine;
 using CardMaker.Card.Shapes;
 using CardMaker.Data;
+using CardMaker.Events.Managers;
 using CardMaker.Forms;
 using Support.Progress;
 using Support.UI;
@@ -77,7 +78,7 @@ namespace CardMaker
         static void Initialize()
         {
             ShapeManager.Init();
-            CardMakerMDI.RestoreReplacementChars();
+            InitializationManager.RestoreReplacementChars();
 
             var zForm = new Form();
             var zGraphics = zForm.CreateGraphics();

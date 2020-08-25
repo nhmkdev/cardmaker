@@ -573,11 +573,9 @@ namespace CardMaker.Forms
                 }
                 zBuilder.Remove(zBuilder.Length - 1, 1); // remove last char
                 CardMakerSettings.IniManager.SetValue(IniSettings.ReplacementChars, zBuilder.ToString());
-                RestoreReplacementChars();
+                InitializationManager.RestoreReplacementChars();
             }
         }
-
-
 
         private void removeLayoutTemplatesToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -836,20 +834,6 @@ namespace CardMaker.Forms
 #else // non threaded
             zFileCardExporter.ExportThread();
 #endif
-        }
-
-#warning move to a more central location
-        public static void RestoreReplacementChars()
-        {
-            string[] arrayReplacementChars = CardMakerSettings.IniManager.GetValue(IniSettings.ReplacementChars, string.Empty).Split(new char[] { CardMakerConstants.CHAR_FILE_SPLIT });
-            if (arrayReplacementChars.Length == FilenameTranslator.DISALLOWED_FILE_CHARS_ARRAY.Length)
-            {
-                FilenameTranslator.IllegalCharReplacementArray = arrayReplacementChars;
-            }
-            else
-            {
-                Logger.AddLogLine("Note: No replacement chars have been configured.");
-            }
         }
 
         private T SetupMDIForm<T>(T zForm, bool bDefaultShow) where T : Form

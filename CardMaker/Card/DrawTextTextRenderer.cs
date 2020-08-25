@@ -79,7 +79,7 @@ namespace CardMaker.Card
                     break;
             }
 
-#warning TextRenderer apparently does not support opactiy?!
+//#warning TextRenderer apparently does not support opactiy?!
             Bitmap zOpacityBitmap = null;
             if (255 != zElement.opacity)
             {
@@ -287,7 +287,7 @@ namespace CardMaker.Card
 
                     try
                     {
-#warning is there a path based text renderer thing to use?
+//#warning is there a path based text renderer thing to use?
                         var zFormat = new StringFormat
                         {
                             LineAlignment = zElement.GetVerticalAlignment(),

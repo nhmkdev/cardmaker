@@ -5,9 +5,13 @@ using CardMaker.Card.Import;
 using CardMaker.Data;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
-using Support.IO;
 using Support.Progress;
 using Support.UI;
+
+#if MONO_BUILD
+using System.Threading;
+#endif
+
 
 namespace CardMaker.Card
 {

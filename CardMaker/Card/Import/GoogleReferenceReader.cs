@@ -74,6 +74,10 @@ namespace CardMaker.Card.Import
                         CardMakerInstance.GoogleCredentialsInvalid = true;
                     }
                 }
+                catch (Exception e)
+                {
+                    Logger.AddLogLine("Google Access Error: {0}".FormatString(e.Message));
+                }
             }
 
             return this;

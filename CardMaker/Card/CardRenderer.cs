@@ -67,7 +67,6 @@ namespace CardMaker.Card
                 new BorderElementRenderProcessor()
             };
 
-#warning this results in re-use of the same deck over and over... quite confusing. (see EmptyReference among other fields)
         public Deck CurrentDeck { get; set; }
         public float ZoomLevel { get; set; }
 
