@@ -96,18 +96,21 @@ namespace CardMaker.Card.Export
         /// <summary>
         /// Rotates the export buffer based on the Layout exportRotation setting
         /// </summary>
-        /// <param name="zBuffer"></param>
-        /// <param name="zLayout"></param>
-        /// <param name="postTransition"></param>
-        protected void ProcessRotateExport(Bitmap zBuffer, ProjectLayout zLayout, bool postTransition)
+        /// <param name="zBuffer">The buffer to rotate</param>
+        /// <param name="zLayout">The layout containing the rotation settings</param>
+        /// <param name="reverseRotation">Flags to perform the reverse rotation transform</param>
+        protected void ProcessRotateExport(Bitmap zBuffer, ProjectLayout zLayout, bool reverseRotation)
         {
             switch (zLayout.exportRotation)
             {
                 case 90:
-                    zBuffer.RotateFlip(postTransition ? RotateFlipType.Rotate270FlipNone : RotateFlipType.Rotate90FlipNone);
+                    zBuffer.RotateFlip(reverseRotation ? RotateFlipType.Rotate270FlipNone : RotateFlipType.Rotate90FlipNone);
                     break;
                 case -90:
-                    zBuffer.RotateFlip(postTransition ? RotateFlipType.Rotate90FlipNone : RotateFlipType.Rotate270FlipNone);
+                    zBuffer.RotateFlip(reverseRotation ? RotateFlipType.Rotate90FlipNone : RotateFlipType.Rotate270FlipNone);
+                    break;
+                case 180:
+                    zBuffer.RotateFlip(RotateFlipType.Rotate180FlipNone);
                     break;
             }
         }

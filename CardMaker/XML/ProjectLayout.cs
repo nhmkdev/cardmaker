@@ -31,7 +31,7 @@ namespace CardMaker.XML
 {
     public class ProjectLayout
     {
-        public static readonly string[] AllowedExportRotations = { "0", "90", "-90" };
+        public static readonly string[] AllowedExportRotations = { "0", "90", "-90", "180" };
         
         private Dictionary<string, ProjectLayoutElement> m_dictionaryElements = new Dictionary<string, ProjectLayoutElement>();
 
