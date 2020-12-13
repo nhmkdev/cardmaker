@@ -22,19 +22,30 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using CardMaker.Card.Export;
-using CardMaker.Card.Export.Pdf;
-using Support.UI;
-
-namespace CardMaker.Card.CommandLine
+namespace CardMaker.Card.Export.Pdf
 {
-    class PDFCommandLineExporter : CommandLineExporterBase
+    /// <summary>
+    /// Draws the layouts from left to right
+    /// </summary>
+    public class LeftAlignPdfRowExporter : PdfRowExporter
     {
-        public override CardExportBase CreateExporter()
+        public LeftAlignPdfRowExporter(PdfSharpExportData zExportData) : base(zExportData)
         {
-            var sExportPath = GetExportPath(false);
-            Description = "PDF Export - {0}".FormatString(sExportPath);
-            return new PdfSharpExporter(GetLayoutIndices(), sExportPath, GetPageOrientation());
+        }
+
+        public override bool IsRowFull()
+        {
+            return m_zExportData.DrawX + m_zExportData.LayoutPointWidth > m_zExportData.PageMarginEndX;
+        }
+
+        public override void SetupNewRowXPosition(int nNextExportIndex)
+        {
+            m_zExportData.DrawX = m_zExportData.PageMarginX;
+        }
+
+        public override void MoveXToNextColumnPosition()
+        {
+            m_zExportData.DrawX += m_zExportData.LayoutPointWidth + m_zExportData.BufferX;
         }
     }
 }

@@ -34,6 +34,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using CardMaker.Card.Export;
+using CardMaker.Card.Export.Pdf;
 using CardMaker.Card.Translation;
 using CardMaker.Data;
 using CardMaker.Events.Args;

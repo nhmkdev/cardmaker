@@ -22,19 +22,39 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using CardMaker.Card.Export;
-using CardMaker.Card.Export.Pdf;
-using Support.UI;
-
-namespace CardMaker.Card.CommandLine
+namespace CardMaker.Card.Export.Pdf
 {
-    class PDFCommandLineExporter : CommandLineExporterBase
+    /// <summary>
+    /// Row exporting base class. This is necessary as alignment within a row is unique.
+    /// </summary>
+    public abstract class PdfRowExporter
     {
-        public override CardExportBase CreateExporter()
+        protected PdfSharpExportData m_zExportData;
+
+        public PdfRowExporter(PdfSharpExportData zExportData)
         {
-            var sExportPath = GetExportPath(false);
-            Description = "PDF Export - {0}".FormatString(sExportPath);
-            return new PdfSharpExporter(GetLayoutIndices(), sExportPath, GetPageOrientation());
+            m_zExportData = zExportData;
+        }
+
+        /// <summary>
+        /// Sets up the current row, adjusting the x value accordingly
+        /// </summary>
+        public abstract void SetupNewRowXPosition(int nNextExportIndex);
+
+        /// <summary>
+        /// Moves the x value to the next draw location. The resulting location may be invalid for drawing.
+        /// </summary>
+        public abstract void MoveXToNextColumnPosition();
+        
+        /// <summary>
+        /// Determines if the row is full based on the current layout
+        /// </summary>
+        /// <returns>true if full, false otherwise</returns>
+        public abstract bool IsRowFull();
+
+        public virtual bool IsLayoutForcedToNewRow()
+        {
+            return false;
         }
     }
 }

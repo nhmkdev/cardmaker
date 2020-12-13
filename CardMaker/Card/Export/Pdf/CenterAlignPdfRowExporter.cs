@@ -22,19 +22,37 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using CardMaker.Card.Export;
-using CardMaker.Card.Export.Pdf;
-using Support.UI;
-
-namespace CardMaker.Card.CommandLine
+namespace CardMaker.Card.Export.Pdf
 {
-    class PDFCommandLineExporter : CommandLineExporterBase
+    /// <summary>
+    /// Draws the row with layouts centered
+    /// </summary>
+    public class CenterAlignPdfRowExporter : LeftAlignPdfRowExporter
     {
-        public override CardExportBase CreateExporter()
+        public CenterAlignPdfRowExporter(PdfSharpExportData zExportData) : base(zExportData)
         {
-            var sExportPath = GetExportPath(false);
-            Description = "PDF Export - {0}".FormatString(sExportPath);
-            return new PdfSharpExporter(GetLayoutIndices(), sExportPath, GetPageOrientation());
+        }
+
+        public override bool IsLayoutForcedToNewRow()
+        {
+            return true;
+        }
+
+        /// <summary>
+        /// Centers the draw point based on the number of items that will be drawn to the row from the
+        /// current layout
+        /// </summary>
+        /// <param name="nNextExportIndex">The next index of the item to be exported (0-X counter)</param>
+        public override void SetupNewRowXPosition(int nNextExportIndex)
+        {
+            var dWidth = m_zExportData.PageMarginEndX - m_zExportData.PageMarginX;
+            var nItemsThisRow = (double)m_zExportData.GetItemsPerRow(nNextExportIndex);
+            // the last horizontal buffer is not counted
+            m_zExportData.DrawX = m_zExportData.PageMarginX + (dWidth -
+                                                               ((nItemsThisRow * m_zExportData.LayoutPointWidth) +
+                                                                ((nItemsThisRow - 1) * m_zExportData.BufferX)))
+                / 2;
+
         }
     }
 }

@@ -36,29 +36,18 @@ using PdfSharp.Pdf;
 using Support.IO;
 using Support.UI;
 
-namespace CardMaker.Card.Export
+namespace CardMaker.Card.Export.Pdf
 {
     /// <summary>
     /// PdfSharp wrapper for exporting cards. This is based heavily on inches due to the use of DPI. CM/MM are supported but converted.
     /// </summary>
     public class PdfSharpExporter : CardExportBase
     {
+        private readonly PdfSharpExportData m_zExportData = new PdfSharpExportData();
         private readonly PdfDocument m_zDocument;
         private PdfPage m_zCurrentPage;
-        private double m_dDrawX;
-        private double m_dDrawY;
-        private double m_dLayoutPointWidth;
-        private double m_dLayoutPointHeight;
-        private double m_dBufferX;
-        private double m_dBufferY;
         private XGraphics m_zPageGfx;
         private readonly string m_sExportFile;
-
-        private double m_dPageMarginX = -1;
-        private double m_dPageMarginEndX = -1;
-        private double m_dPageMarginY = -1;
-        private double m_dPageMarginEndY = -1;
-        private double m_dNextRowYAdjust = -1;
 
         private readonly PageOrientation m_ePageOrientation = PageOrientation.Portrait;
 
@@ -76,10 +65,9 @@ namespace CardMaker.Card.Export
             }
             catch (Exception)
             {
-                ProgressReporter.AddIssue(sPageOrientation + " is an unknow page orientation.");
+                ProgressReporter.AddIssue(sPageOrientation + " is an unknown page orientation.");
             }
             m_zDocument = new PdfDocument();
-            AddPage();
         }
 
         public PdfSharpExporter(int[] arrayLayoutIndices, string sExportFile, PageOrientation ePageOrientation) : base(arrayLayoutIndices)
@@ -87,7 +75,6 @@ namespace CardMaker.Card.Export
             m_sExportFile = sExportFile;
             m_ePageOrientation = ePageOrientation;
             m_zDocument = new PdfDocument();
-            AddPage();
         }
 
         public override void ExportThread()
@@ -119,9 +106,16 @@ namespace CardMaker.Card.Export
             var progressCardIdx = ProgressReporter.GetProgressIndex(ProgressName.CARD);
 
             ProgressReporter.ProgressReset(progressLayoutIdx, 0, ExportLayoutIndices.Length, 0);
+
+            // always add a new page initially (necessary for ConfigurePointSizes)
+            AddInitialPage();
+
+            Type zLastExporterType = null;
+
             foreach (var nIdx in ExportLayoutIndices)
             {
                 ChangeExportLayoutIndex(nIdx);
+                m_zExportData.Deck = CurrentDeck;
                 if (CurrentDeck.EmptyReference)
                 {
                     // empty reference layouts are not exported
@@ -133,56 +127,60 @@ namespace CardMaker.Card.Export
 
                 var rectCrop = CurrentDeck.CardLayout.getExportCropDefinition();
 
-                ConfigurePointSizes(CurrentDeck.CardLayout, rectCrop);
+                // each layout has its own row export style (potentially)
+                var zRowExporter = GetRowExporter();
 
                 // necessary tracking for which index of the layout is to be exported (this is NOT necessarily the index of the card due to the page back functionality)
                 var nNextExportIndex = 0;
 
-                if (0 < nIdx)
+                // reconfigure the page per layout
+                ConfigurePointSizes(CurrentDeck.CardLayout, rectCrop);
+                
+                if (nIdx == 0)
                 {
-                    if (CardMakerSettings.PrintLayoutsOnNewPage)
+                    // only the page has been setup at this point, not the x-position
+                    zRowExporter.SetupNewRowXPosition(nNextExportIndex);
+                }
+                else
+                {
+                    // after the first layout always evaluate whether a new page should be added
+                    // if the exporter type changes start a new page
+                    if (CardMakerSettings.PrintLayoutsOnNewPage || zLastExporterType != zRowExporter.GetType())
                     {
-                        AddPage();    
+                        AddPage(zRowExporter, nNextExportIndex);
                     }
-
-                    if (CardMakerSettings.PrintAutoHorizontalCenter || 
-                        (m_dDrawX + m_dLayoutPointWidth > m_dPageMarginEndX)) // this is the case where a layout won't fit in the remaining space of the row
+                    else if (zRowExporter.IsLayoutForcedToNewRow() || zRowExporter.IsRowFull())
                     {
-                        MoveToNextRow(nNextExportIndex);
+                        MoveToNextRow(zRowExporter, nNextExportIndex);
                     }
                 }
 
-                // should be adjusted after the above move to next row
-                m_dNextRowYAdjust = Math.Max(m_dNextRowYAdjust, m_dLayoutPointHeight + m_dBufferY);
+                zLastExporterType = zRowExporter.GetType();
 
-                if (CardMakerSettings.PrintAutoHorizontalCenter)
-                {
-                    CenterLayoutPositionOnNewRow(nNextExportIndex);
-                }
+                // When moving to the next row it should be a completely empty row. In the case of nesting only 2 layouts deep is supported at this
+                // time - the first layout and one additional. Also note this is applied AFTER the above decisions above about moving to the next row.
+                m_zExportData.NextRowYAdjust = Math.Max(m_zExportData.NextRowYAdjust, m_zExportData.LayoutPointHeight + m_zExportData.BufferY);
 
 #if !MONO_BUILD
                 zBuffer?.Dispose();
                 zBuffer = createExportBuffer(CurrentDeck.CardLayout, rectCrop);
 
-                float fOriginalXDpi = zBuffer.HorizontalResolution;
-                float fOriginalYDpi = zBuffer.VerticalResolution;
+                var fOriginalXDpi = zBuffer.HorizontalResolution;
+                var fOriginalYDpi = zBuffer.VerticalResolution;
 #endif
 
                 foreach (var nCardIdx in GetExportIndices())
                 {
-                    CurrentDeck.ResetDeckCache();
-
                     CurrentDeck.CardPrintIndex = nCardIdx;
 
 #if MONO_BUILD
                     // mono build won't support the optimization so re-create the buffer
                     Bitmap zBuffer = createExportBuffer(CurrentDeck.CardLayout, rectCrop);
-#endif
-
-#if !MONO_BUILD
+#else
                     // minor optimization, reuse the same bitmap (for drawing sake the DPI has to be reset)
                     zBuffer.SetResolution(fOriginalXDpi, fOriginalYDpi);
 #endif
+                    // Draw the image into the buffer
                     if(nCardIdx == -1)
                     {
                         Graphics.FromImage(zBuffer).FillRectangle(Brushes.White, 0, 0, zBuffer.Width, zBuffer.Height);
@@ -204,11 +202,13 @@ namespace CardMaker.Card.Export
 
                     var xImage = XImage.FromGdiPlusImage(zBuffer);
 
-                    EvaluatePagePosition(nNextExportIndex);
+                    // before drawing make sure there is space (will move to next row/page)
+                    EvaluateDrawLocation(nNextExportIndex, zRowExporter);
 
-                    m_zPageGfx.DrawImage(xImage, m_dDrawX, m_dDrawY);
+                    m_zPageGfx.DrawImage(xImage, m_zExportData.DrawX, m_zExportData.DrawY);
 
-                    MoveToNextColumnPosition();
+                    // any next row movement is dealt with independent of this call
+                    zRowExporter.MoveXToNextColumnPosition();
 
                     // undo any export rotation
                     ProcessRotateExport(zBuffer, CurrentDeck.CardLayout, true);
@@ -245,33 +245,23 @@ namespace CardMaker.Card.Export
         private IEnumerable<int> GetExportIndices()
         {
             var listExportIndices = new List<int>();
-            var nItemsThisRow = GetItemsPerRow(0);
+            var nItemsThisRow = m_zExportData.GetItemsPerRow(0);
 
             // if exporting layouts as backs adjust the sequence for each row
-            if (CurrentDeck.CardLayout.exportPDFAsPageBack)
+            if (CurrentDeck.CardLayout.exportPDFAsPageBack && CardMakerSettings.PrintAutoHorizontalCenter)
             {
                 for (var nCardIdx = 0; nCardIdx < CurrentDeck.CardCount; nCardIdx += nItemsThisRow)
                 {
                     // juggle the sequence a bit to support printed and glued together (or more risky -- double sided)
                     for (var nSubIdx = (nCardIdx + nItemsThisRow) - 1; nSubIdx >= nCardIdx; nSubIdx--)
                     {
-                        if (CardMakerSettings.PrintAutoHorizontalCenter)
+                        if (nSubIdx < CurrentDeck.CardCount)
                         {
-                            // -1 card index is not used for centered + back page
-                            if (nSubIdx < CurrentDeck.CardCount)
-                            {
-                                listExportIndices.Add(nSubIdx);
-                            }
-                        }
-                        else
-                        {
-                            // trickery, add a -1 item as a placeholder to shift over the back facing card
-                            listExportIndices.Add(nSubIdx >= CurrentDeck.CardCount ? -1 : nSubIdx);
+                            listExportIndices.Add(nSubIdx);
                         }
                     }
                 }
             }
-            // standard left to right, top to bottom export
             else
             {
                 for (var nCardIdx = 0; nCardIdx < CurrentDeck.CardCount; nCardIdx++)
@@ -283,26 +273,10 @@ namespace CardMaker.Card.Export
         }
 
         /// <summary>
-        /// Centers the draw point based on the number of items that will be drawn to the row from the
-        /// current layout
-        /// </summary>
-        /// <param name="nNextExportIndex">The next index of the item to be exported (0-X counter)</param>
-        private void CenterLayoutPositionOnNewRow(int nNextExportIndex)
-        {
-            var dWidth = m_dPageMarginEndX - m_dPageMarginX;
-            var nItemsThisRow = (double)GetItemsPerRow(nNextExportIndex);
-            // the last horizontal buffer is not counted
-            m_dDrawX = m_dPageMarginX + (dWidth -
-                         ((nItemsThisRow*m_dLayoutPointWidth) +
-                          ((nItemsThisRow - 1) * m_dBufferX)))
-                        /2;
-
-        }
-
-        /// <summary>
         /// Updates the point sizes to match that of the PDF exporter
         /// </summary>
         /// <param name="zLayout"></param>
+        /// <param name="rectCrop"></param>
         private void ConfigurePointSizes(ProjectLayout zLayout, Rectangle rectCrop)
         {
             var nWidth = rectCrop.Width == 0 ? zLayout.width : rectCrop.Width;
@@ -318,16 +292,16 @@ namespace CardMaker.Card.Export
                     break;
             }
 
-            double dPointsPerInchWidth = (double)m_zCurrentPage.Width / (double)m_zCurrentPage.Width.Inch;
-            double dInchesWidthPerLayoutItem = (double)nWidth / (double)zLayout.dpi;
-            m_dLayoutPointWidth = dInchesWidthPerLayoutItem * dPointsPerInchWidth;
+            var dPointsPerInchWidth = (double)m_zCurrentPage.Width / (double)m_zCurrentPage.Width.Inch;
+            var dInchesWidthPerLayoutItem = (double)nWidth / (double)zLayout.dpi;
+            m_zExportData.LayoutPointWidth = dInchesWidthPerLayoutItem * dPointsPerInchWidth;
 
-            double dPointsPerInchHeight = (double)m_zCurrentPage.Height / (double)m_zCurrentPage.Height.Inch;
-            double dInchesHeightPerLayoutItem = (double)nHeight / (double)zLayout.dpi;
-            m_dLayoutPointHeight = dInchesHeightPerLayoutItem * dPointsPerInchHeight;
+            var dPointsPerInchHeight = (double)m_zCurrentPage.Height / (double)m_zCurrentPage.Height.Inch;
+            var dInchesHeightPerLayoutItem = (double)nHeight / (double)zLayout.dpi;
+            m_zExportData.LayoutPointHeight = dInchesHeightPerLayoutItem * dPointsPerInchHeight;
 
-            m_dBufferX = ((double)zLayout.buffer / (double)zLayout.dpi) * dPointsPerInchWidth;
-            m_dBufferY = ((double)zLayout.buffer / (double)zLayout.dpi) * dPointsPerInchHeight;
+            m_zExportData.BufferX = ((double)zLayout.buffer / (double)zLayout.dpi) * dPointsPerInchWidth;
+            m_zExportData.BufferY = ((double)zLayout.buffer / (double)zLayout.dpi) * dPointsPerInchHeight;
         }
 
         /// <summary>
@@ -335,21 +309,18 @@ namespace CardMaker.Card.Export
         /// to the next row/page. This respects the horizontal centering option when adding a new page.
         /// </summary>
         /// <param name="nNextExportIndex">The next index of the item to be exported (0-X counter)</param>
-        private void EvaluatePagePosition(int nNextExportIndex)
+        private void EvaluateDrawLocation(int nNextExportIndex, PdfRowExporter zRowExporter)
         {
-            // TODO this should probably error or at least warn on truncation (if the object simply won't fit horizontally)
-            if (m_dDrawX + m_dLayoutPointWidth > m_dPageMarginEndX)
+#warning TODO this should probably error or at least warn on truncation (if the object simply won't fit horizontally)
+            if (zRowExporter.IsRowFull())
             {
-                MoveToNextRow(nNextExportIndex);
+                MoveToNextRow(zRowExporter, nNextExportIndex);
             }
 
-            if (m_dDrawY + m_dLayoutPointHeight > m_dPageMarginEndY)
+            // if the draw will extend beyond the bottom margin start a new page
+            if (m_zExportData.DrawY + m_zExportData.LayoutPointHeight > m_zExportData.PageMarginEndY)
             {
-                AddPage();
-                if (CardMakerSettings.PrintAutoHorizontalCenter)
-                {
-                    CenterLayoutPositionOnNewRow(nNextExportIndex);
-                }
+                AddPage(zRowExporter, nNextExportIndex);
             }
         }
 
@@ -357,46 +328,48 @@ namespace CardMaker.Card.Export
         /// Adjusts the y position to the next row based on the current layout
         /// respecting the horizontal centering option
         /// </summary>
+        /// <param name="zRowExporter"></param>
         /// <param name="nNextExportIndex">The next index of the item to be exported (0-X counter)</param>
-        private void MoveToNextRow(int nNextExportIndex)
+        private void MoveToNextRow(PdfRowExporter zRowExporter, int nNextExportIndex)
         {
-            m_dDrawX = m_dPageMarginX;
-            m_dDrawY += m_dNextRowYAdjust;
-            if (CardMakerSettings.PrintAutoHorizontalCenter)
-            {
-                CenterLayoutPositionOnNewRow(nNextExportIndex);
-            }
+            zRowExporter.SetupNewRowXPosition(nNextExportIndex);
+            m_zExportData.DrawY += m_zExportData.NextRowYAdjust;
             // reset the row adjust to be that of the current layout
-            m_dNextRowYAdjust = m_dLayoutPointHeight + m_dBufferY;
-        }
-
-        /// <summary>
-        /// Adjusts the x position to the next column based on the current layout
-        /// </summary>
-        private void MoveToNextColumnPosition()
-        {
-            m_dDrawX += m_dLayoutPointWidth + m_dBufferX;
+#warning    (this likely happens more often than needed, should only apply on layout changes)
+            m_zExportData.NextRowYAdjust = m_zExportData.LayoutPointHeight + m_zExportData.BufferY;
         }
 
         /// <summary>
         /// Adds a new page to the PDF based on the current configuration
         /// </summary>
-        private void AddPage()
+        private void AddInitialPage()
         {
             m_zCurrentPage = m_zDocument.AddPage();
 
             UpdatePageSize();
-
             m_zCurrentPage.Orientation = m_ePageOrientation;
-
             UpdatePageMargins();
 
             m_zPageGfx = XGraphics.FromPdfPage(m_zCurrentPage);
-            // start within the margin
-            m_dDrawX = m_dPageMarginX;
-            m_dDrawY = m_dPageMarginY;
+            m_zExportData.DrawY = m_zExportData.PageMarginY;
+        }
 
-            m_dNextRowYAdjust = m_dLayoutPointHeight + m_dBufferY;
+        /// <summary>
+        /// Adds a new page to the PDF based on the current configuration
+        /// </summary>
+        /// <param name="zRowExporter">The row exporter to setup the x position with</param>
+        /// <param name="nNextExportIndex">Will be used to setup the x position</param>
+        private void AddPage(PdfRowExporter zRowExporter, int nNextExportIndex)
+        {
+            m_zCurrentPage = m_zDocument.AddPage();
+            
+            m_zCurrentPage.Orientation = m_ePageOrientation;
+
+            m_zPageGfx = XGraphics.FromPdfPage(m_zCurrentPage);
+            m_zExportData.DrawY = m_zExportData.PageMarginY;
+
+            zRowExporter.SetupNewRowXPosition(nNextExportIndex);
+            m_zExportData.NextRowYAdjust = m_zExportData.LayoutPointHeight + m_zExportData.BufferY;
         }
 
         /// <summary>
@@ -426,47 +399,27 @@ namespace CardMaker.Card.Export
         /// </summary>
         private void UpdatePageMargins()
         {
-            if (m_dPageMarginX != -1)
-            {
-                return;
-            }
-
-            double dPointsPerInchWidth = (double)m_zCurrentPage.Width / (double)m_zCurrentPage.Width.Inch;
-            double dPointsPerInchHeight = (double)m_zCurrentPage.Height / (double)m_zCurrentPage.Height.Inch;
+            var dPointsPerInchWidth = (double)m_zCurrentPage.Width / (double)m_zCurrentPage.Width.Inch;
+            var dPointsPerInchHeight = (double)m_zCurrentPage.Height / (double)m_zCurrentPage.Height.Inch;
 
             // working in dpi/inches/pixels in the end for consistency (up for argument!)
             switch (CardMakerSettings.PrintPageMeasurementUnit)
             {
                 case MeasurementUnit.Inch:
-                    m_dPageMarginX = (double)CardMakerSettings.PrintPageHorizontalMargin * dPointsPerInchWidth;
-                    m_dPageMarginY = (double)CardMakerSettings.PrintPageVerticalMargin * dPointsPerInchHeight;
+                    m_zExportData.PageMarginX = (double)CardMakerSettings.PrintPageHorizontalMargin * dPointsPerInchWidth;
+                    m_zExportData.PageMarginY = (double)CardMakerSettings.PrintPageVerticalMargin * dPointsPerInchHeight;
                     break;
                 case MeasurementUnit.Millimeter:
-                    m_dPageMarginX = MeasurementUtil.GetInchesFromMillimeter((double)CardMakerSettings.PrintPageHorizontalMargin) * dPointsPerInchWidth;
-                    m_dPageMarginY = MeasurementUtil.GetInchesFromMillimeter((double)CardMakerSettings.PrintPageVerticalMargin) * dPointsPerInchHeight;
+                    m_zExportData.PageMarginX = MeasurementUtil.GetInchesFromMillimeter((double)CardMakerSettings.PrintPageHorizontalMargin) * dPointsPerInchWidth;
+                    m_zExportData.PageMarginY = MeasurementUtil.GetInchesFromMillimeter((double)CardMakerSettings.PrintPageVerticalMargin) * dPointsPerInchHeight;
                     break;
                 case MeasurementUnit.Centimeter:
-                    m_dPageMarginX = MeasurementUtil.GetInchesFromCentimeter((double)CardMakerSettings.PrintPageHorizontalMargin) * dPointsPerInchWidth;
-                    m_dPageMarginY = MeasurementUtil.GetInchesFromCentimeter((double)CardMakerSettings.PrintPageVerticalMargin) * dPointsPerInchHeight;
+                    m_zExportData.PageMarginX = MeasurementUtil.GetInchesFromCentimeter((double)CardMakerSettings.PrintPageHorizontalMargin) * dPointsPerInchWidth;
+                    m_zExportData.PageMarginY = MeasurementUtil.GetInchesFromCentimeter((double)CardMakerSettings.PrintPageVerticalMargin) * dPointsPerInchHeight;
                     break;
             }
-            m_dPageMarginEndX = m_zCurrentPage.Width - m_dPageMarginX;
-            m_dPageMarginEndY = m_zCurrentPage.Height - m_dPageMarginY;
-        }
-
-        /// <summary>
-        /// Gets the number of items that would fit per row based on the current layout and page
-        /// </summary>
-        /// <returns>The number of items that would fit in the row</returns>
-        /// <param name="nNextExportIndex">The next index of the item to be exported (0-X counter)</param>
-        private int GetItemsPerRow(int nNextExportIndex)
-        {
-            // remaining space in row based on layout vs. remaining cards to fit (last row may have fewer than the space would fit)
-            return (int)Math.Floor(
-                Math.Min(
-                    (m_dPageMarginEndX - m_dPageMarginX) / m_dLayoutPointWidth,
-                    CurrentDeck.ValidLines.Count - nNextExportIndex)
-                );
+            m_zExportData.PageMarginEndX = m_zCurrentPage.Width - m_zExportData.PageMarginX;
+            m_zExportData.PageMarginEndY = m_zCurrentPage.Height - m_zExportData.PageMarginY;
         }
 
         /// <summary>
@@ -504,6 +457,19 @@ namespace CardMaker.Card.Export
             {
                 ProgressReporter.AddIssue(sMsg);
             }
+        }
+
+        private PdfRowExporter GetRowExporter()
+        {
+            if (CardMakerSettings.PrintAutoHorizontalCenter)
+            {
+                return new CenterAlignPdfRowExporter(m_zExportData);
+            }
+            else if (CurrentDeck.CardLayout.exportPDFAsPageBack)
+            {
+                return new RightAlignPdfRowExporter(m_zExportData);
+            }
+            return new LeftAlignPdfRowExporter(m_zExportData);
         }
     }
 }

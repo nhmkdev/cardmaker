@@ -181,6 +181,11 @@
     <Compile Include="Card\Export\FileCardClipboardExporter.cs" />
     <Compile Include="Card\Export\FileCardSingleExporter.cs" />
     <Compile Include="Card\Export\FileCardExporterFactory.cs" />
+    <Compile Include="Card\Export\Pdf\LeftAlignPdfRowExporter.cs" />
+    <Compile Include="Card\Export\Pdf\PdfSharpExportData.cs" />
+    <Compile Include="Card\Export\Pdf\RightAlignPdfRowExporter.cs" />
+    <Compile Include="Card\Export\Pdf\CenterAlignPdfRowExporter.cs" />
+    <Compile Include="Card\Export\Pdf\PdfRowExporter.cs" />
     <Compile Include="Card\FontLoader.cs" />
     <Compile Include="Card\FormattedText\Alignment\AlignmentController.cs" />
     <Compile Include="Card\FormattedText\Alignment\HorizontalLeftAlignmentProcessor.cs" />
@@ -205,7 +210,7 @@
     <Compile Include="Card\IDrawText.cs" />
     <Compile Include="Card\ElementString.cs" />
     <Compile Include="Card\Export\CardExportBase.cs" />
-    <Compile Include="Card\Export\PdfSharpExporter.cs" />
+    <Compile Include="Card\Export\Pdf\PdfSharpExporter.cs" />
     <Compile Include="Card\FormattedText\Markup\BackgroundColorMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\BackgroundImageMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\FontMarkup.cs" />
