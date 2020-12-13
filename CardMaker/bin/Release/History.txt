@@ -1,6 +1,8 @@
 Card Maker Version History
 --------------------------
 1.1.0.0
+- Changed card export for layouts marked as back to be right-aligned
+- Added ability to export a layout at 180 degrees
 - Added ability to create reference elements (an element owned by a layout but accessible in others)
 - When adding a Google reference the prompt will not disrupt the add reference process.
 - Reference loading is now multi-threaded so you don't have to wait as long!
