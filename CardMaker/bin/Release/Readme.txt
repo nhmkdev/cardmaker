@@ -2,7 +2,7 @@ License
 -------
 The MIT License (MIT)
 
-Copyright (c) 2018 Tim Stair
+Copyright (c) 2020 Tim Stair
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
