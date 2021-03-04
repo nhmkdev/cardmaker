@@ -98,3 +98,7 @@ CardMaker played some role in the development of these games (prototyping or oth
 ## Original Author
 
 CardMaker was originally created in 2009 by Tim Stair.
+
+## Disclaimer
+
+I am providing code in the repository to you under an open source license. Because this is my personal repository, the license you receive to my code is from me and not my employer.
