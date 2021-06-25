@@ -201,14 +201,8 @@ namespace CardMaker.Forms
             var zPanel = (Panel)btnClicked.Tag;
             zRGB.UpdateColorBox(zPanel.BackColor);
 
-            if (DialogResult.OK != zRGB.ShowDialog())
-            {
-                return;
-            }
-            var colorRedo = zRGB.Color;
-
-            var listActions = UserAction.CreateActionList();
-
+            // create the undo dictionary per element
+            var dictionaryElementUndoColors = new Dictionary<ProjectLayoutElement, Color>(listSelectedElements.Count);
             foreach (var zElement in listSelectedElements)
             {
                 var zElementToChange = zElement;
@@ -225,16 +219,55 @@ namespace CardMaker.Forms
                 {
                     colorUndo = zElement.GetElementColor();
                 }
+
                 if (btnClicked == btnElementBackgroundColor)
                 {
                     colorUndo = zElement.GetElementBackgroundColor();
                 }
+                dictionaryElementUndoColors.Add(zElementToChange, colorUndo);
+            }
+
+            zRGB.PreviewEvent += delegate(object o, Color color)
+            {
+                foreach (var zElement in listSelectedElements)
+                {
+                    SetColorValue(btnClicked, color, zElement);
+                }
+                LayoutManager.Instance.FireLayoutUpdatedEvent(false);
+            };
+
+            if (DialogResult.OK != zRGB.ShowDialog())
+            {
+                // restore the original colors on the elements
+                foreach (var zElement in listSelectedElements)
+                {
+                    if (dictionaryElementUndoColors.TryGetValue(zElement, out var colorOriginal))
+                    {
+                        SetColorValue(btnClicked, colorOriginal, zElement);
+                    }
+                }
+                LayoutManager.Instance.FireLayoutUpdatedEvent(false);
+                return;
+            }
+            var colorRedo = zRGB.Color;
+
+            var listActions = UserAction.CreateActionList();
+
+            foreach (var zElement in listSelectedElements)
+            {
+                var zElementToChange = zElement;
 
                 listActions.Add(bRedo =>
                     {
                         if (null != LayoutManager.Instance.ActiveDeck)
                         {
                             LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElementToChange.name);
+                        }
+
+                        var colorUndo = Color.White;
+                        if (dictionaryElementUndoColors.TryGetValue(zElementToChange, out var colorOriginal))
+                        {
+                            colorUndo = colorOriginal;
                         }
                         SetColorValue(btnClicked, bRedo ? colorRedo : colorUndo, zElementToChange);
                         UpdatePanelColors(zElementToChange);
