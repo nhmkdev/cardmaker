@@ -1,5 +1,8 @@
 Card Maker Version History
 --------------------------
+1.2.0.0
+- Added ability to preview color changes in the color selection dialog. This works with 1+ elements selected.
+
 1.1.0.0
 - Changed card export for layouts marked as back to be right-aligned
 - Added ability to export a layout at 180 degrees
