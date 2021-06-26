@@ -31,7 +31,7 @@ namespace CardMaker
         public static string GetBuildSuffix()
         {
 #if UNSTABLE
-            return "[UNSTABLE] V.A14";
+            return "[UNSTABLE] V.A1";
 #else
             return string.Empty;
 #endif
