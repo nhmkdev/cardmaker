@@ -77,6 +77,7 @@ namespace CardMaker.Forms
             btnElementBorderColor.Tag = panelBorderColor;
             btnElementFontColor.Tag = panelFontColor;
             btnElementShapeColor.Tag = panelShapeColor;
+            btnElementGraphicColor.Tag = panelGraphicColor;
             btnElementOutlineColor.Tag = panelOutlineColor;
             btnElementBackgroundColor.Tag = panelBackgroundColor;
 
@@ -215,14 +216,13 @@ namespace CardMaker.Forms
                 {
                     colorUndo = zElement.GetElementOutlineColor();
                 }
-                else if (btnClicked == btnElementFontColor || btnClicked == btnElementShapeColor)
-                {
-                    colorUndo = zElement.GetElementColor();
-                }
-
-                if (btnClicked == btnElementBackgroundColor)
+                else if (btnClicked == btnElementBackgroundColor)
                 {
                     colorUndo = zElement.GetElementBackgroundColor();
+                }
+                else if (btnClicked == btnElementFontColor || btnClicked == btnElementShapeColor || btnClicked == btnElementGraphicColor)
+                {
+                    colorUndo = zElement.GetElementColor();
                 }
                 dictionaryElementUndoColors.Add(zElementToChange, colorUndo);
             }
@@ -739,7 +739,7 @@ namespace CardMaker.Forms
             {
                 zElement.SetElementOutlineColor(color);
             }
-            else if (btnClicked == btnElementFontColor || btnClicked == btnElementShapeColor)
+            else if (btnClicked == btnElementFontColor || btnClicked == btnElementShapeColor || btnClicked == btnElementGraphicColor)
             {
                 zElement.SetElementColor(color);
             }
@@ -1166,6 +1166,7 @@ namespace CardMaker.Forms
             panelOutlineColor.BackColor = zElement.GetElementOutlineColor();
             panelShapeColor.BackColor = zElement.GetElementColor();
             panelFontColor.BackColor = panelShapeColor.BackColor;
+            panelGraphicColor.BackColor = panelShapeColor.BackColor;
             panelBackgroundColor.BackColor = zElement.GetElementBackgroundColor() == CardMakerConstants.NoColor
                 ? Control.DefaultBackColor
                 : zElement.GetElementBackgroundColor();

@@ -125,6 +125,8 @@ namespace CardMaker.Forms
             this.comboElementType = new System.Windows.Forms.ComboBox();
             this.contextMenuReferenceStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.contextMenuStripAssist = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.btnElementGraphicColor = new System.Windows.Forms.Button();
+            this.panelGraphicColor = new System.Windows.Forms.Panel();
             this.groupBoxElement.SuspendLayout();
             this.groupBackgroundColor.SuspendLayout();
             this.tabControl.SuspendLayout();
@@ -504,7 +506,7 @@ namespace CardMaker.Forms
             // 
             // panelShapeColor
             // 
-            this.panelShapeColor.Location = new System.Drawing.Point(76, 34);
+            this.panelShapeColor.Location = new System.Drawing.Point(57, 40);
             this.panelShapeColor.Name = "panelShapeColor";
             this.panelShapeColor.Size = new System.Drawing.Size(20, 20);
             this.panelShapeColor.TabIndex = 44;
@@ -521,9 +523,9 @@ namespace CardMaker.Forms
             // 
             // btnElementShapeColor
             // 
-            this.btnElementShapeColor.Location = new System.Drawing.Point(3, 34);
+            this.btnElementShapeColor.Location = new System.Drawing.Point(0, 40);
             this.btnElementShapeColor.Name = "btnElementShapeColor";
-            this.btnElementShapeColor.Size = new System.Drawing.Size(64, 20);
+            this.btnElementShapeColor.Size = new System.Drawing.Size(49, 20);
             this.btnElementShapeColor.TabIndex = 24;
             this.btnElementShapeColor.Text = "Color";
             this.btnElementShapeColor.UseVisualStyleBackColor = true;
@@ -546,6 +548,8 @@ namespace CardMaker.Forms
             // 
             // tabPageGraphic
             // 
+            this.tabPageGraphic.Controls.Add(this.panelGraphicColor);
+            this.tabPageGraphic.Controls.Add(this.btnElementGraphicColor);
             this.tabPageGraphic.Controls.Add(this.label9);
             this.tabPageGraphic.Controls.Add(this.txtTileSize);
             this.tabPageGraphic.Controls.Add(this.checkKeepOriginalSize);
@@ -591,9 +595,9 @@ namespace CardMaker.Forms
             // 
             // btnSetSizeToImage
             // 
-            this.btnSetSizeToImage.Location = new System.Drawing.Point(3, 32);
+            this.btnSetSizeToImage.Location = new System.Drawing.Point(623, 6);
             this.btnSetSizeToImage.Name = "btnSetSizeToImage";
-            this.btnSetSizeToImage.Size = new System.Drawing.Size(125, 23);
+            this.btnSetSizeToImage.Size = new System.Drawing.Size(90, 48);
             this.btnSetSizeToImage.TabIndex = 40;
             this.btnSetSizeToImage.Text = "Set Size To Image";
             this.btnSetSizeToImage.UseVisualStyleBackColor = true;
@@ -1020,6 +1024,23 @@ namespace CardMaker.Forms
             this.contextMenuStripAssist.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this.contextMenuStripAssist.Size = new System.Drawing.Size(61, 4);
             // 
+            // btnElementGraphicColor
+            // 
+            this.btnElementGraphicColor.Location = new System.Drawing.Point(0, 40);
+            this.btnElementGraphicColor.Name = "btnElementGraphicColor";
+            this.btnElementGraphicColor.Size = new System.Drawing.Size(49, 20);
+            this.btnElementGraphicColor.TabIndex = 44;
+            this.btnElementGraphicColor.Text = "Color";
+            this.btnElementGraphicColor.UseVisualStyleBackColor = true;
+            this.btnElementGraphicColor.Click += new System.EventHandler(this.btnColor_Click);
+            // 
+            // panelGraphicColor
+            // 
+            this.panelGraphicColor.Location = new System.Drawing.Point(57, 40);
+            this.panelGraphicColor.Name = "panelGraphicColor";
+            this.panelGraphicColor.Size = new System.Drawing.Size(20, 20);
+            this.panelGraphicColor.TabIndex = 45;
+            // 
             // MDIElementControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1130,5 +1151,7 @@ namespace CardMaker.Forms
         private System.Windows.Forms.Button btnElementBackgroundColor;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.TextBox txtTileSize;
+        private System.Windows.Forms.Panel panelGraphicColor;
+        private System.Windows.Forms.Button btnElementGraphicColor;
     }
 }
