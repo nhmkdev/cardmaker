@@ -38,6 +38,9 @@ namespace CardMaker.Data
         public const int MAX_RECENT_PROJECTS = 10;
         public const string GOOGLE_CACHE_FILE = ".CardMakerGoogleCache.dat";
         public static readonly Color NoColor = Color.FromArgb(0, 0, 0, 0);
+        public const string ALLOWED_LAYOUT_COLUMN = "allowed_layout";
+        public const char ALLOWED_COLUMN_SEPARATOR = ';';
+        public const string OVERRIDE_COLUMN = "override:";
 
         // Google connectivity constants
         public const string GOOGLE_CLIENT_ID = "455195524701-cmdvv6fl5ru9uftin99kjmhojt36mnm9.apps.googleusercontent.com";

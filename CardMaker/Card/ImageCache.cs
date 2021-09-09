@@ -61,12 +61,12 @@ namespace CardMaker.Card
             var zElementType = EnumUtil.GetElementType(zElement.type);
 
             var zSourceBitmap = LoadImageFromCache(sFile);
-            // if the desired width/height/opcaity match the 'plain' cached copy just return it
             if (null == zSourceBitmap)
             {
                 return null;
             }
-            if(
+            // if the desired width/height/opacity match the 'plain' cached copy just return it
+            if (
                 (
                     (-1 == nTargetWidth || zSourceBitmap.Width == nTargetWidth)
                     && (-1 == nTargetHeight || zSourceBitmap.Height == nTargetHeight)
@@ -88,6 +88,7 @@ namespace CardMaker.Card
                 
             }
             // TODO: should this be handled in a shared way?
+            // TODO: this is a terrible eviction strategy
             if (s_dictionaryCustomImages.Count > IMAGE_CACHE_MAX)
             {
                 DumpImagesFromDictionary(s_dictionaryCustomImages);
@@ -129,6 +130,7 @@ namespace CardMaker.Card
             {
                 if (s_dictionaryImages.Count > IMAGE_CACHE_MAX)
                 {
+                    // TODO: this is a terrible eviction strategy
                     DumpImagesFromDictionary(s_dictionaryImages);
                 }
                 if (!File.Exists(sFile))

@@ -271,6 +271,10 @@ namespace UnitTest.DeckObject
 
         [TestCase("x", "x" , ExpectedResult = 1)]
         [TestCase("X", "x", ExpectedResult = 1)]
+        [TestCase("X", "x;y", ExpectedResult = 1)]
+        [TestCase("x", "x;y", ExpectedResult = 1)]
+        [TestCase("Y", "x;y", ExpectedResult = 1)]
+        [TestCase("y", "x;y", ExpectedResult = 1)]
         public int ValidateAllowedLayout(string layoutName, string allowedLayout)
         {
             _testDeck.CardLayout.Name = layoutName;
@@ -285,15 +289,16 @@ namespace UnitTest.DeckObject
             return _testDeck.CardCount;
         }
 
-        [Test]
-        public void ValidateNonAllowedLayout()
+        [TestCase("y", "x")]
+        [TestCase("y", "w;x;z")]
+        public void ValidateNonAllowedLayout(string layoutName, string allowedLayout)
         {
-            _testDeck.CardLayout.Name = "x";
+            _testDeck.CardLayout.Name = layoutName;
             _testDeck.ProcessLinesPublic(
                 new List<List<string>>()
                 {
                     new List<string>(){"a", "allowed_layout"},
-                    new List<string>() {"1", "y"}
+                    new List<string>() {"1", allowedLayout}
                 },
                 new List<List<string>>(),
                 null);

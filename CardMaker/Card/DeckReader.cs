@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CardMaker.Card.Import;
 using CardMaker.Data;
@@ -173,9 +174,6 @@ namespace CardMaker.Card
         {
 #warning this method is horribly long
 
-            const string ALLOWED_LAYOUT = "allowed_layout";
-            const string OVERRIDE = "override:";
-
             var nDefaultCount = m_zDeck.CardLayout.defaultCount;
             var listColumnNames = new List<string>();
             var dictionaryColumnNames = new Dictionary<string, int>();
@@ -204,7 +202,7 @@ namespace CardMaker.Card
 
                 // determine the allowed layout column index
                 int nAllowedLayoutColumn;
-                if (!dictionaryColumnNames.TryGetValue(ALLOWED_LAYOUT, out nAllowedLayoutColumn))
+                if (!dictionaryColumnNames.TryGetValue(CardMakerConstants.ALLOWED_LAYOUT_COLUMN, out nAllowedLayoutColumn))
                 {
                     nAllowedLayoutColumn = -1;
                 }
@@ -212,7 +210,7 @@ namespace CardMaker.Card
                 // construct the override dictionary
                 foreach (string sKey in listColumnNames)
                 {
-                    if (sKey.StartsWith(OVERRIDE))
+                    if (sKey.StartsWith(CardMakerConstants.OVERRIDE_COLUMN))
                     {
                         string[] arraySplit = sKey.Split(new char[] { ':' });
                         if (3 == arraySplit.Length)
@@ -269,7 +267,7 @@ namespace CardMaker.Card
                     {
                         // some rows may not include the column at that index
                         if (listLines[nLine].Count > nAllowedLayoutColumn
-                            && !m_zDeck.CardLayout.Name.Equals(listLines[nLine][nAllowedLayoutColumn], StringComparison.CurrentCultureIgnoreCase))
+                            && !IsLayoutAllowed(listLines[nLine][nAllowedLayoutColumn]))
                         {
                             listLines.RemoveAt(nLine);
                         }
@@ -434,6 +432,14 @@ namespace CardMaker.Card
                 // if a ref reader had an issue handle it (google for example due to auth)
                 m_zErrorReferenceReader?.HandleInvalid();
             }
+        }
+
+        private bool IsLayoutAllowed(string sAllowedEntry)
+        {
+            var arrayAllowedLayouts = sAllowedEntry == null ? new string[] { } : sAllowedEntry.Split(CardMakerConstants.ALLOWED_COLUMN_SEPARATOR);
+            return null != arrayAllowedLayouts.FirstOrDefault((sAllowedLayout) =>
+                m_zDeck.CardLayout.Name.Equals(sAllowedLayout, StringComparison.CurrentCultureIgnoreCase)
+            );
         }
     }
 }

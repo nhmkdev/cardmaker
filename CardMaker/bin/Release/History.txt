@@ -3,6 +3,7 @@ Card Maker Version History
 1.2.0.0
 - Added ability to preview color changes in the color selection dialog. This works with 1+ elements selected.
 - Added ability to apply color to graphic elements. This is applied to the image (not other aspects like background/border).
+- Expanded allowed_layout functionality to support a semi-colon delimited set.
 
 1.1.0.0
 - Changed card export for layouts marked as back to be right-aligned
