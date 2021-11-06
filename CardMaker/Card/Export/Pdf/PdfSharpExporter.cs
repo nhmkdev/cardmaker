@@ -362,7 +362,8 @@ namespace CardMaker.Card.Export.Pdf
         private void AddPage(PdfRowExporter zRowExporter, int nNextExportIndex)
         {
             m_zCurrentPage = m_zDocument.AddPage();
-            
+
+            UpdatePageSize();
             m_zCurrentPage.Orientation = m_ePageOrientation;
 
             m_zPageGfx = XGraphics.FromPdfPage(m_zCurrentPage);
@@ -379,18 +380,18 @@ namespace CardMaker.Card.Export.Pdf
         {
             switch (CardMakerSettings.PrintPageMeasurementUnit)
             {
-                    case MeasurementUnit.Inch:
-                        m_zCurrentPage.Width = XUnit.FromInch((double)CardMakerSettings.PrintPageWidth);
-                        m_zCurrentPage.Height = XUnit.FromInch((double)CardMakerSettings.PrintPageHeight);
-                        break;
-                    case MeasurementUnit.Millimeter:
-                        m_zCurrentPage.Width = XUnit.FromMillimeter((double)CardMakerSettings.PrintPageWidth);
-                        m_zCurrentPage.Height = XUnit.FromMillimeter((double)CardMakerSettings.PrintPageHeight);
-                        break;
-                    case MeasurementUnit.Centimeter:
-                        m_zCurrentPage.Width = XUnit.FromCentimeter((double)CardMakerSettings.PrintPageWidth);
-                        m_zCurrentPage.Height = XUnit.FromCentimeter((double)CardMakerSettings.PrintPageHeight);
-                        break;
+                case MeasurementUnit.Inch:
+                    m_zCurrentPage.Width = XUnit.FromInch((double)CardMakerSettings.PrintPageWidth);
+                    m_zCurrentPage.Height = XUnit.FromInch((double)CardMakerSettings.PrintPageHeight);
+                    break;
+                case MeasurementUnit.Millimeter:
+                    m_zCurrentPage.Width = XUnit.FromMillimeter((double)CardMakerSettings.PrintPageWidth);
+                    m_zCurrentPage.Height = XUnit.FromMillimeter((double)CardMakerSettings.PrintPageHeight);
+                    break;
+                case MeasurementUnit.Centimeter:
+                    m_zCurrentPage.Width = XUnit.FromCentimeter((double)CardMakerSettings.PrintPageWidth);
+                    m_zCurrentPage.Height = XUnit.FromCentimeter((double)CardMakerSettings.PrintPageHeight);
+                    break;
             }
         }
 

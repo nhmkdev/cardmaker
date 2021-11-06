@@ -275,6 +275,7 @@ namespace UnitTest.DeckObject
         [TestCase("x", "x;y", ExpectedResult = 1)]
         [TestCase("Y", "x;y", ExpectedResult = 1)]
         [TestCase("y", "x;y", ExpectedResult = 1)]
+        [TestCase("z", "*", ExpectedResult = 1)]
         public int ValidateAllowedLayout(string layoutName, string allowedLayout)
         {
             _testDeck.CardLayout.Name = layoutName;
@@ -291,6 +292,7 @@ namespace UnitTest.DeckObject
 
         [TestCase("y", "x")]
         [TestCase("y", "w;x;z")]
+        [TestCase("y", "w;x;*")]
         public void ValidateNonAllowedLayout(string layoutName, string allowedLayout)
         {
             _testDeck.CardLayout.Name = layoutName;

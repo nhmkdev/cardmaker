@@ -1,6 +1,8 @@
 Card Maker Version History
 --------------------------
 1.2.0.0
+- Fixed issue with page resizing/margins on PDF export
+- Added * option for allowed layout column to indicate the row should be included in all layouts
 - Added ability to preview color changes in the color selection dialog. This works with 1+ elements selected.
 - Added ability to apply color to graphic elements. This is applied to the image (not other aspects like background/border).
 - Expanded allowed_layout functionality to support a semi-colon delimited set.

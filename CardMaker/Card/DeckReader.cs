@@ -437,6 +437,10 @@ namespace CardMaker.Card
         private bool IsLayoutAllowed(string sAllowedEntry)
         {
             var arrayAllowedLayouts = sAllowedEntry == null ? new string[] { } : sAllowedEntry.Split(CardMakerConstants.ALLOWED_COLUMN_SEPARATOR);
+            if (sAllowedEntry.Trim().Equals("*"))
+            {
+                return true;
+            }
             return null != arrayAllowedLayouts.FirstOrDefault((sAllowedLayout) =>
                 m_zDeck.CardLayout.Name.Equals(sAllowedLayout, StringComparison.CurrentCultureIgnoreCase)
             );
