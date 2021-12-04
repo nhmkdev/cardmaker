@@ -83,7 +83,7 @@ namespace CardMaker.Card.FormattedText.Markup
 
             var fMeasuredHeight = Math.Max(m_rectMeasuredRectangle.Height, m_fFontHeight);
 
-            if (zProcessData.CurrentX + fMeasuredWidth > zElement.width)
+            if (zProcessData.CurrentX + fMeasuredWidth > zProcessData.CurrentMarginRight)
             {
                 zProcessData.MoveToNextLine(zElement);
             }

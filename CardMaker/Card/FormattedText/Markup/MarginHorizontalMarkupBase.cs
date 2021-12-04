@@ -22,28 +22,35 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#define UNSTABLE
+using System.Drawing;
+using CardMaker.XML;
+using Support.IO;
 
-namespace CardMaker
+namespace CardMaker.Card.FormattedText.Markup
 {
-    public static class CardMakerBuild
+    public abstract class MarginHorizontalMarkupBase : MarkupValueBase
     {
-        public static string GetBuildSuffix()
-        {
-#if UNSTABLE
-            return "[UNSTABLE] V.A5";
-#else
-            return string.Empty;
-#endif
-        }
+        public MarginHorizontalMarkupBase(string sVariable) : base(sVariable) { }
 
-        public static bool IsUnstable()
+        protected abstract MarginType GetMarginType();
+
+        protected override bool ProcessMarkupHandler(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
-#if UNSTABLE
-            return true;
-#else
+            var arrayComponents = m_sVariable.Split(new char[] { ';' });
+            if (3 != arrayComponents.Length)
+            {
+                return false;
+            }
+
+            if (!int.TryParse(arrayComponents[0], out var nXMargin) || !int.TryParse(arrayComponents[1], out var nYTop) || !int.TryParse(arrayComponents[2], out var nYBottom))
+            {
+                return false;
+            }
+            if (nXMargin >= 0 && nXMargin < zElement.width && nYTop < nYBottom && nYTop >= 0 && nYBottom <= zElement.height)
+            {
+                zProcessData.AddHorizontalMargin(zElement, GetMarginType(), nXMargin, nYTop, nYBottom);
+            }
             return false;
-#endif
         }
     }
 }

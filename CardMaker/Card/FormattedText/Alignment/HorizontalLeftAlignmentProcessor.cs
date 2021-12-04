@@ -31,7 +31,8 @@ namespace CardMaker.Card.FormattedText.Alignment
     {
         public override float GetHorizontalOffset(ProjectLayoutElement zElement, RectangleF rectFirst, RectangleF rectLast)
         {
-            var fXOffset = -rectFirst.X + 1;
+#warning This was previously "-rectFirst.X + 1"
+            var fXOffset = 1;
             return fXOffset;
         }
     }

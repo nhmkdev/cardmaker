@@ -22,28 +22,15 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#define UNSTABLE
-
-namespace CardMaker
+namespace CardMaker.Card.FormattedText.Markup
 {
-    public static class CardMakerBuild
+    public class MarginRightMarkup : MarginHorizontalMarkupBase
     {
-        public static string GetBuildSuffix()
-        {
-#if UNSTABLE
-            return "[UNSTABLE] V.A5";
-#else
-            return string.Empty;
-#endif
-        }
+        public MarginRightMarkup(string sVariable) : base(sVariable) { }
 
-        public static bool IsUnstable()
+        protected override MarginType GetMarginType()
         {
-#if UNSTABLE
-            return true;
-#else
-            return false;
-#endif
+            return MarginType.Right;
         }
     }
 }

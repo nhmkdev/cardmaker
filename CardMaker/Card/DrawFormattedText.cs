@@ -180,7 +180,9 @@ namespace CardMaker.Card
             {
                 FontBrush = zBrush,
                 CurrentLineHeight = zElement.lineheight,
-                CurrentStringAlignment = zElement.GetHorizontalAlignment()
+                CurrentStringAlignment = zElement.GetHorizontalAlignment(),
+                CurrentMarginLeft = 0,
+                CurrentMarginRight = zElement.width
             };
 
             var zFont = zElement.GetElementFont();

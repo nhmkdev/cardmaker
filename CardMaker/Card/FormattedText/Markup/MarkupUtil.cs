@@ -51,6 +51,8 @@ namespace CardMaker.Card.FormattedText.Markup
             {"ac", typeof(AlignCenterMarkup) },
             {"ar", typeof(AlignRightMarkup) },
             {"al", typeof(AlignLeftMarkup) },
+            {"marginleft", typeof(MarginLeftMarkup)},
+            {"marginright", typeof(MarginRightMarkup)},
         };
 
         public static Type GetMarkupType(string sInput)
