@@ -77,7 +77,7 @@ namespace CardMaker.Card.FormattedText.Markup
             zProcessData.CurrentX += nXPush;
             zProcessData.CurrentY += nYPush;
 
-            if (zProcessData.CurrentX > zElement.width)
+            if (zProcessData.IsXPositionOutsideBounds(zProcessData.CurrentX))
             {
                 zProcessData.MoveToNextLine(zElement);
             }

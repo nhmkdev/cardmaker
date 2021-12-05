@@ -121,16 +121,16 @@ namespace CardMaker.Card.FormattedText.Markup
             }
 
             // newline eval
-            if (TargetRect.Width + TargetRect.X > zElement.width)
+            if (zProcessData.IsXPositionOutsideBounds(TargetRect.X + TargetRect.Width))
             {
                 zProcessData.MoveToNextLine(zElement);
-                TargetRect = new RectangleF(0, zProcessData.CurrentY, TargetRect.Width, TargetRect.Height);
+                TargetRect = new RectangleF(zProcessData.CurrentX, zProcessData.CurrentY, TargetRect.Width, TargetRect.Height);
             }
 
             // cap off excessively wide images
-            if (TargetRect.Width + TargetRect.X > zElement.width)
+            if (zProcessData.IsXPositionOutsideBounds(TargetRect.X + TargetRect.Width))
             {
-                var fNewHeight = zElement.width / fAspectRatio;
+                var fNewHeight = zProcessData.GetMaxLineWidth() / fAspectRatio;
                 TargetRect = new RectangleF(TargetRect.X, TargetRect.Y, zElement.width, fNewHeight);
             }
 

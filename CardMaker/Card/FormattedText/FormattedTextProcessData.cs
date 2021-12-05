@@ -102,6 +102,16 @@ namespace CardMaker.Card.FormattedText
             UpdateMargins(zElement, bFromMarginUpdate);
         }
 
+        public bool IsXPositionOutsideBounds(float fX)
+        {
+            return fX > CurrentMarginRight;
+        }
+
+        public float GetMaxLineWidth()
+        {
+            return CurrentMarginRight - CurrentMarginLeft;
+        }
+
         /// <summary>
         /// Configures a single margin
         /// </summary>
