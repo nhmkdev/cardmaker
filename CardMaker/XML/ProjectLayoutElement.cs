@@ -453,6 +453,11 @@ namespace CardMaker.XML
         /// </summary>
         public static PropertyInfo[] SortedPropertyInfos => s_listPropertyInfos.ToArray();
 
+        public static string BoolToNumericString(bool bValue)
+        {
+            return bValue ? "1" : "0";
+        }
+
         static ProjectLayoutElement()
         {
             s_listPropertyInfos = new List<PropertyInfo>(typeof(ProjectLayoutElement).GetProperties(

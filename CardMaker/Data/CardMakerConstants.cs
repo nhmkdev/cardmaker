@@ -39,6 +39,8 @@ namespace CardMaker.Data
         public const string GOOGLE_CACHE_FILE = ".CardMakerGoogleCache.dat";
         public static readonly Color NoColor = Color.FromArgb(0, 0, 0, 0);
         public const string ALLOWED_LAYOUT_COLUMN = "allowed_layout";
+        public const string FORMATTED_TEXT_PARAM_SEPARATOR = ";";
+        public static readonly string[] FORMATTED_TEXT_PARAM_SEPARATOR_ARRAY = {FORMATTED_TEXT_PARAM_SEPARATOR};
         public const char ALLOWED_COLUMN_SEPARATOR = ';';
         public const string OVERRIDE_COLUMN = "override:";
 

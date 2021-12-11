@@ -22,7 +22,9 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Drawing;
+using CardMaker.Data;
 using CardMaker.XML;
 
 namespace CardMaker.Card.FormattedText.Markup
@@ -35,7 +37,57 @@ namespace CardMaker.Card.FormattedText.Markup
 
         protected override bool ProcessMarkupHandler(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
-            var zNewFont = ProjectLayoutElement.TranslateFontString(m_sVariable);
+            // TODO: adjust the TranslateFontString method (or add a sibling) to not double up on the string split
+            var arrayComponents = m_sVariable.Split(CardMakerConstants.FORMATTED_TEXT_PARAM_SEPARATOR_ARRAY, StringSplitOptions.None);
+            if (1 > arrayComponents.Length)
+            {
+                return false;
+            }
+
+            var sNewFont = m_sVariable;
+
+            if (arrayComponents.Length == 1)
+            {
+                sNewFont = string.Join(CardMakerConstants.FORMATTED_TEXT_PARAM_SEPARATOR, new string[]
+                {
+                    arrayComponents[0],
+                    zProcessData.Font.Size.ToString(),
+                    ProjectLayoutElement.BoolToNumericString(zProcessData.Font.Bold),
+                    ProjectLayoutElement.BoolToNumericString(zProcessData.Font.Underline),
+                    ProjectLayoutElement.BoolToNumericString(zProcessData.Font.Italic),
+                    ProjectLayoutElement.BoolToNumericString(zProcessData.Font.Strikeout)
+                });
+            }
+            else if (arrayComponents.Length == 2)
+            {
+                sNewFont = string.Join(CardMakerConstants.FORMATTED_TEXT_PARAM_SEPARATOR, new string[]
+                {
+                    arrayComponents[0],
+                    string.IsNullOrWhiteSpace(arrayComponents[1]) ? zProcessData.Font.Size.ToString(): arrayComponents[1],
+                    ProjectLayoutElement.BoolToNumericString(zProcessData.Font.Bold),
+                    ProjectLayoutElement.BoolToNumericString(zProcessData.Font.Underline),
+                    ProjectLayoutElement.BoolToNumericString(zProcessData.Font.Italic),
+                    ProjectLayoutElement.BoolToNumericString(zProcessData.Font.Strikeout)
+                });
+            }
+            else if (arrayComponents.Length == 6)
+            {
+                sNewFont = string.Join(CardMakerConstants.FORMATTED_TEXT_PARAM_SEPARATOR, new string[]
+                {
+                    arrayComponents[0],
+                    string.IsNullOrWhiteSpace(arrayComponents[1]) ? zProcessData.Font.Size.ToString(): arrayComponents[1],
+                    arrayComponents[2],
+                    arrayComponents[3],
+                    arrayComponents[4],
+                    arrayComponents[5]
+                });
+            }
+            else
+            {
+                sNewFont = m_sVariable;
+            }
+
+            var zNewFont = ProjectLayoutElement.TranslateFontString(sNewFont);
             if (zNewFont != null)
             {
                 m_zPreviousFont = zProcessData.Font;
