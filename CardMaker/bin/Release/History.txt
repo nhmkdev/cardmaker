@@ -1,6 +1,7 @@
 Card Maker Version History
 --------------------------
 1.2.0.0
+- Updated OpenXML (support newer Excel functionality)
 - Added alternative parameter sets for the font <f> tag in FormattedText
 - Added FormattedText marginleft and marginright tags.
 - Fixed issue with page resizing/margins on PDF export
