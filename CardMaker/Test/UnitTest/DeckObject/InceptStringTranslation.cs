@@ -144,7 +144,38 @@ namespace UnitTest.DeckObject
             return result.String;
         }
 
-        // note this result sucks -- should just be nothing
+        [TestCase("#(if [1;2;3] == [1] then good else bad)#", ExpectedResult = "good")]
+        [TestCase("#(if [1] == [1;2;3] then good else bad)#", ExpectedResult = "good")]
+        [TestCase("#(if [1] == [2;3] then good)#", ExpectedResult = "")]
+        [TestCase("#(if 1 == [1;2;3] then good)#", ExpectedResult = "good")]
+        [TestCase("#(if 1 == [2;3] then good)#", ExpectedResult = "")]
+        [TestCase("#(if [1;2;3] == 1 then good)#", ExpectedResult = "good")]
+        [TestCase("#(if [2;3] == 1 then good)#", ExpectedResult = "")]
+        [TestCase("#(if [1;2;3] == [a;3;b] then good)#", ExpectedResult = "good")]
+        [TestCase("#(if [1;2;3] == [a;b;c] then good else bad)#", ExpectedResult = "bad")]
+        [TestCase("#(if [1;2;3] == [3;4;5] then good)#", ExpectedResult = "good")]
+        public string ValidateGroupedIfStatements(string input)
+        {
+            _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
+            var result = _testDeck.TranslateString(input, _testLine, _testElement, false);
+            return result.String;
+        }
+
+        // note this result sucks -- should just be nothing (empty string)
+        [TestCase("#(switch;[45];[15];nothing)#", ExpectedResult = "switch;[45];[15];nothing")]
+        // NOTE: the delimiter change to support grouped cases (2 char)
+        [TestCase("#(switch::[45;15]::15::nothing::#default::stuff)#", ExpectedResult = "nothing")]
+        [TestCase("#(switch::[45;15]::[15]::nothing::#default::stuff)#", ExpectedResult = "nothing")]
+        [TestCase("#(switch::15::[15]::nothing::#default::stuff)#", ExpectedResult = "nothing")]
+        [TestCase("#(switch::[35;ab]::[15;45]::nothing::#default::stuff)#", ExpectedResult = "stuff")]
+        public string ValidateGroupedSwitchStatements(string input)
+        {
+            _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
+            var result = _testDeck.TranslateString(input, _testLine, _testElement, false);
+            return result.String;
+        }
+
+        // note this result sucks -- should just be nothing (empty string)
         [TestCase("#(switch;45;15;nothing)#", ExpectedResult = "switch;45;15;nothing")]
         [TestCase("#(switch;45;15;nothing;#default;stuff)#", ExpectedResult = "stuff")]
         [TestCase("#(switch;45;15;nothing;45;;#default;stuff)#", ExpectedResult = "")]
@@ -162,7 +193,7 @@ namespace UnitTest.DeckObject
             return result.String;
         }
 
-        // note this result sucks -- should just be nothing
+        // note this result sucks -- should just be nothing (empty string)
         [TestCase("#(switch//45//15//nothing)#", ExpectedResult = "switch//45//15//nothing")]
         [TestCase("#(switch-=45-=15-=nothing-=#default-=weird)#", ExpectedResult = "weird")]
         [TestCase("#(switch//45//15//nothing//#default//stuff)#", ExpectedResult = "stuff")]

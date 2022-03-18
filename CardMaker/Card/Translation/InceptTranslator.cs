@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using CardMaker.Data;
@@ -72,7 +73,9 @@ namespace CardMaker.Card.Translation
         
         private const string SWITCH_DEFAULT = "#default";
         private const string SWITCH_KEY = "#switchkey";
-        private readonly string[] ArraySwitchDelimiter = new string[] {";"};
+        private const char ARRAY_DELIMITER = ';';
+        private readonly string[] ArrayDelimiter_string = new string[] { ARRAY_DELIMITER.ToString() };
+        private readonly char[] ArrayDelimiter_char = new char[] { ARRAY_DELIMITER };
 
         public InceptTranslator(Dictionary<string, int> dictionaryColumnNameToIndex,
             Dictionary<string, string> dictionaryDefines,
@@ -515,7 +518,7 @@ namespace CardMaker.Card.Translation
                 }
                 if (eCheck == LogicCheck.Equals || eCheck == LogicCheck.NotEquals)
                 {
-                    bool bCompare = CompareIfSet(zIfMatch.Groups[2].ToString(), zIfMatch.Groups[4].ToString());
+                    bool bCompare = CheckStringsForMatch(zIfMatch.Groups[2].ToString(), zIfMatch.Groups[4].ToString());
                     if (eCheck == LogicCheck.NotEquals)
                     {
                         bCompare = !bCompare;
@@ -574,21 +577,19 @@ namespace CardMaker.Card.Translation
             return sOutput;
         }
 
-        private bool CompareIfSet(string sSet1, string sSet2)
+        private bool CheckStringsForMatch(string sSet1, string sSet2)
         {
-            var hSet1 = GetIfSet(sSet1);
-            var hSet2 = GetIfSet(sSet2);
-            foreach (string sKey in hSet1)
-            {
-                if (hSet2.Contains(sKey))
-                {
-                    return true;
-                }
-            }
-            return false;
+            var hSet1 = GetGroupSet(sSet1);
+            var hSet2 = GetGroupSet(sSet2);
+            return CheckSetsForMatch(hSet1, hSet2);
         }
 
-        private HashSet<string> GetIfSet(string sSet)
+        private bool CheckSetsForMatch(HashSet<string> hs1, HashSet<string> hs2)
+        {
+            return hs1.FirstOrDefault(hs2.Contains) != null;
+        }
+
+        private HashSet<string> GetGroupSet(string sSet)
         {
             var hSet = new HashSet<string>();
             // Groups                    
@@ -597,7 +598,7 @@ namespace CardMaker.Card.Translation
             if (s_regexIfSet.IsMatch(sSet))
             {
                 var zMatch = s_regexIfSet.Match(sSet);
-                var arraySplit = zMatch.Groups[2].ToString().Split(new char[] {';'});
+                var arraySplit = zMatch.Groups[2].ToString().Split(ArrayDelimiter_char);
                 foreach (var sEntry in arraySplit)
                 {
                     var sItem = sEntry.Trim().ToLower();
@@ -622,24 +623,21 @@ namespace CardMaker.Card.Translation
             //(switch)(;)(.*?)(;)(.*)");
             // OR
             //      1   2    3   4   5
-            //(switch)(::)(.*?)(::)(.*)
+            //(switch)(**)(.*?)(::)(.*) << Note: ** is any character
             var nDefaultIndex = -1;
-            Match zSwitchMatch = null;
-            string[] arraySwitchDelimiter;;
             string sKey = null;
             string[] arrayCases = null;
             if (s_regexSwitchStatement.IsMatch(sInput))
             {
-                zSwitchMatch = s_regexSwitchStatement.Match(sInput);
-                arraySwitchDelimiter = ArraySwitchDelimiter;
+                var zSwitchMatch = s_regexSwitchStatement.Match(sInput);
                 sKey = zSwitchMatch.Groups[3].ToString();
-                arrayCases = zSwitchMatch.Groups[5].ToString().Split(arraySwitchDelimiter, StringSplitOptions.None);
+                arrayCases = zSwitchMatch.Groups[5].ToString().Split(ArrayDelimiter_string, StringSplitOptions.None);
             }
             else
             {
                 if (sInput.StartsWith(SWITCH) && sInput.Length > SWITCH.Length + 2)
                 {
-                    arraySwitchDelimiter = new[] {sInput.Substring(SWITCH.Length, 2)};
+                    var arraySwitchDelimiter = new[] {sInput.Substring(SWITCH.Length, 2)};
                     var arraySplit = sInput.Split(arraySwitchDelimiter, StringSplitOptions.None);
                     if (arraySplit.Length > 2)
                     {
@@ -662,6 +660,7 @@ namespace CardMaker.Card.Translation
             }
 
             var nIdx = 0;
+            var hsKey = GetGroupSet(sKey);
             while (nIdx < arrayCases.Length)
             {
                 if (arrayCases[nIdx].Equals(SWITCH_DEFAULT, StringComparison.CurrentCultureIgnoreCase))
@@ -669,6 +668,10 @@ namespace CardMaker.Card.Translation
                     nDefaultIndex = nIdx;
                 }
                 if (arrayCases[nIdx].Equals(sKey, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    return arrayCases[nIdx + 1];
+                }
+                if (CheckSetsForMatch(hsKey, GetGroupSet(arrayCases[nIdx])))
                 {
                     return arrayCases[nIdx + 1];
                 }
