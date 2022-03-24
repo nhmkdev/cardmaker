@@ -48,12 +48,17 @@ namespace CardMaker.Card
             DumpImagesFromDictionary(s_dictionaryCustomImages);
         }
 
-        public static Bitmap LoadCustomImageFromCache(string sFile, ProjectLayoutElement zElement, int nTargetWidth = -1, int nTargetHeight = -1)
+        public static Bitmap LoadCustomImageFromCache(string sFile, ProjectLayoutElement zElement,
+            int nTargetWidth = -1, int nTargetHeight = -1)
         {
-            Bitmap zDestinationBitmap;
-            var sKey = sFile.ToLower() + ":" + zElement.opacity + ":" + nTargetWidth + ":" + nTargetHeight + ProjectLayoutElement.GetElementColorString(zElement.GetElementColor());
+            return LoadCustomImageFromCache(sFile, zElement, zElement.GetElementColor(), nTargetWidth, nTargetHeight);
+        }
 
-            if (s_dictionaryCustomImages.TryGetValue(sKey, out zDestinationBitmap))
+        public static Bitmap LoadCustomImageFromCache(string sFile, ProjectLayoutElement zElement, Color colorOverride, int nTargetWidth = -1, int nTargetHeight = -1)
+        {
+            var sKey = sFile.ToLower() + ":" + zElement.opacity + ":" + nTargetWidth + ":" + nTargetHeight + ProjectLayoutElement.GetElementColorString(colorOverride);
+
+            if (s_dictionaryCustomImages.TryGetValue(sKey, out var zDestinationBitmap))
             {
                 return zDestinationBitmap;
             }
@@ -65,7 +70,8 @@ namespace CardMaker.Card
             {
                 return null;
             }
-            // if the desired width/height/opacity match the 'plain' cached copy just return it
+            // if the desired width/height/opacity match the 'plain' cached copy just return it (or special color handling for certain element types)
+            // TODO: make a method for this just to shrink all this logic down
             if (
                 (
                     (-1 == nTargetWidth || zSourceBitmap.Width == nTargetWidth)
@@ -76,8 +82,9 @@ namespace CardMaker.Card
             {
                 switch (zElementType)
                 {
+                    case ElementType.FormattedText:
                     case ElementType.Graphic:
-                        if (zElement.GetElementColor() == Color.Black)
+                        if (colorOverride == Color.Black)
                         {
                             return zSourceBitmap;
                         }
@@ -100,11 +107,18 @@ namespace CardMaker.Card
             {
                 zColor.Matrix33 = (float) zElement.opacity / 255.0f;
             }
-            if (zElementType == ElementType.Graphic && zElement.GetElementColor() != Color.Black)
+            // special color handling for certain element types
+            if (colorOverride != Color.Black)
             {
-                zColor.Matrix40 = (float) zElement.GetElementColor().R / 255.0f;
-                zColor.Matrix41 = (float)zElement.GetElementColor().G / 255.0f;
-                zColor.Matrix42 = (float)zElement.GetElementColor().B / 255.0f;
+                switch (zElementType)
+                {
+                    case ElementType.FormattedText:
+                    case ElementType.Graphic:
+                        zColor.Matrix40 = (float)colorOverride.R / 255.0f;
+                        zColor.Matrix41 = (float)colorOverride.G / 255.0f;
+                        zColor.Matrix42 = (float)colorOverride.B / 255.0f;
+                        break;
+                }
             }
             zImageAttributes.SetColorMatrix(zColor);
 
@@ -189,7 +203,7 @@ namespace CardMaker.Card
 
         private static void DumpImagesFromDictionary(Dictionary<string, Bitmap> dictionaryImages)
         {
-            foreach (Bitmap zBitmap in dictionaryImages.Values)
+            foreach (var zBitmap in dictionaryImages.Values)
             {
                 zBitmap.Dispose();
             }

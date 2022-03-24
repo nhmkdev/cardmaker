@@ -1,6 +1,7 @@
 Card Maker Version History
 --------------------------
 1.2.0.0
+- Added Image Color tag for FormattedText (<ic>)
 - Added group logic to switch statements so multiple matches can have the same result
 - Updated ClosedXML (support newer Excel functionality)
 - Added alternative parameter sets for the font <f> tag in FormattedText

@@ -35,6 +35,7 @@ namespace CardMaker.Card.FormattedText.Markup
         private string m_sImageFile;
         private float m_fXOffset;
         private float m_fYOffset;
+        private Color m_colorImage = Color.Black;
 
         public override bool Aligns => true;
 
@@ -50,8 +51,9 @@ namespace CardMaker.Card.FormattedText.Markup
             LineNumber = zProcessData.CurrentLine;
 
             m_sImageFile = arrayComponents[0];
+            m_colorImage = zProcessData.ImageColor;
 
-            var zBmp = ImageCache.LoadCustomImageFromCache(m_sImageFile, zElement);
+            var zBmp = LoadImage(zElement);
 
             if (null == zBmp 
                 || zBmp.Width == 0 
@@ -162,7 +164,7 @@ namespace CardMaker.Card.FormattedText.Markup
                 zGraphics.DrawRectangle(Pens.Green, TargetRect.X + m_fXOffset, TargetRect.Y + m_fYOffset, TargetRect.Width, TargetRect.Height);
             }
 
-            var zBmp = ImageCache.LoadCustomImageFromCache(m_sImageFile, zElement);
+            var zBmp = LoadImage(zElement);
 
             if (null != zBmp)
             {
@@ -176,6 +178,11 @@ namespace CardMaker.Card.FormattedText.Markup
             }
 
             return true;
+        }
+
+        private Bitmap LoadImage(ProjectLayoutElement zElement)
+        {
+            return ImageCache.LoadCustomImageFromCache(m_sImageFile, zElement, m_colorImage);
         }
     }
 }

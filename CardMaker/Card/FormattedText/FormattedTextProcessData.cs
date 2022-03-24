@@ -45,6 +45,7 @@ namespace CardMaker.Card.FormattedText
         public float FontSpaceWidth { get; private set; }
         public float FontSpaceHeight { get; private set; }
         public Brush FontBrush { get; set; }
+        public Color ImageColor { get; set; }
 
         public float CurrentX { get; set; }
         public float CurrentY { get; set; }

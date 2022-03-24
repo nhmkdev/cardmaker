@@ -168,6 +168,9 @@ namespace UnitTest.DeckObject
         [TestCase("#(switch::[45;15]::[15]::nothing::#default::stuff)#", ExpectedResult = "nothing")]
         [TestCase("#(switch::15::[15]::nothing::#default::stuff)#", ExpectedResult = "nothing")]
         [TestCase("#(switch::[35;ab]::[15;45]::nothing::#default::stuff)#", ExpectedResult = "stuff")]
+        [TestCase("#(switch::weapon::[weapon;potion;equipment]::item::#default::#switchkey)#", ExpectedResult = "item")]
+        [TestCase("#(switch::weapon::other::??::[weapon;potion;equipment]::item::#default::#switchkey)#", ExpectedResult = "item")]
+        [TestCase("#(switch::unknown::[weapon;potion;equipment]::item::#default::#switchkey)#", ExpectedResult = "unknown")]
         public string ValidateGroupedSwitchStatements(string input)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");

@@ -22,28 +22,26 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#define UNSTABLE
+using System.Drawing;
+using CardMaker.XML;
 
-namespace CardMaker
+namespace CardMaker.Card.FormattedText.Markup
 {
-    public static class CardMakerBuild
+    public class ImageColorMarkup : MarkupValueBase
     {
-        public static string GetBuildSuffix()
+        private Color m_colorPrevious = Color.Black;
+        public ImageColorMarkup(string sVariable) : base(sVariable) { }
+
+        protected override bool ProcessMarkupHandler(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
-#if UNSTABLE
-            return "[UNSTABLE] V.A9";
-#else
-            return string.Empty;
-#endif
+            m_colorPrevious = zProcessData.ImageColor;
+            zProcessData.ImageColor = ProjectLayoutElement.TranslateColorString(m_sVariable, zElement.opacity);
+            return false;
         }
 
-        public static bool IsUnstable()
+        public override void CloseMarkup(FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
-#if UNSTABLE
-            return true;
-#else
-            return false;
-#endif
+            zProcessData.ImageColor = m_colorPrevious;
         }
     }
 }
