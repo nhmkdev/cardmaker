@@ -22,37 +22,27 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
-using CardMaker.Data;
-using CardMaker.Events.Managers;
-using Support.IO;
-using Support.UI;
+using System.Drawing;
+using CardMaker.XML;
 
-namespace CardMaker.Card.Translation
+namespace CardMaker.Card.FormattedText.Markup
 {
-    public class TranslatorFactory : ITranslatorFactory
+    public abstract class BaseImageMarkup : MarkupValueBase
     {
-        public TranslatorBase GetTranslator(Dictionary<string, int> dictionaryColumnNames, Dictionary<string, string> dictionaryDefines,
-            Dictionary<string, Dictionary<string, int>> dictionaryElementOverrides, List<string> listColumnNames)
+        protected string m_sImageFile;
+        protected Color m_colorImage = Color.Black;
+
+        protected BaseImageMarkup(string sVariable) : base(sVariable) { }
+
+        public override bool PostProcessMarkupRectangle(ProjectLayoutElement zElement, List<MarkupBase> listAllMarkups, int nMarkup)
         {
-            TranslatorType eTranslator;
-            if (ProjectManager.Instance.LoadedProject == null ||
-                !Enum.TryParse(ProjectManager.Instance.LoadedProject.translatorName, true, out eTranslator))
-            {
-                eTranslator = TranslatorType.Incept;
-            }
+            return true;
+        }
 
-            // not a critical log message...
-            //Logger.AddLogLine("Deck Translator: {0}".FormatString(eTranslator.ToString()));
-
-            switch (eTranslator)
-            {
-                case TranslatorType.JavaScript:
-                    return new JavaScriptTranslator(dictionaryColumnNames, dictionaryDefines, dictionaryElementOverrides, listColumnNames);
-                default:
-                    return new InceptTranslator(dictionaryColumnNames, dictionaryDefines, dictionaryElementOverrides, listColumnNames);
-            }
+        protected Bitmap LoadImage(ProjectLayoutElement zElement)
+        {
+            return ImageCache.LoadCustomImageFromCache(m_sImageFile, zElement, m_colorImage);
         }
     }
 }

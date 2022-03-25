@@ -205,6 +205,7 @@
     <Compile Include="Card\FormattedText\Markup\AlignRightMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\BaseAlignMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\ImageColorMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\BaseImageMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\LineSpaceMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\MarginHorizontalMarkupBase.cs" />
     <Compile Include="Card\FormattedText\Markup\MarginRightMarkup.cs" />

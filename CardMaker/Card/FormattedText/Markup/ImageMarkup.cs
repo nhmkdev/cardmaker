@@ -1,7 +1,7 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2021 Tim Stair
+// Copyright (c) 2022 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -30,12 +30,10 @@ using Support.Util;
 
 namespace CardMaker.Card.FormattedText.Markup
 {
-    public class ImageMarkup : MarkupValueBase
+    public class ImageMarkup : BaseImageMarkup
     {
-        private string m_sImageFile;
         private float m_fXOffset;
         private float m_fYOffset;
-        private Color m_colorImage = Color.Black;
 
         public override bool Aligns => true;
 
@@ -145,11 +143,6 @@ namespace CardMaker.Card.FormattedText.Markup
             return true;
         }
 
-        public override bool PostProcessMarkupRectangle(ProjectLayoutElement zElement, List<MarkupBase> listAllMarkups, int nMarkup)
-        {
-            return true;
-        }
-
         public override bool Render(ProjectLayoutElement zElement, Graphics zGraphics)
         {
             if (zElement.height < (TargetRect.Y + TargetRect.Height))
@@ -178,11 +171,6 @@ namespace CardMaker.Card.FormattedText.Markup
             }
 
             return true;
-        }
-
-        private Bitmap LoadImage(ProjectLayoutElement zElement)
-        {
-            return ImageCache.LoadCustomImageFromCache(m_sImageFile, zElement, m_colorImage);
         }
     }
 }
