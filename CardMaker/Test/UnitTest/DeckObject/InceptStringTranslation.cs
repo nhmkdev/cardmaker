@@ -274,6 +274,42 @@ namespace UnitTest.DeckObject
             return result.String;
         }
 
+
+        [TestCase("#math;0;+;0#", ExpectedResult = "0")]
+        [TestCase("#math;1;+;3#", ExpectedResult = "4")]
+        [TestCase("#math;0;-;0#", ExpectedResult = "0")]
+        [TestCase("#math;1;-;10#", ExpectedResult = "-9")]
+        [TestCase("#math;10;-;9#", ExpectedResult = "1")]
+        [TestCase("#math;0;*;0#", ExpectedResult = "0")]
+        [TestCase("#math;7;*;8#", ExpectedResult = "56")]
+        [TestCase("#math;-7;*;8#", ExpectedResult = "-56")]
+        [TestCase("#math;0;/;0#", ExpectedResult = "")]
+        [TestCase("#math;49;/;6#", ExpectedResult = "8")]
+        [TestCase("#math;1;/;4#", ExpectedResult = "0")]
+        [TestCase("#math;12;/;3#", ExpectedResult = "4")]
+        [TestCase("#math;12;%;3#", ExpectedResult = "0")]
+        [TestCase("#math;12;%;5#", ExpectedResult = "2")]
+        public string ValidateIntMath(string input)
+        {
+            _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
+            return _testDeck.TranslateString(input, _testLine, _testElement, false).String;
+        }
+
+        [TestCase("#floatmath;1.5;+;1.75;#", ExpectedResult = "3.25")]
+        [TestCase("#floatmath;1.5;-;1.75;#", ExpectedResult = "-0.25")]
+        [TestCase("#floatmath;1.5;*;3;#", ExpectedResult = "4.5")]
+        [TestCase("#floatmath;0;/;0;#", ExpectedResult = "")]
+        [TestCase("#floatmath;1;/;4;#", ExpectedResult = "0.25")]
+        [TestCase("#floatmath;1;/;3;#", ExpectedResult = "0.3333333")]
+        [TestCase("#floatmath;1;/;4;0.0#", ExpectedResult = "0.3")] // rounds up!
+        [TestCase("#floatmath;1;/;3;0.000#", ExpectedResult = "0.333")]
+        [TestCase("#floatmath;12;/;3;#", ExpectedResult = "4")]
+        public string ValidateFloatMath(string input)
+        {
+            _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
+            return _testDeck.TranslateString(input, _testLine, _testElement, false).String;
+        }
+
         // x + (current card index * y) with left padded 0's numbering z
         [TestCase("##0;0;0#", 0, ExpectedResult = "0")]
         [TestCase("##0;0;0#", 10, ExpectedResult = "0")]
