@@ -275,36 +275,38 @@ namespace UnitTest.DeckObject
         }
 
 
-        [TestCase("#math;0;+;0#", ExpectedResult = "0")]
-        [TestCase("#math;1;+;3#", ExpectedResult = "4")]
-        [TestCase("#math;0;-;0#", ExpectedResult = "0")]
-        [TestCase("#math;1;-;10#", ExpectedResult = "-9")]
-        [TestCase("#math;10;-;9#", ExpectedResult = "1")]
-        [TestCase("#math;0;*;0#", ExpectedResult = "0")]
-        [TestCase("#math;7;*;8#", ExpectedResult = "56")]
-        [TestCase("#math;-7;*;8#", ExpectedResult = "-56")]
-        [TestCase("#math;0;/;0#", ExpectedResult = "")]
-        [TestCase("#math;49;/;6#", ExpectedResult = "8")]
-        [TestCase("#math;1;/;4#", ExpectedResult = "0")]
-        [TestCase("#math;12;/;3#", ExpectedResult = "4")]
-        [TestCase("#math;12;%;3#", ExpectedResult = "0")]
-        [TestCase("#math;12;%;5#", ExpectedResult = "2")]
-        public string ValidateIntMath(string input)
-        {
-            _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
-            return _testDeck.TranslateString(input, _testLine, _testElement, false).String;
-        }
-
-        [TestCase("#floatmath;1.5;+;1.75;#", ExpectedResult = "3.25")]
-        [TestCase("#floatmath;1.5;-;1.75;#", ExpectedResult = "-0.25")]
-        [TestCase("#floatmath;1.5;*;3;#", ExpectedResult = "4.5")]
-        [TestCase("#floatmath;0;/;0;#", ExpectedResult = "")]
-        [TestCase("#floatmath;1;/;4;#", ExpectedResult = "0.25")]
-        [TestCase("#floatmath;1;/;3;#", ExpectedResult = "0.3333333")]
-        [TestCase("#floatmath;1;/;4;0.0#", ExpectedResult = "0.3")] // rounds up!
-        [TestCase("#floatmath;1;/;3;0.000#", ExpectedResult = "0.333")]
-        [TestCase("#floatmath;12;/;3;#", ExpectedResult = "4")]
-        public string ValidateFloatMath(string input)
+        [TestCase("#math;0+0#", ExpectedResult = "0")]
+        [TestCase("#math;1+3#", ExpectedResult = "4")]
+        [TestCase("aa#math;1+3#bb", ExpectedResult = "aa4bb")]
+        [TestCase("aa#math;1+3#3-4", ExpectedResult = "aa43-4")]
+        [TestCase("#math;0-0#", ExpectedResult = "0")]
+        [TestCase("#math;1-10#", ExpectedResult = "-9")]
+        [TestCase("#math;10-9#", ExpectedResult = "1")]
+        [TestCase("#math;0*0#", ExpectedResult = "0")]
+        [TestCase("#math;7*8#", ExpectedResult = "56")]
+        [TestCase("#math;-7*8#", ExpectedResult = "-56")]
+        [TestCase("#math;0/0#", ExpectedResult = "")]
+        [TestCase("#math;49/6#", ExpectedResult = "8.166667")]
+        [TestCase("#math;1/4#", ExpectedResult = "0.25")]
+        [TestCase("#math;1/4;0#", ExpectedResult = "0")]
+        [TestCase("#math;12/3#", ExpectedResult = "4")]
+        [TestCase("#math;12%3#", ExpectedResult = "0")]
+        [TestCase("#math;12%5#", ExpectedResult = "2")]
+        [TestCase("#math;1.5+1.75#", ExpectedResult = "3.25")]
+        [TestCase("#math;1.5-1.75#", ExpectedResult = "-0.25")]
+        [TestCase("#math;1.5*3#", ExpectedResult = "4.5")]
+        [TestCase("aa#math;1.5*-3;#bb", ExpectedResult = "aa-4.5bb")]
+        [TestCase("aa#math;1.5*-3;#4-5", ExpectedResult = "aa-4.54-5")]
+        [TestCase("#math;0/0#", ExpectedResult = "")]
+        [TestCase("#math;1/4#", ExpectedResult = "0.25")]
+        [TestCase("#math;1/3#", ExpectedResult = "0.3333333")]
+        [TestCase("#math;1/4;0.0#", ExpectedResult = "0.3")] // rounds up!
+        [TestCase("#math;1/3;0.000#", ExpectedResult = "0.333")]
+        [TestCase("#math;#math;1/3;0.00#*100#", ExpectedResult = "33")]
+        [TestCase("#math;12/3#", ExpectedResult = "4")]
+        [TestCase("#math;12%5#", ExpectedResult = "2")]
+        [TestCase("#math;12.6%5#", ExpectedResult = "2.6")]
+        public string ValidateMath(string input)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
             return _testDeck.TranslateString(input, _testLine, _testElement, false).String;

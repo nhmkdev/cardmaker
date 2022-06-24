@@ -62,8 +62,9 @@ namespace CardMaker.Card.Translation
         private static readonly Regex s_regexSubCardCounter = new Regex(@"(.*)(#sc;)(\d+)(;)(\d+)(;)(\d+)(#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexRepeat = new Regex(@"(.*)(#repeat;)(\d+)(;)(.+?)(#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexRandomNumber = new Regex(@"(.*)(#random;)(-?\d+)(;)(-?\d+)(#)(.*)", RegexOptions.Compiled);
-        private static readonly Regex s_regexMath = new Regex(@"(.*)(#math;)(.+?)(;)([+\-*/%])(;)(.+?)(#)(.*)", RegexOptions.Compiled);
-        private static readonly Regex s_regexFloatMath = new Regex(@"(.*)(#floatmath;)(.+?)(;)([+\-*/%])(;)(.+?)(;)(.*?)(#)(.*)", RegexOptions.Compiled);
+        private static readonly Regex s_regexMath =
+            new Regex(@"(.*)(#math;)([+-]?[0-9]*[.]?[0-9]+)([+\-*/%])([+-]?[0-9]*[.]?[0-9]+)[;]?(.*?)(#)(.*)",
+                RegexOptions.Compiled);
         private static readonly Regex s_regexIfLogic = new Regex(@"(.*)(#\()(if.*?)(\)#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexSwitchLogic = new Regex(@"(.*)(#\()(switch.*?)(\)#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexIfThenStatement = new Regex(@"(if)(.*?)\s([!=><]=|<|>)\s(.*?)(then )(.*)", RegexOptions.Compiled);
@@ -295,64 +296,24 @@ namespace CardMaker.Card.Translation
                            zMatch.Groups[7];
                 }));
 
-            // Translate math (int)
-            // Groups                 
-            //    1  2       3    4  5         6  7    8  9
-            //@"(.*)(#math;)(.+?)(;)([+\-*/%])(;)(.+?)(#)(.+?)"
+            // Translate math (float support)
+            // https://docs.microsoft.com/en-us/dotnet/standard/base-types/standard-numeric-format-strings
+            // Groups
+            //   1   2            3                  4         5                           6    7  8
+            //@"(.*)(#math;)([+-]?[0-9]*[.,]?[0-9]+)([+\-*/%])([+-]?[0-9]*[.,]?[0-9]+)[;]?(.*?)(#)(.*)"
             sOutput = LoopTranslateRegex(s_regexMath, sOutput, zElement,
                 (zMatch =>
                 {
                     var sResult = "";
-                    if (int.TryParse(zMatch.Groups[3].ToString(), out var nAValue) &&
-                        int.TryParse(zMatch.Groups[7].ToString(), out var nBValue))
+                    if (ParseUtil.ParseFloat(zMatch.Groups[3].ToString(), out var fAValue) &&
+                        ParseUtil.ParseFloat(zMatch.Groups[5].ToString(), out var fBValue))
                     {
                         try
                         {
-                            switch (zMatch.Groups[5].ToString()[0])
-                            {
-                                case '+':
-                                    sResult = (nAValue + nBValue).ToString();
-                                    break;
-                                case '-':
-                                    sResult = (nAValue - nBValue).ToString();
-                                    break;
-                                case '*':
-                                    sResult = (nAValue * nBValue).ToString();
-                                    break;
-                                case '/':
-                                    sResult = (nAValue / nBValue).ToString();
-                                    break;
-                                case '%':
-                                    sResult = (nAValue % nBValue).ToString();
-                                    break;
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            Logger.AddLogLine("Math int translator failed: {0}".FormatString(e));
-                        }
-                    }
-                    return zMatch.Groups[1] + sResult + zMatch.Groups[9];
-                }));
-
-            // Translate math (float)
-            // https://docs.microsoft.com/en-us/dotnet/standard/base-types/standard-numeric-format-strings
-            // Groups
-            //   1   2            3    4  5         6  7    8  9    10 11
-            //@"(.*)(#floatmath;)(.+?)(;)([+\-*/%])(;)(.+?)(;)(.+?)(#)(.*)"
-            sOutput = LoopTranslateRegex(s_regexFloatMath, sOutput, zElement,
-                (zMatch =>
-                {
-                    var sResult = "";
-                    if (float.TryParse(zMatch.Groups[3].ToString(), out var fAValue) &&
-                        float.TryParse(zMatch.Groups[7].ToString(), out var fBValue))
-                    {
-                        try
-                        {
-                            var sFormat = zMatch.Groups[9].ToString();
+                            var sFormat = zMatch.Groups[6].ToString();
                             var bUseFormat = !string.IsNullOrWhiteSpace(sFormat);
                             float fResult = 0;
-                            switch (zMatch.Groups[5].ToString()[0])
+                            switch (zMatch.Groups[4].ToString()[0])
                             {
                                 case '+':
                                     fResult = fAValue + fBValue;
@@ -370,6 +331,9 @@ namespace CardMaker.Card.Translation
                                     }
                                     fResult = fAValue / fBValue;
                                     break;
+                                case '%':
+                                    fResult = fAValue % fBValue;
+                                    break;
                             }
 
                             sResult = bUseFormat
@@ -381,7 +345,7 @@ namespace CardMaker.Card.Translation
                             Logger.AddLogLine("Math float translator failed: {0}".FormatString(e));
                         }
                     }
-                    return zMatch.Groups[1] + sResult + zMatch.Groups[11];
+                    return zMatch.Groups[1] + sResult + zMatch.Groups[8];
                 }));
 
 
