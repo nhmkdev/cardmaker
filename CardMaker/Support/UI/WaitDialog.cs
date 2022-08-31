@@ -176,10 +176,10 @@ namespace Support.UI
             const int LABEL_Y_ADJUST = 8;
             const int INDENT = 8;
             const int PROGRESS_HEIGHT = 24;
-            const int PROGRESS_WIDTH_ADJUST = 22;
+            const int PROGRESS_WIDTH_ADJUST = 32;
             const int LABEL_WIDTH_ADJUST = 16;
             const int LABEL_SINGLELINE_HEIGHT = 12;
-            const int LOWER_WINDOW_BUFFER = 32;
+            const int LOWER_WINDOW_BUFFER = 48;
 
             if (0 != nProgressBarCount)
             {

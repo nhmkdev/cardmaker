@@ -350,7 +350,7 @@ namespace Support.UI
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(456, 353);
+            this.ClientSize = new System.Drawing.Size(464, 369);
             this.Controls.Add(this.panelColorBG);
             this.Controls.Add(this.numericAlpha);
             this.Controls.Add(this.checkBoxAddZeroX);
@@ -371,9 +371,9 @@ namespace Support.UI
             this.Controls.Add(this.pictureColorHue);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(472, 392);
+            this.MaximumSize = new System.Drawing.Size(480, 408);
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(472, 392);
+            this.MinimumSize = new System.Drawing.Size(480, 408);
             this.Name = "RGBColorSelectDialog";
             this.Text = "Select Color";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.RGBColorSelectDialog_FormClosing);
