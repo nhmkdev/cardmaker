@@ -22,10 +22,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-Current Known Mono Issues (Lightly tested in Ubuntu 12.04 LTS)
+Current Known Mono Issues (Lightly tested in Ubuntu 20.04.1 LTS)
 -------------------------
-I installed mono using this: "sudo apt-get install mono-complete"
-
+I installed mono using the following commands: 
+sudo apt-get install mono-complete
 sudo apt-get install libcanberra-gtk-module
 
 In OSX you can try the following: 1) Install mono 2) install XQuartz (provides Windows.Forms support)
