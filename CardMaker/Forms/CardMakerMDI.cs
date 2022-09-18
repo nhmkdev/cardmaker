@@ -45,6 +45,7 @@ using PdfSharp;
 using Support.IO;
 using Support.Progress;
 using Support.UI;
+using Support.Util;
 using LayoutEventArgs = CardMaker.Events.Args.LayoutEventArgs;
 
 namespace CardMaker.Forms
@@ -71,7 +72,7 @@ namespace CardMaker.Forms
 
             m_sFileOpenFilter = "CMP files (*.cmp)|*.cmp|All files (*.*)|*.*";
 
-            Icon = Properties.Resources.CardMakerIcon;
+            Icon = CardMakerResources.CardMakerIcon;
 
             CardMakerInstance.ApplicationIcon = Icon;
             CardMakerInstance.ApplicationForm = this;
@@ -525,7 +526,7 @@ namespace CardMaker.Forms
             string sHelpFile = CardMakerInstance.StartupPath + "Card_Maker.pdf";
             if (File.Exists(sHelpFile))
             {
-                Process.Start(sHelpFile);
+                ProcessUtil.StartProcess(sHelpFile);
             }
         }
 
@@ -534,7 +535,7 @@ namespace CardMaker.Forms
             string sSampleFile = CardMakerInstance.StartupPath + "Card_Maker_Basic_Project.pdf";
             if (File.Exists(sSampleFile))
             {
-                Process.Start(sSampleFile);
+                ProcessUtil.StartProcess(sSampleFile);
             }
         }
 
@@ -546,7 +547,7 @@ namespace CardMaker.Forms
         private void illegalFilenameCharacterReplacementToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var zQuery = new QueryPanelDialog("Illegal File Name Character Replacement", 350, false);
-            zQuery.SetIcon(Properties.Resources.CardMakerIcon);
+            zQuery.SetIcon(CardMakerResources.CardMakerIcon);
             var arrayBadChars = FilenameTranslator.DISALLOWED_FILE_CHARS_ARRAY;
             var arrayReplacementChars = CardMakerSettings.IniManager.GetValue(IniSettings.ReplacementChars, string.Empty).Split(new char[] { CardMakerConstants.CHAR_FILE_SPLIT });
             if (arrayReplacementChars.Length == FilenameTranslator.DISALLOWED_FILE_CHARS_ARRAY.Length)
@@ -585,7 +586,7 @@ namespace CardMaker.Forms
             LayoutTemplateManager.Instance.LayoutTemplates.ForEach(x => listItems.Add(x.ToString()));
 
             var zQuery = new QueryPanelDialog("Remove Layout Templates", 450, false);
-            zQuery.SetIcon(Properties.Resources.CardMakerIcon);
+            zQuery.SetIcon(CardMakerResources.CardMakerIcon);
             zQuery.AddLabel("Select the templates to remove.", 20);
             zQuery.AddListBox("Templates", listItems.ToArray(), null, true, 240, TEMPLATE)
                 .Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
@@ -814,7 +815,7 @@ namespace CardMaker.Forms
                 m_bPdfExportLastOpen &&
                 File.Exists(m_sPdfExportLastFile))
             {
-                Process.Start(m_sPdfExportLastFile);
+                ProcessUtil.StartProcess(m_sPdfExportLastFile);
             }
         }
 

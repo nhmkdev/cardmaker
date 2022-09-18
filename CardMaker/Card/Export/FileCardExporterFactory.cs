@@ -22,12 +22,7 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
 using System.Drawing.Imaging;
-using System.IO;
-using System.Linq;
-using System.Windows.Forms;
 using CardMaker.Data;
 using CardMaker.Events.Managers;
 using CardMaker.Forms;
@@ -73,7 +68,7 @@ namespace CardMaker.Card.Export
         private static CardExportBase BuildProjectExporter()
         {
             var zQuery = new QueryPanelDialog("Export to Images", 750, false);
-            zQuery.SetIcon(Properties.Resources.CardMakerIcon);
+            zQuery.SetIcon(CardMakerResources.CardMakerIcon);
 
             var sDefinition = ProjectManager.Instance.LoadedProject.exportNameFormat; // default to the project level definition
             var nDefaultFormatIndex = GetLastFormatIndex();
@@ -118,7 +113,7 @@ namespace CardMaker.Card.Export
         private static CardExportBase BuildLayoutExporter()
         {
             var zQuery = new QueryPanelDialog("Export to Images", 750, false);
-            zQuery.SetIcon(Properties.Resources.CardMakerIcon);
+            zQuery.SetIcon(CardMakerResources.CardMakerIcon);
 
             var sDefinition = LayoutManager.Instance.ActiveLayout.exportNameFormat;
             var nDefaultFormatIndex = GetLastFormatIndex();
@@ -164,7 +159,7 @@ namespace CardMaker.Card.Export
         public static CardExportBase BuildImageExporter()
         {
             var zQuery = new QueryPanelDialog("Export Image", 750, false);
-            zQuery.SetIcon(Properties.Resources.CardMakerIcon);
+            zQuery.SetIcon(CardMakerResources.CardMakerIcon);
 
             var sDefinition = LayoutManager.Instance.ActiveLayout.exportNameFormat;
             var nDefaultFormatIndex = GetLastFormatIndex();

@@ -26,6 +26,7 @@ using System;
 using System.Diagnostics;
 using System.Windows.Forms;
 using CardMaker.Data;
+using Support.Util;
 
 namespace CardMaker.Forms
 {
@@ -54,7 +55,7 @@ namespace CardMaker.Forms
 
         private void btnBrowse_Click(object sender, EventArgs e)
         {
-            Process.Start(GOOGLE_AUTH_URL);
+            ProcessUtil.StartProcess(GOOGLE_AUTH_URL);
         }
 
         private void btnPaste_Click(object sender, EventArgs e)

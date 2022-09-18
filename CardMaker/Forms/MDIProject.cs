@@ -22,24 +22,18 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Windows.Forms;
 using CardMaker.Card.Import;
 using CardMaker.Data;
 using CardMaker.Events.Args;
 using CardMaker.Events.Managers;
 using CardMaker.Forms.Dialogs;
-using CardMaker.Properties;
 using CardMaker.XML;
 using ClosedXML.Excel;
 using Support.Google.Sheets;
 using Support.IO;
 using Support.UI;
+using Support.Util;
 using LayoutEventArgs = CardMaker.Events.Args.LayoutEventArgs;
 
 namespace CardMaker.Forms
@@ -188,7 +182,7 @@ namespace CardMaker.Forms
             const string DPI = "dpi";
 
             var zQuery = new QueryPanelDialog("New Layout", 450, false);
-            zQuery.SetIcon(Resources.CardMakerIcon);
+            zQuery.SetIcon(CardMakerResources.CardMakerIcon);
             zQuery.AddTextBox("Name", "New Layout", false, NAME);
             zQuery.AddNumericBox("Width", 300, 1, Int32.MaxValue, WIDTH);
             zQuery.AddNumericBox("Height", 300, 1, Int32.MaxValue, HEIGHT);
@@ -215,7 +209,7 @@ namespace CardMaker.Forms
             LayoutTemplateManager.Instance.LayoutTemplates.ForEach(x => listTemplateNames.Add(x.ToString()));
 
             var zQuery = new QueryPanelDialog("Select Layout Template", 600, false);
-            zQuery.SetIcon(Resources.CardMakerIcon);
+            zQuery.SetIcon(CardMakerResources.CardMakerIcon);
             zQuery.AddTextBox("New Layout Name", "New Layout", false, NAME);
             zQuery.AddNumericBox("Number to create", 1, 1, 256, COUNT);
             var zTxtFilter = zQuery.AddTextBox("Template Filter", string.Empty, false, TEMPLATE + NAME);
@@ -262,7 +256,7 @@ namespace CardMaker.Forms
             const string NAME = "name";
             //const string COPY_REFS = "copy_refs";
             var zQuery = new QueryPanelDialog("Template Name", 450, 80, false);
-            zQuery.SetIcon(Resources.CardMakerIcon);
+            zQuery.SetIcon(CardMakerResources.CardMakerIcon);
             zQuery.AddTextBox("Name", "New Template", false, NAME);
             // TODO: is there really a case where the refs should be copied?
             //zQuery.AddCheckBox("Copy References", false, COPY_REFS);
@@ -463,7 +457,7 @@ namespace CardMaker.Forms
             Type typeObj = treeView.SelectedNode.Tag.GetType();
             var sExistingFormat = string.Empty;
             var zQuery = new QueryPanelDialog("Configure Layout Export", 550, 300, false);
-            zQuery.SetIcon(Resources.CardMakerIcon);
+            zQuery.SetIcon(CardMakerResources.CardMakerIcon);
 
             if (typeof(Project) == typeObj)
             {
@@ -605,12 +599,7 @@ namespace CardMaker.Forms
         private void windowsExplorerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if(string.IsNullOrWhiteSpace(ProjectManager.Instance.ProjectPath)) return;
-            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
-            {
-                FileName = ProjectManager.Instance.ProjectPath,
-                UseShellExecute = true,
-                Verb = "open"
-            });
+            ProcessUtil.StartProcess(ProjectManager.Instance.ProjectPath, "open");
         }
 
 #endregion

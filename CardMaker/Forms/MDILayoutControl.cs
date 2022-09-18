@@ -134,7 +134,7 @@ namespace CardMaker.Forms
         {
             const string ELEMNAME = "ELEMNAME";
             var zQuery = new QueryPanelDialog("Add Element", 400, false);
-            zQuery.SetIcon(Properties.Resources.CardMakerIcon);
+            zQuery.SetIcon(CardMakerResources.CardMakerIcon);
             zQuery.AddLabel("Element Names are broken up by a line.", 24);
             zQuery.AddMultiLineTextBox("Element Name(s)", string.Empty, 200, ELEMNAME);
 
@@ -158,7 +158,7 @@ namespace CardMaker.Forms
 
             const string ELEMNAME = "ELEMNAME";
             var zQuery = new QueryPanelDialog("Duplicate Element", 400, false);
-            zQuery.SetIcon(Properties.Resources.CardMakerIcon);
+            zQuery.SetIcon(CardMakerResources.CardMakerIcon);
             zQuery.AddLabel("Duplicate Element Names are broken up by a line.", 24);
             zQuery.AddMultiLineTextBox("Element Name(s)", string.Empty, 200, ELEMNAME);
             if (1 < listViewElements.SelectedItems.Count)
@@ -269,7 +269,7 @@ namespace CardMaker.Forms
             }
 
             var zQuery = new QueryPanelDialog("Rename", 350, false);
-            zQuery.SetIcon(Properties.Resources.CardMakerIcon);
+            zQuery.SetIcon(CardMakerResources.CardMakerIcon);
             zQuery.AddTextBox("Name: ", zElement.name, false, NAME);
             if (DialogResult.OK == zQuery.ShowDialog(this))
             {
@@ -437,7 +437,7 @@ namespace CardMaker.Forms
                     {
                         const string ELEMENT_NAMES = "ELEMENT_NAMES";
                         var zQuery = new QueryPanelDialog("Duplicate Elements Rename", 400, false);
-                        zQuery.SetIcon(Properties.Resources.CardMakerIcon);
+                        zQuery.SetIcon(CardMakerResources.CardMakerIcon);
                         zQuery.AddLabel("Each line has the name of an element to be pasted.", 24);
                         zQuery.AddLabel("Duplicated element names are marked with *", 24);
                         zQuery.AddMultiLineTextBox("Element Name(s)",

@@ -1,583 +1,65 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
-  <Import Project="..\packages\Microsoft.ClearScript.V8.Native.win-x64.7.3.1\build\Microsoft.ClearScript.V8.Native.win-x64.props" Condition="Exists('..\packages\Microsoft.ClearScript.V8.Native.win-x64.7.3.1\build\Microsoft.ClearScript.V8.Native.win-x64.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{49AB3FC5-596A-4B33-963C-C16E1862AF16}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CardMaker</RootNamespace>
-    <AssemblyName>CardMaker</AssemblyName>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
     <StartupObject>CardMaker.Program</StartupObject>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <UpgradeBackupLocation>
-    </UpgradeBackupLocation>
-    <OldToolsVersion>3.5</OldToolsVersion>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <ApplicationIcon>Resources\CardMakerIcon.ico</ApplicationIcon>
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile />
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <AssemblyVersion>1.2.0.0</AssemblyVersion>
+    <FileVersion>1.2.0.0</FileVersion>
+    <ApplicationIcon>CardMakerIcon.ico</ApplicationIcon>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="ClearScript.Core, Version=7.3.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.ClearScript.Core.7.3.1\lib\net471\ClearScript.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="ClearScript.V8, Version=7.3.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.ClearScript.V8.7.3.1\lib\net471\ClearScript.V8.dll</HintPath>
-    </Reference>
-    <Reference Include="ClearScript.V8.ICUData, Version=7.3.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.ClearScript.V8.ICUData.7.3.1\lib\netstandard1.0\ClearScript.V8.ICUData.dll</HintPath>
-    </Reference>
-    <Reference Include="ClosedXML, Version=0.95.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ClosedXML.0.95.4\lib\net46\ClosedXML.dll</HintPath>
-    </Reference>
-    <Reference Include="DocumentFormat.OpenXml, Version=2.16.0.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
-      <HintPath>..\packages\DocumentFormat.OpenXml.2.16.0\lib\net46\DocumentFormat.OpenXml.dll</HintPath>
-    </Reference>
-    <Reference Include="ExcelNumberFormat, Version=1.1.0.0, Culture=neutral, PublicKeyToken=23c6f5d73be07eca, processorArchitecture=MSIL">
-      <HintPath>..\packages\ExcelNumberFormat.1.1.0\lib\net20\ExcelNumberFormat.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.Apis, Version=1.57.0.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.1.57.0\lib\net45\Google.Apis.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.Apis.Auth, Version=1.57.0.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.Auth.1.57.0\lib\net461\Google.Apis.Auth.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.Apis.Auth.PlatformServices, Version=1.57.0.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.Auth.1.57.0\lib\net461\Google.Apis.Auth.PlatformServices.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.Apis.Core, Version=1.57.0.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.Core.1.57.0\lib\net45\Google.Apis.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.Apis.Drive.v3, Version=1.57.0.2684, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.Drive.v3.1.57.0.2684\lib\net45\Google.Apis.Drive.v3.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.Apis.PlatformServices, Version=1.57.0.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.1.57.0\lib\net45\Google.Apis.PlatformServices.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.Apis.Sheets.v4, Version=1.57.0.2720, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.Sheets.v4.1.57.0.2720\lib\net45\Google.Apis.Sheets.v4.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="PdfSharp">
-      <HintPath>..\3rdParty\PDFsharp\GDI+\PdfSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.IO, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IO.4.3.0\lib\net462\System.IO.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.IO.FileSystem.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IO.FileSystem.Primitives.4.3.0\lib\net46\System.IO.FileSystem.Primitives.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.IO.Packaging, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IO.Packaging.6.0.0\lib\net461\System.IO.Packaging.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Management" />
-    <Reference Include="System.Net" />
-    <Reference Include="System.Net.Http, Version=4.1.1.3, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Net.Http.4.3.4\lib\net46\System.Net.Http.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Runtime, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.4.3.0\lib\net462\System.Runtime.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Security.Cryptography.Algorithms, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Security.Cryptography.Algorithms.4.3.0\lib\net463\System.Security.Cryptography.Algorithms.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Security.Cryptography.Encoding, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Security.Cryptography.Encoding.4.3.0\lib\net46\System.Security.Cryptography.Encoding.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Security.Cryptography.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Security.Cryptography.Primitives.4.3.0\lib\net46\System.Security.Cryptography.Primitives.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Security.Cryptography.X509Certificates, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Security.Cryptography.X509Certificates.4.3.0\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.ServiceModel.Web" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase" />
+    <Content Include="CardMakerIcon.ico" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="CardMakerBuild.cs" />
-    <Compile Include="Card\CardCanvas.cs">
-      <SubType>UserControl</SubType>
+    <PackageReference Include="ClosedXML" Version="0.96.0" />
+    <PackageReference Include="ExcelNumberFormat" Version="1.1.0" />
+    <PackageReference Include="Google.Apis.Drive.v3" Version="1.57.0.2789" />
+    <PackageReference Include="Google.Apis.Sheets.v4" Version="1.57.0.2727" />
+    <PackageReference Include="Microsoft.ClearScript.V8" Version="7.3.1" />
+    <PackageReference Include="PDFsharp-gdi" Version="1.50.5147" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="CardMakerResources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CardMakerResources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Card\CardPathUtil.cs" />
-    <Compile Include="Card\CardRenderer.cs" />
-    <Compile Include="Card\CommandLine\CommandLineEnumerations.cs" />
-    <Compile Include="Card\CommandLine\CommandLineExporterBase.cs" />
-    <Compile Include="Card\CommandLine\CommandLineProcessor.cs" />
-    <Compile Include="Card\CommandLine\CommandLineUtil.cs" />
-    <Compile Include="Card\CommandLine\ConsoleLogger.cs" />
-    <Compile Include="Card\CommandLine\ImageCommandLineExporter.cs" />
-    <Compile Include="Card\CommandLine\PDFCommandLineExporter.cs" />
-    <Compile Include="Card\Deck.cs" />
-    <Compile Include="Card\DeckLine.cs" />
-    <Compile Include="Card\DeckReader.cs" />
-    <Compile Include="Card\DrawFormattedText.cs" />
-    <Compile Include="Card\DrawGraphic.cs" />
-    <Compile Include="Card\DrawTextGraphics.cs" />
-    <Compile Include="Card\DrawTextTextRenderer.cs" />
-    <Compile Include="Card\Export\FileCardClipboardExporter.cs" />
-    <Compile Include="Card\Export\FileCardSingleExporter.cs" />
-    <Compile Include="Card\Export\FileCardExporterFactory.cs" />
-    <Compile Include="Card\Export\Pdf\LeftAlignPdfRowExporter.cs" />
-    <Compile Include="Card\Export\Pdf\PdfSharpExportData.cs" />
-    <Compile Include="Card\Export\Pdf\RightAlignPdfRowExporter.cs" />
-    <Compile Include="Card\Export\Pdf\CenterAlignPdfRowExporter.cs" />
-    <Compile Include="Card\Export\Pdf\PdfRowExporter.cs" />
-    <Compile Include="Card\FontLoader.cs" />
-    <Compile Include="Card\FormattedText\Alignment\AlignmentController.cs" />
-    <Compile Include="Card\FormattedText\Alignment\HorizontalLeftAlignmentProcessor.cs" />
-    <Compile Include="Card\FormattedText\Alignment\HorizontalRightAlignmentProcessor.cs" />
-    <Compile Include="Card\FormattedText\Alignment\HorizontalCenterAlignmentProcessor.cs" />
-    <Compile Include="Card\FormattedText\Alignment\HorizontalJustifiedAlignmentProcessor.cs" />
-    <Compile Include="Card\FormattedText\Alignment\HorizontalAlignmentProcessor.cs" />
-    <Compile Include="Card\FormattedText\Alignment\VerticalAlignmentProcessor.cs" />
-    <Compile Include="Card\FormattedText\Alignment\VerticalTopAlignmentProcessor.cs" />
-    <Compile Include="Card\FormattedText\Alignment\VerticalBottomAlignmentProcessor.cs" />
-    <Compile Include="Card\FormattedText\Alignment\VerticalMiddleAlignmentProcessor.cs" />
-    <Compile Include="Card\FormattedText\FormattedTextParser.cs" />
-    <Compile Include="Card\FormattedText\Markup\AlignCenterMarkup.cs" />
-    <Compile Include="Card\FormattedText\Markup\AlignLeftMarkup.cs" />
-    <Compile Include="Card\FormattedText\Markup\AlignRightMarkup.cs" />
-    <Compile Include="Card\FormattedText\Markup\BaseAlignMarkup.cs" />
-    <Compile Include="Card\FormattedText\Markup\ImageColorMarkup.cs" />
-    <Compile Include="Card\FormattedText\Markup\BaseImageMarkup.cs" />
-    <Compile Include="Card\FormattedText\Markup\LineSpaceMarkup.cs" />
-    <Compile Include="Card\FormattedText\Markup\MarginHorizontalMarkupBase.cs" />
-    <Compile Include="Card\FormattedText\Markup\MarginRightMarkup.cs" />
-    <Compile Include="Card\FormattedText\Markup\MarkupUtil.cs" />
-    <Compile Include="Card\FormattedText\Markup\PixelMarkup.cs" />
-    <Compile Include="Card\FormattedText\Markup\MarginLeftMarkup.cs" />
-    <Compile Include="Card\IDrawFormattedText.cs" />
-    <Compile Include="Card\IDrawGraphic.cs" />
-    <Compile Include="Card\IDrawText.cs" />
-    <Compile Include="Card\ElementString.cs" />
-    <Compile Include="Card\Export\CardExportBase.cs" />
-    <Compile Include="Card\Export\Pdf\PdfSharpExporter.cs" />
-    <Compile Include="Card\FormattedText\Markup\BackgroundColorMarkup.cs" />
-    <Compile Include="Card\FormattedText\Markup\BackgroundImageMarkup.cs" />
-    <Compile Include="Card\FormattedText\Markup\FontMarkup.cs" />
-    <Compile Include="Card\FormattedText\Markup\PushMarkup.cs" />
-    <Compile Include="Card\FormattedText\Markup\CloseTagMarkup.cs" />
-    <Compile Include="Card\FormattedText\Markup\ImageMarkup.cs" />
-    <Compile Include="Card\FormattedText\Markup\XDrawOffsetMarkup.cs" />
-    <Compile Include="Card\FormattedText\Markup\SpaceMarkup.cs" />
-    <Compile Include="Card\FormattedText\Markup\FontColorMarkup.cs" />
-    <Compile Include="Card\FormattedText\Markup\FontSizeMarkup.cs" />
-    <Compile Include="Card\FormattedText\Markup\FontStyleMarkup.cs" />
-    <Compile Include="Card\FormattedText\FormattedTextData.cs" />
-    <Compile Include="Card\FormattedText\FormattedTextDataCache.cs" />
-    <Compile Include="Card\FormattedText\FormattedTextProcessData.cs" />
-    <Compile Include="Card\FormattedText\Markup\MarkupBase.cs" />
-    <Compile Include="Card\FormattedText\Markup\MarkupValueBase.cs" />
-    <Compile Include="Card\FormattedText\Markup\NewlineMarkup.cs" />
-    <Compile Include="Card\FormattedText\Markup\TextMarkup.cs" />
-    <Compile Include="Card\FormattedText\Markup\YDrawOffsetMarkup.cs" />
-    <Compile Include="Card\Export\CompilerCardExporter.cs" />
-    <Compile Include="Card\Export\FileCardExporter.cs" />
-    <Compile Include="Card\IInlineBackgroundElementProcessor.cs" />
-    <Compile Include="Card\ImageCache.cs" />
-    <Compile Include="Card\Import\CSVReferenceReader.cs" />
-    <Compile Include="Card\Import\ExcelReferenceReader.cs" />
-    <Compile Include="Card\Import\ExcelSpreadsheetReference.cs" />
-    <Compile Include="Card\Import\GoogleReferenceReader.cs" />
-    <Compile Include="Card\Import\GoogleSpreadsheetReference.cs" />
-    <Compile Include="Card\Import\ReferenceReader.cs" />
-    <Compile Include="Card\Import\ReferenceReaderFactory.cs" />
-    <Compile Include="Card\InlineBackgroundElementProcessor.cs" />
-    <Compile Include="Card\MeasurementUtil.cs" />
-    <Compile Include="Card\Render\InputElementRenderProcessor.cs" />
-    <Compile Include="Card\Render\IElementRenderProcessor.cs" />
-    <Compile Include="Card\Render\BackgroundColorElementRenderProcessor.cs" />
-    <Compile Include="Card\Render\InlineElementRenderProcessor.cs" />
-    <Compile Include="Card\Render\BorderElementRenderProcessor.cs" />
-    <Compile Include="Card\Render\TypeElementRenderProcessor.cs" />
-    <Compile Include="Card\Render\TransformElementRenderProcessor.cs" />
-    <Compile Include="Card\Shapes\Definitions\TriangleShape.cs" />
-    <Compile Include="Card\Shapes\IShapeRenderer.cs" />
-    <Compile Include="Card\Shapes\ShapeInfo.cs" />
-    <Compile Include="Card\Translation\FilenameTranslator.cs" />
-    <Compile Include="Card\Translation\InceptTranslator.cs" />
-    <Compile Include="Card\Translation\JavascriptHostFunctions.cs" />
-    <Compile Include="Card\Translation\JavaScriptTranslator.cs" />
-    <Compile Include="Card\Translation\TranslatorBase.cs" />
-    <Compile Include="Card\Translation\TranslatorFactory.cs" />
-    <Compile Include="Card\Translation\ITranslatorFactory.cs" />
-    <Compile Include="Data\CardMakerConstants.cs" />
-    <Compile Include="Data\CardMakerInstance.cs" />
-    <Compile Include="Data\CardMakerSettings.cs" />
-    <Compile Include="Data\ElementPosition.cs" />
-    <Compile Include="Data\Enumerations.cs" />
-    <Compile Include="Data\LayoutTemplateManager.cs" />
-    <Compile Include="Events\Args\DeckChangeEventArgs.cs" />
-    <Compile Include="Events\Args\ElementEventArgs.cs" />
-    <Compile Include="Events\Args\ExportEventArgs.cs" />
-    <Compile Include="Events\Args\GoogleAuthEventArgs.cs" />
-    <Compile Include="Events\Args\IssueCardInfoEventArgs.cs" />
-    <Compile Include="Events\Args\IssueElementEventArgs.cs" />
-    <Compile Include="Events\Args\IssueMessageEventArgs.cs" />
-    <Compile Include="Events\Args\IssueRefreshEventArgs.cs" />
-    <Compile Include="Events\Args\LayoutElementNumericAdjustEventArgs.cs" />
-    <Compile Include="Events\Args\LayoutEventArgs.cs" />
-    <Compile Include="Events\Args\ProjectEventArgs.cs" />
-    <Compile Include="Events\Managers\AutoSaveManager.cs" />
-    <Compile Include="Events\Managers\ExportManager.cs" />
-    <Compile Include="Events\Managers\GoogleAuthManager.cs" />
-    <Compile Include="Events\Managers\InitializationManager.cs" />
-    <Compile Include="Forms\CardMakerMDI.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\CardMakerMDI.Designer.cs">
-      <DependentUpon>CardMakerMDI.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\Dialogs\ExcelSheetSelectionDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\Dialogs\ExcelSheetSelectionDialog.Designer.cs">
-      <DependentUpon>ExcelSheetSelectionDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\Dialogs\ProjectSettingsDialog.cs" />
-    <Compile Include="Forms\FormUtils.cs" />
-    <Compile Include="Forms\GoogleCredentialsDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\GoogleCredentialsDialog.Designer.cs">
-      <DependentUpon>GoogleCredentialsDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Events\Managers\IssueManager.cs" />
-    <Compile Include="Forms\MDIDefines.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\MDIDefines.Designer.cs">
-      <DependentUpon>MDIDefines.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\MDIIssues.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\MDIIssues.Designer.cs">
-      <DependentUpon>MDIIssues.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\MDICanvas.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\MDICanvas.Designer.cs">
-      <DependentUpon>MDICanvas.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\MDIElementControl.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\MDIElementControl.Designer.cs">
-      <DependentUpon>MDIElementControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\MDILayoutControl.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\MDILayoutControl.Designer.cs">
-      <DependentUpon>MDILayoutControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\MDILogger.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\MDILogger.Designer.cs">
-      <DependentUpon>MDILogger.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\MDIProject.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\MDIProject.Designer.cs">
-      <DependentUpon>MDIProject.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\ProjectManagerUI.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\ProjectManagerUI.Designer.cs">
-      <DependentUpon>ProjectManagerUI.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Program.cs" />
-    <Compile Include="Support\3rdParty\PhotoshopFile\AlphaChannels.cs" />
-    <Compile Include="Support\3rdParty\PhotoshopFile\BinaryReverseReader.cs" />
-    <Compile Include="Support\3rdParty\PhotoshopFile\ImageDecoderBitmaps.cs" />
-    <Compile Include="Support\3rdParty\PhotoshopFile\ImageResource.cs" />
-    <Compile Include="Support\3rdParty\PhotoshopFile\Layer.cs" />
-    <Compile Include="Support\3rdParty\PhotoshopFile\PsdFile.cs" />
-    <Compile Include="Support\3rdParty\PhotoshopFile\ResolutionInfo.cs" />
-    <Compile Include="Support\3rdParty\PhotoshopFile\Thumbnail.cs" />
-    <Compile Include="Support\3rdParty\SimpleJson\SimpleJson.cs" />
-    <Compile Include="Support\Google\GoogleApi.cs" />
-    <Compile Include="Support\Google\GoogleInitializerFactory.cs" />
-    <Compile Include="Support\Google\Sheets\GoogleSheetInfo.cs" />
-    <Compile Include="Support\Google\Sheets\GoogleSpreadsheet.cs" />
-    <Compile Include="Support\Google\Sheets\GoogleSpreadsheetBrowser.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Support\Google\Sheets\GoogleSpreadsheetBrowser.Designer.cs">
-      <DependentUpon>GoogleSpreadsheetBrowser.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Support\IO\CSVFile.cs" />
-    <Compile Include="Support\IO\INIManager.cs" />
-    <Compile Include="Support\IO\IOUtils.cs" />
-    <Compile Include="Support\IO\Logger.cs" />
-    <Compile Include="Support\IO\SerializationUtils.cs" />
-    <Compile Include="Support\Progress\ConsoleProgressReporter.cs" />
-    <Compile Include="Support\Progress\ProgressReporterProxy.cs" />
-    <Compile Include="Support\Progress\WaitDialogLineProgressReporterFactory.cs" />
-    <Compile Include="Support\Progress\ConsoleProgressReporterFactory.cs" />
-    <Compile Include="Support\Progress\ProgressReporterFactory.cs" />
-    <Compile Include="Support\Progress\IProgressReporter.cs" />
-    <Compile Include="Support\UI\AbstractDirtyForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Support\UI\Extensions.cs" />
-    <Compile Include="Support\UI\ListViewAssist.cs" />
-    <Compile Include="Support\UI\ListViewDoubleBuffer.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Support\UI\ListViewItemComparer.cs" />
-    <Compile Include="Support\UI\PanelEx.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Support\UI\QueryPanel.cs" />
-    <Compile Include="Support\UI\QueryPanelDialog.cs" />
-    <Compile Include="Support\UI\RGBColorSelectDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Support\UI\RGBColorSelectDialog.Designer.cs">
-      <DependentUpon>RGBColorSelectDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Support\UI\UserAction.cs" />
-    <Compile Include="Support\UI\WaitDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Support\UI\Win32.cs" />
-    <Compile Include="Support\Util\CommandLineParser.cs" />
-    <Compile Include="Support\Util\ParseUtil.cs" />
-    <Compile Include="Support\Util\TimeMeasure.cs" />
-    <Compile Include="Events\Managers\ElementManager.cs" />
-    <Compile Include="Events\Managers\LayoutManager.cs" />
-    <Compile Include="Events\Managers\ProjectManager.cs" />
-    <Compile Include="XML\Project.cs" />
-    <Compile Include="XML\ProjectLayout.cs" />
-    <Compile Include="XML\ProjectLayoutElement.cs" />
-    <Compile Include="XML\ProjectLayoutReference.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Forms\CardMakerMDI.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>CardMakerMDI.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Dialogs\ExcelSheetSelectionDialog.resx">
-      <DependentUpon>ExcelSheetSelectionDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\GoogleCredentialsDialog.resx">
-      <DependentUpon>GoogleCredentialsDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\MDIDefines.resx">
-      <DependentUpon>MDIDefines.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\MDIIssues.resx">
-      <DependentUpon>MDIIssues.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\MDICanvas.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>MDICanvas.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\MDIElementControl.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>MDIElementControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\MDILayoutControl.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>MDILayoutControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\MDILogger.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>MDILogger.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\MDIProject.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>MDIProject.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ProjectManagerUI.resx">
-      <DependentUpon>ProjectManagerUI.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="Support\Google\Sheets\GoogleSpreadsheetBrowser.resx">
-      <DependentUpon>GoogleSpreadsheetBrowser.cs</DependentUpon>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="CardMakerResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>CardMakerResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Support\UI\RGBColorSelectDialog.resx">
-      <DependentUpon>RGBColorSelectDialog.cs</DependentUpon>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="app.config" />
-    <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <Compile Include="Card\Shapes\AbstractShape.cs" />
-    <Compile Include="Card\Shapes\Definitions\EllipseShape.cs" />
-    <Compile Include="Card\Shapes\Definitions\GridShape.cs" />
-    <Compile Include="Card\Shapes\Definitions\RectShape.cs" />
-    <Compile Include="Card\Shapes\Definitions\RoundedRectShape.cs" />
-    <Compile Include="Card\Shapes\ShapeManager.cs" />
-    <Compile Include="XML\LayoutTemplate.cs" />
-    <None Include="Support\3rdParty\PhotoshopFile\LICENSE" />
-    <None Include="Support\3rdParty\SimpleJson\LICENSE" />
   </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\CardMakerIcon.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Resources\CustomAlign.ico" />
-    <Content Include="Resources\HorizontalAlign.ico" />
-    <Content Include="Resources\HorizontalCustomAlign.ico" />
-    <Content Include="Resources\RotateCursor.ico" />
-    <Content Include="Resources\VerticalAlign.ico" />
-    <Content Include="Resources\VerticalCustomAlign.ico" />
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
-  <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
-    <PostBuildEvent>IF $(ConfigurationName) == Release (
-    DEL "$(SolutionDir)$(OutDir)*.zip"
-    COPY /Y "$(SolutionDir)\3rdParty\GoogleDataAPI\GData-LICENSE-2.0.txt" "$(TargetDir)\Licenses"
-    COPY /Y "$(SolutionDir)\3rdParty\PDFSharp\PDFSharp-License.txt" "$(TargetDir)\Licenses"
-    COPY /Y "$(SolutionDir)\3rdParty\ClearScript\*.license" "$(TargetDir)\Licenses"
-    "C:\Program Files\7-Zip\7z" a "$(TargetDir)CardMaker_X.X.X.X.zip" "$(TargetDir)CardMaker.ex*" "$(TargetDir)CardMaker_Mono.ex*" "$(TargetDir)*.dll" "$(TargetDir)Card_Maker.pdf"     "$(TargetDir)Card_Maker_Basic_Project.pdf"  "$(TargetDir)Card_Maker_JavaScript.pdf" "$(TargetDir)Sample" "$(TargetDir)Readme.txt" "$(TargetDir)History.txt" "$(TargetDir)Licenses"     "$(TargetDir)images" "$(TargetDir)templates" -tzip -mx5
-) ELSE (
-  echo "Debug Build. Nothing to do!"
-)
-</PostBuildEvent>
-  </PropertyGroup>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Microsoft.ClearScript.V8.Native.win-x64.7.3.1\build\Microsoft.ClearScript.V8.Native.win-x64.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.ClearScript.V8.Native.win-x64.7.3.1\build\Microsoft.ClearScript.V8.Native.win-x64.props'))" />
-  </Target>
+
 </Project>

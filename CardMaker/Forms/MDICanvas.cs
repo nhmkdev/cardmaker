@@ -145,11 +145,11 @@ namespace CardMaker.Forms
             ElementManager.Instance.ElementSelected += Element_Selected;
             ProjectManager.Instance.ProjectOpened += Project_Opened;
 
-            verticalCenterButton.Image = Properties.Resources.VerticalAlign.ToBitmap();
-            customVerticalAlignButton.Image = Properties.Resources.VerticalCustomAlign.ToBitmap();
-            horizontalCenterButton.Image = Properties.Resources.HorizontalAlign.ToBitmap();
-            customHoritonalAlignButton.Image = Properties.Resources.HorizontalCustomAlign.ToBitmap();
-            customAlignButton.Image = Properties.Resources.CustomAlign.ToBitmap();
+            verticalCenterButton.Image = CardMakerResources.VerticalAlign.ToBitmap();
+            customVerticalAlignButton.Image = CardMakerResources.VerticalCustomAlign.ToBitmap();
+            horizontalCenterButton.Image = CardMakerResources.HorizontalAlign.ToBitmap();
+            customHoritonalAlignButton.Image = CardMakerResources.HorizontalCustomAlign.ToBitmap();
+            customAlignButton.Image = CardMakerResources.CustomAlign.ToBitmap();
 
         }
 
@@ -1128,7 +1128,7 @@ namespace CardMaker.Forms
                     break;
                 case MouseMode.Rotate:
                     Text = "Canvas [Mode: Rotate-only]";
-                    Cursor = new Cursor(Properties.Resources.RotateCursor.Handle);
+                    Cursor = new Cursor(CardMakerResources.RotateCursor.Handle);
                     break;
             }
 

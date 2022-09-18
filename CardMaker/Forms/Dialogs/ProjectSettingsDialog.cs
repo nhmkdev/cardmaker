@@ -22,12 +22,9 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Windows.Forms;
 using CardMaker.Card.Import;
 using CardMaker.Data;
 using CardMaker.Events.Managers;
-using CardMaker.Properties;
 using Support.Google.Sheets;
 using Support.UI;
 
@@ -45,7 +42,7 @@ namespace CardMaker.Forms.Dialogs
             const string JS_KEEP_FUNCTIONS = "js_keep_functions";
 
             var zQuery = new QueryPanelDialog("Project Settings", 550, 300, true);
-            zQuery.SetIcon(Resources.CardMakerIcon);
+            zQuery.SetIcon(CardMakerResources.CardMakerIcon);
 
             TranslatorType eTranslator = ProjectManager.Instance.LoadedProjectTranslatorType;
             ReferenceType eDefaultDefineReferenceType = ProjectManager.Instance.LoadedProjectDefaultDefineReferenceType;

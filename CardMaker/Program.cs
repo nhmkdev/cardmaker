@@ -22,8 +22,6 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Windows.Forms;
 using CardMaker.Card.CommandLine;
 using CardMaker.Card.Shapes;
 using CardMaker.Data;
@@ -32,16 +30,18 @@ using CardMaker.Forms;
 using Support.Progress;
 using Support.UI;
 using Support.Util;
+using System.Text;
 
 namespace CardMaker
 {
-    public static class Program
+    internal static class Program
     {
         // this is primarily here for the functional tests of the command line (repeating them breaks things)
         static Program()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             Initialize();
         }
 

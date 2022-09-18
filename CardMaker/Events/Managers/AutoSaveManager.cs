@@ -33,7 +33,7 @@ namespace CardMaker.Events.Managers
     {
         private static AutoSaveManager m_zInstance;
 
-        private Timer m_zTimer;
+        private System.Timers.Timer m_zTimer;
         private AbstractDirtyForm m_zAbstractDirtyForm;
 
         public static AutoSaveManager Instance => m_zInstance ?? (m_zInstance = new AutoSaveManager());
@@ -46,7 +46,7 @@ namespace CardMaker.Events.Managers
         public void Init(AbstractDirtyForm zAbstractDirtyForm)
         {
             m_zAbstractDirtyForm = zAbstractDirtyForm;
-            m_zTimer = new Timer(GetTimeInterval())
+            m_zTimer = new System.Timers.Timer(GetTimeInterval())
             {
                 AutoReset = true,
                 Enabled = CardMakerSettings.AutoSaveEnabled
