@@ -21,7 +21,8 @@
     <PackageReference Include="ExcelNumberFormat" Version="1.1.0" />
     <PackageReference Include="Google.Apis.Drive.v3" Version="1.57.0.2789" />
     <PackageReference Include="Google.Apis.Sheets.v4" Version="1.57.0.2727" />
-    <PackageReference Include="Microsoft.ClearScript.V8" Version="7.3.1" />
+    <PackageReference Include="Microsoft.ClearScript.V8" Version="7.3.2" />
+    <PackageReference Include="Microsoft.ClearScript.V8.Native.win-x64" Version="7.3.2" />
     <PackageReference Include="PDFsharp-gdi" Version="1.50.5147" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
   </ItemGroup>
