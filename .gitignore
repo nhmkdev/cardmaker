@@ -21,7 +21,22 @@
 /CardMaker/bin/Release/*.zip
 /CardMaker/bin/Release/*.config
 /CardMaker/bin/Release/CardMaker.vshost.*
+/CardMaker/bin/Release/net6.0-windows/de/
+/CardMaker/bin/Release/net6.0-windows/Licenses/
+/CardMaker/bin/Release/net6.0-windows/CardMaker.deps.json
+/CardMaker/bin/Release/net6.0-windows/CardMaker.runtimeconfig.json
+/CardMaker/bin/Release/net6.0-windows/*.exe
+/CardMaker/bin/Release/net6.0-windows/*.ini
+/CardMaker/bin/Release/net6.0-windows/*.pdf
+/CardMaker/bin/Release/net6.0-windows/*.cmp
+/CardMaker/bin/Release/net6.0-windows/*.xml
+/CardMaker/bin/Release/net6.0-windows/*.pdb
+/CardMaker/bin/Release/net6.0-windows/*.dll
+/CardMaker/bin/Release/net6.0-windows/*.zip
+/CardMaker/bin/Release/net6.0-windows/*.config
+/CardMaker/bin/Release/net6.0-windows/CardMaker.vshost.*
 /CardMaker/obj/
+CardMaker/Properties/launchSettings.json
 /CardMaker/CardMaker.csproj.user
 /CardMaker/Test/UnitTest/bin/
 /CardMaker/Test/UnitTest/obj/
@@ -29,3 +44,5 @@
 CardMaker.sln.DotSettings.user
 
 \.vs/
+UnitTest/bin
+UnitTest/obj
