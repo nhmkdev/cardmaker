@@ -26,3 +26,5 @@ CardMaker/Properties/launchSettings.json
 CardMaker.sln.DotSettings.user
 
 \.vs/
+UnitTest/bin
+UnitTest/obj

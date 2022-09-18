@@ -34,7 +34,7 @@ using System.Text;
 
 namespace CardMaker
 {
-    internal static class Program
+    public static class Program
     {
         // this is primarily here for the functional tests of the command line (repeating them breaks things)
         static Program()
