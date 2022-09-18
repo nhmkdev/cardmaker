@@ -14,7 +14,7 @@ namespace UnitTest.CommandLine
     internal class CommandLineTest
     {
         private const string UnitTestFolder = @"unit_test_temp\";
-        private const string ProjectFile = @"bin\Release\Sample\sample_project.cmp";
+        private const string ProjectFile = @"CardMaker\bin\Release\net6.0-windows\Sample\sample_project.cmp";
         private const string PdfFile = "unit_test.pdf";
         private string m_sProjectRoot = string.Empty;
         private string m_sTestTemp = string.Empty;
@@ -42,7 +42,6 @@ namespace UnitTest.CommandLine
             Directory.Delete(m_sTestTemp, true);
         }
 
-        [Ignore("NET upgrade nightmares")]
         [Test]
         public void ExecutePDFExport()
         {
@@ -58,7 +57,6 @@ namespace UnitTest.CommandLine
             Assert.IsTrue(File.Exists(sPdfExport));
         }
 
-        [Ignore("NET upgrade nightmares")]
         [Test]
         public void ExecutePNGExport()
         {
@@ -74,7 +72,6 @@ namespace UnitTest.CommandLine
             AssertFileRangeExistence(m_sTestTemp, "Default_", ".png", 1, 18);
         }
 
-        [Ignore("NET upgrade nightmares")]
         [Test]
         public void ExecuteRangePNGExport()
         {
