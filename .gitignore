@@ -46,3 +46,4 @@ CardMaker.sln.DotSettings.user
 \.vs/
 UnitTest/bin
 UnitTest/obj
+CardMaker/CardMaker_Mono.csproj.user
