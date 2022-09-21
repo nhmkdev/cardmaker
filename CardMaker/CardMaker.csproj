@@ -36,6 +36,7 @@
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <BaseIntermediateOutputPath>.\cardmaker_obj</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -539,7 +540,7 @@
     COPY /Y "$(SolutionDir)\3rdParty\GoogleDataAPI\GData-LICENSE-2.0.txt" "$(TargetDir)\Licenses"
     COPY /Y "$(SolutionDir)\3rdParty\PDFSharp\PDFSharp-License.txt" "$(TargetDir)\Licenses"
     COPY /Y "$(SolutionDir)\3rdParty\ClearScript\*.license" "$(TargetDir)\Licenses"
-    "C:\Program Files\7-Zip\7z" a "$(TargetDir)CardMaker_X.X.X.X.zip" "$(TargetDir)CardMaker.ex*" "$(TargetDir)CardMaker_Mono.ex*" "$(TargetDir)*.dll" "$(TargetDir)Card_Maker.pdf"     "$(TargetDir)Card_Maker_Basic_Project.pdf"  "$(TargetDir)Card_Maker_JavaScript.pdf" "$(TargetDir)Sample" "$(TargetDir)Readme.txt" "$(TargetDir)History.txt" "$(TargetDir)Licenses"     "$(TargetDir)images" "$(TargetDir)templates" -tzip -mx5
+    "C:\Program Files\7-Zip\7z" a "$(TargetDir)CardMaker_X.X.X.X.zip" "$(TargetDir)CardMaker.ex*" "$(TargetDir)CardMaker_Mono.ex*" "$(TargetDir)*.dll" "$(TargetDir)*.so" "$(TargetDir)Card_Maker.pdf"     "$(TargetDir)Card_Maker_Basic_Project.pdf"  "$(TargetDir)Card_Maker_JavaScript.pdf" "$(TargetDir)Sample" "$(TargetDir)Readme.txt" "$(TargetDir)History.txt" "$(TargetDir)Licenses"     "$(TargetDir)images" "$(TargetDir)templates" -tzip -mx5
 ) ELSE (
   echo "Debug Build. Nothing to do!"
 )

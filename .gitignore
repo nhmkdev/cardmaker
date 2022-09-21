@@ -47,3 +47,6 @@ CardMaker.sln.DotSettings.user
 UnitTest/bin
 UnitTest/obj
 CardMaker/CardMaker_Mono.csproj.user
+CardMaker/cardmaker_obj
+CardMaker/cardmaker_mono_obj
+CardMaker/bin/Release/ClearScriptV8.linux-x64.so
