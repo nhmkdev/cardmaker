@@ -28,8 +28,6 @@ I installed mono using the following commands:
 sudo apt-get install mono-complete
 sudo apt-get install libcanberra-gtk-module
 
-In OSX you can try the following: 1) Install mono 2) install XQuartz (provides Windows.Forms support)
-
 1) If you use a text object with a non-zero outline thickness the text may draw incorrectly.
 This is the only remaining issue that I had no resolution for when evaluating the executable
 through MoMA (Mono Migration Analyzer). See the details below.

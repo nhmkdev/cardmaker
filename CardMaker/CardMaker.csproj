@@ -520,6 +520,9 @@
     <PackageReference Include="Microsoft.ClearScript.V8.Native.win-x64">
       <Version>7.3.2</Version>
     </PackageReference>
+    <PackageReference Include="PDFsharp-gdi">
+      <Version>1.50.5147</Version>
+    </PackageReference>
     <PackageReference Include="System.IO.Packaging">
       <Version>7.0.0-rc.1.22426.10</Version>
     </PackageReference>
