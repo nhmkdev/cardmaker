@@ -30,7 +30,6 @@ using CardMaker.Card.FormattedText.Alignment;
 using CardMaker.Card.FormattedText.Markup;
 using CardMaker.XML;
 using Support.IO;
-using Support.UI;
 
 namespace CardMaker.Card
 {

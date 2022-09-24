@@ -22,17 +22,11 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-// define USE_BUILT_IN_JSON at the project level to use the .NET Json functionality (requires System.Web.Services under references)
-
 using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Xml.Serialization;
-
-#if USE_BUILT_IN_JSON
-using System.Runtime.Serialization.Json;
-#endif
 
 namespace Support.IO
 {
@@ -67,38 +61,6 @@ namespace Support.IO
             return (T)bFormatter.Deserialize(zStream);
         }
 
-#if USE_BUILT_IN_JSON
-        public static string SerializeJson<T>(T tObject)
-        {
-            DataContractJsonSerializer serializer
-                    = new DataContractJsonSerializer(typeof(T));
-
-            using (MemoryStream ms = new MemoryStream())
-            {
-                try
-                {
-                    serializer.WriteObject(ms, tObject);
-                    return Encoding.Default.GetString(ms.ToArray());
-                }
-                catch (Exception) { }
-            }
-            return null;
-        }
-
-        public static T DeserializeJson<T>(string sJson, Encoding zEncoding)
-        {
-            try
-            {
-                using (MemoryStream zStream = new MemoryStream(zEncoding.GetBytes(sJson)))
-                {
-                    DataContractJsonSerializer zSerializer = new DataContractJsonSerializer(typeof(T));
-                    return (T)zSerializer.ReadObject(zStream);
-                }
-            }
-            catch (Exception) { }
-            return default(T);
-        }
-#endif
         public static bool DeserializeFromXmlString<T>(string sInput, Encoding zEncoding, ref T obj)
         {
             try

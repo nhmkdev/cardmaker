@@ -24,7 +24,6 @@
 
 using System.Xml.Serialization;
 using CardMaker.Card.Import;
-using CardMaker.Data;
 
 namespace CardMaker.XML
 {

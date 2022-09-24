@@ -25,16 +25,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using CardMaker.Card;
 using CardMaker.Data;
 using CardMaker.Events.Args;
+using CardMaker.Forms;
 using CardMaker.XML;
 using Support.IO;
 using Support.UI;
-using LayoutEventArgs = CardMaker.Events.Args.LayoutEventArgs;
 
 namespace CardMaker.Events.Managers
 {
@@ -95,7 +94,7 @@ namespace CardMaker.Events.Managers
 
         public void FireLayoutSelectRequested(ProjectLayout zLayout)
         {
-            LayoutSelectRequested?.Invoke(this, new LayoutEventArgs(zLayout));
+            LayoutSelectRequested?.Invoke(this, new ProjectLayoutEventArgs(zLayout));
         }
 
         public void FireDeckIndexChangeRequested(int nIdx)
@@ -109,7 +108,7 @@ namespace CardMaker.Events.Managers
         /// </summary>
         public void FireLayoutUpdatedEvent(bool bDataChanged)
         {
-            LayoutUpdated?.Invoke(this, new LayoutEventArgs(ActiveLayout, ActiveDeck, bDataChanged));
+            LayoutUpdated?.Invoke(this, new ProjectLayoutEventArgs(ActiveLayout, ActiveDeck, bDataChanged));
         }
 
         /// <summary>
@@ -117,7 +116,7 @@ namespace CardMaker.Events.Managers
         /// </summary>
         public void FireLayoutRenderUpdatedEvent()
         {
-            LayoutRenderUpdated?.Invoke(this, new LayoutEventArgs(ActiveLayout));
+            LayoutRenderUpdated?.Invoke(this, new ProjectLayoutEventArgs(ActiveLayout));
         }
 
         /// <summary>
@@ -175,7 +174,7 @@ namespace CardMaker.Events.Managers
                 ActiveDeck.SetAndLoadLayout(ActiveLayout, false, null);
             }
 
-            LayoutLoaded?.Invoke(this, new LayoutEventArgs(ActiveLayout, ActiveDeck));
+            LayoutLoaded?.Invoke(this, new ProjectLayoutEventArgs(ActiveLayout, ActiveDeck));
         }
 
         /// <summary>
@@ -242,8 +241,7 @@ namespace CardMaker.Events.Managers
         /// <param name="zLayout">The base layout to adjust or duplicate</param>
         public static void ShowAdjustLayoutSettingsDialog(bool bCreateNew, ProjectLayout zLayout, Form zParentForm)
         {
-            var zQuery = new QueryPanelDialog(bCreateNew ? "Duplicate Layout (Custom)" : "Resize Layout", 450, false);
-            zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
+            var zQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog(bCreateNew ? "Duplicate Layout (Custom)" : "Resize Layout", 450, false));
             const string LAYOUT_NAME = "layoutName";
 
             const string RESIZE_ADJUST_DIMENSIONS = "Dimensions";

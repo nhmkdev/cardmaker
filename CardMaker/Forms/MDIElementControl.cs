@@ -653,8 +653,7 @@ namespace CardMaker.Forms
                     case ElementType.Text:
                         contextMenuStripAssist.Items.Add("Add Counter...", null, (os, ea) =>
                         {
-                            var zQuery = new QueryPanelDialog("Add Counter", 450, false);
-                            zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
+                            var zQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("Add Counter", 450, false));
                             const string INIT_VALUE = "initialValue";
                             const string MULT_VALUE = "multValue";
                             const string PAD_VALUE = "padValue";

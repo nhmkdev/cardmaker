@@ -26,8 +26,6 @@ using System;
 using System.Collections.Generic;
 using CardMaker.Data;
 using CardMaker.Events.Managers;
-using Support.IO;
-using Support.UI;
 
 namespace CardMaker.Card.Translation
 {

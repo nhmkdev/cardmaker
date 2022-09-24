@@ -30,7 +30,6 @@ using CardMaker.Card.Export;
 using CardMaker.Data;
 using CardMaker.Events.Managers;
 using PdfSharp;
-using Support.UI;
 using Support.Util;
 
 namespace CardMaker.Card.CommandLine

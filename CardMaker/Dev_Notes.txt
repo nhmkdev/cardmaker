@@ -1,0 +1,4 @@
+Project Files
+---
+https://learn.microsoft.com/en-us/previous-versions/visualstudio/visual-studio-2015/msbuild/common-msbuild-project-properties?view=vs-2015&redirectedfrom=MSDN
+- <BaseIntermediateOutputPath> is set to have different obj folders per project

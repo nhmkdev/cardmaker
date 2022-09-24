@@ -24,7 +24,6 @@
 
 using System.Collections.Generic;
 using System.Drawing;
-using CardMaker.Data;
 using CardMaker.XML;
 
 namespace CardMaker.Card.FormattedText.Markup

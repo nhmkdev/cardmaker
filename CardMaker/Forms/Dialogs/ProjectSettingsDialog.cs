@@ -44,8 +44,7 @@ namespace CardMaker.Forms.Dialogs
             const string JS_TILDE_CODE = "js_tilde_code";
             const string JS_KEEP_FUNCTIONS = "js_keep_functions";
 
-            var zQuery = new QueryPanelDialog("Project Settings", 550, 300, true);
-            zQuery.SetIcon(Resources.CardMakerIcon);
+            var zQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("Project Settings", 550, 300, true));
 
             TranslatorType eTranslator = ProjectManager.Instance.LoadedProjectTranslatorType;
             ReferenceType eDefaultDefineReferenceType = ProjectManager.Instance.LoadedProjectDefaultDefineReferenceType;

@@ -27,9 +27,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using CardMaker.Data;
+using CardMaker.Events.Args;
 using CardMaker.Events.Managers;
 using Support.UI;
-using LayoutEventArgs = CardMaker.Events.Args.LayoutEventArgs;
 
 namespace CardMaker.Forms
 {
@@ -60,7 +60,7 @@ namespace CardMaker.Forms
 
         #region manager events
 
-        void Layout_Loaded(object sender, LayoutEventArgs args)
+        void Layout_Loaded(object sender, ProjectLayoutEventArgs args)
         {
             listViewDefines.Items.Clear();
 

@@ -28,7 +28,6 @@ using System.Threading;
 using System.Windows.Forms;
 using CardMaker.Data;
 using Support.IO;
-using Support.UI;
 
 namespace CardMaker.Card.Export
 {

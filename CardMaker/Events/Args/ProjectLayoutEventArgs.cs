@@ -22,45 +22,41 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-
-using System;
 using CardMaker.Card;
 using CardMaker.XML;
 
 namespace CardMaker.Events.Args
 {
-    public delegate void LayoutSelectRequested(object sender, LayoutEventArgs args);
+    public delegate void LayoutSelectRequested(object sender, ProjectLayoutEventArgs args);
 
-    public delegate void LayoutSelected(object sender, LayoutEventArgs args);
+    public delegate void LayoutLoaded(object sender, ProjectLayoutEventArgs args);
     
-    public delegate void LayoutLoaded(object sender, LayoutEventArgs args);
-    
-    public delegate void LayoutUpdated(object sender, LayoutEventArgs args);
+    public delegate void LayoutUpdated(object sender, ProjectLayoutEventArgs args);
 
-    public delegate void LayoutAdded(object sender, LayoutEventArgs args);
+    public delegate void LayoutAdded(object sender, ProjectLayoutEventArgs args);
 
     public delegate void LayoutRenamed(object sender, LayoutRenamedEventArgs args);
 
-    public class LayoutEventArgs
+    public class ProjectLayoutEventArgs
     {
         public ProjectLayout Layout { get; private set; }
         public Deck Deck { get; private set; }
         public bool DataChange { get; private set; }
 
-        public LayoutEventArgs(ProjectLayout zLayout, Deck zDeck, bool bDataChange)
+        public ProjectLayoutEventArgs(ProjectLayout zLayout, Deck zDeck, bool bDataChange)
         {
             Layout = zLayout;
             Deck = zDeck;
             DataChange = bDataChange;
         }
 
-        public LayoutEventArgs(ProjectLayout zLayout, Deck zDeck)
+        public ProjectLayoutEventArgs(ProjectLayout zLayout, Deck zDeck)
             : this(zLayout, zDeck, false)
         {
 
         }
 
-        public LayoutEventArgs(ProjectLayout zLayout)
+        public ProjectLayoutEventArgs(ProjectLayout zLayout)
             : this(zLayout, null, false)
         {
 

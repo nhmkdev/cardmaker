@@ -35,7 +35,6 @@ using CardMaker.Events.Managers;
 using CardMaker.XML;
 using Support.IO;
 using Support.UI;
-using LayoutEventArgs = CardMaker.Events.Args.LayoutEventArgs;
 
 namespace CardMaker.Forms
 {
@@ -272,14 +271,14 @@ namespace CardMaker.Forms
             Redraw();
         }
 
-        void Layout_Updated(object sender, LayoutEventArgs args)
+        void Layout_Updated(object sender, ProjectLayoutEventArgs args)
         {
             // pass the loaded deck into the renderer
             m_zCardCanvas.Reset(args.Deck);
             Redraw();
         }
 
-        void Layout_Loaded(object sender, LayoutEventArgs args)
+        void Layout_Loaded(object sender, ProjectLayoutEventArgs args)
         {
             // pass the loaded deck into the renderer
             m_zCardCanvas.Reset(args.Deck);
@@ -292,7 +291,7 @@ namespace CardMaker.Forms
             Redraw();
         }
 
-        void LayoutRender_Updated(object sender, LayoutEventArgs args)
+        void LayoutRender_Updated(object sender, ProjectLayoutEventArgs args)
         {
             Redraw();
         }
@@ -782,8 +781,7 @@ namespace CardMaker.Forms
             const string HORIZONTAL_SPACING = "horizontal_spacing";
             const string APPLY_ELEMENT_HEIGHTS = "apply_element_heights";
 
-            var zQuery = new QueryPanelDialog("Custom Align Elements", 450, 150, false);
-            zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
+            var zQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("Custom Align Elements", 450, 150, false));
 
             zQuery.AddNumericBox("Vertical Pixel Spacing", 0, int.MinValue, int.MaxValue, VERTICAL_SPACING);
             zQuery.AddCheckBox("Include Element Heights", false, APPLY_ELEMENT_HEIGHTS);
@@ -834,8 +832,7 @@ namespace CardMaker.Forms
             const string APPLY_ELEMENT_HEIGHTS = "apply_element_heights";
             const string ELEMENT_CENTERING = "element_centering";
 
-            var zQuery = new QueryPanelDialog("Custom Vertical Align Elements", 450, 150, false);
-            zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
+            var zQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("Custom Vertical Align Elements", 450, 150, false));
 
             zQuery.AddNumericBox("Vertical Pixel Spacing", 0, int.MinValue, int.MaxValue, VERTICAL_SPACING);
             zQuery.AddCheckBox("Include Element Heights", false, APPLY_ELEMENT_HEIGHTS);
@@ -905,8 +902,7 @@ namespace CardMaker.Forms
             const string APPLY_ELEMENT_WIDTHS = "apply_element_widths";
             const string ELEMENT_CENTERING = "element_centering";
 
-            var zQuery = new QueryPanelDialog("Custom Horizontal Align Elements", 450, 150, false);
-            zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
+            var zQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("Custom Horizontal Align Elements", 450, 150, false));
 
             zQuery.AddNumericBox("Horizontal Pixel Spacing", 0, int.MinValue, int.MaxValue, HORIZONTAL_SPACING);
             zQuery.AddCheckBox("Include Element Widths", false, APPLY_ELEMENT_WIDTHS);

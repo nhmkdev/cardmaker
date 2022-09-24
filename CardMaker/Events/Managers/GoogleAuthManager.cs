@@ -27,7 +27,6 @@ using System.Windows.Forms;
 using CardMaker.Data;
 using CardMaker.Events.Args;
 using CardMaker.Forms;
-using Support.IO;
 
 namespace CardMaker.Events.Managers
 {

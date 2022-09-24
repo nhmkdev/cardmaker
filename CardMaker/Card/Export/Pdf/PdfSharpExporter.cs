@@ -33,7 +33,6 @@ using CardMaker.XML;
 using PdfSharp;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
-using Support.IO;
 using Support.UI;
 
 namespace CardMaker.Card.Export.Pdf

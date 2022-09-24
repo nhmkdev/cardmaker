@@ -31,7 +31,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Windows.Forms;
 using CardMaker.Card.Export;
 using CardMaker.Card.Export.Pdf;
@@ -43,9 +42,8 @@ using CardMaker.Forms.Dialogs;
 using CardMaker.XML;
 using PdfSharp;
 using Support.IO;
-using Support.Progress;
 using Support.UI;
-using LayoutEventArgs = CardMaker.Events.Args.LayoutEventArgs;
+using Support.Util;
 
 namespace CardMaker.Forms
 {
@@ -366,7 +364,7 @@ namespace CardMaker.Forms
 
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var zQuery = new QueryPanelDialog(
+            var zQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog(
                 "CardMaker Settings",
                 450, 
                 250,
@@ -375,8 +373,7 @@ namespace CardMaker.Forms
 #else
                 false
 #endif
-                );
-            zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
+                ));
             zQuery.SetMaxHeight(600);
 #if !MONO_BUILD
             zQuery.AddTab("General");
@@ -405,8 +402,6 @@ namespace CardMaker.Forms
             zQuery.AddTab("AutoSave");
             zQuery.AddCheckBox("Enable AutoSave", CardMakerSettings.AutoSaveEnabled, IniSettings.AutoSaveEnabled);
             zQuery.AddNumericBox("AutoSave Interval (Minutes)", CardMakerSettings.AutoSaveIntervalMinutes, 1, 60, 1, 0, IniSettings.AutoSaveIntervalMinutes);
-
-            zQuery.SetIcon(Icon);
 
             if (DialogResult.OK == zQuery.ShowDialog(this))
             {
@@ -465,7 +460,7 @@ namespace CardMaker.Forms
                 return;
             }
 
-            var zQuery = new QueryPanelDialog("Select Layouts To Import", 500, false);
+            var zQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("Select Layouts To Import", 500, false));
             const string LAYOUT_QUERY_KEY = "layoutquerykey";
             zQuery.AddListBox("Layouts", zProject.Layout.ToList().Select(projectLayout => projectLayout.Name).ToArray(), null, true, 400, LAYOUT_QUERY_KEY);
             if (DialogResult.OK == zQuery.ShowDialog(this))
@@ -525,7 +520,7 @@ namespace CardMaker.Forms
             string sHelpFile = CardMakerInstance.StartupPath + "Card_Maker.pdf";
             if (File.Exists(sHelpFile))
             {
-                Process.Start(sHelpFile);
+                ProcessUtil.StartProcess(sHelpFile);
             }
         }
 
@@ -534,7 +529,7 @@ namespace CardMaker.Forms
             string sSampleFile = CardMakerInstance.StartupPath + "Card_Maker_Basic_Project.pdf";
             if (File.Exists(sSampleFile))
             {
-                Process.Start(sSampleFile);
+                ProcessUtil.StartProcess(sSampleFile);
             }
         }
 
@@ -545,8 +540,7 @@ namespace CardMaker.Forms
 
         private void illegalFilenameCharacterReplacementToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var zQuery = new QueryPanelDialog("Illegal File Name Character Replacement", 350, false);
-            zQuery.SetIcon(Properties.Resources.CardMakerIcon);
+            var zQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("Illegal File Name Character Replacement", 350, false));
             var arrayBadChars = FilenameTranslator.DISALLOWED_FILE_CHARS_ARRAY;
             var arrayReplacementChars = CardMakerSettings.IniManager.GetValue(IniSettings.ReplacementChars, string.Empty).Split(new char[] { CardMakerConstants.CHAR_FILE_SPLIT });
             if (arrayReplacementChars.Length == FilenameTranslator.DISALLOWED_FILE_CHARS_ARRAY.Length)
@@ -584,8 +578,7 @@ namespace CardMaker.Forms
             var listItems = new List<string>();
             LayoutTemplateManager.Instance.LayoutTemplates.ForEach(x => listItems.Add(x.ToString()));
 
-            var zQuery = new QueryPanelDialog("Remove Layout Templates", 450, false);
-            zQuery.SetIcon(Properties.Resources.CardMakerIcon);
+            var zQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("Remove Layout Templates", 450, false));
             zQuery.AddLabel("Select the templates to remove.", 20);
             zQuery.AddListBox("Templates", listItems.ToArray(), null, true, 240, TEMPLATE)
                 .Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
@@ -677,7 +670,7 @@ namespace CardMaker.Forms
             }
         }
 
-        void Layout_Updated(object sender, LayoutEventArgs e)
+        void Layout_Updated(object sender, ProjectLayoutEventArgs e)
         {
             if (e.DataChange)
             {
@@ -685,7 +678,7 @@ namespace CardMaker.Forms
             }
         }
 
-        void Layout_Loaded(object sender, LayoutEventArgs e)
+        void Layout_Loaded(object sender, ProjectLayoutEventArgs e)
         {
             UserAction.ClearUndoRedoStacks();
         }
@@ -745,8 +738,7 @@ namespace CardMaker.Forms
 
         private void ExportViaPDFSharp(bool bExportAllLayouts)
         {
-            var zQuery = new QueryPanelDialog("Export to PDF (via PDFSharp)", 750, false);
-            zQuery.SetIcon(Icon);
+            var zQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("Export to PDF (via PDFSharp)", 750, false));
             const string ORIENTATION = "orientation";
             const string OUTPUT_FILE = "output_file";
             const string OPEN_ON_EXPORT = "open_on_export";
@@ -814,7 +806,7 @@ namespace CardMaker.Forms
                 m_bPdfExportLastOpen &&
                 File.Exists(m_sPdfExportLastFile))
             {
-                Process.Start(m_sPdfExportLastFile);
+                ProcessUtil.StartProcess(m_sPdfExportLastFile);
             }
         }
 

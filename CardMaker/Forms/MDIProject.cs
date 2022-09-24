@@ -40,7 +40,7 @@ using ClosedXML.Excel;
 using Support.Google.Sheets;
 using Support.IO;
 using Support.UI;
-using LayoutEventArgs = CardMaker.Events.Args.LayoutEventArgs;
+using Support.Util;
 
 namespace CardMaker.Forms
 {
@@ -77,7 +77,7 @@ namespace CardMaker.Forms
 
         #region manager events
 
-        void LayoutSelect_Requested(object sender, LayoutEventArgs args)
+        void LayoutSelect_Requested(object sender, ProjectLayoutEventArgs args)
         {
             if (null == m_tnCurrentLayout || (ProjectLayout)m_tnCurrentLayout.Tag != args.Layout)
             {
@@ -92,7 +92,7 @@ namespace CardMaker.Forms
             }
         }
 
-        void Layout_Added(object sender, LayoutEventArgs args)
+        void Layout_Added(object sender, ProjectLayoutEventArgs args)
         {
             AddProjectLayout(args.Layout);
         }
@@ -187,8 +187,7 @@ namespace CardMaker.Forms
             const string HEIGHT = "height";
             const string DPI = "dpi";
 
-            var zQuery = new QueryPanelDialog("New Layout", 450, false);
-            zQuery.SetIcon(Resources.CardMakerIcon);
+            var zQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("New Layout", 450, false));
             zQuery.AddTextBox("Name", "New Layout", false, NAME);
             zQuery.AddNumericBox("Width", 300, 1, Int32.MaxValue, WIDTH);
             zQuery.AddNumericBox("Height", 300, 1, Int32.MaxValue, HEIGHT);
@@ -214,8 +213,7 @@ namespace CardMaker.Forms
             var listTemplateNames = new List<string>();
             LayoutTemplateManager.Instance.LayoutTemplates.ForEach(x => listTemplateNames.Add(x.ToString()));
 
-            var zQuery = new QueryPanelDialog("Select Layout Template", 600, false);
-            zQuery.SetIcon(Resources.CardMakerIcon);
+            var zQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("Select Layout Template", 600, false));
             zQuery.AddTextBox("New Layout Name", "New Layout", false, NAME);
             zQuery.AddNumericBox("Number to create", 1, 1, 256, COUNT);
             var zTxtFilter = zQuery.AddTextBox("Template Filter", string.Empty, false, TEMPLATE + NAME);
@@ -261,8 +259,7 @@ namespace CardMaker.Forms
         {
             const string NAME = "name";
             //const string COPY_REFS = "copy_refs";
-            var zQuery = new QueryPanelDialog("Template Name", 450, 80, false);
-            zQuery.SetIcon(Resources.CardMakerIcon);
+            var zQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("Template Name", 450, 80, false));
             zQuery.AddTextBox("Name", "New Template", false, NAME);
             // TODO: is there really a case where the refs should be copied?
             //zQuery.AddCheckBox("Copy References", false, COPY_REFS);
@@ -368,10 +365,12 @@ namespace CardMaker.Forms
                 }
 
                 // Let the user select a sheet from the spreadsheet they selected
-                ExcelSheetSelectionDialog dialog = new ExcelSheetSelectionDialog(sheets);
-                if(dialog.ShowDialog() == DialogResult.OK)
+                const string EXCEL_SHEET_SELECT = "excel_sheet_select";
+                var zExcelSheetSelectionQueryDialog = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("Select Sheet", 400, false));
+                zExcelSheetSelectionQueryDialog.AddPullDownBox("Sheet", sheets.ToArray(), 0, EXCEL_SHEET_SELECT);
+                if (zExcelSheetSelectionQueryDialog.ShowDialog(this) == DialogResult.OK)
                 {
-                    tryToAddReferenceNode(ExcelSpreadsheetReference.generateFullReference(sFile, dialog.GetSelectedSheet()));
+                    tryToAddReferenceNode(ExcelSpreadsheetReference.generateFullReference(sFile, zExcelSheetSelectionQueryDialog.GetString(EXCEL_SHEET_SELECT)));
                 }
             }
         }
@@ -462,8 +461,7 @@ namespace CardMaker.Forms
 
             Type typeObj = treeView.SelectedNode.Tag.GetType();
             var sExistingFormat = string.Empty;
-            var zQuery = new QueryPanelDialog("Configure Layout Export", 550, 300, false);
-            zQuery.SetIcon(Resources.CardMakerIcon);
+            var zQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("Configure Layout Export", 550, 300, false));
 
             if (typeof(Project) == typeObj)
             {
@@ -605,12 +603,7 @@ namespace CardMaker.Forms
         private void windowsExplorerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if(string.IsNullOrWhiteSpace(ProjectManager.Instance.ProjectPath)) return;
-            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
-            {
-                FileName = ProjectManager.Instance.ProjectPath,
-                UseShellExecute = true,
-                Verb = "open"
-            });
+            ProcessUtil.StartProcess(ProjectManager.Instance.ProjectPath, "open");
         }
 
 #endregion

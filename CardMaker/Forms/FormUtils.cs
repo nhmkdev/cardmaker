@@ -24,6 +24,8 @@
 
 using System.Windows.Forms;
 using CardMaker.Data;
+using CardMaker.Properties;
+using Support.UI;
 
 namespace CardMaker.Forms
 {
@@ -61,6 +63,12 @@ namespace CardMaker.Forms
         public static void ShowErrorMessage(string sMessage)
         {
             MessageBox.Show(CardMakerInstance.ApplicationForm, sMessage, "CardMaker Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        public static QueryPanelDialog InitializeQueryPanelDialog(QueryPanelDialog zQueryPanelDialog)
+        {
+            zQueryPanelDialog.SetIcon(Resources.CardMakerIcon);
+            return zQueryPanelDialog;
         }
     }
 }

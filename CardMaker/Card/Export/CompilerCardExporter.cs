@@ -25,7 +25,6 @@
 using System.Drawing;
 using CardMaker.Data;
 using CardMaker.Events.Managers;
-using Support.UI;
 
 namespace CardMaker.Card.Export
 {

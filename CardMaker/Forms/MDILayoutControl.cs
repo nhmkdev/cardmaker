@@ -36,7 +36,6 @@ using CardMaker.Events.Managers;
 using CardMaker.XML;
 using Support.IO;
 using Support.UI;
-using LayoutEventArgs = CardMaker.Events.Args.LayoutEventArgs;
 
 namespace CardMaker.Forms
 {
@@ -107,7 +106,7 @@ namespace CardMaker.Forms
             ChangeElementOrder(args.Adjustment);
         }
 
-        void Layout_Updated(object sender, LayoutEventArgs args)
+        void Layout_Updated(object sender, ProjectLayoutEventArgs args)
         {
             RefreshLayoutControls(args.Layout);
             RefreshElementInformation();
@@ -121,7 +120,7 @@ namespace CardMaker.Forms
             }
         }
 
-        void ProjectLayout_Loaded(object sender, LayoutEventArgs args)
+        void ProjectLayout_Loaded(object sender, ProjectLayoutEventArgs args)
         {
             UpdateLayoutInfo(args.Layout);
         }
@@ -133,8 +132,7 @@ namespace CardMaker.Forms
         private void btnAddElement_Click(object sender, EventArgs e)
         {
             const string ELEMNAME = "ELEMNAME";
-            var zQuery = new QueryPanelDialog("Add Element", 400, false);
-            zQuery.SetIcon(Properties.Resources.CardMakerIcon);
+            var zQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("Add Element", 400, false));
             zQuery.AddLabel("Element Names are broken up by a line.", 24);
             zQuery.AddMultiLineTextBox("Element Name(s)", string.Empty, 200, ELEMNAME);
 
@@ -157,8 +155,7 @@ namespace CardMaker.Forms
             }
 
             const string ELEMNAME = "ELEMNAME";
-            var zQuery = new QueryPanelDialog("Duplicate Element", 400, false);
-            zQuery.SetIcon(Properties.Resources.CardMakerIcon);
+            var zQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("Duplicate Element", 400, false));
             zQuery.AddLabel("Duplicate Element Names are broken up by a line.", 24);
             zQuery.AddMultiLineTextBox("Element Name(s)", string.Empty, 200, ELEMNAME);
             if (1 < listViewElements.SelectedItems.Count)
@@ -268,8 +265,7 @@ namespace CardMaker.Forms
                 return;
             }
 
-            var zQuery = new QueryPanelDialog("Rename", 350, false);
-            zQuery.SetIcon(Properties.Resources.CardMakerIcon);
+            var zQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("Rename", 350, false));
             zQuery.AddTextBox("Name: ", zElement.name, false, NAME);
             if (DialogResult.OK == zQuery.ShowDialog(this))
             {
@@ -335,8 +331,7 @@ namespace CardMaker.Forms
                 return;
             }
             const string CARD_COUNT = "CARD_COUNT";
-            var zQuery = new QueryPanelDialog("Default Card Count", 240, false);
-            zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
+            var zQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("Default Card Count", 240, false));
             zQuery.AddNumericBox("Card Count", LayoutManager.Instance.ActiveDeck.CardLayout.defaultCount, 1, int.MaxValue, CARD_COUNT);
             if (DialogResult.OK == zQuery.ShowDialog(this))
             {
@@ -436,8 +431,7 @@ namespace CardMaker.Forms
                         zElement => dictionaryExistingElements.ContainsKey(zElement.name)))
                     {
                         const string ELEMENT_NAMES = "ELEMENT_NAMES";
-                        var zQuery = new QueryPanelDialog("Duplicate Elements Rename", 400, false);
-                        zQuery.SetIcon(Properties.Resources.CardMakerIcon);
+                        var zQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("Duplicate Elements Rename", 400, false));
                         zQuery.AddLabel("Each line has the name of an element to be pasted.", 24);
                         zQuery.AddLabel("Duplicated element names are marked with *", 24);
                         zQuery.AddMultiLineTextBox("Element Name(s)",
@@ -523,8 +517,7 @@ namespace CardMaker.Forms
                 return;
             }
             var zSourceElement = m_listClipboardElements[0];
-            var zQuery = new QueryPanelDialog("Apply Element Settings", 400, false);
-            zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
+            var zQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("Apply Element Settings", 400, false));
             const string SETTINGS_TO_COPY = "settings_to_copy";
 
             // TODO: if this ever expands to more fields just use a dictionary.contains
@@ -594,10 +587,9 @@ namespace CardMaker.Forms
 
         private void resize_Click(object sender, EventArgs e)
         {
-            var zQuery = new QueryPanelDialog("Resize Elements", 500, false);
+            var zQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("Resize Elements", 500, false));
             const string WIDTH_ADJUST = "widthadjust";
             const string HEIGHT_ADJUST = "heightadjust";
-            zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
             zQuery.AddNumericBox("Width Adjust", 0, -65536, 65536, WIDTH_ADJUST);
             zQuery.AddNumericBox("Height Adjust", 0, -65536, 65536, HEIGHT_ADJUST);
             if (DialogResult.OK == zQuery.ShowDialog(this))
@@ -610,10 +602,9 @@ namespace CardMaker.Forms
 
         private void btnScale_Click(object sender, EventArgs e)
         {
-            var zQuery = new QueryPanelDialog("Resize Elements", 500, false);
+            var zQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("Resize Elements", 500, false));
             const string WIDTH_ADJUST = "widthadjust";
             const string HEIGHT_ADJUST = "heightadjust";
-            zQuery.SetIcon(CardMakerInstance.ApplicationIcon);
             zQuery.AddNumericBox("Width Scale", 1, 0.001m, 1000, 0.001m, 3, WIDTH_ADJUST);
             zQuery.AddNumericBox("Height Scale", 1, 0.001m, 1000, 0.001m, 3, HEIGHT_ADJUST);
             if (DialogResult.OK == zQuery.ShowDialog(this))

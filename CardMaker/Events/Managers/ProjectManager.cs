@@ -22,7 +22,6 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -269,7 +268,7 @@ namespace CardMaker.Events.Managers
             var listLayouts = new List<ProjectLayout>(LoadedProject.Layout) {zLayout};
             LoadedProject.Layout = listLayouts.ToArray();
             LayoutManager.InitializeElementCache(zLayout);
-            LayoutAdded?.Invoke(this, new LayoutEventArgs(zLayout, null));
+            LayoutAdded?.Invoke(this, new ProjectLayoutEventArgs(zLayout, null));
             FireProjectUpdated(true);
         }
 
