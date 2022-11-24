@@ -69,7 +69,7 @@ namespace Support.Google
             {
                 AccessToken = AccessToken,
                 ExpiresInSeconds = TokenExpirationSeconds,
-                Issued = DateTime.Now
+                IssuedUtc = DateTime.UtcNow
             };
 
             var zUserCredential = new UserCredential(zAuthCodeFlow, Environment.UserName, zTokenResponse);
