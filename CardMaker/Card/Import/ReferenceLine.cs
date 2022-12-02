@@ -32,7 +32,6 @@ namespace CardMaker.Card.Import
         public string Source { get; private set; }
         public int LineNumber { get; private set; }
 
-#warning callers need to provide an actual line number
         public ReferenceLine(List<string> listEntries, string sSource, int nLineNumber)
         {
             Entries = listEntries;

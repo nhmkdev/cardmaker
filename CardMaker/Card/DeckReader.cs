@@ -115,7 +115,10 @@ namespace CardMaker.Card
                             {
                                 if (!string.IsNullOrEmpty(ProjectManager.Instance.ProjectFilePath))
                                 {
-                                    listAllProjectDefineLines = zRefReader.GetProjectDefineData(zReferenceData[0]);
+                                    // the the default project wide ref reader (may differ from the references themselves)
+                                    var zProjectDefineReader = ReferenceReaderFactory.GetDefineReader(
+                                        ProjectManager.Instance.LoadedProjectDefaultDefineReferenceType, m_zReporterProxy.ProgressReporter);
+                                    listAllProjectDefineLines = zProjectDefineReader.GetProjectDefineData() ?? new List<ReferenceLine>();
                                     if (listAllProjectDefineLines.Count == 0)
                                     {
                                         m_zReporterProxy.AddIssue(
@@ -392,33 +395,22 @@ namespace CardMaker.Card
         }
 
         /// <summary>
-        /// Populates the project defines based on the default reference type. If nothing is found on Google then attempt the local CSV.
+        /// Populates the project defines based on the default reference type. Always attempt the local CSV on zero data.
         /// </summary>
         /// <param name="listDefineLines"></param>
         private List<ReferenceLine> ReadDefaultProjectDefinitions()
         {
             m_zReporterProxy.ProgressReset(0, 2, 0);
             var listDefineLines = new List<ReferenceLine>();
-            ReferenceReader zRefReader;
-            if (ReferenceType.Google == ProjectManager.Instance.LoadedProjectDefaultDefineReferenceType)
-            {
-                zRefReader = ReferenceReaderFactory.GetDefineReader(ReferenceType.Google, m_zReporterProxy.ProgressReporter);
-                if (null != zRefReader)
-                {
-                    listDefineLines = zRefReader.GetProjectDefineData(null);
-                }
-            }
-#warning excel sheet not supported? also some dupe code...
-
+            var zRefReader = ReferenceReaderFactory.GetDefineReader(
+                ProjectManager.Instance.LoadedProjectDefaultDefineReferenceType, m_zReporterProxy.ProgressReporter);
+            listDefineLines = zRefReader.GetProjectDefineData() ?? new List<ReferenceLine>();
             m_zReporterProxy.ProgressStep();
-            // always attempt to load the local if nothing was pulled from google
-            if (0 == listDefineLines.Count)
+            // always attempt to load the local CSV if nothing was pulled from the other sources
+            if (0 == listDefineLines.Count && ProjectManager.Instance.LoadedProjectDefaultDefineReferenceType != ReferenceType.CSV)
             {
                 zRefReader = ReferenceReaderFactory.GetDefineReader(ReferenceType.CSV, m_zReporterProxy.ProgressReporter);
-                if (null != zRefReader)
-                {
-                    listDefineLines = zRefReader.GetProjectDefineData(null);
-                }
+                listDefineLines = zRefReader?.GetProjectDefineData() ?? new List<ReferenceLine>();
             }
             m_zReporterProxy.ProgressStep();
             return listDefineLines;

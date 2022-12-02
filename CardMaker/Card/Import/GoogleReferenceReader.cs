@@ -210,9 +210,9 @@ namespace CardMaker.Card.Import
             return GetData(GoogleSpreadsheetReference.parse(ReferencePath), 0);
         }
 
-        public override List<ReferenceLine> GetProjectDefineData(ProjectLayoutReference zReference)
+        public override List<ReferenceLine> GetProjectDefineData()
         {
-            if (null == ProjectManager.Instance.ProjectFilePath)
+            if (string.IsNullOrEmpty(ProjectManager.Instance.ProjectFilePath))
             {
                 return new List<ReferenceLine>();
             }
