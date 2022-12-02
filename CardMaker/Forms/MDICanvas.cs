@@ -269,6 +269,7 @@ namespace CardMaker.Forms
         void DeckIndex_Changed(object sender, DeckChangeEventArgs args)
         {
             Redraw();
+            UpdateFormText();
         }
 
         void Layout_Updated(object sender, ProjectLayoutEventArgs args)
@@ -1132,6 +1133,11 @@ namespace CardMaker.Forms
                 AutoSaveManager.Instance.IsEnabled()
                     ? "Enabled"
                     : "Disabled");
+            var zReferenceLine = m_zCardCanvas.CardRenderer?.CurrentDeck?.CurrentLine?.Reference;
+            if (zReferenceLine != null)
+            {
+                Text += " [Reference Line: {1} / {0}]".FormatString(zReferenceLine.Source, zReferenceLine.LineNumber);
+            }
         }
 
         private bool CheckAllSelectedElementsEnabled(bool bShowWarning)

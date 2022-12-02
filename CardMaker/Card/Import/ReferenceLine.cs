@@ -42,7 +42,7 @@ namespace CardMaker.Card.Import
 
         public static ReferenceLine CreateDefaultInternalReferenceLine(List<string> listEntries)
         {
-            return new ReferenceLine(listEntries, "CardMaker Generated", 0);
+            return new ReferenceLine(listEntries, "CardMaker Generated", 1);
         }
     }
 }

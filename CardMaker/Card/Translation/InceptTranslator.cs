@@ -172,6 +172,7 @@ namespace CardMaker.Card.Translation
             string sDefineValue;
             var sKey = zMatch.Groups[3].ToString().ToLower();
 
+#warning TODO: if there are many more this should be converted to a dictionary of methods
             // NOTE: if this expands into more variables move all this into some other method and use a dictionary lookup
             if (sKey.Equals("cardindex"))
             {
@@ -189,11 +190,17 @@ namespace CardMaker.Card.Translation
             {
                 sDefineValue = zTranslationContext.Element.name;
             }
-            else if (sKey.Equals("cardinfo"))
+            else if (sKey.Equals("refname"))
             {
                 sDefineValue = zTranslationContext.DeckLine.Reference == null 
                     ? "No reference info."
-                    : zTranslationContext.DeckLine.Reference.Source + "::" + zTranslationContext.DeckLine.Reference.LineNumber;
+                    : zTranslationContext.DeckLine.Reference.Source;
+            }
+            else if (sKey.Equals("refline"))
+            {
+                sDefineValue = zTranslationContext.DeckLine.Reference == null
+                    ? "No reference info."
+                    : zTranslationContext.DeckLine.Reference.LineNumber.ToString();
             }
             else
             {

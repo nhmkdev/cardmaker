@@ -25,6 +25,7 @@
 using CardMaker.Card;
 using CardMaker.XML;
 using System.Collections.Generic;
+using System.Linq;
 using CardMaker.Card.Import;
 using CardMaker.Card.Translation;
 using Support.Progress;
@@ -61,12 +62,16 @@ namespace UnitTest.DeckObject
             List<List<string>> listDefineLines,
             string sReferencePath)
         {
-#warning - line numbers would be nice instead of hard coded 0
-            new DeckReader(this, m_zReporterProxy).ProcessLines(listLines.ConvertAll(
-                x => new ReferenceLine(x, "TEST REFERENCE", 0)
-            ), listDefineLines.ConvertAll(
-                x => new ReferenceLine(x, "TEST DEFINE REFERENCE", 0)
-            ), false);
+            new DeckReader(this, m_zReporterProxy).ProcessLines(
+                ConvertToReferenceLines(listLines, "TEST REFERENCE"), 
+                ConvertToReferenceLines(listDefineLines,"TEST DEFINE REFERENCE"),
+                false);
+        }
+
+        private List<ReferenceLine> ConvertToReferenceLines(List<List<string>> listLines, string sRefName)
+        {
+            // line number is index + 1 (not quite accurate but not critical for test)
+            return listLines.Select((list, i) => new ReferenceLine(list, sRefName, i + 1)).ToList();
         }
 
         public string GetDefine(string key)
