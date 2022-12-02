@@ -50,10 +50,7 @@ namespace CardMaker.Card.Import
 
         private bool m_bCacheUpdated;
 
-        public GoogleReferenceReader()
-        {
-
-        }
+        public GoogleReferenceReader() { }
 
         public override ReferenceReader Initialize()
         {
@@ -136,15 +133,20 @@ namespace CardMaker.Card.Import
                    m_dictionaryDataCache.ContainsKey(GetCacheKey(ReferencePath, Deck.DEFINES_DATA_POSTFIX));
         }
 
-        public void GetData(GoogleSpreadsheetReference zReference, List<List<string>> listData, bool bRemoveFirstRow, string sNameAppend = "")
+        public List<ReferenceLine> GetData(GoogleSpreadsheetReference zReference, int nStartRow, string sNameAppend = "")
         {
             var sCacheKey = GetCacheKey(zReference.generateFullReference(), sNameAppend);
+            var listReferenceLines = new List<ReferenceLine>();
             List<List<string>> listCacheData;
             if (!CardMakerInstance.ForceDataCacheRefresh && m_dictionaryDataCache.TryGetValue(sCacheKey, out listCacheData))
             {
                 ProgressReporter.AddIssue("Loading {0} from local cache".FormatString(sCacheKey));
-                listData.AddRange(listCacheData);
-                return;
+                // The cache contains all rows
+                for (var nRow = nStartRow; nRow < listCacheData.Count; nRow++)
+                {
+                    listReferenceLines.Add(new ReferenceLine(listCacheData[nRow], zReference.SpreadsheetName, nRow));
+                }
+                return listReferenceLines;
             }
 
             var sSpreadsheetName = zReference.SpreadsheetName;
@@ -191,39 +193,36 @@ namespace CardMaker.Card.Import
             }
             else
             {
-                if (bRemoveFirstRow && listGoogleData.Count > 0)
-                {
-                    listGoogleData.RemoveAt(0);
-                }
-
-                listData.AddRange(listGoogleData);
-                if (m_dictionaryDataCache.ContainsKey(sCacheKey))
-                {
-                    m_dictionaryDataCache.Remove(sCacheKey);
-                }
-                m_dictionaryDataCache.Add(sCacheKey, listGoogleData);
+                // The cache contains all rows
+                m_dictionaryDataCache[sCacheKey] = listGoogleData;
                 m_bCacheUpdated = true;
+                for (var nRow = nStartRow; nRow < listGoogleData.Count; nRow++)
+                {
+                    listReferenceLines.Add(new ReferenceLine(listGoogleData[nRow], zReference.SpreadsheetName, nRow));
+                }
             }
+
+            return listReferenceLines;
         }
 
-        public override void GetReferenceData(ProjectLayoutReference zReference, List<List<string>> listReferenceData)
+        public override List<ReferenceLine> GetReferenceData(ProjectLayoutReference zReference)
         {
-            GetData(GoogleSpreadsheetReference.parse(ReferencePath), listReferenceData, false);
+            return GetData(GoogleSpreadsheetReference.parse(ReferencePath), 0);
         }
 
-        public override void GetProjectDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData)
+        public override List<ReferenceLine> GetProjectDefineData(ProjectLayoutReference zReference)
         {
             if (null == ProjectManager.Instance.ProjectFilePath)
             {
-                return;
+                return new List<ReferenceLine>();
             }
 
-            GetData(GetDefinesReference(), listDefineData, true);
+            return GetData(GetDefinesReference(), 1);
         }
 
-        public override void GetDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData)
+        public override List<ReferenceLine> GetDefineData(ProjectLayoutReference zReference)
         {
-            GetData(GoogleSpreadsheetReference.parse(ReferencePath), listDefineData, true, Deck.DEFINES_DATA_POSTFIX);
+            return GetData(GoogleSpreadsheetReference.parse(ReferencePath), 1, Deck.DEFINES_DATA_POSTFIX);
         }
 
         private static GoogleSpreadsheetReference GetDefinesReference()

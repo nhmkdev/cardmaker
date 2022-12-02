@@ -54,9 +54,10 @@ namespace CardMaker.Card.Import
             Directory.SetCurrentDirectory(previousCurrentDirectory);
         }
 
-        public void GetData(string sPath, List<List<string>> listData, bool bLogNotFound, int nStartIdx, string nameAppend = "")
+        public List<ReferenceLine> GetData(string sPath, bool bLogNotFound, int nStartRow, string nameAppend = "")
         {
             CSVFile zCSVParser = null;
+            var listReferenceLines = new List<ReferenceLine>();
             var bTryCopy = false;
             var sCombinedPath =
                 Path.GetDirectoryName(sPath) + Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(sPath) + nameAppend + Path.GetExtension(sPath);
@@ -68,7 +69,7 @@ namespace CardMaker.Card.Import
                     ProgressReporter.AddIssue(sMsg);
                     IssueManager.Instance.FireAddIssueEvent(sMsg);
                 }
-                return;
+                return listReferenceLines;
             }
             try
             {
@@ -88,22 +89,24 @@ namespace CardMaker.Card.Import
                 File.Delete(sTmpFile); // remove the temp file
             }
 
-            for (var nLine = nStartIdx; nLine < zCSVParser.Rows; nLine++)
+            for (var nRow = nStartRow; nRow < zCSVParser.Rows; nRow++)
             {
-                listData.Add(zCSVParser.GetRow(nLine));
+                listReferenceLines.Add(new ReferenceLine(zCSVParser.GetRow(nRow), sPath, nRow));
             }
+
+            return listReferenceLines;
         }
 
-        public override void GetReferenceData(ProjectLayoutReference zReference, List<List<string>> listReferenceData)
+        public override List<ReferenceLine> GetReferenceData(ProjectLayoutReference zReference)
         {
-            GetData(ReferencePath, listReferenceData, true, 0);
+            return GetData(ReferencePath, true, 0);
         }
 
-        public override void GetProjectDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData)
+        public override List<ReferenceLine> GetProjectDefineData(ProjectLayoutReference zReference)
         {
             if (null == ProjectManager.Instance.ProjectFilePath)
             {
-                return;
+                return new List<ReferenceLine>();
             }
 
             var sReferencePath =
@@ -112,12 +115,12 @@ namespace CardMaker.Card.Import
                 + Path.GetFileNameWithoutExtension(ProjectManager.Instance.ProjectFilePath)
                 + ".csv";
 
-            GetData(sReferencePath, listDefineData, false, 1, Deck.DEFINES_DATA_POSTFIX);
+            return GetData(sReferencePath, false, 1, Deck.DEFINES_DATA_POSTFIX);
         }
 
-        public override void GetDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData)
+        public override List<ReferenceLine> GetDefineData(ProjectLayoutReference zReference)
         {
-            GetData(ReferencePath, listDefineData, false, 1, Deck.DEFINES_DATA_POSTFIX);
+            return GetData(ReferencePath, false, 1, Deck.DEFINES_DATA_POSTFIX);
         }
     }
 }

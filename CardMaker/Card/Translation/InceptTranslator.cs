@@ -189,6 +189,12 @@ namespace CardMaker.Card.Translation
             {
                 sDefineValue = zTranslationContext.Element.name;
             }
+            else if (sKey.Equals("cardinfo"))
+            {
+                sDefineValue = zTranslationContext.DeckLine.Reference == null 
+                    ? "No reference info."
+                    : zTranslationContext.DeckLine.Reference.Source + "::" + zTranslationContext.DeckLine.Reference.LineNumber;
+            }
             else
             {
                 IssueManager.Instance.FireAddIssueEvent("Bad card variable: " + sKey);

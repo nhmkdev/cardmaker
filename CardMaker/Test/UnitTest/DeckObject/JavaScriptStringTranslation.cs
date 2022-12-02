@@ -27,6 +27,7 @@ using CardMaker.XML;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using CardMaker.Card.Import;
 using CardMaker.Data;
 using CardMaker.Events.Managers;
 using Moq;
@@ -54,7 +55,7 @@ namespace UnitTest.DeckObject
             _mockProgressReporterProxy = new Mock<ProgressReporterProxy>();
             _testDeck = new TestDeck(new JavaScriptTranslatorFactory());
             _testDeck.SetProgressReporterProxy(_mockProgressReporterProxy.Object);
-            _testLine = new DeckLine(new List<string>());
+            _testLine = new DeckLine(ReferenceLine.CreateDefaultInternalReferenceLine(new List<string>()));
             _testElement = new ProjectLayoutElement(TEST_ELEMENT_NAME);
         }
 

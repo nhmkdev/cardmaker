@@ -27,6 +27,7 @@ using CardMaker.XML;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using CardMaker.Card.Import;
 using CardMaker.Data;
 using Moq;
 using Support.Progress;
@@ -51,7 +52,7 @@ namespace UnitTest.DeckObject
             _mockProgressReporterProxy = new Mock<ProgressReporterProxy>();
             _testDeck = new TestDeck();
             _testDeck.SetProgressReporterProxy(_mockProgressReporterProxy.Object);
-            _testLine = new DeckLine(new List<string>());
+            _testLine = new DeckLine(ReferenceLine.CreateDefaultInternalReferenceLine(new List<string>()));
             _testElement = new ProjectLayoutElement(TEST_ELEMENT_NAME);
         }
 
@@ -94,7 +95,7 @@ namespace UnitTest.DeckObject
                 new List<string>() {"1", "102", "aaa", "testColumn1"}
             };
             var listDefines = new List<List<string>>();
-            _testLine = new DeckLine(listLines[listLines.Count - 1]);
+            _testLine = new DeckLine(ReferenceLine.CreateDefaultInternalReferenceLine(listLines[listLines.Count - 1]));
             _testDeck.ProcessLinesPublic(
                 listLines,
                 listDefines,
@@ -772,7 +773,7 @@ namespace UnitTest.DeckObject
                 new List<string>() { "5", "@[@[4ex]]" },
                 new List<string>() { "cointypeimage1", "gold.png"}
             };
-            _testLine = new DeckLine(listLines[listLines.Count - 1]);
+            _testLine = new DeckLine(ReferenceLine.CreateDefaultInternalReferenceLine(listLines[listLines.Count - 1]));
             _testDeck.ProcessLinesPublic(
                 listLines,
                 listDefines,

@@ -160,6 +160,7 @@
     <Compile Include="Card\Import\ExcelSpreadsheetReference.cs" />
     <Compile Include="Card\Import\GoogleReferenceReader.cs" />
     <Compile Include="Card\Import\GoogleSpreadsheetReference.cs" />
+    <Compile Include="Card\Import\ReferenceLine.cs" />
     <Compile Include="Card\Import\ReferenceReader.cs" />
     <Compile Include="Card\Import\ReferenceReaderFactory.cs" />
     <Compile Include="Card\InlineBackgroundElementProcessor.cs" />

@@ -38,19 +38,19 @@ namespace CardMaker.Card.Import
         /// </summary>
         /// <param name="zReference">The reference meta data</param>
         /// <param name="listReferenceData">The list to append</param>
-        public abstract void GetReferenceData(ProjectLayoutReference zReference, List<List<string>> listReferenceData);
+        public abstract List<ReferenceLine> GetReferenceData(ProjectLayoutReference zReference);
         /// <summary>
         /// Reads the project define data into the specified list
         /// </summary>
         /// <param name="zReference">The reference meta data</param>
         /// <param name="listReferenceData">The list to append</param>
-        public abstract void GetProjectDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData);
+        public abstract List<ReferenceLine> GetProjectDefineData(ProjectLayoutReference zReference);
         /// <summary>
         /// Reads the reference define data into the specified list
         /// </summary>
         /// <param name="zReference">The reference meta data</param>
         /// <param name="listReferenceData">The list to append</param>
-        public abstract void GetDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData);
+        public abstract List<ReferenceLine> GetDefineData(ProjectLayoutReference zReference);
 
         /// <summary>
         /// Post constructor initialization

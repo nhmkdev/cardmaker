@@ -24,9 +24,11 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
 using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace CardMaker.Card.Import
 {
@@ -44,15 +46,16 @@ namespace CardMaker.Card.Import
             ReferencePath = zReference.RelativePath;
         }
 
-        public void GetData(ExcelSpreadsheetReference zReference, List<List<string>> listData, bool bRemoveFirstRow, string sNameAppend = "")
+        public List<ReferenceLine> GetData(ExcelSpreadsheetReference zReference, int nStartRow, string sNameAppend = "")
         {
             var sSpreadsheetName = zReference.SpreadsheetFile;
             var sSheetName = zReference.SheetName + sNameAppend;
+            var listReferenceLines = new List<ReferenceLine>();
 
             // This covers the case where we try to open the project level defines.
             if (!File.Exists(sSpreadsheetName))
             {
-                return;
+                return listReferenceLines;
             }
 
             // Open the workbook
@@ -72,7 +75,7 @@ namespace CardMaker.Card.Import
             if (worksheet == null)
             {
                 ProgressReporter.AddIssue("Missing sheet from Excel Spreadsheet." + "[" + sSpreadsheetName + "," + sSheetName + "]");
-                return;
+                return listReferenceLines;
             }
 
             // Get all data for the given worksheet
@@ -82,15 +85,15 @@ namespace CardMaker.Card.Import
             // empty sheets just return null
             if (usedRange != null)
             {
-                foreach (IXLRangeRow row in usedRange.Rows())
+                var zRows = usedRange.Rows().ToList();
+                for(var nRow = nStartRow; nRow < zRows.Count(); nRow++)
                 {
-                    List<string> rowData = new List<string>();
-                    foreach (IXLCell cell in row.Cells())
+                    var rowData = new List<string>();
+                    foreach (IXLCell cell in zRows[nRow].Cells())
                     {
                         rowData.Add(cell.Value.ToString());
                     }
-
-                    listExcelData.Add(rowData);
+                    listReferenceLines.Add(new ReferenceLine(rowData, zReference.SpreadsheetFile, nRow));
                 }
             }
 
@@ -98,37 +101,29 @@ namespace CardMaker.Card.Import
             {
                 ProgressReporter.AddIssue("Failed to load any data from Excel Spreadsheet." + "[" + sSpreadsheetName + "," + sSheetName + "]");
             }
-            else
-            {
-                if (bRemoveFirstRow && listExcelData.Count > 0)
-                {
-                    listExcelData.RemoveAt(0);
-                }
-
-                listData.AddRange(listExcelData);
-            }
+            return listReferenceLines;
         }
 
-        public override void GetDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData)
+        public override List<ReferenceLine> GetDefineData(ProjectLayoutReference zReference)
         {
-            GetData(ExcelSpreadsheetReference.parse(ReferencePath), listDefineData, true, Deck.DEFINES_DATA_POSTFIX);
+            return GetData(ExcelSpreadsheetReference.parse(ReferencePath), 1, Deck.DEFINES_DATA_POSTFIX);
         }
 
-        public override void GetProjectDefineData(ProjectLayoutReference zReference, List<List<string>> listDefineData)
+        public override List<ReferenceLine> GetProjectDefineData(ProjectLayoutReference zReference)
         {
             if (null == ProjectManager.Instance.ProjectFilePath)
             {
-                return;
+                return new List<ReferenceLine>();
             }
 
             ExcelSpreadsheetReference zExcelSpreadSheetReference = ExcelSpreadsheetReference.parse(zReference.RelativePath);
             zExcelSpreadSheetReference.SheetName = DEFAULT_DEFINES_SHEET_NAME;
-            GetData(zExcelSpreadSheetReference, listDefineData, true);
+            return GetData(zExcelSpreadSheetReference, 1);
         }
 
-        public override void GetReferenceData(ProjectLayoutReference zReference, List<List<string>> listReferenceData)
+        public override List<ReferenceLine> GetReferenceData(ProjectLayoutReference zReference)
         {
-            GetData(ExcelSpreadsheetReference.parse(ReferencePath), listReferenceData, false);
+            return GetData(ExcelSpreadsheetReference.parse(ReferencePath), 0);
         }
     }
 }

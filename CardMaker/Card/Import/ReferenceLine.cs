@@ -23,34 +23,26 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-using CardMaker.Card.Import;
 
-namespace CardMaker.Card
+namespace CardMaker.Card.Import
 {
-    public class DeckLine
+    public class ReferenceLine
     {
-        public List<string> LineColumns
-        {
-            get { return Reference.Entries; }
-        }
-        public int RowSubIndex { get; private set; }
-        public ReferenceLine Reference { get; private set; }
+        public List<string> Entries { get; private set; }
+        public string Source { get; private set; }
+        public int LineNumber { get; private set; }
 
-        private DeckLine()
+#warning callers need to provide an actual line number
+        public ReferenceLine(List<string> listEntries, string sSource, int nLineNumber)
         {
-            
-        }
-
-        public DeckLine(ReferenceLine zReference)
-        {
-            RowSubIndex = 0;
-            Reference = zReference;
+            Entries = listEntries;
+            Source = sSource;
+            LineNumber = nLineNumber;
         }
 
-        public DeckLine(int nRowSubIndex, ReferenceLine zReference)
+        public static ReferenceLine CreateDefaultInternalReferenceLine(List<string> listEntries)
         {
-            RowSubIndex = nRowSubIndex;
-            Reference = zReference;
+            return new ReferenceLine(listEntries, "CardMaker Generated", 0);
         }
     }
 }
