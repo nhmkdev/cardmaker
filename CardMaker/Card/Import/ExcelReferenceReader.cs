@@ -28,7 +28,6 @@ using System.Linq;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
 using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace CardMaker.Card.Import
 {
