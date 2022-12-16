@@ -8,7 +8,7 @@ Command line based export support is in development (coming soon!). Soon you wil
 
 ## Download
 
-Latest stable (I hope) release binary: [Download 1.1.0.0](https://github.com/nhmkdev/cardmaker/releases/tag/v.1.1.0.0)
+Latest stable (I hope) release binary: [Download 1.2.0.0](https://github.com/nhmkdev/cardmaker/releases/tag/v.1.2.0.0)
 
 Latest releases (may be a bit unstable): [Download Releases](https://github.com/nhmkdev/cardmaker/releases)
 
