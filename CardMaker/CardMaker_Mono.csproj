@@ -124,6 +124,9 @@
     <Compile Include="Card\FormattedText\Markup\MarginHorizontalMarkupBase.cs" />
     <Compile Include="Card\FormattedText\Markup\MarginRightMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\MarkupUtil.cs" />
+    <Compile Include="Card\FormattedText\Markup\MirrorHorizontalMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\MirrorMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\MirrorVerticalMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\PixelMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\MarginLeftMarkup.cs" />
     <Compile Include="Card\IDrawFormattedText.cs" />

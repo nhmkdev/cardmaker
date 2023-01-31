@@ -22,29 +22,12 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Collections.Generic;
-using System.Drawing;
 using CardMaker.Data;
-using CardMaker.XML;
 
 namespace CardMaker.Card.FormattedText.Markup
 {
-    public abstract class BaseImageMarkup : MarkupValueBase
+    public class MirrorHorizontalMarkup : MirrorMarkup
     {
-        protected string m_sImageFile;
-        protected Color m_colorImage = Color.Black;
-        protected MirrorType m_eMirrorType = MirrorType.None;
-
-        protected BaseImageMarkup(string sVariable) : base(sVariable) { }
-
-        public override bool PostProcessMarkupRectangle(ProjectLayoutElement zElement, List<MarkupBase> listAllMarkups, int nMarkup)
-        {
-            return true;
-        }
-
-        protected Bitmap LoadImage(ProjectLayoutElement zElement)
-        {
-            return ImageCache.LoadCustomImageFromCache(m_sImageFile, zElement, m_colorImage, -1, -1, m_eMirrorType);
-        }
+        public override MirrorType MarkupMirrorType => MirrorType.Horizontal;
     }
 }

@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using CardMaker.Card.FormattedText.Markup;
+using CardMaker.Data;
 using CardMaker.XML;
 using Support.IO;
 
@@ -61,6 +62,7 @@ namespace CardMaker.Card.FormattedText
         public StringAlignment CurrentStringAlignment { get; set; }
 
         public int CurrentLine { get; private set; }
+        public MirrorType CurrentMirrorType { get; set; }
 
         const string FontStringToTest = "]";
 

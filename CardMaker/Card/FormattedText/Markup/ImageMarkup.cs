@@ -49,6 +49,7 @@ namespace CardMaker.Card.FormattedText.Markup
 
             m_sImageFile = arrayComponents[0];
             m_colorImage = zProcessData.ImageColor;
+            m_eMirrorType = zProcessData.CurrentMirrorType;
 
             var zBmp = LoadImage(zElement);
 
@@ -156,6 +157,7 @@ namespace CardMaker.Card.FormattedText.Markup
                 zGraphics.DrawRectangle(Pens.Green, TargetRect.X + m_fXOffset, TargetRect.Y + m_fYOffset, TargetRect.Width, TargetRect.Height);
             }
 
+            // NOTE: this image should have already been cached, but just in case
             var zBmp = LoadImage(zElement);
 
             if (null != zBmp)

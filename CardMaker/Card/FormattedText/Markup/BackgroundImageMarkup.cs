@@ -60,6 +60,7 @@ namespace CardMaker.Card.FormattedText.Markup
 
             m_sImageFile = arrayComponents[0];
             m_colorImage = zProcessData.ImageColor;
+            m_eMirrorType = zProcessData.CurrentMirrorType;
 
             var zBmp = LoadImage(zElement);
 
