@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using CardMaker.Card.FormattedText.Markup;
+using CardMaker.Data;
 using CardMaker.XML;
 
 namespace CardMaker.Card.FormattedText
@@ -64,6 +65,8 @@ namespace CardMaker.Card.FormattedText
 
         public void Render(ProjectLayoutElement zElement, Graphics zGraphics)
         {
+            MirrorRender.MirrorElementGraphicTransform(zGraphics, zElement, zElement.GetMirrorType());
+
             foreach (var zRenderType in s_zTypeRenderOrder)
             {
                 foreach (var zMarkup in m_dictionaryTypeMarkupList[zRenderType])

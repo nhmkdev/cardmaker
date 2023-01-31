@@ -25,6 +25,7 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using CardMaker.Data;
 using CardMaker.XML;
 using Support.IO;
 using Support.UI;
@@ -117,6 +118,8 @@ namespace CardMaker.Card
                     Logger.AddLogLine("This font is using the Unit: {0} (not currently supported)".FormatString(zFont.Unit.ToString()));
                     break;
             }
+
+            MirrorRender.MirrorElementGraphicTransform(zGraphics, zElement, zElement.GetMirrorType());
 
             if (0 == zElement.outlinethickness)
             {

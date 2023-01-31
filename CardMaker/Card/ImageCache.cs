@@ -51,12 +51,13 @@ namespace CardMaker.Card
         public static Bitmap LoadCustomImageFromCache(string sFile, ProjectLayoutElement zElement,
             int nTargetWidth = -1, int nTargetHeight = -1)
         {
-            return LoadCustomImageFromCache(sFile, zElement, zElement.GetElementColor(), nTargetWidth, nTargetHeight);
+            return LoadCustomImageFromCache(sFile, zElement, zElement.GetElementColor(), nTargetWidth, nTargetHeight, zElement.GetMirrorType());
         }
 
-        public static Bitmap LoadCustomImageFromCache(string sFile, ProjectLayoutElement zElement, Color colorOverride, int nTargetWidth = -1, int nTargetHeight = -1)
+        public static Bitmap LoadCustomImageFromCache(string sFile, ProjectLayoutElement zElement, Color colorOverride, int nTargetWidth = -1, int nTargetHeight = -1, MirrorType eMirrorType = MirrorType.None)
         {
-            var sKey = sFile.ToLower() + ":" + zElement.opacity + ":" + nTargetWidth + ":" + nTargetHeight + ProjectLayoutElement.GetElementColorString(colorOverride);
+            var sKey = sFile.ToLower() + ":" + zElement.opacity + ":" + nTargetWidth + ":" + nTargetHeight + ProjectLayoutElement.GetElementColorString(colorOverride) + 
+                       ":" + eMirrorType;
 
             if (s_dictionaryCustomImages.TryGetValue(sKey, out var zDestinationBitmap))
             {
@@ -127,6 +128,8 @@ namespace CardMaker.Card
 
             zDestinationBitmap = new Bitmap(nTargetWidth, nTargetHeight); // target image
             var zGraphics = Graphics.FromImage(zDestinationBitmap);
+
+            MirrorRender.MirrorElementGraphicTransform(zGraphics, zElement, eMirrorType, nTargetWidth, nTargetHeight);
 
             // draw the source image into the destination with the desired opacity
             zGraphics.DrawImage(zSourceBitmap, new Rectangle(0, 0, nTargetWidth, nTargetHeight), 0, 0, zSourceBitmap.Width, zSourceBitmap.Height, GraphicsUnit.Pixel,

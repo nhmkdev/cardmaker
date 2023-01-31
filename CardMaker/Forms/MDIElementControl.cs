@@ -382,10 +382,13 @@ namespace CardMaker.Forms
 
             for (var nIdx = 0; nIdx < (int)ElementType.End; nIdx++)
             {
-                var sType = ((ElementType)nIdx).ToString();
-                comboElementType.Items.Add(sType);
+                comboElementType.Items.Add(((ElementType)nIdx).ToString());
             }
 
+            for (var nIdx = 0; nIdx < (int)MirrorType.End; nIdx++)
+            {
+                comboElementMirror.Items.Add(((MirrorType)nIdx).ToString());
+            }
             tabControl.Visible = false;
         }
 
@@ -849,6 +852,7 @@ namespace CardMaker.Forms
             m_dictionaryControlField.Add(comboTextVerticalAlign, zType.GetProperty("verticalalign"));
             m_dictionaryControlField.Add(numericElementOpacity, zType.GetProperty("opacity"));
             m_dictionaryControlField.Add(txtTileSize, zType.GetProperty("tilesize"));
+            m_dictionaryControlField.Add(comboElementMirror, zType.GetProperty("mirrortype"));
 
             // HandleFontSettingChange related 
             m_dictionaryControlField.Add(numericLineSpace, zType.GetProperty("lineheight"));
@@ -1069,6 +1073,7 @@ namespace CardMaker.Forms
                 txtElementVariable.Text = zElement.variable;
                 txtElementVariable.SelectionStart = zElement.variable.Length;
                 txtElementVariable.SelectionLength = 0;
+                comboElementMirror.SelectedIndex = zElement.mirrortype;
                 ElementType eType = EnumUtil.GetElementType(zElement.type);
                 switch (eType)
                 {

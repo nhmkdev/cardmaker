@@ -165,6 +165,7 @@
     <Compile Include="Card\Import\ReferenceReaderFactory.cs" />
     <Compile Include="Card\InlineBackgroundElementProcessor.cs" />
     <Compile Include="Card\MeasurementUtil.cs" />
+    <Compile Include="Card\MirrorRender.cs" />
     <Compile Include="Card\Render\InputElementRenderProcessor.cs" />
     <Compile Include="Card\Render\IElementRenderProcessor.cs" />
     <Compile Include="Card\Render\BackgroundColorElementRenderProcessor.cs" />

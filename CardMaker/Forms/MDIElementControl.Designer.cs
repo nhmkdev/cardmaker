@@ -86,6 +86,8 @@ namespace CardMaker.Forms
             this.btnElementShapeColor = new System.Windows.Forms.Button();
             this.propertyGridShape = new System.Windows.Forms.PropertyGrid();
             this.tabPageGraphic = new System.Windows.Forms.TabPage();
+            this.panelGraphicColor = new System.Windows.Forms.Panel();
+            this.btnElementGraphicColor = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
             this.txtTileSize = new System.Windows.Forms.TextBox();
             this.checkKeepOriginalSize = new System.Windows.Forms.CheckBox();
@@ -125,8 +127,8 @@ namespace CardMaker.Forms
             this.comboElementType = new System.Windows.Forms.ComboBox();
             this.contextMenuReferenceStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.contextMenuStripAssist = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.btnElementGraphicColor = new System.Windows.Forms.Button();
-            this.panelGraphicColor = new System.Windows.Forms.Panel();
+            this.label17 = new System.Windows.Forms.Label();
+            this.comboElementMirror = new System.Windows.Forms.ComboBox();
             this.groupBoxElement.SuspendLayout();
             this.groupBackgroundColor.SuspendLayout();
             this.tabControl.SuspendLayout();
@@ -150,6 +152,8 @@ namespace CardMaker.Forms
             // 
             // groupBoxElement
             // 
+            this.groupBoxElement.Controls.Add(this.comboElementMirror);
+            this.groupBoxElement.Controls.Add(this.label17);
             this.groupBoxElement.Controls.Add(this.groupBackgroundColor);
             this.groupBoxElement.Controls.Add(this.btnAssist);
             this.groupBoxElement.Controls.Add(this.tabControl);
@@ -565,6 +569,23 @@ namespace CardMaker.Forms
             this.tabPageGraphic.TabIndex = 2;
             this.tabPageGraphic.Text = "Graphic";
             this.tabPageGraphic.UseVisualStyleBackColor = true;
+            // 
+            // panelGraphicColor
+            // 
+            this.panelGraphicColor.Location = new System.Drawing.Point(57, 40);
+            this.panelGraphicColor.Name = "panelGraphicColor";
+            this.panelGraphicColor.Size = new System.Drawing.Size(20, 20);
+            this.panelGraphicColor.TabIndex = 45;
+            // 
+            // btnElementGraphicColor
+            // 
+            this.btnElementGraphicColor.Location = new System.Drawing.Point(0, 40);
+            this.btnElementGraphicColor.Name = "btnElementGraphicColor";
+            this.btnElementGraphicColor.Size = new System.Drawing.Size(49, 20);
+            this.btnElementGraphicColor.TabIndex = 44;
+            this.btnElementGraphicColor.Text = "Color";
+            this.btnElementGraphicColor.UseVisualStyleBackColor = true;
+            this.btnElementGraphicColor.Click += new System.EventHandler(this.btnColor_Click);
             // 
             // label9
             // 
@@ -1024,22 +1045,24 @@ namespace CardMaker.Forms
             this.contextMenuStripAssist.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this.contextMenuStripAssist.Size = new System.Drawing.Size(61, 4);
             // 
-            // btnElementGraphicColor
+            // label17
             // 
-            this.btnElementGraphicColor.Location = new System.Drawing.Point(0, 40);
-            this.btnElementGraphicColor.Name = "btnElementGraphicColor";
-            this.btnElementGraphicColor.Size = new System.Drawing.Size(49, 20);
-            this.btnElementGraphicColor.TabIndex = 44;
-            this.btnElementGraphicColor.Text = "Color";
-            this.btnElementGraphicColor.UseVisualStyleBackColor = true;
-            this.btnElementGraphicColor.Click += new System.EventHandler(this.btnColor_Click);
+            this.label17.Location = new System.Drawing.Point(179, 19);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(43, 21);
+            this.label17.TabIndex = 48;
+            this.label17.Text = "Mirror:";
+            this.label17.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // panelGraphicColor
+            // comboElementMirror
             // 
-            this.panelGraphicColor.Location = new System.Drawing.Point(57, 40);
-            this.panelGraphicColor.Name = "panelGraphicColor";
-            this.panelGraphicColor.Size = new System.Drawing.Size(20, 20);
-            this.panelGraphicColor.TabIndex = 45;
+            this.comboElementMirror.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboElementMirror.FormattingEnabled = true;
+            this.comboElementMirror.Location = new System.Drawing.Point(237, 19);
+            this.comboElementMirror.Name = "comboElementMirror";
+            this.comboElementMirror.Size = new System.Drawing.Size(105, 21);
+            this.comboElementMirror.TabIndex = 49;
+            this.comboElementMirror.SelectedIndexChanged += new System.EventHandler(this.HandleElementValueChange);
             // 
             // MDIElementControl
             // 
@@ -1153,5 +1176,7 @@ namespace CardMaker.Forms
         private System.Windows.Forms.TextBox txtTileSize;
         private System.Windows.Forms.Panel panelGraphicColor;
         private System.Windows.Forms.Button btnElementGraphicColor;
+        private System.Windows.Forms.ComboBox comboElementMirror;
+        private System.Windows.Forms.Label label17;
     }
 }

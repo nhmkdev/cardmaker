@@ -116,6 +116,8 @@ namespace CardMaker.Card.Shapes
 
                 zShape.DrawShape(zPath, targetRect, zShapeInfo);
 
+                MirrorRender.MirrorElementGraphicTransform(zGraphics, zElement, zElement.GetMirrorType());
+
                 if (0 == zShapeInfo.Thickness)
                 {
                     CardRenderer.DrawElementPath(zElement, zGraphics, zPath, GetFillBrush(zElement));

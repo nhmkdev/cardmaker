@@ -22,28 +22,27 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#define UNSTABLE
+using CardMaker.XML;
+using System.Drawing;
+using CardMaker.Data;
 
-namespace CardMaker
+namespace CardMaker.Card
 {
-    public static class CardMakerBuild
+    static class MirrorRender
     {
-        public static string GetBuildSuffix()
+        public static void MirrorElementGraphicTransform(Graphics zGraphics, ProjectLayoutElement zElement, MirrorType eMirrorType, int width = -1, int height = -1)
         {
-#if UNSTABLE
-            return "[UNSTABLE] V.A2";
-#else
-            return string.Empty;
-#endif
-        }
-
-        public static bool IsUnstable()
-        {
-#if UNSTABLE
-            return true;
-#else
-            return false;
-#endif
+            switch (eMirrorType)
+            {
+                case MirrorType.Horizontal:
+                    zGraphics.TranslateTransform(width == -1 ? zElement.width : width, 0);
+                    zGraphics.ScaleTransform(-1, 1);
+                    break;
+                case MirrorType.Vertical:
+                    zGraphics.TranslateTransform(0, height == -1 ? zElement.height: height);
+                    zGraphics.ScaleTransform(1, -1);
+                    break;
+            }
         }
     }
 }

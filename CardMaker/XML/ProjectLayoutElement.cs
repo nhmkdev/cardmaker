@@ -125,6 +125,9 @@ namespace CardMaker.XML
         [XmlAttribute]
         public string tilesize { get; set; }
 
+        [XmlAttribute]
+        public int mirrortype { get; set; }
+
         #endregion
 
         private Color m_colorElement = Color.Black;
@@ -174,6 +177,7 @@ namespace CardMaker.XML
             opacity = 255;
             enabled = true;
             justifiedtext = false;
+            mirrortype = (int)MirrorType.None;
 
             InitializeTranslatedFields();
         }
@@ -203,6 +207,11 @@ namespace CardMaker.XML
             return m_fontText;
         }
 
+        public MirrorType GetMirrorType()
+        {
+            return mirrortype >= 0 && mirrortype < (int)MirrorType.End ? (MirrorType)mirrortype : MirrorType.None;
+        }
+
         public StringAlignment GetHorizontalAlignment()
         {
             return (StringAlignment) horizontalalign;
@@ -228,7 +237,7 @@ namespace CardMaker.XML
         }
 
         /// <summary>
-        /// Performs a partial deepy copy based on the input element, the name field is left unchanged
+        /// Performs a partial deep copy based on the input element, the name field is left unchanged
         /// </summary>
         /// <param name="zElement">The source element to copy from</param>
         /// <param name="bInitializeTranslatedFields">flag indicating whether to reinitialize the translated fields</param>
@@ -261,6 +270,7 @@ namespace CardMaker.XML
             justifiedtext = zElement.justifiedtext;
             layoutreference = zElement.layoutreference;
             elementreference = zElement.elementreference;
+            mirrortype = zElement.mirrortype;
 
             if (bInitializeTranslatedFields)
             {

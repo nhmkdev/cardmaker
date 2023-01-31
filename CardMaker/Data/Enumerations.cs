@@ -41,7 +41,7 @@ namespace CardMaker.Data
         public static ElementType GetElementType(string sType)
         {
             ElementType eType;
-            if (s_dictionaryStringElementType.TryGetValue(sType, out eType))
+            if (sType != null && s_dictionaryStringElementType.TryGetValue(sType, out eType))
             {
                 return eType;
             }
@@ -55,6 +55,14 @@ namespace CardMaker.Data
         FormattedText,
         Graphic,
         Shape,
+        End
+    }
+
+    public enum MirrorType
+    {
+        None = 0,
+        Horizontal,
+        Vertical,
         End
     }
 
