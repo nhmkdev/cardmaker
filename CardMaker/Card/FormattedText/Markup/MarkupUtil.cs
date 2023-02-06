@@ -54,6 +54,8 @@ namespace CardMaker.Card.FormattedText.Markup
             {"al", typeof(AlignLeftMarkup) },
             {"mh", typeof(MirrorHorizontalMarkup)},
             {"mv", typeof(MirrorVerticalMarkup)},
+            {"mgnl", typeof(MarginLeftMarkup)},
+            {"mgnr", typeof(MarginRightMarkup)},
             {"marginleft", typeof(MarginLeftMarkup)},
             {"marginright", typeof(MarginRightMarkup)},
         };
