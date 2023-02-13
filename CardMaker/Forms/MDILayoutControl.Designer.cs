@@ -58,10 +58,6 @@ namespace CardMaker.Forms
             this.checkLoadAllReferences = new System.Windows.Forms.CheckBox();
             this.btnScale = new System.Windows.Forms.Button();
             this.resizeBtn = new System.Windows.Forms.Button();
-            this.listViewElements = new Support.UI.ListViewDoubleBuffered();
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.contextMenuElements = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -90,6 +86,11 @@ namespace CardMaker.Forms
             this.label2 = new System.Windows.Forms.Label();
             this.numericRowIndex = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
+            this.btnConfigureExport = new System.Windows.Forms.Button();
+            this.listViewElements = new Support.UI.ListViewDoubleBuffered();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.groupBoxCardSet.SuspendLayout();
             this.contextMenuElements.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericCardSetDPI)).BeginInit();
@@ -103,6 +104,7 @@ namespace CardMaker.Forms
             // 
             // groupBoxCardSet
             // 
+            this.groupBoxCardSet.Controls.Add(this.btnConfigureExport);
             this.groupBoxCardSet.Controls.Add(this.btnConfigureSize);
             this.groupBoxCardSet.Controls.Add(this.checkLoadAllReferences);
             this.groupBoxCardSet.Controls.Add(this.btnScale);
@@ -134,9 +136,9 @@ namespace CardMaker.Forms
             // 
             // btnConfigureSize
             // 
-            this.btnConfigureSize.Location = new System.Drawing.Point(257, 41);
+            this.btnConfigureSize.Location = new System.Drawing.Point(257, 40);
             this.btnConfigureSize.Name = "btnConfigureSize";
-            this.btnConfigureSize.Size = new System.Drawing.Size(59, 20);
+            this.btnConfigureSize.Size = new System.Drawing.Size(59, 22);
             this.btnConfigureSize.TabIndex = 34;
             this.btnConfigureSize.Text = "Resize";
             this.btnConfigureSize.UseVisualStyleBackColor = true;
@@ -174,48 +176,6 @@ namespace CardMaker.Forms
             this.resizeBtn.Text = "Resize";
             this.resizeBtn.UseVisualStyleBackColor = true;
             this.resizeBtn.Click += new System.EventHandler(this.resize_Click);
-            // 
-            // listViewElements
-            // 
-            this.listViewElements.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.listViewElements.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.listViewElements.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader1,
-            this.columnHeader2,
-            this.columnHeader3});
-            this.listViewElements.ContextMenuStrip = this.contextMenuElements;
-            this.listViewElements.FullRowSelect = true;
-            this.listViewElements.GridLines = true;
-            this.listViewElements.HideSelection = false;
-            this.listViewElements.Location = new System.Drawing.Point(6, 89);
-            this.listViewElements.Name = "listViewElements";
-            this.listViewElements.ShowItemToolTips = true;
-            this.listViewElements.Size = new System.Drawing.Size(310, 184);
-            this.listViewElements.TabIndex = 30;
-            this.listViewElements.UseCompatibleStateImageBehavior = false;
-            this.listViewElements.View = System.Windows.Forms.View.Details;
-            this.listViewElements.SelectedIndexChanged += new System.EventHandler(this.listViewElements_SelectedIndexChanged);
-            this.listViewElements.DoubleClick += new System.EventHandler(this.listViewElements_DoubleClick);
-            this.listViewElements.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listViewElements_KeyDown);
-            this.listViewElements.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.listViewElements_KeyPress);
-            this.listViewElements.Resize += new System.EventHandler(this.listViewElements_Resize);
-            // 
-            // columnHeader1
-            // 
-            this.columnHeader1.Text = "Enabled";
-            this.columnHeader1.Width = 55;
-            // 
-            // columnHeader2
-            // 
-            this.columnHeader2.Text = "Element";
-            this.columnHeader2.Width = 161;
-            // 
-            // columnHeader3
-            // 
-            this.columnHeader3.Text = "Type";
-            this.columnHeader3.Width = 92;
             // 
             // contextMenuElements
             // 
@@ -540,6 +500,58 @@ namespace CardMaker.Forms
             this.label1.Text = "Card:";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
+            // btnConfigureExport
+            // 
+            this.btnConfigureExport.Location = new System.Drawing.Point(257, 15);
+            this.btnConfigureExport.Name = "btnConfigureExport";
+            this.btnConfigureExport.Size = new System.Drawing.Size(59, 22);
+            this.btnConfigureExport.TabIndex = 35;
+            this.btnConfigureExport.Text = "Settings";
+            this.btnConfigureExport.UseVisualStyleBackColor = true;
+            this.btnConfigureExport.Click += new System.EventHandler(this.btnConfigureExport_Click);
+            // 
+            // listViewElements
+            // 
+            this.listViewElements.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.listViewElements.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.listViewElements.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2,
+            this.columnHeader3});
+            this.listViewElements.ContextMenuStrip = this.contextMenuElements;
+            this.listViewElements.FullRowSelect = true;
+            this.listViewElements.GridLines = true;
+            this.listViewElements.HideSelection = false;
+            this.listViewElements.Location = new System.Drawing.Point(6, 89);
+            this.listViewElements.Name = "listViewElements";
+            this.listViewElements.ShowItemToolTips = true;
+            this.listViewElements.Size = new System.Drawing.Size(310, 184);
+            this.listViewElements.TabIndex = 30;
+            this.listViewElements.UseCompatibleStateImageBehavior = false;
+            this.listViewElements.View = System.Windows.Forms.View.Details;
+            this.listViewElements.SelectedIndexChanged += new System.EventHandler(this.listViewElements_SelectedIndexChanged);
+            this.listViewElements.DoubleClick += new System.EventHandler(this.listViewElements_DoubleClick);
+            this.listViewElements.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listViewElements_KeyDown);
+            this.listViewElements.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.listViewElements_KeyPress);
+            this.listViewElements.Resize += new System.EventHandler(this.listViewElements_Resize);
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "Enabled";
+            this.columnHeader1.Width = 55;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "Element";
+            this.columnHeader2.Width = 161;
+            // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Text = "Type";
+            this.columnHeader3.Width = 92;
+            // 
             // MDILayoutControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -604,5 +616,6 @@ namespace CardMaker.Forms
         private System.Windows.Forms.Button btnConfigureSize;
         private System.Windows.Forms.ToolStripMenuItem pasteReferenceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem detachReferenceToolStripMenuItem;
+        private System.Windows.Forms.Button btnConfigureExport;
     }
 }

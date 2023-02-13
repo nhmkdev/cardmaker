@@ -37,6 +37,8 @@ namespace CardMaker.Events.Args
 
     public delegate void LayoutRenamed(object sender, LayoutRenamedEventArgs args);
 
+    public delegate void LayoutConfigureRequested(object sender, ProjectLayoutEventArgs args);
+
     public class ProjectLayoutEventArgs
     {
         public ProjectLayout Layout { get; private set; }

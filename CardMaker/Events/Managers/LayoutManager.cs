@@ -88,6 +88,11 @@ namespace CardMaker.Events.Managers
         /// </summary>
         public event DeckIndexChanged DeckIndexChangeRequested;
 
+        /// <summary>
+        /// Fired when there is a request to display the layout (export) configuration
+        /// </summary>
+        public event LayoutConfigureRequested LayoutConfigureRequested;
+
         public static LayoutManager Instance => m_zInstance ?? (m_zInstance = new LayoutManager());
 
         #region Event Triggers
@@ -144,6 +149,14 @@ namespace CardMaker.Events.Managers
         public void FireElementSelectAdjustRequest(int nAdjust)
         {
             ElementSelectAdjustRequest?.Invoke(this, new LayoutElementNumericAdjustEventArgs(nAdjust));
+        }
+
+        /// <summary>
+        /// Fires the LayoutConfigureRequested event
+        /// </summary>
+        public void FireLayoutConfigureRequested()
+        {
+            LayoutConfigureRequested?.Invoke(this, new ProjectLayoutEventArgs(ActiveLayout, ActiveDeck, false));
         }
 
         #endregion

@@ -359,6 +359,11 @@ namespace CardMaker.Forms
             }
         }
 
+        private void btnConfigureExport_Click(object sender, EventArgs e)
+        {
+            LayoutManager.Instance.FireLayoutConfigureRequested();
+        }
+
         private void listViewElements_Resize(object sender, EventArgs e)
         {
             ListViewAssist.ResizeColumnHeaders(listViewElements);

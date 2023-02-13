@@ -34,7 +34,6 @@ using CardMaker.Data;
 using CardMaker.Events.Args;
 using CardMaker.Events.Managers;
 using CardMaker.Forms.Dialogs;
-using CardMaker.Properties;
 using CardMaker.XML;
 using ClosedXML.Excel;
 using Support.Google.Sheets;
@@ -58,6 +57,7 @@ namespace CardMaker.Forms
 
             // layout selection may occur outside of the project window (MDIIssues)
             LayoutManager.Instance.LayoutSelectRequested += LayoutSelect_Requested;
+            LayoutManager.Instance.LayoutConfigureRequested += LayoutConfigure_Requested;
         }
 
         #region overrides
@@ -101,6 +101,110 @@ namespace CardMaker.Forms
         {
             ResetTreeToProject(e.Project);
             LayoutManager.Instance.SetActiveLayout(null);
+        }
+
+        private void LayoutConfigure_Requested(object sender, ProjectLayoutEventArgs args)
+        {
+            const string NAME = "NAME";
+            const string ROTATION = "ROTATION";
+            const string EXPORT_WIDTH = "EXPORT_WIDTH";
+            const string EXPORT_HEIGHT = "EXPORT_HEIGHT";
+            const string EXPORT_CROP = "EXPORT_CROP";
+            const string EXPORT_TRANSPARENT = "EXPORT_TRANSPARENT";
+            const string EXPORT_PDF_AS_PAGE_BACK = "EXPORT_PDF_AS_PAGE_BACK";
+            const string EXPORT_BORDER = "EXPORT_BORDER";
+            const string EXPORT_BORDER_CROSS_SIZE = "EXPORT_BORDER_CROSS_SIZE";
+
+            Type typeObj = treeView.SelectedNode.Tag.GetType();
+            var sExistingFormat = string.Empty;
+            var zQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("Configure Layout Export", 550, 300, false));
+
+            if (typeof(Project) == typeObj)
+            {
+                sExistingFormat = ((Project)treeView.SelectedNode.Tag).exportNameFormat;
+            }
+            else if (typeof(ProjectLayout) == typeObj)
+            {
+                var zProjectLayout = ((ProjectLayout)treeView.SelectedNode.Tag);
+
+                sExistingFormat = zProjectLayout.exportNameFormat;
+                var nDefaultRotationIndex =
+                    Math.Max(0, ProjectLayout.AllowedExportRotations.ToList()
+                        .IndexOf(zProjectLayout.exportRotation.ToString()));
+                zQuery.AddPullDownBox("Export Rotation (PDF/Export)", ProjectLayout.AllowedExportRotations,
+                    nDefaultRotationIndex, ROTATION);
+
+                zQuery.AddCheckBox("Export PDF Layout Page as Back", zProjectLayout.exportPDFAsPageBack, EXPORT_PDF_AS_PAGE_BACK);
+
+                var nColumns = 0;
+                var nRows = 0;
+
+                if (zProjectLayout.exportWidth > 0)
+                {
+                    var nWidth = zProjectLayout.width + zProjectLayout.buffer;
+                    nColumns = zProjectLayout.exportWidth / nWidth;
+                }
+
+                if (zProjectLayout.exportHeight > 0)
+                {
+                    var nHeight = zProjectLayout.height + zProjectLayout.buffer;
+                    nRows = zProjectLayout.exportHeight / nHeight;
+                }
+
+                var numericColumns = zQuery.AddNumericBox("Stitched Columns (changes export width)", nColumns, 0, 100, "COLUMNS");
+
+                var numericRows = zQuery.AddNumericBox("Stitched Rows (changes export height)", nRows, 0, 100, "ROWS");
+
+                var numericExportWidth = zQuery.AddNumericBox("Export Width", zProjectLayout.exportWidth,
+                    0, 65536, EXPORT_WIDTH);
+                var numericExportHeight = zQuery.AddNumericBox("Export Height", zProjectLayout.exportHeight,
+                    0, 65536, EXPORT_HEIGHT);
+
+                zQuery.AddTextBox("Export Crop Definition", zProjectLayout.exportCropDefinition, false, EXPORT_CROP);
+
+                zQuery.AddCheckBox("Export Transparent Background", zProjectLayout.exportTransparentBackground,
+                    EXPORT_TRANSPARENT);
+
+                zQuery.AddCheckBox("Export Layout Border (Draw Border required)", zProjectLayout.exportLayoutBorder, EXPORT_BORDER);
+                zQuery.AddNumericBox("Export Layout Border Cross Size", zProjectLayout.exportLayoutBorderCrossSize, 0, int.MaxValue, 1, 0, EXPORT_BORDER_CROSS_SIZE);
+
+                numericColumns.ValueChanged += (o, a) =>
+                {
+                    numericExportWidth.Value = (zProjectLayout.width * numericColumns.Value) +
+                        Math.Max(0, (numericColumns.Value - 1) * zProjectLayout.buffer);
+                };
+
+                numericRows.ValueChanged += (o, a) =>
+                {
+                    numericExportHeight.Value = (zProjectLayout.height * numericRows.Value) +
+                        Math.Max(0, (numericRows.Value - 1) * zProjectLayout.buffer);
+                };
+
+            }
+
+            zQuery.AddTextBox("Name Format", sExistingFormat ?? string.Empty, false, NAME);
+
+            if (DialogResult.OK == zQuery.ShowDialog(this))
+            {
+                if (typeof(Project) == typeObj)
+                {
+                    ((Project)treeView.SelectedNode.Tag).exportNameFormat = zQuery.GetString(NAME);
+                }
+                else if (typeof(ProjectLayout) == typeObj)
+                {
+                    var zProjectLayout = ((ProjectLayout)treeView.SelectedNode.Tag);
+                    zProjectLayout.exportNameFormat = zQuery.GetString(NAME);
+                    zProjectLayout.exportRotation = int.Parse(zQuery.GetString(ROTATION));
+                    zProjectLayout.exportWidth = int.Parse(zQuery.GetString(EXPORT_WIDTH));
+                    zProjectLayout.exportHeight = int.Parse(zQuery.GetString(EXPORT_HEIGHT));
+                    zProjectLayout.exportCropDefinition = zQuery.GetString(EXPORT_CROP);
+                    zProjectLayout.exportTransparentBackground = zQuery.GetBool(EXPORT_TRANSPARENT);
+                    zProjectLayout.exportPDFAsPageBack = zQuery.GetBool(EXPORT_PDF_AS_PAGE_BACK);
+                    zProjectLayout.exportLayoutBorder = zQuery.GetBool(EXPORT_BORDER);
+                    zProjectLayout.exportLayoutBorderCrossSize = (int)zQuery.GetDecimal(EXPORT_BORDER_CROSS_SIZE);
+                }
+                ProjectManager.Instance.FireProjectUpdated(true);
+            }
         }
 
         #endregion
@@ -447,108 +551,9 @@ namespace CardMaker.Forms
             ExportManager.Instance.FireExportRequestedEvent(ExportType.PDFSharp);
         }
 
-        private void setNameFormatToolStripMenuItem_Click(object sender, EventArgs e)
+        private void toolStripMenuItemSetLayoutExport_Click(object sender, EventArgs e)
         {
-            const string NAME = "NAME";
-            const string ROTATION = "ROTATION";
-            const string EXPORT_WIDTH = "EXPORT_WIDTH";
-            const string EXPORT_HEIGHT = "EXPORT_HEIGHT";
-            const string EXPORT_CROP = "EXPORT_CROP";
-            const string EXPORT_TRANSPARENT = "EXPORT_TRANSPARENT";
-            const string EXPORT_PDF_AS_PAGE_BACK = "EXPORT_PDF_AS_PAGE_BACK";
-            const string EXPORT_BORDER = "EXPORT_BORDER";
-            const string EXPORT_BORDER_CROSS_SIZE = "EXPORT_BORDER_CROSS_SIZE";
-
-            Type typeObj = treeView.SelectedNode.Tag.GetType();
-            var sExistingFormat = string.Empty;
-            var zQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("Configure Layout Export", 550, 300, false));
-
-            if (typeof(Project) == typeObj)
-            {
-                sExistingFormat = ((Project)treeView.SelectedNode.Tag).exportNameFormat;
-            }
-            else if (typeof(ProjectLayout) == typeObj)
-            {
-                var zProjectLayout = ((ProjectLayout) treeView.SelectedNode.Tag);
-
-                sExistingFormat = zProjectLayout.exportNameFormat;
-                var nDefaultRotationIndex =
-                    Math.Max(0, ProjectLayout.AllowedExportRotations.ToList()
-                        .IndexOf(zProjectLayout.exportRotation.ToString()));
-                zQuery.AddPullDownBox("Export Rotation (PDF/Export)", ProjectLayout.AllowedExportRotations,
-                    nDefaultRotationIndex, ROTATION);
-
-                zQuery.AddCheckBox("Export PDF Layout Page as Back", zProjectLayout.exportPDFAsPageBack, EXPORT_PDF_AS_PAGE_BACK);
-
-                var nColumns = 0;
-                var nRows = 0;
-
-                if (zProjectLayout.exportWidth > 0)
-                {
-                    var nWidth = zProjectLayout.width + zProjectLayout.buffer;
-                    nColumns = zProjectLayout.exportWidth / nWidth;
-                }
-
-                if (zProjectLayout.exportHeight > 0)
-                {
-                    var nHeight = zProjectLayout.height + zProjectLayout.buffer;
-                    nRows = zProjectLayout.exportHeight / nHeight;
-                }
-
-                var numericColumns = zQuery.AddNumericBox("Stitched Columns (changes export width)", nColumns, 0, 100, "COLUMNS");
-
-                var numericRows = zQuery.AddNumericBox("Stitched Rows (changes export height)", nRows, 0, 100, "ROWS");
-
-                var numericExportWidth = zQuery.AddNumericBox("Export Width", zProjectLayout.exportWidth,
-                    0, 65536, EXPORT_WIDTH);
-                var numericExportHeight = zQuery.AddNumericBox("Export Height", zProjectLayout.exportHeight,
-                    0, 65536, EXPORT_HEIGHT);
-
-                zQuery.AddTextBox("Export Crop Definition", zProjectLayout.exportCropDefinition, false, EXPORT_CROP);
-
-                zQuery.AddCheckBox("Export Transparent Background", zProjectLayout.exportTransparentBackground,
-                    EXPORT_TRANSPARENT);
-
-                zQuery.AddCheckBox("Print/Export Layout Border", zProjectLayout.exportLayoutBorder, EXPORT_BORDER);
-                zQuery.AddNumericBox("Print/Export Layout Border Cross Size", zProjectLayout.exportLayoutBorderCrossSize, 0, int.MaxValue, 1, 0, EXPORT_BORDER_CROSS_SIZE);
-
-                numericColumns.ValueChanged += (o, args) =>
-                {
-                    numericExportWidth.Value = (zProjectLayout.width * numericColumns.Value) + 
-                        Math.Max(0, (numericColumns.Value - 1) * zProjectLayout.buffer);
-                };
-
-                numericRows.ValueChanged += (o, args) =>
-                {
-                    numericExportHeight.Value = (zProjectLayout.height * numericRows.Value) +
-                        Math.Max(0, (numericRows.Value - 1) * zProjectLayout.buffer);
-                };
-
-            }
-
-            zQuery.AddTextBox("Name Format", sExistingFormat ?? string.Empty, false, NAME);
-
-            if(DialogResult.OK == zQuery.ShowDialog(this))
-            {
-                if (typeof(Project) == typeObj)
-                {
-                    ((Project)treeView.SelectedNode.Tag).exportNameFormat = zQuery.GetString(NAME);
-                }
-                else if (typeof(ProjectLayout) == typeObj)
-                {
-                    var zProjectLayout = ((ProjectLayout)treeView.SelectedNode.Tag);
-                    zProjectLayout.exportNameFormat = zQuery.GetString(NAME);
-                    zProjectLayout.exportRotation = int.Parse(zQuery.GetString(ROTATION));
-                    zProjectLayout.exportWidth = int.Parse(zQuery.GetString(EXPORT_WIDTH));
-                    zProjectLayout.exportHeight = int.Parse(zQuery.GetString(EXPORT_HEIGHT));
-                    zProjectLayout.exportCropDefinition = zQuery.GetString(EXPORT_CROP);
-                    zProjectLayout.exportTransparentBackground = zQuery.GetBool(EXPORT_TRANSPARENT);
-                    zProjectLayout.exportPDFAsPageBack = zQuery.GetBool(EXPORT_PDF_AS_PAGE_BACK);
-                    zProjectLayout.exportLayoutBorder = zQuery.GetBool(EXPORT_BORDER);
-                    zProjectLayout.exportLayoutBorderCrossSize = (int)zQuery.GetDecimal(EXPORT_BORDER_CROSS_SIZE);
-                }
-                ProjectManager.Instance.FireProjectUpdated(true);
-            }
+            LayoutManager.Instance.FireLayoutConfigureRequested();
         }
 
         private void projectSettingsToolStripMenuItem_Click(object sender, EventArgs e)

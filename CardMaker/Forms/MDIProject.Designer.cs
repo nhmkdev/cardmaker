@@ -68,6 +68,8 @@ namespace CardMaker.Forms
             this.toolStripMenuItemSetProjectNameFormat = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripSeparator();
             this.projectSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem6 = new System.Windows.Forms.ToolStripSeparator();
+            this.windowsExplorerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStripLayout = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.duplicateLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.duplicateLayoutCustomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -82,12 +84,10 @@ namespace CardMaker.Forms
             this.addExcelReferenceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addGoogleSpreadsheetReferenceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripMenuItemSetLayoutNameFormat = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItemSetLayoutExport = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStripReference = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.setAsDefaultReferenceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeReferenceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem6 = new System.Windows.Forms.ToolStripSeparator();
-            this.windowsExplorerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStripProject.SuspendLayout();
             this.contextMenuStripLayout.SuspendLayout();
             this.contextMenuStripReference.SuspendLayout();
@@ -126,46 +126,58 @@ namespace CardMaker.Forms
             this.windowsExplorerToolStripMenuItem});
             this.contextMenuStripProject.Name = "contextMenuStripTreeView";
             this.contextMenuStripProject.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.contextMenuStripProject.Size = new System.Drawing.Size(242, 154);
+            this.contextMenuStripProject.Size = new System.Drawing.Size(255, 132);
             this.contextMenuStripProject.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStripTreeView_Opening);
             // 
             // addCardLayoutToolStripMenuItem
             // 
             this.addCardLayoutToolStripMenuItem.Name = "addCardLayoutToolStripMenuItem";
-            this.addCardLayoutToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
+            this.addCardLayoutToolStripMenuItem.Size = new System.Drawing.Size(254, 22);
             this.addCardLayoutToolStripMenuItem.Text = "Add Card Layout...";
             this.addCardLayoutToolStripMenuItem.Click += new System.EventHandler(this.addLayoutToolStripMenuItem_Click);
             // 
             // addCardLayoutFromTemplateToolStripMenuItem
             // 
             this.addCardLayoutFromTemplateToolStripMenuItem.Name = "addCardLayoutFromTemplateToolStripMenuItem";
-            this.addCardLayoutFromTemplateToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
+            this.addCardLayoutFromTemplateToolStripMenuItem.Size = new System.Drawing.Size(254, 22);
             this.addCardLayoutFromTemplateToolStripMenuItem.Text = "Add Card Layout From Template...";
             this.addCardLayoutFromTemplateToolStripMenuItem.Click += new System.EventHandler(this.addCardLayoutFromTemplateToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(238, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(251, 6);
             // 
             // toolStripMenuItemSetProjectNameFormat
             // 
             this.toolStripMenuItemSetProjectNameFormat.Name = "toolStripMenuItemSetProjectNameFormat";
-            this.toolStripMenuItemSetProjectNameFormat.Size = new System.Drawing.Size(241, 22);
+            this.toolStripMenuItemSetProjectNameFormat.Size = new System.Drawing.Size(254, 22);
             this.toolStripMenuItemSetProjectNameFormat.Text = "Set Name Format...";
-            this.toolStripMenuItemSetProjectNameFormat.Click += new System.EventHandler(this.setNameFormatToolStripMenuItem_Click);
+            this.toolStripMenuItemSetProjectNameFormat.Click += new System.EventHandler(this.toolStripMenuItemSetLayoutExport_Click);
             // 
             // toolStripMenuItem5
             // 
             this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(238, 6);
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(251, 6);
             // 
             // projectSettingsToolStripMenuItem
             // 
             this.projectSettingsToolStripMenuItem.Name = "projectSettingsToolStripMenuItem";
-            this.projectSettingsToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
+            this.projectSettingsToolStripMenuItem.Size = new System.Drawing.Size(254, 22);
             this.projectSettingsToolStripMenuItem.Text = "Project Settings...";
             this.projectSettingsToolStripMenuItem.Click += new System.EventHandler(this.projectSettingsToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem6
+            // 
+            this.toolStripMenuItem6.Name = "toolStripMenuItem6";
+            this.toolStripMenuItem6.Size = new System.Drawing.Size(251, 6);
+            // 
+            // windowsExplorerToolStripMenuItem
+            // 
+            this.windowsExplorerToolStripMenuItem.Name = "windowsExplorerToolStripMenuItem";
+            this.windowsExplorerToolStripMenuItem.Size = new System.Drawing.Size(254, 22);
+            this.windowsExplorerToolStripMenuItem.Text = "Show Project Folder...";
+            this.windowsExplorerToolStripMenuItem.Click += new System.EventHandler(this.windowsExplorerToolStripMenuItem_Click);
             // 
             // contextMenuStripLayout
             // 
@@ -183,102 +195,102 @@ namespace CardMaker.Forms
             this.addExcelReferenceToolStripMenuItem,
             this.addGoogleSpreadsheetReferenceToolStripMenuItem,
             this.toolStripMenuItem3,
-            this.toolStripMenuItemSetLayoutNameFormat});
+            this.toolStripMenuItemSetLayoutExport});
             this.contextMenuStripLayout.Name = "contextMenuStripLayout";
             this.contextMenuStripLayout.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.contextMenuStripLayout.Size = new System.Drawing.Size(259, 242);
+            this.contextMenuStripLayout.Size = new System.Drawing.Size(269, 286);
             // 
             // duplicateLayoutToolStripMenuItem
             // 
             this.duplicateLayoutToolStripMenuItem.Name = "duplicateLayoutToolStripMenuItem";
-            this.duplicateLayoutToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
+            this.duplicateLayoutToolStripMenuItem.Size = new System.Drawing.Size(268, 22);
             this.duplicateLayoutToolStripMenuItem.Text = "Duplicate Layout";
             this.duplicateLayoutToolStripMenuItem.Click += new System.EventHandler(this.duplicateLayoutToolStripMenuItem_Click);
             // 
             // duplicateLayoutCustomToolStripMenuItem
             // 
             this.duplicateLayoutCustomToolStripMenuItem.Name = "duplicateLayoutCustomToolStripMenuItem";
-            this.duplicateLayoutCustomToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
+            this.duplicateLayoutCustomToolStripMenuItem.Size = new System.Drawing.Size(268, 22);
             this.duplicateLayoutCustomToolStripMenuItem.Text = "Duplicate Layout (Custom)...";
             this.duplicateLayoutCustomToolStripMenuItem.Click += new System.EventHandler(this.duplicateLayoutCustomToolStripMenuItem_Click);
             // 
             // resizeLayoutToolStripMenuItem
             // 
             this.resizeLayoutToolStripMenuItem.Name = "resizeLayoutToolStripMenuItem";
-            this.resizeLayoutToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
+            this.resizeLayoutToolStripMenuItem.Size = new System.Drawing.Size(268, 22);
             this.resizeLayoutToolStripMenuItem.Text = "Resize Layout...";
             this.resizeLayoutToolStripMenuItem.Click += new System.EventHandler(this.resizeLayoutToolStripMenuItem_Click);
             // 
             // defineAsTemplateLayoutToolStripMenuItem
             // 
             this.defineAsTemplateLayoutToolStripMenuItem.Name = "defineAsTemplateLayoutToolStripMenuItem";
-            this.defineAsTemplateLayoutToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
+            this.defineAsTemplateLayoutToolStripMenuItem.Size = new System.Drawing.Size(268, 22);
             this.defineAsTemplateLayoutToolStripMenuItem.Text = "Define As Template Layout...";
             this.defineAsTemplateLayoutToolStripMenuItem.Click += new System.EventHandler(this.defineAsTemplateLayoutToolStripMenuItem_Click);
             // 
             // removeCardLayoutToolStripMenuItem
             // 
             this.removeCardLayoutToolStripMenuItem.Name = "removeCardLayoutToolStripMenuItem";
-            this.removeCardLayoutToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
+            this.removeCardLayoutToolStripMenuItem.Size = new System.Drawing.Size(268, 22);
             this.removeCardLayoutToolStripMenuItem.Text = "Remove Card Layout";
             this.removeCardLayoutToolStripMenuItem.Click += new System.EventHandler(this.removeLayoutToolStripMenuItem_Click);
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(255, 6);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(265, 6);
             // 
             // exportCardLayoutAsImagesToolStripMenuItem
             // 
             this.exportCardLayoutAsImagesToolStripMenuItem.Name = "exportCardLayoutAsImagesToolStripMenuItem";
-            this.exportCardLayoutAsImagesToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
+            this.exportCardLayoutAsImagesToolStripMenuItem.Size = new System.Drawing.Size(268, 22);
             this.exportCardLayoutAsImagesToolStripMenuItem.Text = "Export Card Layout as Images...";
             this.exportCardLayoutAsImagesToolStripMenuItem.Click += new System.EventHandler(this.exportCardLayoutAsImagesToolStripMenuItem_Click);
             // 
             // exportCardLayoutAsPDFToolStripMenuItem
             // 
             this.exportCardLayoutAsPDFToolStripMenuItem.Name = "exportCardLayoutAsPDFToolStripMenuItem";
-            this.exportCardLayoutAsPDFToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
+            this.exportCardLayoutAsPDFToolStripMenuItem.Size = new System.Drawing.Size(268, 22);
             this.exportCardLayoutAsPDFToolStripMenuItem.Text = "Export Card Layout as PDF...";
             this.exportCardLayoutAsPDFToolStripMenuItem.Click += new System.EventHandler(this.exportCardLayoutAsPDFToolStripMenuItem_Click);
             // 
             // toolStripMenuItem4
             // 
             this.toolStripMenuItem4.Name = "toolStripMenuItem4";
-            this.toolStripMenuItem4.Size = new System.Drawing.Size(255, 6);
+            this.toolStripMenuItem4.Size = new System.Drawing.Size(265, 6);
             // 
             // addReferenceToolStripMenuItem
             // 
             this.addReferenceToolStripMenuItem.Name = "addReferenceToolStripMenuItem";
-            this.addReferenceToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
+            this.addReferenceToolStripMenuItem.Size = new System.Drawing.Size(268, 22);
             this.addReferenceToolStripMenuItem.Text = "Add Reference...";
             this.addReferenceToolStripMenuItem.Click += new System.EventHandler(this.addReferenceToolStripMenuItem_Click);
             // 
             // addExcelReferenceToolStripMenuItem
             // 
             this.addExcelReferenceToolStripMenuItem.Name = "addExcelReferenceToolStripMenuItem";
-            this.addExcelReferenceToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
+            this.addExcelReferenceToolStripMenuItem.Size = new System.Drawing.Size(268, 22);
             this.addExcelReferenceToolStripMenuItem.Text = "Add Excel Reference...";
             this.addExcelReferenceToolStripMenuItem.Click += new System.EventHandler(this.addExcelReferenceToolStripMenuItem_Click);
             // 
             // addGoogleSpreadsheetReferenceToolStripMenuItem
             // 
             this.addGoogleSpreadsheetReferenceToolStripMenuItem.Name = "addGoogleSpreadsheetReferenceToolStripMenuItem";
-            this.addGoogleSpreadsheetReferenceToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
+            this.addGoogleSpreadsheetReferenceToolStripMenuItem.Size = new System.Drawing.Size(268, 22);
             this.addGoogleSpreadsheetReferenceToolStripMenuItem.Text = "Add Google Spreadsheet Reference...";
             this.addGoogleSpreadsheetReferenceToolStripMenuItem.Click += new System.EventHandler(this.addGoogleSpreadsheetReferenceToolStripMenuItem_Click);
             // 
             // toolStripMenuItem3
             // 
             this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(255, 6);
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(265, 6);
             // 
-            // toolStripMenuItemSetLayoutNameFormat
+            // toolStripMenuItemSetLayoutExport
             // 
-            this.toolStripMenuItemSetLayoutNameFormat.Name = "toolStripMenuItemSetLayoutNameFormat";
-            this.toolStripMenuItemSetLayoutNameFormat.Size = new System.Drawing.Size(258, 22);
-            this.toolStripMenuItemSetLayoutNameFormat.Text = "Configure Layout Settings...";
-            this.toolStripMenuItemSetLayoutNameFormat.Click += new System.EventHandler(this.setNameFormatToolStripMenuItem_Click);
+            this.toolStripMenuItemSetLayoutExport.Name = "toolStripMenuItemSetLayoutExport";
+            this.toolStripMenuItemSetLayoutExport.Size = new System.Drawing.Size(268, 22);
+            this.toolStripMenuItemSetLayoutExport.Text = "Configure Layout Export...";
+            this.toolStripMenuItemSetLayoutExport.Click += new System.EventHandler(this.toolStripMenuItemSetLayoutExport_Click);
             // 
             // contextMenuStripReference
             // 
@@ -287,33 +299,21 @@ namespace CardMaker.Forms
             this.removeReferenceToolStripMenuItem});
             this.contextMenuStripReference.Name = "contextMenuStripReference";
             this.contextMenuStripReference.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.contextMenuStripReference.Size = new System.Drawing.Size(197, 48);
+            this.contextMenuStripReference.Size = new System.Drawing.Size(203, 48);
             // 
             // setAsDefaultReferenceToolStripMenuItem
             // 
             this.setAsDefaultReferenceToolStripMenuItem.Name = "setAsDefaultReferenceToolStripMenuItem";
-            this.setAsDefaultReferenceToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+            this.setAsDefaultReferenceToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
             this.setAsDefaultReferenceToolStripMenuItem.Text = "Set As Default Reference";
             this.setAsDefaultReferenceToolStripMenuItem.Click += new System.EventHandler(this.setAsDefaultReferenceToolStripMenuItem_Click);
             // 
             // removeReferenceToolStripMenuItem
             // 
             this.removeReferenceToolStripMenuItem.Name = "removeReferenceToolStripMenuItem";
-            this.removeReferenceToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+            this.removeReferenceToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
             this.removeReferenceToolStripMenuItem.Text = "Remove Reference";
             this.removeReferenceToolStripMenuItem.Click += new System.EventHandler(this.removeReferenceToolStripMenuItem_Click);
-            // 
-            // toolStripMenuItem6
-            // 
-            this.toolStripMenuItem6.Name = "toolStripMenuItem6";
-            this.toolStripMenuItem6.Size = new System.Drawing.Size(238, 6);
-            // 
-            // windowsExplorerToolStripMenuItem
-            // 
-            this.windowsExplorerToolStripMenuItem.Name = "windowsExplorerToolStripMenuItem";
-            this.windowsExplorerToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
-            this.windowsExplorerToolStripMenuItem.Text = "Show Project Folder...";
-            this.windowsExplorerToolStripMenuItem.Click += new System.EventHandler(this.windowsExplorerToolStripMenuItem_Click);
             // 
             // MDIProject
             // 
@@ -348,7 +348,7 @@ namespace CardMaker.Forms
         private ToolStripMenuItem removeReferenceToolStripMenuItem;
         private ToolStripSeparator toolStripMenuItem1;
         private ToolStripSeparator toolStripMenuItem3;
-        private ToolStripMenuItem toolStripMenuItemSetLayoutNameFormat;
+        private ToolStripMenuItem toolStripMenuItemSetLayoutExport;
         private ToolStripSeparator toolStripMenuItem2;
         private ToolStripSeparator toolStripMenuItem4;
         private ToolStripMenuItem addGoogleSpreadsheetReferenceToolStripMenuItem;
