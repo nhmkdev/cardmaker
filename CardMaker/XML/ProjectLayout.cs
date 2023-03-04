@@ -168,6 +168,10 @@ namespace CardMaker.XML
             exportWidth = zLayout.exportWidth;
             exportHeight = zLayout.exportHeight;
             exportTransparentBackground = zLayout.exportTransparentBackground;
+            exportPDFAsPageBack = zLayout.exportPDFAsPageBack;
+            exportLayoutBorder = zLayout.exportLayoutBorder;
+            exportLayoutBorderCrossSize = zLayout.exportLayoutBorderCrossSize;
+
             if (null != zLayout.Element)
             {
                 var listElements = new List<ProjectLayoutElement>();
