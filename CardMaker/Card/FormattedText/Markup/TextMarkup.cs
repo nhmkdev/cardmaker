@@ -21,6 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
+#define STUPID
 
 using System;
 using System.Collections.Generic;
@@ -41,6 +42,8 @@ namespace CardMaker.Card.FormattedText.Markup
         public float m_fFontOutlineSize;
         private float m_fXOffset;
         private float m_fYOffset;
+        private float m_fFontScaleX;
+        private float m_fFontScaleY;
 
         private RectangleF m_rectMeasuredRectangle = RectangleF.Empty;
 
@@ -53,11 +56,14 @@ namespace CardMaker.Card.FormattedText.Markup
 
         protected override bool ProcessMarkupHandler(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
+            m_sVariable = zProcessData.ForceTextCaps ? m_sVariable.ToUpper() : m_sVariable;
             m_zFontBrush = zProcessData.FontBrush;
             m_zFont = zProcessData.Font;
             m_fFontHeight = zProcessData.FontHeight;
             m_fXOffset = zProcessData.CurrentXOffset;
             m_fYOffset = zProcessData.CurrentYOffset;
+            m_fFontScaleX = zProcessData.FontScaleX;
+            m_fFontScaleY = zProcessData.FontScaleY;
 
             LineNumber = zProcessData.CurrentLine;
 
@@ -100,11 +106,12 @@ namespace CardMaker.Card.FormattedText.Markup
             return true;
         }
 
-        public static RectangleF MeasureDisplayStringWidth(Graphics zGraphics, string text, Font font)
+        public RectangleF MeasureDisplayStringWidth(Graphics zGraphics, string text, Font font)
         {
             // measurements should be performed at the reset transform
             var matrixOriginalTransform = zGraphics.Transform;
             zGraphics.ResetTransform();
+            zGraphics.ScaleTransform(m_fFontScaleX, m_fFontScaleY);
             var zFormat = new StringFormat
             {
                 Alignment = StringAlignment.Near,
@@ -112,12 +119,11 @@ namespace CardMaker.Card.FormattedText.Markup
             };
             var rect = new RectangleF(0, 0, 65536, 65536);
             CharacterRange[] ranges = { new CharacterRange(0, text.Length) };
-            var regions = new Region[1];
-
             zFormat.SetMeasurableCharacterRanges(ranges);
-
-            regions = zGraphics.MeasureCharacterRanges(text, font, rect, zFormat);
+            var regions = zGraphics.MeasureCharacterRanges(text, font, rect, zFormat);
             rect = regions[0].GetBounds(zGraphics);
+            rect.Width *= m_fFontScaleX;
+            rect.Height *= m_fFontScaleY;
             zGraphics.Transform = matrixOriginalTransform;
             return rect;
         }
@@ -137,8 +143,8 @@ namespace CardMaker.Card.FormattedText.Markup
             }
 
             // NOTE: when rendering there is no need for a target rect as that information has already been processed
-            float targetX = TargetRect.X + m_fXOffset;
-            float targetY = TargetRect.Y + m_fYOffset;
+            var targetX = TargetRect.X + m_fXOffset;
+            var targetY = TargetRect.Y + m_fYOffset;
 
             // draw border (debugging)
             if (CardMakerInstance.DrawFormattedTextBorder)
@@ -147,13 +153,17 @@ namespace CardMaker.Card.FormattedText.Markup
             }
 
             // when a string is measured there is a bit of an offset to where it renders (into the target rect a few pixels right ---->)
-            targetX -= m_rectMeasuredRectangle.X;
+            targetX -= m_rectMeasuredRectangle.X * m_fFontScaleX;
 
             if (0 == zElement.outlinethickness)
             {
                 try
                 {
-                    zGraphics.DrawString(m_sVariable, m_zFont, m_zFontBrush, targetX, targetY, zFormat);
+                    var zOrigTransform = zGraphics.Transform;
+                    zGraphics.TranslateTransform(targetX, targetY);
+                    zGraphics.ScaleTransform(m_fFontScaleX, m_fFontScaleY);
+                    zGraphics.DrawString(m_sVariable, m_zFont, m_zFontBrush, 0, 0, zFormat);
+                    zGraphics.Transform = zOrigTransform;
                 }
                 catch (Exception)
                 {
@@ -165,9 +175,12 @@ namespace CardMaker.Card.FormattedText.Markup
                 try
                 {
                     var zPath = new GraphicsPath();
-                    zPath.AddString(m_sVariable, m_zFont.FontFamily, (int) m_zFont.Style, m_fFontOutlineSize,
-                        new PointF(targetX, targetY), zFormat);
+                    zPath.AddString(m_sVariable, m_zFont.FontFamily, (int) m_zFont.Style, m_fFontOutlineSize, new PointF(0, 0), zFormat);
+                    var zOrigTransform = zGraphics.Transform;
+                    zGraphics.TranslateTransform(targetX, targetY);
+                    zGraphics.ScaleTransform(m_fFontScaleX, m_fFontScaleY);
                     CardRenderer.DrawElementPath(zElement, zGraphics, zPath, m_zFontBrush);
+                    zGraphics.Transform = zOrigTransform;
                 }
                 catch (Exception)
                 {
