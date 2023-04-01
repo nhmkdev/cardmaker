@@ -73,6 +73,7 @@ namespace Support.UI
             this.picturePurpleToBlue = new Support.UI.PictureBoxSelectable();
             this.pictureRedToPurple = new Support.UI.PictureBoxSelectable();
             this.pictureColorHue = new Support.UI.PictureBoxSelectable();
+            this.btnSelectFromScreen = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.numericRed)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericBlue)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericGreen)).BeginInit();
@@ -97,6 +98,7 @@ namespace Support.UI
             // 
             // btnOK
             // 
+            this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnOK.Location = new System.Drawing.Point(320, 336);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(65, 23);
@@ -107,6 +109,7 @@ namespace Support.UI
             // 
             // btnCancel
             // 
+            this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnCancel.Location = new System.Drawing.Point(391, 336);
             this.btnCancel.Name = "btnCancel";
@@ -344,6 +347,17 @@ namespace Support.UI
             this.pictureColorHue.MouseLeave += new System.EventHandler(this.pictureColor_MouseLeave);
             this.pictureColorHue.MouseMove += new System.Windows.Forms.MouseEventHandler(this.HandleMouseHueColor);
             // 
+            // btnSelectFromScreen
+            // 
+            this.btnSelectFromScreen.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSelectFromScreen.Location = new System.Drawing.Point(320, 307);
+            this.btnSelectFromScreen.Name = "btnSelectFromScreen";
+            this.btnSelectFromScreen.Size = new System.Drawing.Size(136, 23);
+            this.btnSelectFromScreen.TabIndex = 18;
+            this.btnSelectFromScreen.Text = "Select from Screen";
+            this.btnSelectFromScreen.UseVisualStyleBackColor = true;
+            this.btnSelectFromScreen.Click += new System.EventHandler(this.btnSelectFromScreen_Click);
+            // 
             // RGBColorSelectDialog
             // 
             this.AcceptButton = this.btnOK;
@@ -351,6 +365,7 @@ namespace Support.UI
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(464, 369);
+            this.Controls.Add(this.btnSelectFromScreen);
             this.Controls.Add(this.panelColorBG);
             this.Controls.Add(this.numericAlpha);
             this.Controls.Add(this.checkBoxAddZeroX);
@@ -417,5 +432,6 @@ namespace Support.UI
         private System.Windows.Forms.CheckBox checkBoxAddZeroX;
         private System.Windows.Forms.NumericUpDown numericAlpha;
         private System.Windows.Forms.Panel panelColorBG;
+        private System.Windows.Forms.Button btnSelectFromScreen;
     }
 }

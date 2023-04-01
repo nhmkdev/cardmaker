@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Threading;
 using System.Windows.Forms;
 using CardMaker.XML;
 
@@ -37,6 +38,8 @@ namespace Support.UI
         bool m_bEventsEnabled = true;
         private Color m_lastColor = Color.Black;
 
+        private bool m_bScreenPixelSelectionMode = false;
+        private Bitmap m_BitmapPixelSelect = new Bitmap(1, 1);
         readonly Bitmap m_BitmapHue;
 
         private const int PREVIOUS_COLOR_WIDTH = 16;
@@ -386,6 +389,10 @@ namespace Support.UI
 
         private void RGBColorSelectDialog_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (m_bScreenPixelSelectionMode)
+            {
+                e.Cancel = true;
+            }
             s_bZeroXChecked = checkBoxAddZeroX.Checked;
         }
 
@@ -405,6 +412,38 @@ namespace Support.UI
                     UpdateColorBox(zColor, txtHexColor);
                 }
             }
+        }
+
+        private void AssignColorFromPixelAtCursorThread()
+        {
+            do
+            {
+                Thread.Sleep(50);
+                var x = Cursor.Position.X;
+                var y = Cursor.Position.Y;
+                var rectBounds = new Rectangle(x, y, 1, 1);
+                using (var zGraphics = Graphics.FromImage(m_BitmapPixelSelect))
+                    zGraphics.CopyFromScreen(rectBounds.Location, Point.Empty, rectBounds.Size);
+                var colorPixel = m_BitmapPixelSelect.GetPixel(0, 0);
+                if (!m_bScreenPixelSelectionMode) break;
+                this.InvokeAction(() => UpdateColorBox(colorPixel));
+            } while (Visible && m_bScreenPixelSelectionMode);
+        }
+
+        private void btnSelectFromScreen_Click(object sender, EventArgs e)
+        {
+            if (m_bScreenPixelSelectionMode)
+            {
+                m_bScreenPixelSelectionMode = false;
+            }
+            else
+            {
+                m_bScreenPixelSelectionMode = true;
+                new Thread(AssignColorFromPixelAtCursorThread).Start();
+            }
+
+            btnOK.Enabled = btnCancel.Enabled = !m_bScreenPixelSelectionMode;
+            btnSelectFromScreen.Text = m_bScreenPixelSelectionMode ? "Assign with Spacebar" : "Select from Screen";
         }
     }
 
