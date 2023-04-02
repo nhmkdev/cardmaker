@@ -68,6 +68,8 @@ namespace CardMaker.Card.Export
             var progressLayoutIdx = ProgressReporter.GetProgressIndex(ProgressName.LAYOUT);
             var progressCardIdx = ProgressReporter.GetProgressIndex(ProgressName.CARD);
 
+            // Exports may put multiple cards into a single exported image (referred to as a container below)
+
             ProgressReporter.ProgressReset(progressLayoutIdx, 0, ExportLayoutIndices.Length, 0);
             foreach (var nIdx in ExportLayoutIndices)
             {
@@ -78,25 +80,36 @@ namespace CardMaker.Card.Export
                     ProgressReporter.ProgressStep(progressLayoutIdx);
                     continue;
                 }
-                var nPadSize = CurrentDeck.CardCount.ToString(CultureInfo.InvariantCulture).Length;
+                var nCardCountPadSize = CurrentDeck.CardCount.ToString(CultureInfo.InvariantCulture).Length;
                 ProgressReporter.ProgressReset(progressCardIdx, 0, CurrentDeck.CardCount, 0);
 
-                var exportWidth = CurrentDeck.CardLayout.exportWidth == 0
+                var exportContainerWidth = CurrentDeck.CardLayout.exportWidth == 0
                     ? CurrentDeck.CardLayout.width : CurrentDeck.CardLayout.exportWidth;
 
-                var exportHeight = CurrentDeck.CardLayout.exportHeight == 0
+                var exportContainerHeight = CurrentDeck.CardLayout.exportHeight == 0
                     ? CurrentDeck.CardLayout.height : CurrentDeck.CardLayout.exportHeight;
 
-                if (CurrentDeck.CardLayout.width > exportWidth ||
-                    CurrentDeck.CardLayout.height > exportHeight)
+                if (CurrentDeck.CardLayout.width > exportContainerWidth ||
+                    CurrentDeck.CardLayout.height > exportContainerHeight)
                 {
                     Logger.AddLogLine(
                         $"ERROR: Layout: [{CurrentDeck.CardLayout.Name}] exportWidth and/or exportHeight too small! (Skipping export)");
                     continue;
                 }
 
-                UpdateBufferBitmap(exportWidth, exportHeight);
-                var zGraphics = Graphics.FromImage(m_zExportCardBuffer);
+                // swap width/height if necessary for rotation
+                var currentCardWidth = CurrentDeck.CardLayout.width;
+                var currentCardHeight = CurrentDeck.CardLayout.height;
+                if (Math.Abs(CurrentDeck.CardLayout.exportRotation) == 90)
+                {
+                    (exportContainerWidth, exportContainerHeight) = (exportContainerHeight, exportContainerWidth);
+                    (currentCardWidth, currentCardHeight) = (currentCardHeight, currentCardWidth);
+                }
+
+                UpdateBufferBitmap(exportContainerWidth, exportContainerHeight);
+                // The graphics must be initialized BEFORE the resolution of the bitmap is set (graphics will be the same DPI as the application/card)
+                var zContainerGraphics = Graphics.FromImage(m_zExportCardBuffer);
+                m_zExportCardBuffer.SetResolution(CurrentDeck.CardLayout.dpi, CurrentDeck.CardLayout.dpi);
                 var arrayCardIndices = GetCardIndicesArray(CurrentDeck);
                 for(var nCardArrayIdx = 0; nCardArrayIdx < arrayCardIndices.Length; nCardArrayIdx++)
                 {
@@ -104,9 +117,7 @@ namespace CardMaker.Card.Export
                     var nX = 0;
                     var nY = 0;
                     var nCardsExportedInImage = 0;
-                    zGraphics.Clear(CurrentDeck.CardLayout.exportTransparentBackground ?
-                        CardMakerConstants.NoColor :
-                        Color.White);
+                    ClearGraphics(zContainerGraphics);
                     do
                     {
                         // NOTE: If this loops to create a multi-card image the cardId needs to be updated
@@ -115,12 +126,17 @@ namespace CardMaker.Card.Export
                         // HACK - the printcard index is 0 based but all other uses of nCardId are 1 based (so ++ it!)
                         CurrentDeck.CardPrintIndex = nCardId++;
                         nCardsExportedInImage++;
-                        CardRenderer.DrawPrintLineToGraphics(zGraphics, nX, nY, !CurrentDeck.CardLayout.exportTransparentBackground);
-                        m_zExportCardBuffer.SetResolution(CurrentDeck.CardLayout.dpi, CurrentDeck.CardLayout.dpi);
+#warning TODO: optimize this by only creating the bitmap when necessary                        
+                        var bitmapSingleCard = new Bitmap(CurrentDeck.CardLayout.width, CurrentDeck.CardLayout.height);
+                        var zSingleCardGraphics = Graphics.FromImage(bitmapSingleCard);
+                        ClearGraphics(zSingleCardGraphics);
+                        CardRenderer.DrawPrintLineToGraphics(zSingleCardGraphics, 0, 0, !CurrentDeck.CardLayout.exportTransparentBackground);
+                        ProcessRotateExport(bitmapSingleCard, CurrentDeck.CardLayout, false);
+                        zContainerGraphics.DrawImage(bitmapSingleCard, nX, nY);
 
                         ProgressReporter.ProgressStep(progressCardIdx);
 
-                        int nMoveCount = 1;
+                        var nMoveCount = 1;
                         if (m_nSkipStitchIndex > 0)
                         {
                             var x = ((nCardsExportedInImage + 1)%m_nSkipStitchIndex);
@@ -132,15 +148,17 @@ namespace CardMaker.Card.Export
                         }
 
                         var bOutOfSpace = false;
-                        for (int nShift = 0; nShift < nMoveCount; nShift++)
+
+                        for (var nShift = 0; nShift < nMoveCount; nShift++)
                         {
-                            nX += CurrentDeck.CardLayout.width + CurrentDeck.CardLayout.buffer;
-                            if (nX + CurrentDeck.CardLayout.width > exportWidth)
+#warning this is messed up for rotated layouts
+                            nX += currentCardWidth + CurrentDeck.CardLayout.buffer;
+                            if (nX + currentCardWidth > exportContainerWidth)
                             {
                                 nX = 0;
-                                nY += CurrentDeck.CardLayout.height + CurrentDeck.CardLayout.buffer;
+                                nY += currentCardHeight + CurrentDeck.CardLayout.buffer;
                             }
-                            if (nY + CurrentDeck.CardLayout.height > exportHeight)
+                            if (nY + currentCardHeight > exportContainerHeight)
                             {
                                 // no more space
                                 bOutOfSpace = true;
@@ -163,25 +181,24 @@ namespace CardMaker.Card.Export
                     if (!string.IsNullOrEmpty(m_sOverrideStringFormat))
                     {
                         // check for the super override
-                        sFileName = CurrentDeck.TranslateFileNameString(m_sOverrideStringFormat, nCardId, nPadSize);
+                        sFileName = CurrentDeck.TranslateFileNameString(m_sOverrideStringFormat, nCardId, nCardCountPadSize);
                     }
                     else if (!string.IsNullOrEmpty(CurrentDeck.CardLayout.exportNameFormat))
                     {
                         // check for the per layout override
-                        sFileName = CurrentDeck.TranslateFileNameString(CurrentDeck.CardLayout.exportNameFormat, nCardId, nPadSize);
+                        sFileName = CurrentDeck.TranslateFileNameString(CurrentDeck.CardLayout.exportNameFormat, nCardId, nCardCountPadSize);
                     }
                     else // default
                     {
-                        sFileName = CurrentDeck.CardLayout.Name + "_" + (nCardId).ToString(CultureInfo.InvariantCulture).PadLeft(nPadSize, '0');
+                        sFileName = CurrentDeck.CardLayout.Name + "_" + (nCardId).ToString(CultureInfo.InvariantCulture).PadLeft(nCardCountPadSize, '0');
                     }
+                    
                     try
                     {
-                        ProcessRotateExport(m_zExportCardBuffer, CurrentDeck.CardLayout, false);
                         m_zExportCardBuffer.Save(
                             m_sExportFolder + sFileName +
                             "." + m_eImageFormat.ToString().ToLower(),
                             m_eImageFormat);
-                        ProcessRotateExport(m_zExportCardBuffer, CurrentDeck.CardLayout, true);
                     }
                     catch (Exception ex)
                     {
@@ -230,6 +247,13 @@ namespace CardMaker.Card.Export
         {
             m_zExportCardBuffer?.Dispose();
             m_zExportCardBuffer = new Bitmap(nWidth, nHeight);
+        }
+
+        protected void ClearGraphics(Graphics zGraphics)
+        {
+            zGraphics.Clear(CurrentDeck.CardLayout.exportTransparentBackground ?
+                CardMakerConstants.NoColor :
+                Color.White);
         }
     }
 }
