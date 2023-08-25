@@ -116,6 +116,17 @@ namespace UnitTest.DeckObject
             return result.String;
         }
 
+        [TestCase("aa#padl;5;0;123#bb", ExpectedResult = "aa00123bb")]
+        [TestCase("aa#padr;5;0;123#bb", ExpectedResult = "aa12300bb")]
+        [TestCase("aa#padl;3;0;123#bb", ExpectedResult = "aa123bb")]
+        [TestCase("aa#padr;3;0;123#bb", ExpectedResult = "aa123bb")]
+        public string ValidatePadding(string input)
+        {
+            _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
+            var result = _testDeck.TranslateString(input, _testLine, _testElement, false);
+            return result.String;
+        }
+
         // todo if/switch tests with bggraphic and shape
 
         [TestCase("#(if a == a then word else word2)#", ExpectedResult = "word")]

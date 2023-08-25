@@ -71,6 +71,7 @@ namespace CardMaker.Card.Translation
         private static readonly Regex s_regexIfThenElseStatement = new Regex(@"(if)(.*?)\s([!=><]=|<|>)\s(.*?)(then )(.*?)( else )(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexIfSet = new Regex(@"(\[)(.*?)(\])", RegexOptions.Compiled);
         private static readonly Regex s_regexSwitchStatement = new Regex(@"(switch)(;)(.*?)(;)(.*)", RegexOptions.Compiled);
+        private static readonly Regex s_regexPadStatement = new Regex(@"(.*)(#pad)([l|r])(;)(\d+)(;)(\d+)(;)(.*?)(#)(.*)", RegexOptions.Compiled);
 
         private const string SWITCH = "switch";
         
@@ -150,6 +151,9 @@ namespace CardMaker.Card.Translation
 
             // Translate repeat
             sOutput = LoopTranslateRegex(s_regexRepeat, sOutput, zTranslationContext, TranslateRepeat);
+
+            // Translate padding
+            sOutput = LoopTranslateRegex(s_regexPadStatement, sOutput, zTranslationContext, TranslatePadding);
 
             // if / switch processor
             sOutput = LoopTranslationMatchMap(sOutput, zTranslationContext, s_dictionaryLogicFuncs);
@@ -399,6 +403,22 @@ namespace CardMaker.Card.Translation
             }
 
             return zMatch.Groups[1] + zBuilder.ToString() + zMatch.Groups[7];
+        }
+
+        private static string TranslatePadding(Match zMatch, TranslationContext zTranslationContext)
+        {
+            // Translate padding
+            //Groups
+            // 1   2     3      4  5    6  7  8  9    10 11
+            //(.*)(#pad)([l|r])(;)(\d+)(;)(.)(;)(.*?)(#)(.*)
+
+            var sPadded = zMatch.Groups[3].ToString()[0] == 'l'
+                ? zMatch.Groups[9].ToString()
+                    .PadLeft(int.Parse(zMatch.Groups[5].ToString()), zMatch.Groups[7].ToString()[0])
+                : zMatch.Groups[9].ToString()
+                    .PadRight(int.Parse(zMatch.Groups[5].ToString()), zMatch.Groups[7].ToString()[0]);
+
+            return zMatch.Groups[1] + sPadded + zMatch.Groups[11];
         }
 
         private static string TranslateIf(Match zMatch, TranslationContext zTranslationContext)
