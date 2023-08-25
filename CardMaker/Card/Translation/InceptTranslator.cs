@@ -163,6 +163,22 @@ namespace CardMaker.Card.Translation
             return zElementString;
         }
 
+        private static Dictionary<string, Func<TranslationContext, string>> s_dictTranslateCardVariables =
+            new Dictionary<string, Func<TranslationContext, string>>()
+            {
+                {"cardindex", (zTranslationContext) =>  (zTranslationContext.CardIndex + 1).ToString()},
+                {"deckindex", (zTranslationContext) => (zTranslationContext.DeckLine.RowSubIndex + 1).ToString() },
+                {"cardcount", (zTranslationContext) =>  zTranslationContext.Deck.CardCount.ToString() },
+                {"elementname", (zTranslationContext) => zTranslationContext.Element.name },
+                {"refname", (zTranslationContext) => zTranslationContext.DeckLine.Reference == null
+                    ? "No reference info."
+                    : zTranslationContext.DeckLine.Reference.Source },
+                {"refline", (zTranslationContext) => zTranslationContext.DeckLine.Reference == null
+                    ? "No reference info."
+                    : zTranslationContext.DeckLine.Reference.LineNumber.ToString() },
+                {"layoutname", (zTranslationContext) => zTranslationContext.Deck.CardLayout.Name },
+            };
+
         private static string TranslateCardVariables(Match zMatch, TranslationContext zTranslationContext)
         {
             // Translate card variables (non-reference information)
@@ -172,40 +188,14 @@ namespace CardMaker.Card.Translation
             string sDefineValue;
             var sKey = zMatch.Groups[3].ToString().ToLower();
 
-#warning TODO: if there are many more this should be converted to a dictionary of methods
-            // NOTE: if this expands into more variables move all this into some other method and use a dictionary lookup
-            if (sKey.Equals("cardindex"))
-            {
-                sDefineValue = (zTranslationContext.CardIndex + 1).ToString();
-            }
-            else if (sKey.Equals("deckindex"))
-            {
-                sDefineValue = (zTranslationContext.DeckLine.RowSubIndex + 1).ToString();
-            }
-            else if (sKey.Equals("cardcount"))
-            {
-                sDefineValue = zTranslationContext.Deck.CardCount.ToString();
-            }
-            else if (sKey.Equals("elementname"))
-            {
-                sDefineValue = zTranslationContext.Element.name;
-            }
-            else if (sKey.Equals("refname"))
-            {
-                sDefineValue = zTranslationContext.DeckLine.Reference == null 
-                    ? "No reference info."
-                    : zTranslationContext.DeckLine.Reference.Source;
-            }
-            else if (sKey.Equals("refline"))
-            {
-                sDefineValue = zTranslationContext.DeckLine.Reference == null
-                    ? "No reference info."
-                    : zTranslationContext.DeckLine.Reference.LineNumber.ToString();
-            }
-            else
+            if (!s_dictTranslateCardVariables.ContainsKey(sKey))
             {
                 IssueManager.Instance.FireAddIssueEvent("Bad card variable: " + sKey);
                 sDefineValue = "[BAD NAME: " + sKey + "]";
+            }
+            else
+            {
+                sDefineValue = s_dictTranslateCardVariables[sKey](zTranslationContext);
             }
 
             return zMatch.Groups[1] + sDefineValue + zMatch.Groups[5];

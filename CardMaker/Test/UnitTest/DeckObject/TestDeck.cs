@@ -36,10 +36,13 @@ namespace UnitTest.DeckObject
     {
         protected ProgressReporterProxy m_zReporterProxy;
 
+        public const string LAYOUT_NAME = "testLayout";
+
         public TestDeck()
         {
             CardLayout = new ProjectLayout()
             {
+                Name = LAYOUT_NAME,
                 defaultCount = 10
             };
         }
@@ -48,6 +51,7 @@ namespace UnitTest.DeckObject
         {
             CardLayout = new ProjectLayout()
             {
+                Name = LAYOUT_NAME,
                 defaultCount = 10
             };
             TranslatorFactory = zTranslatorFactory;

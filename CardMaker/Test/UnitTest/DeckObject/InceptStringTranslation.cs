@@ -108,6 +108,7 @@ namespace UnitTest.DeckObject
         [TestCase("![elementname]", ExpectedResult = TEST_ELEMENT_NAME)]
         [TestCase("![cardIndex]", ExpectedResult = "0")]
         [TestCase("![deckIndex]", ExpectedResult = "1")]
+        [TestCase("![layoutname]", ExpectedResult = TestDeck.LAYOUT_NAME)]
         public string ValidateCardVariable(string input)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
@@ -266,6 +267,7 @@ namespace UnitTest.DeckObject
         [TestCase("#(if == #empty then #nodraw)#", false, ExpectedResult = "#nodraw")]
         [TestCase("#nodraw", false, ExpectedResult = "#nodraw")]
         [TestCase("#(if a<4 == a>4 then 6 &lt; 7 else #nodraw)#", false, ExpectedResult = "#nodraw")]
+        [TestCase("#(if [;] == [] then #nodraw)#", false, ExpectedResult = "#nodraw")]
         [TestCase("#(if a<4 == a>4 then #nodraw else 6 &lt; 7)#", true, ExpectedResult = "6 < 7")]
         public string ValidateNoDraw(string input, bool expectedDrawElement)
         {
