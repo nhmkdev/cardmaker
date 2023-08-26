@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
+using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
 
@@ -62,7 +63,7 @@ namespace Support.UI
 			NumBox,
             NumBoxSlider,
             BrowseBox,
-			Label,
+            Label,
             Button,
             ListBox,
             DateTimePicker,
@@ -579,14 +580,65 @@ namespace Support.UI
 			return AddBrowseBox(sLabel, sDefault, sFilter, zQueryKey);
 		}
 
-		/// <summary>
-		/// Adds a browse component (button/textbox/label)
-		/// </summary>
-		/// <param name="sLabel">Label for the component</param>
-		/// <param name="sDefault">Default value</param>
-		/// <param name="sFilter">File filter (applies to file browsing only)</param>
+        /// <summary>
+        /// Adds a file browser component.
+        /// </summary>
+        /// <param name="sLabel">Label string</param>
+        /// <param name="arrayDefaults">Array of items in the combo box (0 index will be selected)</param>
+        /// <param name="sFilter">File filter (standard format for OpenFileDialog), string.empty for default *.*</param>
         /// <param name="zQueryKey">The query key for requesting the value</param>
-		private TextBox AddBrowseBox(string sLabel, string sDefault, string sFilter, object zQueryKey)
+        public ComboBox AddFileBrowseComboBox(string sLabel, string[] arrayDefaults, string sFilter, object zQueryKey)
+        {
+            var zLabel = CreateLabel(sLabel);
+            var zButton = new Button();
+            var zTextLocation = new Point(GetLabelWidth(zLabel) + (X_CONTROL_BUFFER), GetYPosition());
+            var zCombo = new ComboBox
+            {
+                Location = zTextLocation,
+                Size =
+                    new Size(
+                        m_zCurrentLayoutControl.ClientSize.Width - (zTextLocation.X + X_BUTTON_WIDTH + (X_CONTROL_BUFFER * 2)),
+                        Y_CONTROL_HEIGHT),
+                Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top
+            };
+            if (arrayDefaults != null && arrayDefaults.Length > 0)
+            {
+                zCombo.Items.AddRange(arrayDefaults);
+                zCombo.SelectedIndex = 0;
+            }
+
+            if (null != sFilter)
+            {
+                zCombo.Tag = 0 != sFilter.Length
+                    ? sFilter
+                    : "All files (*.*)|*.*";
+            }
+            zLabel.Height = zCombo.Height; // adjust the height of the label to match the control to its right
+
+            zButton.Text = "...";
+            zButton.Size = new Size(X_BUTTON_WIDTH, Y_CONTROL_HEIGHT);
+            zButton.Location = new Point(m_zCurrentLayoutControl.ClientSize.Width - (zButton.Size.Width + X_CONTROL_BUFFER), GetYPosition());
+            zButton.Tag = zCombo; // the tag of the button is the textbox
+            zButton.Anchor = AnchorStyles.Right | AnchorStyles.Top;
+            zButton.Click += zButton_Click;
+
+            AddPendingControl(zLabel);
+            AddPendingControl(zCombo);
+            AddPendingControl(zButton);
+            AddToYPosition(zCombo.Size.Height + Y_CONTROL_BUFFER);
+            var qItem = new QueryItem(ControlType.ComboBox, zCombo, zButton, ref m_nTabIndex); // the tag of the QueryItem is the button (used when disabling the QueryItem)
+            m_dictionaryItems.Add(zQueryKey, qItem);
+            return zCombo;
+        }
+
+        /// <summary>
+        /// Adds a browse component (button/textbox/label)
+        /// </summary>
+        /// <param name="sLabel">Label for the component</param>
+        /// <param name="sDefault">Default value</param>
+        /// <param name="sFilter">File filter (applies to file browsing only)</param>
+        /// <param name="zQueryKey">The query key for requesting the value</param>
+        private TextBox AddBrowseBox(string sLabel, string sDefault, string sFilter, object zQueryKey)
 		{
             var zLabel = CreateLabel(sLabel);
             var zButton = new Button();
@@ -1133,16 +1185,17 @@ namespace Support.UI
 		private void zButton_Click(object sender, EventArgs e)
 		{
             var zButton = (Button)sender;
-            var zText = (TextBox)zButton.Tag;
+            var zText = (Control)zButton.Tag;
             var sFilter = (string)zText.Tag;
 			
 			if(!string.IsNullOrEmpty(sFilter)) // file browse
 			{
 			    var ofn = new OpenFileDialog
 			    {
+                    InitialDirectory = Path.GetDirectoryName(zText.Text),
 				    Filter = sFilter,
 				    CheckFileExists = false,
-                    FileName = zText.Text
+                    FileName = Path.GetFileName(zText.Text)
 			    };
                 if(DialogResult.OK == ofn.ShowDialog())
 				{

@@ -745,9 +745,13 @@ namespace CardMaker.Forms
 
             var nStartLayoutIdx = 0;
             var nEndLayoutIdx = ProjectManager.Instance.LoadedProject.Layout.Length;
+            var sProjectDirectory = ProjectManager.Instance.ProjectPath;
+            var sProjectName = Path.GetFileNameWithoutExtension(ProjectManager.Instance.ProjectFilePath);
+            var listDefaultFileOptions = new List<string>();
             if (!bExportAllLayouts)
             {
-                int nIdx = ProjectManager.Instance.GetLayoutIndex(LayoutManager.Instance.ActiveLayout);
+                var zLayout = LayoutManager.Instance.ActiveLayout;
+                int nIdx = ProjectManager.Instance.GetLayoutIndex(zLayout);
                 if (-1 == nIdx)
                 {
                     FormUtils.ShowErrorMessage("Unable to determine the current layout. Please select a layout in the tree view and try again.");
@@ -755,9 +759,45 @@ namespace CardMaker.Forms
                 }
                 nStartLayoutIdx = nIdx;
                 nEndLayoutIdx = nIdx + 1;
+                if (!string.IsNullOrWhiteSpace(zLayout.exportNameFormat))
+                {
+                    // add option for export name on last export path
+                    if (!string.IsNullOrWhiteSpace(m_sPdfExportLastFile))
+                    {
+                        listDefaultFileOptions.Add(Path.Combine(Path.GetDirectoryName(m_sPdfExportLastFile),
+                                LayoutManager.Instance.ActiveDeck.TranslateFileNameString(zLayout.exportNameFormat, 0, 0) + ".pdf"));
+                    }
+                    // add option for export name in project path
+                    listDefaultFileOptions.Add(
+                        Path.Combine(sProjectDirectory,
+                            LayoutManager.Instance.ActiveDeck.TranslateFileNameString(zLayout.exportNameFormat, 0, 0) + ".pdf"));
+                }
+                // add in the option for just the layout name
+                listDefaultFileOptions.Add(
+                    string.IsNullOrWhiteSpace(m_sPdfExportLastFile)
+                        ? Path.Combine(sProjectDirectory, LayoutManager.Instance.ActiveLayout.Name + ".pdf")
+                        : Path.Combine(Path.GetDirectoryName(m_sPdfExportLastFile), LayoutManager.Instance.ActiveLayout.Name + ".pdf")
+                );
+                // add option for last export folder + project name + layout name
+                if (!string.IsNullOrWhiteSpace(m_sPdfExportLastFile))
+                {
+                    listDefaultFileOptions.Add(
+                        Path.Combine(Path.GetDirectoryName(m_sPdfExportLastFile),
+                            sProjectName + "-" + LayoutManager.Instance.ActiveLayout.Name + ".pdf"));
+                }
+            }
+            // add option for project path + project + layout (if single export)
+            listDefaultFileOptions.Add(Path.Combine(sProjectDirectory,
+                                       (bExportAllLayouts
+                                           ? sProjectName + ".pdf"
+                                           : sProjectName + "-" + LayoutManager.Instance.ActiveLayout.Name + ".pdf")));
+            if (!string.IsNullOrWhiteSpace(m_sPdfExportLastFile))
+            {
+                // add option for last export exactly
+                listDefaultFileOptions.Add(m_sPdfExportLastFile);
             }
 
-            zQuery.AddPullDownBox("Page Orientation", 
+            zQuery.AddPullDownBox("Page Orientation",
                 new string[]
                 {
                     PageOrientation.Portrait.ToString(),
@@ -765,15 +805,7 @@ namespace CardMaker.Forms
                 },
                 m_nPdfExportLastOrientationIndex,
                 ORIENTATION);
-
-            var sExportFileName = string.IsNullOrWhiteSpace(m_sPdfExportLastFile)
-                ? ProjectManager.Instance.ProjectPath + 
-                  (bExportAllLayouts 
-                      ? Path.GetFileNameWithoutExtension(ProjectManager.Instance.ProjectFilePath) + ".pdf" 
-                      : LayoutManager.Instance.ActiveLayout.Name + ".pdf")
-                : m_sPdfExportLastFile;
-
-            zQuery.AddFileBrowseBox("Output File", sExportFileName, "PDF files (*.pdf)|*.pdf|All files (*.*)|*.*", OUTPUT_FILE);
+            zQuery.AddFileBrowseComboBox("Output File", listDefaultFileOptions.ToArray(), "PDF files (*.pdf)|*.pdf|All files (*.*)|*.*", OUTPUT_FILE);
             zQuery.AddCheckBox("Open PDF on Export", m_bPdfExportLastOpen, OPEN_ON_EXPORT);
 
             if (DialogResult.OK != zQuery.ShowDialog(this))
