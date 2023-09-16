@@ -33,6 +33,7 @@ using CardMaker.XML;
 using PdfSharp;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
+using Support.IO;
 using Support.UI;
 
 namespace CardMaker.Card.Export.Pdf
@@ -91,7 +92,7 @@ namespace CardMaker.Card.Export.Pdf
 
                 if (File.Exists(m_sExportFile))
                 {
-                    DisplayError();
+                    DisplayReadOnlyError();
                     ProgressReporter.Shutdown();
                     return;
                 }
@@ -111,8 +112,9 @@ namespace CardMaker.Card.Export.Pdf
 
             Type zLastExporterType = null;
 
-            foreach (var nIdx in ExportLayoutIndices)
+            for(var nExportCounter = 0; nExportCounter < ExportLayoutIndices.Length; nExportCounter++)
             {
+                var nIdx = ExportLayoutIndices[nExportCounter];
                 ChangeExportLayoutIndex(nIdx);
                 m_zExportData.Deck = CurrentDeck;
                 if (CurrentDeck.EmptyReference)
@@ -133,9 +135,16 @@ namespace CardMaker.Card.Export.Pdf
                 var nNextExportIndex = 0;
 
                 // reconfigure the page per layout
-                ConfigurePointSizes(CurrentDeck.CardLayout, rectCrop);
+                if (!ConfigurePointSizes(CurrentDeck.CardLayout, rectCrop))
+                {
+                    DisplayError("Unable to setup page size. See log.");
+                    ProgressReporter.ThreadSuccess = false;
+
+                    ProgressReporter.Shutdown();
+                    return;
+                }
                 
-                if (nIdx == 0)
+                if (nExportCounter == 0)
                 {
                     // only the page has been setup at this point, not the x-position
                     zRowExporter.SetupNewRowXPosition(nNextExportIndex);
@@ -230,7 +239,7 @@ namespace CardMaker.Card.Export.Pdf
             }
             catch (Exception ex)
             {
-                DisplayError(ex.Message);
+                DisplayReadOnlyError(ex.Message);
                 ProgressReporter.ThreadSuccess = false;
             }
 
@@ -276,7 +285,7 @@ namespace CardMaker.Card.Export.Pdf
         /// </summary>
         /// <param name="zLayout"></param>
         /// <param name="rectCrop"></param>
-        private void ConfigurePointSizes(ProjectLayout zLayout, Rectangle rectCrop)
+        private bool ConfigurePointSizes(ProjectLayout zLayout, Rectangle rectCrop)
         {
             var nWidth = rectCrop.Width == 0 ? zLayout.width : rectCrop.Width;
             var nHeight = rectCrop.Height == 0 ? zLayout.height : rectCrop.Height;
@@ -301,6 +310,26 @@ namespace CardMaker.Card.Export.Pdf
 
             m_zExportData.BufferX = ((double)zLayout.buffer / (double)zLayout.dpi) * dPointsPerInchWidth;
             m_zExportData.BufferY = ((double)zLayout.buffer / (double)zLayout.dpi) * dPointsPerInchHeight;
+
+            var dAvailableWidth = m_zCurrentPage.Width.Point -
+                                  ((m_zExportData.PageMarginX * 2) + (m_zExportData.BufferX * 2));
+            var dAvailableHeight = m_zCurrentPage.Height.Point -
+                                   ((m_zExportData.PageMarginY * 2) + (m_zExportData.BufferY * 2));
+            var bRet = true;
+            if (m_zExportData.LayoutPointWidth > dAvailableWidth)
+            {
+                Logger.AddLogLine("The layout width {0} will not fit the available page width {1} (values are point sizes). Please reconfigure the page.".FormatString(m_zExportData.LayoutPointWidth,
+                    dAvailableWidth));
+                bRet = false;
+            }
+
+            if (m_zExportData.LayoutPointHeight > dAvailableHeight)
+            {
+                Logger.AddLogLine("The layout height {0} will not fit the available page height {1} (values are point sizes). Please reconfigure the page.".FormatString(m_zExportData.LayoutPointHeight,
+                    dAvailableHeight));
+                bRet = false;
+            }
+            return bRet;
         }
 
         /// <summary>
@@ -436,9 +465,27 @@ namespace CardMaker.Card.Export.Pdf
         }
 
         /// <summary>
+        /// Shows an error for this export
+        /// </summary>
+        private void DisplayError(string sErrorMessage)
+        {
+            if (null != CardMakerInstance.ApplicationForm)
+            {
+                CardMakerInstance.ApplicationForm.InvokeAction(() =>
+                {
+                    MessageBox.Show(CardMakerInstance.ApplicationForm, sErrorMessage, "PDF Write Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                });
+            }
+            else
+            {
+                ProgressReporter.AddIssue(sErrorMessage);
+            }
+        }
+
+        /// <summary>
         /// Shows the read-only error (assumes the file is open in a viewer)
         /// </summary>
-        private void DisplayError(string extraMessage = "")
+        private void DisplayReadOnlyError(string extraMessage = "")
         {
             var sMsg = "{0}The destination file may be open in a PDF viewer. Please close it before exporting."
                 .FormatString(
