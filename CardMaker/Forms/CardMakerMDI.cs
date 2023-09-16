@@ -157,6 +157,7 @@ namespace CardMaker.Forms
             if (!string.IsNullOrEmpty(sData))
             {
                 IniManager.RestoreState(this, sData);
+                IniManager.ValidateScreenPosition(this);
                 bRestoredFormState = true;
             }
             foreach (var zForm in MdiChildren)

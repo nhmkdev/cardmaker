@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace Support.IO
@@ -282,6 +283,20 @@ namespace Support.IO
                 zForm.Location = new Point(nValues[(int)ERestoreStateValue.LocationX], nValues[(int)ERestoreStateValue.LocationY]);
                 zForm.Size = new Size(nValues[(int)ERestoreStateValue.SizeWidth], nValues[(int)ERestoreStateValue.SizeHeight]);
                 zForm.WindowState = (FormWindowState)nValues[(int)ERestoreStateValue.State];
+            }
+        }
+
+        public static void ValidateScreenPosition(Form zForm)
+        {
+            var ptForm = zForm.Location;
+            if (!Screen.AllScreens.Any(screen =>
+                    ptForm.Y >= screen.Bounds.Y
+                    && ptForm.Y <= screen.Bounds.Y + screen.Bounds.Height
+                    && ptForm.X >= screen.Bounds.X
+                    && ptForm.X <= screen.Bounds.X + screen.Bounds.Width
+                ))
+            {
+                zForm.Location = new Point(0, 0);
             }
         }
 
