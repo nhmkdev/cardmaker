@@ -311,10 +311,8 @@ namespace CardMaker.Card.Export.Pdf
             m_zExportData.BufferX = ((double)zLayout.buffer / (double)zLayout.dpi) * dPointsPerInchWidth;
             m_zExportData.BufferY = ((double)zLayout.buffer / (double)zLayout.dpi) * dPointsPerInchHeight;
 
-            var dAvailableWidth = m_zCurrentPage.Width.Point -
-                                  ((m_zExportData.PageMarginX * 2) + (m_zExportData.BufferX * 2));
-            var dAvailableHeight = m_zCurrentPage.Height.Point -
-                                   ((m_zExportData.PageMarginY * 2) + (m_zExportData.BufferY * 2));
+            var dAvailableWidth = m_zCurrentPage.Width.Point - (m_zExportData.PageMarginX * 2);
+            var dAvailableHeight = m_zCurrentPage.Height.Point - (m_zExportData.PageMarginY * 2);
             var bRet = true;
             if (m_zExportData.LayoutPointWidth > dAvailableWidth)
             {
