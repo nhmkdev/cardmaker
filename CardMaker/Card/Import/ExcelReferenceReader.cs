@@ -54,43 +54,48 @@ namespace CardMaker.Card.Import
             }
 
             // Open the workbook
-            var workbook = new XLWorkbook(zReference.SpreadsheetFile);
-
-            // Get all worksheets and find the one referenced
-            IXLWorksheet worksheet = null;
-            foreach (IXLWorksheet sheet in workbook.Worksheets)
+            using (var zFileStream = new FileStream(zReference.SpreadsheetFile, FileMode.Open, FileAccess.Read,
+                       FileShare.ReadWrite))
             {
-                if (sheet.Name == sSheetName)
+                var workbook = new XLWorkbook(zFileStream);
+
+                // Get all worksheets and find the one referenced
+                IXLWorksheet worksheet = null;
+                foreach (IXLWorksheet sheet in workbook.Worksheets)
                 {
-                    worksheet = sheet;
-                    break;
-                }
-            }
-
-            if (worksheet == null)
-            {
-                ProgressReporter.AddIssue("Missing sheet from Excel Spreadsheet." + "[" + zReference.SpreadsheetFile + "," + sSheetName + "]");
-                return listReferenceLines;
-            }
-
-            // Get all data for the given worksheet
-            // For empty rows put an empty string
-            IXLRange usedRange = worksheet.RangeUsed();
-            // empty sheets just return null
-            if (usedRange != null)
-            {
-                var zRows = usedRange.Rows().ToList();
-                for(var nRow = nStartRow; nRow < zRows.Count(); nRow++)
-                {
-                    var rowData = new List<string>();
-                    foreach (IXLCell cell in zRows[nRow].Cells())
+                    if (sheet.Name == sSheetName)
                     {
-                        rowData.Add(cell.Value.ToString());
+                        worksheet = sheet;
+                        break;
                     }
-                    listReferenceLines.Add(new ReferenceLine(rowData, zReference.SpreadsheetFile, nRow));
+                }
+
+                if (worksheet == null)
+                {
+                    ProgressReporter.AddIssue("Missing sheet from Excel Spreadsheet." + "[" + zReference.SpreadsheetFile +
+                                              "," + sSheetName + "]");
+                    return listReferenceLines;
+                }
+
+                // Get all data for the given worksheet
+                // For empty rows put an empty string
+                IXLRange usedRange = worksheet.RangeUsed();
+                // empty sheets just return null
+                if (usedRange != null)
+                {
+                    var zRows = usedRange.Rows().ToList();
+                    for (var nRow = nStartRow; nRow < zRows.Count(); nRow++)
+                    {
+                        var rowData = new List<string>();
+                        foreach (IXLCell cell in zRows[nRow].Cells())
+                        {
+                            rowData.Add(cell.Value.ToString());
+                        }
+
+                        listReferenceLines.Add(new ReferenceLine(rowData, zReference.SpreadsheetFile, nRow));
+                    }
                 }
             }
-
             if (listReferenceLines.Count == 0)
             {
                 ProgressReporter.AddIssue("Failed to load any data from Excel Spreadsheet." + "[" + zReference.SpreadsheetFile + "," + sSheetName + "]");

@@ -458,14 +458,18 @@ namespace CardMaker.Forms
             var sFile = FormUtils.FileOpenHandler("Excel files (*.xlsx)|*.xlsx|All files (*.*)|*.*", null, true);
             if (null != sFile)
             {
-                // Open File
-                var workbook = new XLWorkbook(sFile);
-
-                // Grab all the sheet names
-                List<string> sheets = new List<string>();
-                foreach(IXLWorksheet sheet in workbook.Worksheets)
+                var sheets = new List<string>();
+                using (var zFileStream = new FileStream(sFile, FileMode.Open, FileAccess.Read,
+                           FileShare.ReadWrite))
                 {
-                    sheets.Add(sheet.Name);
+                    // Open File
+                    var workbook = new XLWorkbook(zFileStream);
+
+                    // Grab all the sheet names
+                    foreach (IXLWorksheet sheet in workbook.Worksheets)
+                    {
+                        sheets.Add(sheet.Name);
+                    }
                 }
 
                 // Let the user select a sheet from the spreadsheet they selected
