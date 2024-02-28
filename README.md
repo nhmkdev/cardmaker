@@ -1,3 +1,7 @@
+# Critical Google Sheets News
+
+The Google Sheets functionality as it currently exists in 1.2.x.x versions will no longer be functional in **May of 2024** due to policy changes with Google. I will be investigating alternative functionality but am assuming the worst right now.
+
 # CardMaker
 
 CardMaker is an application that generates graphics via data sources. It has a graphical user interface for designing layouts and offers scripting functionality.
