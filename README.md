@@ -1,6 +1,8 @@
 # Critical Google Sheets News
 
-The Google Sheets functionality as it currently exists in 1.2.x.x versions will no longer be functional in **May of 2024** due to policy changes with Google. I will be investigating alternative functionality but am assuming the worst right now.
+The Google Sheets functionality as it currently exists in all versions will no longer be functional in **May of 2024** due to policy changes with Google. I will be investigating alternative functionality but am assuming the worst right now.
+
+I may choose to force users to upgrade by breaking the existing sheets logic (sadly may be the most effective approach to getting approval). Existing Google Sheets references in projects should be unaffected. This entire issue is due to how CardMaker allows users to view their spreadsheet names via an in-app window. The `drive.readonly` scope is the main issue as it is restricted.
 
 # CardMaker
 
