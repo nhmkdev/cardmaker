@@ -116,7 +116,9 @@ namespace Support.UI
 		{
 		    m_zForm = new Form
 		    {
-		        Size = new Size(nWidth, 300)
+		        Size = new Size(nWidth, 300),
+                Tag = this
+                
 		    };
 
             Button btnDefault = null; // used to set the proper height of the internal panel

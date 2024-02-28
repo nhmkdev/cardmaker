@@ -48,7 +48,7 @@ namespace CardMaker.Data
         public const string GOOGLE_CLIENT_ID = "455195524701-cmdvv6fl5ru9uftin99kjmhojt36mnm9.apps.googleusercontent.com";
 
         public static readonly string[] GOOGLE_SCOPES = new string[]
-            {SheetsService.Scope.SpreadsheetsReadonly, DriveService.Scope.DriveReadonly};
+            {SheetsService.Scope.SpreadsheetsReadonly};
 
     }
 

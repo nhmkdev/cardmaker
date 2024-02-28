@@ -40,6 +40,7 @@ using Support.Google.Sheets;
 using Support.IO;
 using Support.UI;
 using Support.Util;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace CardMaker.Forms
 {
@@ -490,7 +491,40 @@ namespace CardMaker.Forms
                 return;
             }
 
-            var zDialog = new GoogleSpreadsheetBrowser(new GoogleSpreadsheet(CardMakerInstance.GoogleInitializerFactory), true);
+#if true
+            const string SPREADHSEET_URL = "sheets_url";
+            const string SPREADHSEET_ID = "sheets_id";
+            const string SPREADSHEET_NAME = "spreadsheet_name";
+            const string SHEET_NAME = "sheet_name";
+            var zQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("Setup Google Sheets Reference", 750, false));
+            zQuery.AddTextBox("Sheets URL:", string.Empty, false, SPREADHSEET_URL);
+            zQuery.AddTextBox("Sheets ID: (alternative)", string.Empty, false, SPREADHSEET_ID);
+            zQuery.AddTextBox("Spreadsheet Name:", string.Empty, false, SPREADSHEET_NAME);
+            zQuery.AddTextBox("Sheet Name (within Spreadsheet):", string.Empty, false, SHEET_NAME);
+            if (DialogResult.OK == zQuery.ShowDialog(this))
+            {
+                var sUri = zQuery.GetString(SPREADHSEET_URL).Trim();
+                var sSpreadsheetId = zQuery.GetString(SPREADHSEET_ID).Trim();
+                var sSpreadsheetName = zQuery.GetString(SPREADSHEET_NAME).Trim();
+                var sSheetName = zQuery.GetString(SHEET_NAME).Trim();
+                var sId = string.IsNullOrWhiteSpace(sUri)
+                    ? sSpreadsheetId
+                    : GoogleSpreadsheetReference.ExtractSpreadsheetIDFromURLString(sUri);
+                var zGoogleSpreadsheetReference = new GoogleSpreadsheetReference(
+                    new GoogleSheetInfo()
+                    {
+                        Name = sSpreadsheetName,
+                        Id = sId
+                    }
+                )
+                {
+                    SheetName = sSheetName
+                };
+                tryToAddReferenceNode(zGoogleSpreadsheetReference.generateFullReference());
+            }
+#else
+            var zDialog =
+ new GoogleSpreadsheetBrowser(new GoogleSpreadsheet(CardMakerInstance.GoogleInitializerFactory), true);
             if (DialogResult.OK == zDialog.ShowDialog(this))
             {
                 var zGoogleSpreadsheetReference = new GoogleSpreadsheetReference(zDialog.SelectedSpreadsheet)
@@ -499,6 +533,7 @@ namespace CardMaker.Forms
                 };
                 tryToAddReferenceNode(zGoogleSpreadsheetReference.generateFullReference());
             }
+#endif
         }
 
         private void removeReferenceToolStripMenuItem_Click(object sender, EventArgs e)

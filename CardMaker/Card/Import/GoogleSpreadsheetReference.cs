@@ -141,5 +141,12 @@ namespace CardMaker.Card.Import
                        : GOOGLE_REFERENCE_SPLIT_CHAR + sSpreadSheetId)
                 ;
         }
+
+        public static string ExtractSpreadsheetIDFromURLString(string sUrl)
+        {
+            var zUri = new Uri(sUrl);
+            var arrayPathComponents = zUri.LocalPath.Split(new char[] { '/' });
+            return (arrayPathComponents.Length > 3) ? arrayPathComponents[3] : string.Empty;
+        }
     }
 }
