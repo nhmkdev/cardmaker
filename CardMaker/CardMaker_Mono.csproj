@@ -285,6 +285,12 @@
     <Compile Include="Support\Google\GoogleInitializerFactory.cs" />
     <Compile Include="Support\Google\Sheets\GoogleSheetInfo.cs" />
     <Compile Include="Support\Google\Sheets\GoogleSpreadsheet.cs" />
+    <Compile Include="Support\Google\Sheets\GoogleSpreadsheetSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Support\Google\Sheets\GoogleSpreadsheetSelector.Designer.cs">
+      <DependentUpon>GoogleSpreadsheetSelector.cs</DependentUpon>
+    </Compile>
     <Compile Include="Support\Google\Sheets\GoogleSpreadsheetBrowser.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -387,6 +393,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="Support\Google\Sheets\GoogleSpreadsheetSelector.resx">
+      <DependentUpon>GoogleSpreadsheetSelector.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Support\Google\Sheets\GoogleSpreadsheetBrowser.resx">
       <DependentUpon>GoogleSpreadsheetBrowser.cs</DependentUpon>
     </EmbeddedResource>

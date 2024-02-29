@@ -24,6 +24,8 @@
 
 using System;
 using Support.Google.Sheets;
+using Support.IO;
+using Support.UI;
 
 namespace CardMaker.Card.Import
 {
@@ -144,9 +146,17 @@ namespace CardMaker.Card.Import
 
         public static string ExtractSpreadsheetIDFromURLString(string sUrl)
         {
-            var zUri = new Uri(sUrl);
-            var arrayPathComponents = zUri.LocalPath.Split(new char[] { '/' });
-            return (arrayPathComponents.Length > 3) ? arrayPathComponents[3] : string.Empty;
+            try
+            {
+                var zUri = new Uri(sUrl);
+                var arrayPathComponents = zUri.LocalPath.Split(new char[] { '/' });
+                return (arrayPathComponents.Length > 3) ? arrayPathComponents[3] : string.Empty;
+            }
+            catch (Exception ex)
+            {
+                Logger.AddLogLine("Failed to parse URL: {0} Error: {1}".FormatString(sUrl, ex.ToString()));
+                return string.Empty;
+            }
         }
     }
 }

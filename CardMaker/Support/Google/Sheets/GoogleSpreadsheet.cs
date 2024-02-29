@@ -119,8 +119,20 @@ namespace Support.Google.Sheets
         {
             var zSheetsService = CreateSheetsService();
             // TODO: this can likely be optimized to not return everything (contents won't be included)
-            var zSpreadSheet = zSheetsService.Spreadsheets.Get(sSpreadsheetId).Execute();
-            return zSpreadSheet.Sheets.Select(sheet => sheet.Properties.Title).ToList();
+            var zSpreadsheet = zSheetsService.Spreadsheets.Get(sSpreadsheetId).Execute();
+            return GetSheetNames(zSpreadsheet);
+        }
+
+        public List<string> GetSheetNames(Spreadsheet zSheet)
+        {
+            var zSheetsService = CreateSheetsService();
+            // TODO: this can likely be optimized to not return everything (contents won't be included)
+            return zSheet.Sheets.Select(sheet => sheet.Properties.Title).ToList();
+        }
+
+        public string GetSpreadsheetName(Spreadsheet zSheet)
+        {
+            return zSheet.Properties.Title;
         }
 
         /// <summary>

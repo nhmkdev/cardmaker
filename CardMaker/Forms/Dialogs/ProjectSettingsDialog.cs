@@ -56,46 +56,14 @@ namespace CardMaker.Forms.Dialogs
 
             zQuery.AddPullDownBox("Default Define Reference Type", Enum.GetNames(typeof(ReferenceType)), (int)eDefaultDefineReferenceType, DEFAULT_DEFINE_REFERENCE_TYPE);
 
-            const string SPREADHSEET_URL = "sheets_url";
-            const string SPREADHSEET_ID = "sheets_id";
-            const string SPREADSHEET_NAME = "spreadsheet_name";
-
             zQuery.AddSelectorBox(
                 "Google Project define spreadsheet override",
                 ProjectManager.Instance.LoadedProject.overrideDefineReferenceName,
                 () =>
-#if true
-                {
-                    var zGoogleReferenceQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("Setup Google Sheets Reference", 750, false));
-                    zGoogleReferenceQuery.AddTextBox("Sheets URL:", string.Empty, false, SPREADHSEET_URL);
-                    zGoogleReferenceQuery.AddTextBox("Sheets ID: (alternative)", string.Empty, false, SPREADHSEET_ID);
-                    zGoogleReferenceQuery.AddTextBox("Spreadsheet Name:", string.Empty, false, SPREADSHEET_NAME);
-                    return zGoogleReferenceQuery.Form;
-                },
-                (zGoogleReferenceForm, txtOverride) =>
-                {
-                    var zGoogleReferenceQuery = (QueryPanelDialog)zGoogleReferenceForm.Tag;
-                    var sUri = zGoogleReferenceQuery.GetString(SPREADHSEET_URL).Trim();
-                    var sSpreadsheetId = zGoogleReferenceQuery.GetString(SPREADHSEET_ID).Trim();
-                    var sSpreadsheetName = zGoogleReferenceQuery.GetString(SPREADSHEET_NAME).Trim();
-                    var sId = string.IsNullOrWhiteSpace(sUri)
-                        ? sSpreadsheetId
-                        : GoogleSpreadsheetReference.ExtractSpreadsheetIDFromURLString(sUri);
-                    var zGoogleSpreadsheetReference = 
-                    txtOverride.Text = new GoogleSpreadsheetReference(
-                            new GoogleSheetInfo()
-                            {
-                                Name = sSpreadsheetName,
-                                Id = sId
-                            }
-                        ).generateSpreadsheetReference();
-
-                },
-#else
                 {
                     if (GoogleAuthManager.CheckGoogleCredentials(parentForm))
                     {
-                        return new GoogleSpreadsheetBrowser(new GoogleSpreadsheet(CardMakerInstance.GoogleInitializerFactory), false);
+                        return new GoogleSpreadsheetSelector(new GoogleSpreadsheet(CardMakerInstance.GoogleInitializerFactory), false);
                     }
                     return null;
                 },
@@ -104,7 +72,6 @@ namespace CardMaker.Forms.Dialogs
                     txtOverride.Text = new GoogleSpreadsheetReference(zGoogleSpreadsheetBrowser.SelectedSpreadsheet)
                         .generateSpreadsheetReference();
                 },
-#endif
                 OVERRIDE_DEFINE_REFRENCE_NAME);
 
             zQuery.ChangeToTab("Javascript");
