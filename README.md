@@ -1,8 +1,10 @@
 # Critical Google Sheets News
 
-The Google Sheets functionality as it currently exists in all versions will no longer be functional in **May of 2024** due to policy changes with Google. I will be investigating alternative functionality but am assuming the worst right now.
+Google policies have changed around accessing user data and Card Maker will be undergoing permission/policy changes starting March 2, 2024. This may dramatically impact the use of Google Sheets.
 
-I may choose to force users to upgrade by breaking the existing sheets logic (sadly may be the most effective approach to getting approval). Existing Google Sheets references in projects should be unaffected. This entire issue is due to how CardMaker allows users to view their spreadsheet names via an in-app window. The `drive.readonly` scope is the main issue as it is restricted.
+Google sheets functionality may break completely **OR** they will continue to function using the [1.3.0.0](https://github.com/nhmkdev/cardmaker/releases/tag/v.1.3.0.0) release of the application (changes how Google Sheets are selected).
+
+You can get the latest information as I work through the process here: https://github.com/nhmkdev/cardmaker/issues/122
 
 # CardMaker
 
@@ -14,7 +16,7 @@ Command line based export support is in development (coming soon!). Soon you wil
 
 ## Download
 
-Latest stable (I hope) release binary: [Download 1.2.0.0](https://github.com/nhmkdev/cardmaker/releases/tag/v.1.2.0.0)
+Latest stable (I hope) release binary: [Latest Release](https://github.com/nhmkdev/cardmaker/releases/latest)
 
 Latest releases (may be a bit unstable): [Download Releases](https://github.com/nhmkdev/cardmaker/releases)
 
