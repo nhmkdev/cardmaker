@@ -4,7 +4,7 @@ Google policies have changed around accessing user data and Card Maker will be u
 
 Google sheets functionality may break completely **OR** they will continue to function using the [1.3.0.0](https://github.com/nhmkdev/cardmaker/releases/tag/v.1.3.0.0) release of the application (changes how Google Sheets are selected).
 
-You can get the latest information as I work through the process here: https://github.com/nhmkdev/cardmaker/issues/122
+You can get the latest information as I work through the process here: https://github.com/nhmkdev/cardmaker/issues/123
 
 # CardMaker
 
