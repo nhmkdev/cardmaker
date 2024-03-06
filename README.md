@@ -2,7 +2,7 @@
 
 Google policies have changed around accessing user data and CardMaker had to change slightly to work around the requirements.
 
-Please use the [1.3.0.0](https://github.com/nhmkdev/cardmaker/releases/tag/v.1.3.0.0) release of the application (changes how Google Sheets are selected). If are using an older version with Google Sheets you may run into issues.
+Please use the [1.3.0.0](https://github.com/nhmkdev/cardmaker/releases/tag/v.1.3.0.0) release of the application (changes how Google Sheets are selected). If you are using an older version with Google Sheets you may run into issues.
 
 You can get the latest information related to the changes here: https://github.com/nhmkdev/cardmaker/issues/123
 
