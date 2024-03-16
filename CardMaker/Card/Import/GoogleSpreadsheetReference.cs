@@ -29,8 +29,11 @@ using Support.UI;
 
 namespace CardMaker.Card.Import
 {
-    public class GoogleSpreadsheetReference
+    public class GoogleSpreadsheetReference : SpreadsheetReferenceBase
     {
+        public const string GOOGLE_REFERENCE = "google";
+        public const char GOOGLE_REFERENCE_SPLIT_CHAR = ';';
+
         private enum GoogleSpreadsheetReferenceIndex : int
         {
             GooglePrefix = 0,
@@ -45,12 +48,16 @@ namespace CardMaker.Card.Import
             SpreadsheetId = 1
         }
 
-        public const string GOOGLE_REFERENCE = "google";
-        public const char GOOGLE_REFERENCE_SPLIT_CHAR = ';';
-
         public string SpreadsheetName { get; set; }
         public string SheetName { get; set; }
         public string SpreadsheetId { get; set; }
+
+        public override string RelativePath
+        {
+            get => throw new NotImplementedException(); 
+            set => throw new NotImplementedException();
+        }
+        public override bool IsLocalFile => false;
 
         public GoogleSpreadsheetReference() { }
 
@@ -60,7 +67,7 @@ namespace CardMaker.Card.Import
             SpreadsheetId = zSheetInfo.Id;
         }
 
-        public static GoogleSpreadsheetReference parseSpreadsheetOnlyReference(string sInput)
+        public static GoogleSpreadsheetReference ParseSpreadsheetOnlyReference(string sInput)
         {
             if (string.IsNullOrWhiteSpace(sInput))
                 throw new Exception("Unable to read empty Google Spreadsheet reference.");
@@ -69,6 +76,7 @@ namespace CardMaker.Card.Import
             switch (arrayComponents.Length)
             {
                 // original style
+#warning this will never work again because sheets cannot be looked up by name
                 case 1:
                     return new GoogleSpreadsheetReference()
                     {
@@ -86,7 +94,7 @@ namespace CardMaker.Card.Import
             }
         }
 
-        public static GoogleSpreadsheetReference parse(string sInput)
+        public static GoogleSpreadsheetReference Parse(string sInput)
         {
             if(string.IsNullOrWhiteSpace(sInput))
                 throw new Exception("Unable to read empty Google Spreadsheet reference.");
@@ -114,24 +122,19 @@ namespace CardMaker.Card.Import
             }
         }
 
-        public string generateFullReference()
+        public string GenerateFullReference()
         {
-            return generateFullReference(SpreadsheetName, SheetName, SpreadsheetId);
+            return SerializeToReferenceString(SpreadsheetName, SheetName, SpreadsheetId);
         }
 
-        public string generateSpreadsheetReference()
+        public string GenerateSpreadsheetReference()
         {
-            return generateSpreadsheetReference(SpreadsheetName, SpreadsheetId);
-        }
-
-        public static string generateSpreadsheetReference(string sSpreadsheetName, string sSpreadSheetId = null)
-        {
-            return sSpreadsheetName
+            return SpreadsheetName
                    + GOOGLE_REFERENCE_SPLIT_CHAR
-                   + sSpreadSheetId;
+                   + SpreadsheetId;
         }
 
-        public static string generateFullReference(string sSpreadsheetName, string sSheetName, string sSpreadSheetId = null)
+        public static string SerializeToReferenceString(string sSpreadsheetName, string sSheetName, string sSpreadSheetId = null)
         {
             return GOOGLE_REFERENCE
                    + GOOGLE_REFERENCE_SPLIT_CHAR
@@ -142,6 +145,11 @@ namespace CardMaker.Card.Import
                        ? ""
                        : GOOGLE_REFERENCE_SPLIT_CHAR + sSpreadSheetId)
                 ;
+        }
+
+        public override string SerializeToReferenceString()
+        {
+            return SerializeToReferenceString(SpreadsheetName, SheetName, SpreadsheetId);
         }
 
         public static string ExtractSpreadsheetIDFromURLString(string sUrl)

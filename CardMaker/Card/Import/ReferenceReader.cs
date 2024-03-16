@@ -23,14 +23,15 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-using CardMaker.XML;
 using Support.Progress;
 
 namespace CardMaker.Card.Import
 {
+
+#warning TODO: consider splitting the implementations between reference reading and project reference reading
+
     public abstract class ReferenceReader
     {
-        public string ReferencePath { get; protected set; }
         public IProgressReporter ProgressReporter { get; set; }
 
         /// <summary>
@@ -38,7 +39,7 @@ namespace CardMaker.Card.Import
         /// </summary>
         /// <param name="zReference">The reference meta data</param>
         /// <param name="listReferenceData">The list to append</param>
-        public abstract List<ReferenceLine> GetReferenceData(ProjectLayoutReference zReference);
+        public abstract List<ReferenceLine> GetReferenceData();
         /// <summary>
         /// Reads the project define data into the specified list
         /// </summary>
@@ -50,7 +51,7 @@ namespace CardMaker.Card.Import
         /// </summary>
         /// <param name="zReference">The reference meta data</param>
         /// <param name="listReferenceData">The list to append</param>
-        public abstract List<ReferenceLine> GetDefineData(ProjectLayoutReference zReference);
+        public abstract List<ReferenceLine> GetDefineData();
 
         /// <summary>
         /// Post constructor initialization

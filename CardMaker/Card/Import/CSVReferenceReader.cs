@@ -34,27 +34,16 @@ namespace CardMaker.Card.Import
 {
     public class CSVReferenceReader : ReferenceReader
     {
+        private CSVSpreadsheetReference m_zSpreadsheetReference;
+
         public CSVReferenceReader() { }
 
         public CSVReferenceReader(ProjectLayoutReference zReference)
         {
-            var previousCurrentDirectory = Directory.GetCurrentDirectory();
-
-            if (null != ProjectManager.Instance.ProjectPath && Directory.Exists(ProjectManager.Instance.ProjectPath))
-            {
-                Directory.SetCurrentDirectory(ProjectManager.Instance.ProjectPath);
-                ReferencePath = (File.Exists(zReference.RelativePath)
-                                ? Path.GetFullPath(zReference.RelativePath)
-                                : ProjectManager.Instance.ProjectPath + zReference.RelativePath);
-            }
-            else
-            {
-                ReferencePath = File.Exists(zReference.RelativePath) ? Path.GetFullPath(zReference.RelativePath) : zReference.RelativePath;
-            }
-            Directory.SetCurrentDirectory(previousCurrentDirectory);
+            m_zSpreadsheetReference = CSVSpreadsheetReference.Parse(zReference.RelativePath);
         }
 
-        public List<ReferenceLine> GetData(string sPath, bool bLogNotFound, int nStartRow, string nameAppend = "")
+        private List<ReferenceLine> GetData(string sPath, bool bLogNotFound, int nStartRow, string nameAppend = "")
         {
             CSVFile zCSVParser = null;
             var listReferenceLines = new List<ReferenceLine>();
@@ -97,11 +86,6 @@ namespace CardMaker.Card.Import
             return listReferenceLines;
         }
 
-        public override List<ReferenceLine> GetReferenceData(ProjectLayoutReference zReference)
-        {
-            return GetData(ReferencePath, true, 0);
-        }
-
         public override List<ReferenceLine> GetProjectDefineData()
         {
             if (string.IsNullOrEmpty(ProjectManager.Instance.ProjectFilePath))
@@ -115,12 +99,24 @@ namespace CardMaker.Card.Import
                 + Path.GetFileNameWithoutExtension(ProjectManager.Instance.ProjectFilePath)
                 + ".csv";
 
-            return GetData(sReferencePath, false, 1, Deck.DEFINES_DATA_POSTFIX);
+            return GetData(sReferencePath, false, 1, Deck.DEFINES_DATA_SUFFIX);
         }
 
-        public override List<ReferenceLine> GetDefineData(ProjectLayoutReference zReference)
+        public override List<ReferenceLine> GetDefineData()
         {
-            return GetData(ReferencePath, false, 1, Deck.DEFINES_DATA_POSTFIX);
+            return GetData(
+                ReferenceUtil.ConvertRelativeProjectPathToFullPath(m_zSpreadsheetReference.RelativePath), 
+                false, 
+                1, 
+                Deck.DEFINES_DATA_SUFFIX);
+        }
+
+        public override List<ReferenceLine> GetReferenceData()
+        {
+            return GetData(
+                ReferenceUtil.ConvertRelativeProjectPathToFullPath(m_zSpreadsheetReference.RelativePath),
+                true,
+                0);
         }
     }
 }

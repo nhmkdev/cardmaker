@@ -69,7 +69,7 @@ namespace CardMaker.Card.Import
         /// <param name="eReferenceType">The type of reference to get the reader for</param>
         /// <param name="zProgressReporter">ProgressReporter for the Reader to use</param>
         /// <returns>Reference reader (defaults to null)</returns>
-        public static ReferenceReader GetDefineReader(ReferenceType eReferenceType, IProgressReporter zProgressReporter)
+        public static ReferenceReader GetProjectDefineReader(ReferenceType eReferenceType, IProgressReporter zProgressReporter)
         {
             ReferenceReader zReferenceReader = null;
             switch (eReferenceType)

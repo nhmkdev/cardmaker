@@ -26,7 +26,7 @@ using System;
 
 namespace CardMaker.Card.Import
 {
-    class ExcelSpreadsheetReference
+    class ExcelSpreadsheetReference : SpreadsheetReferenceBase
     {
         public const string EXCEL_REFERENCE = "excel";
         public const char EXCEL_REFERENCE_SPLIT_CHAR = ';';
@@ -37,21 +37,18 @@ namespace CardMaker.Card.Import
             SheetName = 1
         }
 
-        public string SpreadsheetFile { get; set; }
         public string SheetName { get; set; }
 
-        public ExcelSpreadsheetReference() { }
-        public ExcelSpreadsheetReference(string sFilename)
-        {
-            SpreadsheetFile = sFilename;
-        }
+        public override string RelativePath { get; set; }
+        public override bool IsLocalFile => true;
+
         public ExcelSpreadsheetReference(string sFilename, string sSheet)
         {
-            SpreadsheetFile = sFilename;
+            RelativePath = sFilename;
             SheetName = sSheet;
         }
 
-        public static ExcelSpreadsheetReference parse(string sInput)
+        public static ExcelSpreadsheetReference Parse(string sInput)
         {
             if(string.IsNullOrWhiteSpace(sInput))
                 throw new Exception("Unable to read empty Excel Spreadsheet reference.");
@@ -66,26 +63,18 @@ namespace CardMaker.Card.Import
             throw new Exception("Unable to read invalid Excel Spreadsheet reference.");
         }
 
-        public static ExcelSpreadsheetReference parseSpreadsheetOnlyReference(string sInput)
-        {
-            if (string.IsNullOrWhiteSpace(sInput))
-                throw new Exception("Unable to read empty Excel Spreadsheet reference.");
-
-            var arrayComponents = sInput.Split(EXCEL_REFERENCE_SPLIT_CHAR);
-            if (arrayComponents.Length == 1)
-            {
-                return new ExcelSpreadsheetReference(arrayComponents[(int)ExcelSpreadsheetOnlyReferenceIndex.SpreadsheetFile]);
-            }
-            throw new Exception("Unable to read invalid Google Spreadsheet reference.");
-        }
-
-        public static string generateFullReference(string sSpreadsheetFile, string sSheetName)
+        public static string SerializeToReferenceString(string sSpreadsheetFile, string sSheetName)
         {
             return EXCEL_REFERENCE
                    + EXCEL_REFERENCE_SPLIT_CHAR
                    + sSpreadsheetFile
                    + EXCEL_REFERENCE_SPLIT_CHAR
                    + sSheetName;
+        }
+
+        public override string SerializeToReferenceString()
+        {
+            return SerializeToReferenceString(RelativePath, SheetName);
         }
     }
 }

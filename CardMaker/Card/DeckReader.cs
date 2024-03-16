@@ -76,6 +76,7 @@ namespace CardMaker.Card
 
             if (null == zReferenceData || zReferenceData.Length == 0)
             {
+                // (special case) if no data is loaded for a reference try loading up the project definitions
                 listAllProjectDefineLines = ReadDefaultProjectDefinitions();
             }
             else
@@ -116,7 +117,7 @@ namespace CardMaker.Card
                                 if (!string.IsNullOrEmpty(ProjectManager.Instance.ProjectFilePath))
                                 {
                                     // the the default project wide ref reader (may differ from the references themselves)
-                                    var zProjectDefineReader = ReferenceReaderFactory.GetDefineReader(
+                                    var zProjectDefineReader = ReferenceReaderFactory.GetProjectDefineReader(
                                         ProjectManager.Instance.LoadedProjectDefaultDefineReferenceType, m_zReporterProxy.ProgressReporter);
                                     listAllProjectDefineLines = zProjectDefineReader.GetProjectDefineData() ?? new List<ReferenceLine>();
                                     if (listAllProjectDefineLines.Count == 0)
@@ -142,14 +143,14 @@ namespace CardMaker.Card
                     listReferenceActions.Add(Task.Factory.StartNew(
                         () =>
                         {
-                            listRefLines = zRefReader.GetReferenceData(zReference);
+                            listRefLines = zRefReader.GetReferenceData();
                             m_zReporterProxy.ProgressStep();
                         }));
 
                     listReferenceActions.Add(Task.Factory.StartNew(
                         () =>
                         {
-                            listRefDefineLines = zRefReader.GetDefineData(zReference);
+                            listRefDefineLines = zRefReader.GetDefineData();
                             m_zReporterProxy.ProgressStep();
                         }));
 
@@ -401,15 +402,14 @@ namespace CardMaker.Card
         private List<ReferenceLine> ReadDefaultProjectDefinitions()
         {
             m_zReporterProxy.ProgressReset(0, 2, 0);
-            var listDefineLines = new List<ReferenceLine>();
-            var zRefReader = ReferenceReaderFactory.GetDefineReader(
+            var zRefReader = ReferenceReaderFactory.GetProjectDefineReader(
                 ProjectManager.Instance.LoadedProjectDefaultDefineReferenceType, m_zReporterProxy.ProgressReporter);
-            listDefineLines = zRefReader.GetProjectDefineData() ?? new List<ReferenceLine>();
+            var listDefineLines = zRefReader.GetProjectDefineData() ?? new List<ReferenceLine>();
             m_zReporterProxy.ProgressStep();
             // always attempt to load the local CSV if nothing was pulled from the other sources
             if (0 == listDefineLines.Count && ProjectManager.Instance.LoadedProjectDefaultDefineReferenceType != ReferenceType.CSV)
             {
-                zRefReader = ReferenceReaderFactory.GetDefineReader(ReferenceType.CSV, m_zReporterProxy.ProgressReporter);
+                zRefReader = ReferenceReaderFactory.GetProjectDefineReader(ReferenceType.CSV, m_zReporterProxy.ProgressReporter);
                 listDefineLines = zRefReader?.GetProjectDefineData() ?? new List<ReferenceLine>();
             }
             m_zReporterProxy.ProgressStep();

@@ -39,7 +39,7 @@ namespace CardMaker.Card
 {
     public class Deck
     {
-        public const string DEFINES_DATA_POSTFIX = "_defines";
+        public const string DEFINES_DATA_SUFFIX = "_defines";
 
         protected int m_nCardIndex = -1;
         protected int m_nCardPrintIndex;

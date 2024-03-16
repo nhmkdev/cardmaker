@@ -161,13 +161,16 @@
     <Compile Include="Card\IInlineBackgroundElementProcessor.cs" />
     <Compile Include="Card\ImageCache.cs" />
     <Compile Include="Card\Import\CSVReferenceReader.cs" />
+    <Compile Include="Card\Import\CSVSpreadsheetReference.cs" />
     <Compile Include="Card\Import\ExcelReferenceReader.cs" />
     <Compile Include="Card\Import\ExcelSpreadsheetReference.cs" />
     <Compile Include="Card\Import\GoogleReferenceReader.cs" />
     <Compile Include="Card\Import\GoogleSpreadsheetReference.cs" />
+    <Compile Include="Card\Import\SpreadsheetReferenceBase.cs" />
     <Compile Include="Card\Import\ReferenceLine.cs" />
     <Compile Include="Card\Import\ReferenceReader.cs" />
     <Compile Include="Card\Import\ReferenceReaderFactory.cs" />
+    <Compile Include="Card\Import\ReferenceUtil.cs" />
     <Compile Include="Card\InlineBackgroundElementProcessor.cs" />
     <Compile Include="Card\MeasurementUtil.cs" />
     <Compile Include="Card\MirrorRender.cs" />

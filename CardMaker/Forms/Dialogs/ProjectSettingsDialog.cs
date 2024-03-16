@@ -70,7 +70,7 @@ namespace CardMaker.Forms.Dialogs
                 (zGoogleSpreadsheetBrowser, txtOverride) =>
                 {
                     txtOverride.Text = new GoogleSpreadsheetReference(zGoogleSpreadsheetBrowser.SelectedSpreadsheet)
-                        .generateSpreadsheetReference();
+                        .GenerateSpreadsheetReference();
                 },
                 OVERRIDE_DEFINE_REFRENCE_NAME);
 

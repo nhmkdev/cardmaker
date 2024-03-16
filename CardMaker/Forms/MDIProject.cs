@@ -426,11 +426,11 @@ namespace CardMaker.Forms
             LayoutManager.ShowAdjustLayoutSettingsDialog(true, (ProjectLayout)treeView.SelectedNode.Tag, this);
         }
 
-        private void tryToAddReferenceNode(string sFile)
+        private void tryToAddReferenceNode(string sReferenceData)
         {
                 var zLayout = (ProjectLayout)treeView.SelectedNode.Tag;
                 var bNewDefault = 0 == treeView.SelectedNode.Nodes.Count;
-                var tnReference = AddReferenceNode(treeView.SelectedNode, sFile, bNewDefault, zLayout);
+                var tnReference = AddReferenceNode(treeView.SelectedNode, sReferenceData, bNewDefault, zLayout);
                 if (null == tnReference)
                 {
                     MessageBox.Show(this, "The specified reference is already associated with this layout.", "Reference Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -479,7 +479,7 @@ namespace CardMaker.Forms
                 zExcelSheetSelectionQueryDialog.AddPullDownBox("Sheet", sheets.ToArray(), 0, EXCEL_SHEET_SELECT);
                 if (zExcelSheetSelectionQueryDialog.ShowDialog(this) == DialogResult.OK)
                 {
-                    tryToAddReferenceNode(ExcelSpreadsheetReference.generateFullReference(sFile, zExcelSheetSelectionQueryDialog.GetString(EXCEL_SHEET_SELECT)));
+                    tryToAddReferenceNode(ExcelSpreadsheetReference.SerializeToReferenceString(sFile, zExcelSheetSelectionQueryDialog.GetString(EXCEL_SHEET_SELECT)));
                 }
             }
         }
@@ -498,7 +498,7 @@ namespace CardMaker.Forms
                 {
                     SheetName = zDialog.SelectedSheet
                 };
-                tryToAddReferenceNode(zGoogleSpreadsheetReference.generateFullReference());
+                tryToAddReferenceNode(zGoogleSpreadsheetReference.GenerateFullReference());
             }
         }
 
@@ -685,20 +685,20 @@ namespace CardMaker.Forms
         /// UI facing method for adding a reference node (for use from the context menu to add a new reference)
         /// </summary>
         /// <param name="tnLayout"></param>
-        /// <param name="sFile"></param>
+        /// <param name="sReferenceData"></param>
         /// <param name="bSetAsDefault"></param>
         /// <param name="zLayout"></param>
         /// <returns>The new Reference tree node or null if there is an existing reference by the same definition</returns>
-        private static TreeNode AddReferenceNode(TreeNode tnLayout, string sFile, bool bSetAsDefault,
+        private static TreeNode AddReferenceNode(TreeNode tnLayout, string sReferenceData, bool bSetAsDefault,
             ProjectLayout zLayout)
         {
             var sProjectPath = ProjectManager.Instance.ProjectPath;
             var zReference = new ProjectLayoutReference
             {
                 Default = bSetAsDefault,
-                RelativePath = IOUtils.GetRelativePath(sProjectPath,
-                    sFile)
+                RelativePath = sReferenceData,
             };
+            ReferenceUtil.UpdateReferenceRelativePath(zReference, sProjectPath, null);
             return AddReferenceNode(tnLayout, zReference, zLayout);
         }
 

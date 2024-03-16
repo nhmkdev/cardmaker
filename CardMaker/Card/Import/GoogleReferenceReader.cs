@@ -40,17 +40,26 @@ namespace CardMaker.Card.Import
     {
         private const string DEFAULT_DEFINES_SHEET_NAME = "defines";
 
+        // public required to serialize
         public class GoogleCacheItem
         {
             public string Reference { get; set; }
-            public List<List<string>> Data { get; set; } 
+            public List<List<string>> Data { get; set; }
         }
 
-        private readonly Dictionary<string, List<List<string>>> m_dictionaryDataCache = new Dictionary<string, List<List<string>>>();
-
+        private readonly GoogleSpreadsheetReference m_zSpreadsheetReference;
+#warning make this static (currently not shared so it doesn't do a lot of good)
+        private static readonly Dictionary<string, List<List<string>>> m_dictionaryDataCache = new Dictionary<string, List<List<string>>>();
         private bool m_bCacheUpdated;
+        private readonly string m_sCacheKeyBase;
 
         public GoogleReferenceReader() { }
+
+        public GoogleReferenceReader(ProjectLayoutReference zReference) : this()
+        {
+            m_sCacheKeyBase = zReference.RelativePath;
+            m_zSpreadsheetReference = GoogleSpreadsheetReference.Parse(zReference.RelativePath);
+        }
 
         public override ReferenceReader Initialize()
         {
@@ -95,12 +104,6 @@ namespace CardMaker.Card.Import
             }
         }
 
-        public GoogleReferenceReader(ProjectLayoutReference zReference) : this()
-        {
-            // Google references are stored in the relative path just like a local CSV would be
-            ReferencePath = zReference.RelativePath;
-        }
-
         private void LoadCache()
         {
             if (!CardMakerSettings.EnableGoogleCache)
@@ -128,14 +131,14 @@ namespace CardMaker.Card.Import
 
         private bool IsAllDataCached()
         {
-            return m_dictionaryDataCache.ContainsKey(GetCacheKey(ReferencePath)) &&
-                   m_dictionaryDataCache.ContainsKey(GetCacheKey(GetDefinesReference().generateFullReference())) &&
-                   m_dictionaryDataCache.ContainsKey(GetCacheKey(ReferencePath, Deck.DEFINES_DATA_POSTFIX));
+            return m_dictionaryDataCache.ContainsKey(GetCacheKey(m_sCacheKeyBase)) &&
+                   m_dictionaryDataCache.ContainsKey(GetCacheKey(GetDefinesReference().GenerateFullReference())) &&
+                   m_dictionaryDataCache.ContainsKey(GetCacheKey(m_sCacheKeyBase, Deck.DEFINES_DATA_SUFFIX));
         }
 
-        public List<ReferenceLine> GetData(GoogleSpreadsheetReference zReference, int nStartRow, string sNameAppend = "")
+        private List<ReferenceLine> GetData(GoogleSpreadsheetReference zReference, int nStartRow, string sNameAppend = "")
         {
-            var sCacheKey = GetCacheKey(zReference.generateFullReference(), sNameAppend);
+            var sCacheKey = GetCacheKey(zReference.GenerateFullReference(), sNameAppend);
             var listReferenceLines = new List<ReferenceLine>();
             List<List<string>> listCacheData;
             if (!CardMakerInstance.ForceDataCacheRefresh && m_dictionaryDataCache.TryGetValue(sCacheKey, out listCacheData))
@@ -205,11 +208,6 @@ namespace CardMaker.Card.Import
             return listReferenceLines;
         }
 
-        public override List<ReferenceLine> GetReferenceData(ProjectLayoutReference zReference)
-        {
-            return GetData(GoogleSpreadsheetReference.parse(ReferencePath), 0);
-        }
-
         public override List<ReferenceLine> GetProjectDefineData()
         {
             if (string.IsNullOrEmpty(ProjectManager.Instance.ProjectFilePath))
@@ -220,14 +218,19 @@ namespace CardMaker.Card.Import
             return GetData(GetDefinesReference(), 1);
         }
 
-        public override List<ReferenceLine> GetDefineData(ProjectLayoutReference zReference)
+        public override List<ReferenceLine> GetDefineData()
         {
-            return GetData(GoogleSpreadsheetReference.parse(ReferencePath), 1, Deck.DEFINES_DATA_POSTFIX);
+            return GetData(m_zSpreadsheetReference, 1, Deck.DEFINES_DATA_SUFFIX);
+        }
+
+        public override List<ReferenceLine> GetReferenceData()
+        {
+            return GetData(m_zSpreadsheetReference, 0);
         }
 
         private static GoogleSpreadsheetReference GetDefinesReference()
         {
-            var zGoogleSpreadSheetReference = GoogleSpreadsheetReference.parseSpreadsheetOnlyReference(
+            var zGoogleSpreadSheetReference = GoogleSpreadsheetReference.ParseSpreadsheetOnlyReference(
                 (string.IsNullOrEmpty(ProjectManager.Instance.LoadedProject.overrideDefineReferenceName)
                     ? Path.GetFileNameWithoutExtension(ProjectManager.Instance.ProjectFilePath)
                     : ProjectManager.Instance.LoadedProject.overrideDefineReferenceName)

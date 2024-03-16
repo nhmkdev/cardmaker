@@ -22,35 +22,24 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Xml.Serialization;
-
-namespace CardMaker.XML
+namespace CardMaker.Card.Import
 {
-    public class ProjectLayoutReference
+    public abstract class SpreadsheetReferenceBase
     {
-        #region Properties
+        /// <summary>
+        /// Flag indicating if this reference is from a local file
+        /// </summary>
+        public abstract bool IsLocalFile { get; }
 
         /// <summary>
-        /// RelativePath is an overloaded string that can represent the file path or a serialized version of a
-        /// more complex reference type (excel, Google sheet)
+        /// The relative path of the file (locally) - may be full path. This is only set if IsLocalFile is true.
         /// </summary>
-        [XmlAttribute]
-        public string RelativePath { get; set; }
+        public abstract string RelativePath { get; set; }
 
-        [XmlAttribute]
-        public bool Default { get; set; }
-
-        #endregion
-
-        public ProjectLayoutReference()
-        {
-            
-        }
-
-        public void DeepCopy(ProjectLayoutReference zReference)
-        {
-            Default = zReference.Default;
-            RelativePath = zReference.RelativePath;
-        }
+        /// <summary>
+        /// Converts the reference to the standard reference string for this type
+        /// </summary>
+        /// <returns>reference string for use in the persisted ProjectLayoutReference</returns>
+        public abstract string SerializeToReferenceString();
     }
 }

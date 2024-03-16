@@ -35,26 +35,32 @@ namespace CardMaker.Card.Import
     {
         private const string DEFAULT_DEFINES_SHEET_NAME = "defines";
 
+        private ExcelSpreadsheetReference m_zSpreadsheetReference;
+
         public ExcelReferenceReader() {}
 
         public ExcelReferenceReader(ProjectLayoutReference zReference)
         {
-            ReferencePath = zReference.RelativePath;
+            m_zSpreadsheetReference = ExcelSpreadsheetReference.Parse(zReference.RelativePath);
         }
 
-        public List<ReferenceLine> GetData(ExcelSpreadsheetReference zReference, int nStartRow, string sNameAppend = "")
+        public List<ReferenceLine> GetData(string sPath, bool bLogNotFound, string sSheetName, int nStartRow, string sNameAppend = "")
         {
-            var sSheetName = zReference.SheetName + sNameAppend;
+            sSheetName = sSheetName + sNameAppend;
             var listReferenceLines = new List<ReferenceLine>();
 
             // This covers the case where we try to open the project level defines.
-            if (!File.Exists(zReference.SpreadsheetFile))
+            if (!File.Exists(sPath))
             {
+                if (bLogNotFound)
+                {
+                    ProgressReporter.AddIssue($"Excel Spreadsheet file not found. [{sPath},{sSheetName}]");
+                }
                 return listReferenceLines;
             }
 
             // Open the workbook
-            using (var zFileStream = new FileStream(zReference.SpreadsheetFile, FileMode.Open, FileAccess.Read,
+            using (var zFileStream = new FileStream(sPath, FileMode.Open, FileAccess.Read,
                        FileShare.ReadWrite))
             {
                 var workbook = new XLWorkbook(zFileStream);
@@ -72,8 +78,11 @@ namespace CardMaker.Card.Import
 
                 if (worksheet == null)
                 {
-                    ProgressReporter.AddIssue("Missing sheet from Excel Spreadsheet." + "[" + zReference.SpreadsheetFile +
-                                              "," + sSheetName + "]");
+                    if (bLogNotFound)
+                    {
+                        ProgressReporter.AddIssue($"Missing sheet from Excel Spreadsheet. [{sPath},{sSheetName}]");
+                    }
+
                     return listReferenceLines;
                 }
 
@@ -92,20 +101,15 @@ namespace CardMaker.Card.Import
                             rowData.Add(cell.Value.ToString());
                         }
 
-                        listReferenceLines.Add(new ReferenceLine(rowData, zReference.SpreadsheetFile, nRow));
+                        listReferenceLines.Add(new ReferenceLine(rowData, sPath, nRow));
                     }
                 }
             }
             if (listReferenceLines.Count == 0)
             {
-                ProgressReporter.AddIssue("Failed to load any data from Excel Spreadsheet." + "[" + zReference.SpreadsheetFile + "," + sSheetName + "]");
+                ProgressReporter.AddIssue("Failed to load any data from Excel Spreadsheet." + "[" + sPath + "," + sSheetName + "]");
             }
             return listReferenceLines;
-        }
-
-        public override List<ReferenceLine> GetDefineData(ProjectLayoutReference zReference)
-        {
-            return GetData(ExcelSpreadsheetReference.parse(ReferencePath), 1, Deck.DEFINES_DATA_POSTFIX);
         }
 
         public override List<ReferenceLine> GetProjectDefineData()
@@ -120,13 +124,26 @@ namespace CardMaker.Card.Import
                 + Path.GetFileNameWithoutExtension(ProjectManager.Instance.ProjectFilePath)
                 + "_defines.xlsx";
 
-            var zExcelSpreadSheetReference = new ExcelSpreadsheetReference(sReferencePath, DEFAULT_DEFINES_SHEET_NAME);
-            return GetData(zExcelSpreadSheetReference, 1);
+            return GetData(sReferencePath, false, DEFAULT_DEFINES_SHEET_NAME, 1);
         }
 
-        public override List<ReferenceLine> GetReferenceData(ProjectLayoutReference zReference)
+        public override List<ReferenceLine> GetDefineData()
         {
-            return GetData(ExcelSpreadsheetReference.parse(ReferencePath), 0);
+            return GetData(
+                ReferenceUtil.ConvertRelativeProjectPathToFullPath(m_zSpreadsheetReference.RelativePath),
+                false,
+                m_zSpreadsheetReference.SheetName,
+                1, 
+                Deck.DEFINES_DATA_SUFFIX);
+        }
+
+        public override List<ReferenceLine> GetReferenceData()
+        {
+            return GetData(
+                ReferenceUtil.ConvertRelativeProjectPathToFullPath(m_zSpreadsheetReference.RelativePath),
+                true,
+                m_zSpreadsheetReference.SheetName,
+                0);
         }
     }
 }

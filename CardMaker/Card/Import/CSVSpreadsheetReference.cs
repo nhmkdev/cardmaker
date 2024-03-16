@@ -22,35 +22,25 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Xml.Serialization;
-
-namespace CardMaker.XML
+namespace CardMaker.Card.Import
 {
-    public class ProjectLayoutReference
+    public class CSVSpreadsheetReference : SpreadsheetReferenceBase
     {
-        #region Properties
+        public override string RelativePath { get; set; }
 
-        /// <summary>
-        /// RelativePath is an overloaded string that can represent the file path or a serialized version of a
-        /// more complex reference type (excel, Google sheet)
-        /// </summary>
-        [XmlAttribute]
-        public string RelativePath { get; set; }
+        public override bool IsLocalFile => true;
 
-        [XmlAttribute]
-        public bool Default { get; set; }
-
-        #endregion
-
-        public ProjectLayoutReference()
+        public static CSVSpreadsheetReference Parse(string sInput)
         {
-            
+            return new CSVSpreadsheetReference()
+            {
+                RelativePath = sInput
+            };
         }
 
-        public void DeepCopy(ProjectLayoutReference zReference)
+        public override string SerializeToReferenceString()
         {
-            Default = zReference.Default;
-            RelativePath = zReference.RelativePath;
+            return RelativePath;
         }
     }
 }

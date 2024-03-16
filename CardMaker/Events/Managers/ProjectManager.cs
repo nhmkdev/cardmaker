@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using CardMaker.Card.Import;
 using CardMaker.Data;
 using CardMaker.Events.Args;
 using CardMaker.XML;
@@ -226,10 +227,8 @@ namespace CardMaker.Events.Managers
         /// <returns></returns>
         public bool Save(string sFile)
         {
-            string sProjectPath = Path.GetDirectoryName(sFile);
-            string sOldProjectPath = null == ProjectFilePath ? string.Empty : Path.GetDirectoryName(ProjectFilePath);
-
-            bool bOldPathValid = !string.IsNullOrEmpty(sOldProjectPath);
+            var sProjectPath = Path.GetDirectoryName(sFile);
+            var sOldProjectPath = null == ProjectFilePath ? string.Empty : Path.GetDirectoryName(ProjectFilePath);
 
             if (sProjectPath != null &&
                 !sProjectPath.Equals(sOldProjectPath, StringComparison.CurrentCultureIgnoreCase))
@@ -239,12 +238,9 @@ namespace CardMaker.Events.Managers
                 {
                     if (null != zLayout.Reference)
                     {
-                        foreach (ProjectLayoutReference zReference in zLayout.Reference)
+                        foreach (var zReference in zLayout.Reference)
                         {
-                            zReference.RelativePath = bOldPathValid
-                                ? IOUtils.UpdateRelativePath(sOldProjectPath, zReference.RelativePath, sProjectPath)
-                                : zReference.RelativePath =
-                                    IOUtils.GetRelativePath(sProjectPath, zReference.RelativePath);
+                            ReferenceUtil.UpdateReferenceRelativePath(zReference, sProjectPath, sOldProjectPath);
                         }
                     }
                 }
