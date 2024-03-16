@@ -49,7 +49,7 @@ namespace CardMaker.Card.Import
 
         private readonly GoogleSpreadsheetReference m_zSpreadsheetReference;
 #warning make this static (currently not shared so it doesn't do a lot of good)
-        private static readonly Dictionary<string, List<List<string>>> m_dictionaryDataCache = new Dictionary<string, List<List<string>>>();
+        private readonly Dictionary<string, List<List<string>>> m_dictionaryDataCache = new Dictionary<string, List<List<string>>>();
         private bool m_bCacheUpdated;
         private readonly string m_sCacheKeyBase;
 
