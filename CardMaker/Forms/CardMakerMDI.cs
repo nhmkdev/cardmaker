@@ -196,9 +196,6 @@ namespace CardMaker.Forms
                 zLoggerForm.Size = new Size(337, 291);
                 zLoggerForm.Location = new Point(765, 365);
 #endif
-
-                // initialize Google Cache
-                GoogleReferenceCache.ReadFromDisk();
             }
 
             var arrayFiles = CardMakerSettings.IniManager.GetValue(IniSettings.PreviousProjects).Split(new char[] {CardMakerConstants.CHAR_FILE_SPLIT }, StringSplitOptions.RemoveEmptyEntries);
@@ -215,6 +212,12 @@ namespace CardMaker.Forms
             if (!string.IsNullOrEmpty(CardMakerInstance.CommandLineProjectFile))
             {
                 InitOpen(CardMakerInstance.CommandLineProjectFile);
+            }
+
+            // initialize Google Cache
+            if (CardMakerSettings.EnableGoogleCache)
+            {
+                GoogleReferenceCache.ReadFromDisk();
             }
 
 #if !DEBUG

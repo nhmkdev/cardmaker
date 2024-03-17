@@ -62,8 +62,6 @@ namespace CardMaker.Card.Import
 
         public override ReferenceReader Initialize()
         {
-            LoadCache();
-
             if (!IsAllDataCached() || CardMakerInstance.ForceDataCacheRefresh)
             {
                 var zSpreadsheet =
@@ -103,17 +101,6 @@ namespace CardMaker.Card.Import
             }
         }
 
-        private void LoadCache()
-        {
-            if (CardMakerSettings.EnableGoogleCache)
-            {
-                if (!GoogleReferenceCache.ReadFromDisk())
-                {
-                    ProgressReporter.AddIssue("Failed to read cache file: {0}".FormatString(GoogleReferenceCache.GetCacheFilePath()));
-                }
-            }
-        }
-
         private bool IsAllDataCached()
         {
             return GoogleReferenceCache.IsEntryInCache(GetCacheKey(m_sCacheKeyBase)) &&
@@ -126,9 +113,11 @@ namespace CardMaker.Card.Import
             var sCacheKey = GetCacheKey(zReference.GenerateFullReference(), sNameAppend);
             var listReferenceLines = new List<ReferenceLine>();
             List<List<string>> listCacheData;
-            if (!CardMakerInstance.ForceDataCacheRefresh && GoogleReferenceCache.GetCacheEntry(sCacheKey, out listCacheData))
+            if (CardMakerSettings.EnableGoogleCache 
+                && !CardMakerInstance.ForceDataCacheRefresh 
+                && GoogleReferenceCache.GetCacheEntry(sCacheKey, out listCacheData))
             {
-                ProgressReporter.AddIssue("Loading {0} from local cache".FormatString(sCacheKey));
+                ProgressReporter.AddIssue("Loaded {0} from local cache".FormatString(sCacheKey));
                 // The cache contains all rows
                 for (var nRow = nStartRow; nRow < listCacheData.Count; nRow++)
                 {
@@ -181,7 +170,11 @@ namespace CardMaker.Card.Import
             }
             else
             {
-                GoogleReferenceCache.UpdateCacheEntry(sCacheKey, listGoogleData);
+                if (CardMakerSettings.EnableGoogleCache)
+                {
+                    GoogleReferenceCache.UpdateCacheEntry(sCacheKey, listGoogleData);
+                }
+
                 for (var nRow = nStartRow; nRow < listGoogleData.Count; nRow++)
                 {
                     listReferenceLines.Add(new ReferenceLine(listGoogleData[nRow], zReference.SpreadsheetName, nRow));
