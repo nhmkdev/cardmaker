@@ -40,7 +40,7 @@ namespace CardMaker.Card.Import
     {
         private const string DEFAULT_DEFINES_SHEET_NAME = "defines";
 
-        // public required to serialize
+        // public required to serialize (keep here for backwards compatibility?)
         public class GoogleCacheItem
         {
             public string Reference { get; set; }
@@ -48,10 +48,9 @@ namespace CardMaker.Card.Import
         }
 
         private readonly GoogleSpreadsheetReference m_zSpreadsheetReference;
-#warning make this static (currently not shared so it doesn't do a lot of good)
-        private readonly Dictionary<string, List<List<string>>> m_dictionaryDataCache = new Dictionary<string, List<List<string>>>();
-        private bool m_bCacheUpdated;
         private readonly string m_sCacheKeyBase;
+
+        public override ReferenceType ReferenceReaderType => ReferenceType.Google;
 
         public GoogleReferenceReader() { }
 
@@ -106,34 +105,20 @@ namespace CardMaker.Card.Import
 
         private void LoadCache()
         {
-            if (!CardMakerSettings.EnableGoogleCache)
+            if (CardMakerSettings.EnableGoogleCache)
             {
-                return;
-            }
-            var sLocalCacheFile = Path.Combine(CardMakerInstance.StartupPath, CardMakerConstants.GOOGLE_CACHE_FILE);
-
-            List<GoogleCacheItem> listCacheItems = null;
-            if (SerializationUtils.DeserializeFromXmlFile(
-                sLocalCacheFile,
-                CardMakerConstants.XML_ENCODING,
-                ref listCacheItems))
-            {
-                foreach (var zCacheItem in listCacheItems)
+                if (!GoogleReferenceCache.ReadFromDisk())
                 {
-                    m_dictionaryDataCache.Add(zCacheItem.Reference, zCacheItem.Data);
+                    ProgressReporter.AddIssue("Failed to read cache file: {0}".FormatString(GoogleReferenceCache.GetCacheFilePath()));
                 }
-            }
-            else
-            {
-                ProgressReporter.AddIssue("Failed to read cache file: {0}".FormatString(sLocalCacheFile));
             }
         }
 
         private bool IsAllDataCached()
         {
-            return m_dictionaryDataCache.ContainsKey(GetCacheKey(m_sCacheKeyBase)) &&
-                   m_dictionaryDataCache.ContainsKey(GetCacheKey(GetDefinesReference().GenerateFullReference())) &&
-                   m_dictionaryDataCache.ContainsKey(GetCacheKey(m_sCacheKeyBase, Deck.DEFINES_DATA_SUFFIX));
+            return GoogleReferenceCache.IsEntryInCache(GetCacheKey(m_sCacheKeyBase)) &&
+                   GoogleReferenceCache.IsEntryInCache(GetCacheKey(GetDefinesReference().GenerateFullReference())) &&
+                   GoogleReferenceCache.IsEntryInCache(GetCacheKey(m_sCacheKeyBase, Deck.DEFINES_DATA_SUFFIX));
         }
 
         private List<ReferenceLine> GetData(GoogleSpreadsheetReference zReference, int nStartRow, string sNameAppend = "")
@@ -141,7 +126,7 @@ namespace CardMaker.Card.Import
             var sCacheKey = GetCacheKey(zReference.GenerateFullReference(), sNameAppend);
             var listReferenceLines = new List<ReferenceLine>();
             List<List<string>> listCacheData;
-            if (!CardMakerInstance.ForceDataCacheRefresh && m_dictionaryDataCache.TryGetValue(sCacheKey, out listCacheData))
+            if (!CardMakerInstance.ForceDataCacheRefresh && GoogleReferenceCache.GetCacheEntry(sCacheKey, out listCacheData))
             {
                 ProgressReporter.AddIssue("Loading {0} from local cache".FormatString(sCacheKey));
                 // The cache contains all rows
@@ -196,9 +181,7 @@ namespace CardMaker.Card.Import
             }
             else
             {
-                // The cache contains all rows
-                m_dictionaryDataCache[sCacheKey] = listGoogleData;
-                m_bCacheUpdated = true;
+                GoogleReferenceCache.UpdateCacheEntry(sCacheKey, listGoogleData);
                 for (var nRow = nStartRow; nRow < listGoogleData.Count; nRow++)
                 {
                     listReferenceLines.Add(new ReferenceLine(listGoogleData[nRow], zReference.SpreadsheetName, nRow));
@@ -242,33 +225,6 @@ namespace CardMaker.Card.Import
         private string GetCacheKey(string sReference, string sNameAppend = "")
         {
             return sReference + "::" + sNameAppend;
-        }
-
-        public override void FinalizeReferenceLoad()
-        {
-            if (!m_bCacheUpdated || !CardMakerSettings.EnableGoogleCache)
-            {
-                return;
-            }
-
-            List<GoogleCacheItem> listCacheItems = new List<GoogleCacheItem>();
-            foreach (var zPair in m_dictionaryDataCache)
-            {
-                listCacheItems.Add(new GoogleCacheItem()
-                {
-                    Reference = zPair.Key,
-                    Data = zPair.Value
-                });
-            }
-            var sLocalCacheFile = Path.Combine(CardMakerInstance.StartupPath, CardMakerConstants.GOOGLE_CACHE_FILE);
-
-            if (!SerializationUtils.SerializeToXmlFile(
-                sLocalCacheFile, 
-                listCacheItems,
-                CardMakerConstants.XML_ENCODING))
-            {
-                ProgressReporter.AddIssue("Failed to write cache file: {0}".FormatString(sLocalCacheFile));
-            }
         }
     }
 }

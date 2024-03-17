@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using CardMaker.Data;
 using Support.Progress;
 
 namespace CardMaker.Card.Import
@@ -33,6 +34,8 @@ namespace CardMaker.Card.Import
     public abstract class ReferenceReader
     {
         public IProgressReporter ProgressReporter { get; set; }
+
+        public abstract ReferenceType ReferenceReaderType { get; }
 
         /// <summary>
         /// Reads the reference data into the specified list
@@ -59,14 +62,6 @@ namespace CardMaker.Card.Import
         public virtual ReferenceReader Initialize()
         {
             return this;
-        }
-
-        /// <summary>
-        /// Called to signify that all references have been loaded
-        /// </summary>
-        public virtual void FinalizeReferenceLoad()
-        {
-
         }
 
         /// <summary>

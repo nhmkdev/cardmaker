@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using CardMaker.Data;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
 using Support.IO;
@@ -35,6 +36,8 @@ namespace CardMaker.Card.Import
     public class CSVReferenceReader : ReferenceReader
     {
         private CSVSpreadsheetReference m_zSpreadsheetReference;
+
+        public override ReferenceType ReferenceReaderType => ReferenceType.CSV;
 
         public CSVReferenceReader() { }
 

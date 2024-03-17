@@ -34,6 +34,7 @@ using System.Text;
 using System.Windows.Forms;
 using CardMaker.Card.Export;
 using CardMaker.Card.Export.Pdf;
+using CardMaker.Card.Import;
 using CardMaker.Card.Translation;
 using CardMaker.Data;
 using CardMaker.Events.Args;
@@ -195,6 +196,9 @@ namespace CardMaker.Forms
                 zLoggerForm.Size = new Size(337, 291);
                 zLoggerForm.Location = new Point(765, 365);
 #endif
+
+                // initialize Google Cache
+                GoogleReferenceCache.ReadFromDisk();
             }
 
             var arrayFiles = CardMakerSettings.IniManager.GetValue(IniSettings.PreviousProjects).Split(new char[] {CardMakerConstants.CHAR_FILE_SPLIT }, StringSplitOptions.RemoveEmptyEntries);
@@ -423,7 +427,7 @@ namespace CardMaker.Forms
                 CardMakerSettings.EnableGoogleCache = zQuery.GetBool(IniSettings.EnableGoogleCache);
                 if (!CardMakerSettings.EnableGoogleCache && bWasGoogleCacheEnabled)
                 {
-                    DeleteGoogleCache();
+                    GoogleReferenceCache.DeleteGoogleCache();
                 }
             }
         }
@@ -628,7 +632,7 @@ namespace CardMaker.Forms
 
         private void clearGoogleCacheToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (DeleteGoogleCache() && LayoutManager.Instance.ActiveDeck != null)
+            if (GoogleReferenceCache.DeleteGoogleCache() && LayoutManager.Instance.ActiveDeck != null)
             {
                 LayoutManager.Instance.InitializeActiveLayout();
             }
@@ -887,21 +891,6 @@ namespace CardMaker.Forms
             {
                 m_listRecentFiles.RemoveAt(CardMakerConstants.MAX_RECENT_PROJECTS);
             }
-        }
-
-        private bool DeleteGoogleCache()
-        {
-            try
-            {
-                File.Delete(Path.Combine(CardMakerInstance.StartupPath, CardMakerConstants.GOOGLE_CACHE_FILE));
-                Logger.AddLogLine("Cleared Google Cache");
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Logger.AddLogLine("Failed to delete Google Cache File: {0}".FormatString(ex.Message));
-            }
-            return false;
         }
     }
 }

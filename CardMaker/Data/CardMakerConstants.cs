@@ -24,7 +24,6 @@
 
 using System.Drawing;
 using System.Text;
-using Google.Apis.Drive.v3;
 using Google.Apis.Sheets.v4;
 
 namespace CardMaker.Data
@@ -36,7 +35,6 @@ namespace CardMaker.Data
         public const string VISIBLE_SETTING = ".visible";
         public const char CHAR_FILE_SPLIT = '|';
         public const int MAX_RECENT_PROJECTS = 10;
-        public const string GOOGLE_CACHE_FILE = ".CardMakerGoogleCache.dat";
         public static readonly Color NoColor = Color.FromArgb(0, 0, 0, 0);
         public const string ALLOWED_LAYOUT_COLUMN = "allowed_layout";
         public const string FORMATTED_TEXT_PARAM_SEPARATOR = ";";

@@ -165,9 +165,13 @@ namespace CardMaker.Card
                     listAllReferenceLines.AddRange(listRefLines);
                     listAllReferenceDefineLines.AddRange(listRefDefineLines);
 
-                    zRefReader.FinalizeReferenceLoad();
                     m_zReporterProxy.ProgressStep();
                 }
+            }
+
+            if (CardMakerSettings.EnableGoogleCache && !GoogleReferenceCache.FlushToDisk())
+            {
+                m_zReporterProxy.AddIssue("Failed to write cache file: {0}".FormatString(GoogleReferenceCache.GetCacheFilePath()));
             }
 
             // concat all the defines into one list (project + each reference define)

@@ -25,6 +25,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CardMaker.Data;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
 using ClosedXML.Excel;
@@ -36,6 +37,8 @@ namespace CardMaker.Card.Import
         private const string DEFAULT_DEFINES_SHEET_NAME = "defines";
 
         private ExcelSpreadsheetReference m_zSpreadsheetReference;
+
+        public override ReferenceType ReferenceReaderType => ReferenceType.Excel;
 
         public ExcelReferenceReader() {}
 

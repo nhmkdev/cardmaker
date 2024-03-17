@@ -164,6 +164,7 @@
     <Compile Include="Card\Import\CSVSpreadsheetReference.cs" />
     <Compile Include="Card\Import\ExcelReferenceReader.cs" />
     <Compile Include="Card\Import\ExcelSpreadsheetReference.cs" />
+    <Compile Include="Card\Import\GoogleReferenceCache.cs" />
     <Compile Include="Card\Import\GoogleReferenceReader.cs" />
     <Compile Include="Card\Import\GoogleSpreadsheetReference.cs" />
     <Compile Include="Card\Import\ReferenceLine.cs" />

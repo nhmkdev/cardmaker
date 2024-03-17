@@ -204,6 +204,7 @@ namespace Support.Google.Sheets
         /// </summary>
         public void MakeSimpleSpreadsheetRequest()
         {
+#warning need a new way to check this, drive access is dead anyway
             var zDriveService = CreateDriveService();
 
             var zListRequest = zDriveService.Files.List();
