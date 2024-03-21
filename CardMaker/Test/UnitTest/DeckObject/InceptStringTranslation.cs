@@ -27,6 +27,7 @@ using CardMaker.XML;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using CardMaker.Card.Import;
 using CardMaker.Data;
 using Moq;
@@ -53,7 +54,18 @@ namespace UnitTest.DeckObject
             _testDeck = new TestDeck();
             _testDeck.SetProgressReporterProxy(_mockProgressReporterProxy.Object);
             _testLine = new DeckLine(ReferenceLine.CreateDefaultInternalReferenceLine(new List<string>()));
-            _testElement = new ProjectLayoutElement(TEST_ELEMENT_NAME);
+            _testElement = new ProjectLayoutElement(TEST_ELEMENT_NAME)
+            {
+                x = 15,
+                y = 45,
+                verticalalign = (int)StringAlignment.Near,
+                horizontalalign = (int)StringAlignment.Center,
+                width = 100,
+                height = 200,
+                opacity = 128,
+                enabled = true,
+                justifiedtext = false,
+            };
         }
 
         [Test]
@@ -110,6 +122,24 @@ namespace UnitTest.DeckObject
         [TestCase("![deckIndex]", ExpectedResult = "1")]
         [TestCase("![layoutname]", ExpectedResult = TestDeck.LAYOUT_NAME)]
         public string ValidateCardVariable(string input)
+        {
+            _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
+            var result = _testDeck.TranslateString(input, _testLine, _testElement, false);
+            return result.String;
+        }
+
+        [TestCase("&[x]", ExpectedResult = "15")]
+        [TestCase("&[y]", ExpectedResult = "45")]
+        [TestCase("&[verticalalign]", ExpectedResult = "0")]
+        [TestCase("&[horizontalalign]", ExpectedResult = "1")]
+        [TestCase("&[width]", ExpectedResult = "100")]
+        [TestCase("&[height]", ExpectedResult = "200")]
+        [TestCase("aa&[opacity]", ExpectedResult = "aa128")]
+        [TestCase("&[enabled]bb", ExpectedResult = "Truebb")]
+        [TestCase("aa&[justifiedtext]bb", ExpectedResult = "aaFalsebb")]
+        [TestCase("aa&[unknown]bb", ExpectedResult = "aaINVALID_FIELD_READbb")]
+        [TestCase("aa&[variable]bb", ExpectedResult = "aaFIELD_READ_DISALLOWEDbb")]
+        public string ValidateElementFields(string input)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
             var result = _testDeck.TranslateString(input, _testLine, _testElement, false);
@@ -307,6 +337,8 @@ namespace UnitTest.DeckObject
         [TestCase("#math;12%3#", ExpectedResult = "0")]
         [TestCase("#math;12%5#", ExpectedResult = "2")]
         [TestCase("#math;1.5+1.75#", ExpectedResult = "3.25")]
+        [TestCase("#math;10*1.5#", ExpectedResult = "15")]
+        [TestCase("#math;10*@[scale_factor]#", ExpectedResult = "15")]
         [TestCase("#math;1.5-1.75#", ExpectedResult = "-0.25")]
         [TestCase("#math;1.5*3#", ExpectedResult = "4.5")]
         [TestCase("aa#math;1.5*-3;#bb", ExpectedResult = "aa-4.5bb")]
@@ -322,7 +354,10 @@ namespace UnitTest.DeckObject
         [TestCase("#math;12.6%5#", ExpectedResult = "2.6")]
         public string ValidateMath(string input)
         {
-            _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
+            _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>()
+            {
+                new List<string>{"scale_factor", "1.5"}
+            }, "test");
             return _testDeck.TranslateString(input, _testLine, _testElement, false).String;
         }
 

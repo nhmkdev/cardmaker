@@ -38,6 +38,10 @@ namespace CardMaker.Card.Translation
 {
     public abstract class TranslatorBase
     {
+        public const string FIELD_READ_DISALLOWED = "FIELD_READ_DISALLOWED";
+        public const string INVALID_FIELD_READ = "INVALID_FIELD_READ";
+
+
         // spreadsheet based overrides
         public Dictionary<string, int> DictionaryColumnNameToIndex { get; private set; }
         public Dictionary<string, string> DictionaryDefines { get; private set; }
@@ -53,6 +57,15 @@ namespace CardMaker.Card.Translation
             "variable"
         };
         public static bool IsDisallowedOverrideField(string sField)
+        {
+            return s_setDisallowedOverrideFields.Contains(sField);
+        }
+
+        private static readonly HashSet<string> s_setDisallowedReadFields = new HashSet<string>()
+        {
+            "variable"
+        };
+        public static bool IsDisallowedReadField(string sField)
         {
             return s_setDisallowedOverrideFields.Contains(sField);
         }

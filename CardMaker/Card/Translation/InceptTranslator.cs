@@ -57,6 +57,7 @@ namespace CardMaker.Card.Translation
         private static readonly Regex s_regexColumnVariable = new Regex(@"(.*)(@\[)(.+?)(\])(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexColumnVariableSubstring = new Regex(@"(.*)(%\[)(.+?)(,)(\d+)(,)(\d+)(\])(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexCardVariable = new Regex(@"(.*)(\!\[)(.+?)(\])(.*)", RegexOptions.Compiled);
+        private static readonly Regex s_regexElementFields = new Regex(@"(.*)(\&\[)(.+?)(\])(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexElementOverride = new Regex(@"(.*)(\$\[)(.+?):(.*?)(\])(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexCardCounter = new Regex(@"(.*)(##)(\d+)(;)(\d+)(;)(\d+)(#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexSubCardCounter = new Regex(@"(.*)(#sc;)(\d+)(;)(\d+)(;)(\d+)(#)(.*)", RegexOptions.Compiled);
@@ -143,6 +144,9 @@ namespace CardMaker.Card.Translation
             // Translate sub card counter/index
             sOutput = LoopTranslateRegex(s_regexSubCardCounter, sOutput, zTranslationContext, TranslateSubCardCounter);
 
+            // Translate element fields
+            sOutput = LoopTranslateRegex(s_regexElementFields, sOutput, zTranslationContext, TranslateElementFields);
+
             // Translate random number
             sOutput = LoopTranslateRegex(s_regexRandomNumber, sOutput, zTranslationContext, TranslationRandomNumber);
 
@@ -160,6 +164,7 @@ namespace CardMaker.Card.Translation
 
             // this is used by TranslateOverrides
             zElementString.OverrideFieldToValueDictionary = new Dictionary<string, string>();
+            
             // override processing
             sOutput = LoopTranslateRegex(s_regexElementOverride, sOutput, zTranslationContext, TranslateOverrides);
 
@@ -441,6 +446,41 @@ namespace CardMaker.Card.Translation
             return zMatch.Groups[1] +
                    TranslateSwitchLogic(zMatch.Groups[3].ToString()) +
                    zMatch.Groups[5];
+        }
+
+        private string TranslateElementFields(Match zMatch, TranslationContext zTranslationContext)
+        {
+            // Override evaluation:
+            // Translate element fields
+            // Groups
+            //    1   2     3    4   5 
+            // @"(.*)(\&\[)(.+?)(\])(.*)"
+            var sField = zMatch.Groups[3].ToString().ToLower();
+
+            var sTranslated = string.Empty;
+
+            if (IsDisallowedReadField(sField))
+            {
+                sTranslated = FIELD_READ_DISALLOWED;
+                Logger.AddLogLine(
+                    "[{1}] override not allowed on element: [{0}]".FormatString(zTranslationContext.Element.name, sField));
+            }
+            else
+            {
+                var zProperty = typeof(ProjectLayoutElement).GetProperty(sField);
+                if (null != zProperty && zProperty.CanRead)
+                {
+                    var zMethod = zProperty.GetGetMethod();
+                    var zObj = zMethod.Invoke(zTranslationContext.Element, null);
+                    sTranslated = zObj.ToString();
+                }
+                else
+                {
+                    sTranslated = INVALID_FIELD_READ;
+                }
+            }
+
+            return zMatch.Groups[1].Value + sTranslated + zMatch.Groups[5].Value;
         }
 
         private string TranslateOverrides(Match zMatch, TranslationContext zTranslationContext)
