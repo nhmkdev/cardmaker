@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using CardMaker.Card.CommandLine;
 using CardMaker.Card.Shapes;
@@ -51,6 +52,8 @@ namespace CardMaker
         [STAThread]
         public static void Main(string[] args)
         {
+            Regex.CacheSize += 100;
+
             MainEntry(new ConsoleProgressReporterFactory(), args);
         }
 

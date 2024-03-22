@@ -831,7 +831,7 @@ namespace CardMaker.Forms
 
         private void CreateControlFieldDictionary()
         {
-            Type zType = typeof(ProjectLayoutElement);
+            var zType = typeof(ProjectLayoutElement);
 
             // HandleElementValueChange related
             m_dictionaryControlField.Add(txtElementVariable, zType.GetProperty("variable"));
@@ -844,6 +844,7 @@ namespace CardMaker.Forms
             m_dictionaryControlField.Add(checkFontAutoScale, zType.GetProperty("autoscalefont"));
             m_dictionaryControlField.Add(checkLockAspect, zType.GetProperty("lockaspect"));
             m_dictionaryControlField.Add(checkKeepOriginalSize, zType.GetProperty("keeporiginalsize"));
+            m_dictionaryControlField.Add(checkCenterOnOrigin, zType.GetProperty("centerimageonorigin"));
             m_dictionaryControlField.Add(numericElementOutLineThickness, zType.GetProperty("outlinethickness"));
             m_dictionaryControlField.Add(numericElementRotation, zType.GetProperty("rotation"));
             m_dictionaryControlField.Add(comboGraphicHorizontalAlign, zType.GetProperty("horizontalalign"));
@@ -868,11 +869,26 @@ namespace CardMaker.Forms
                 LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElement.name);
             });
 
+            m_dictionaryControlActions.Add(numericElementX, zElement =>
+            {
+                LayoutManager.Instance.ActiveDeck.ResetTranslationCache(zElement);
+                LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElement.name);
+            });
+            m_dictionaryControlActions.Add(numericElementY, zElement =>
+            {
+                LayoutManager.Instance.ActiveDeck.ResetTranslationCache(zElement);
+                LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElement.name);
+            });
             m_dictionaryControlActions.Add(numericElementW, zElement =>
-                LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElement.name));
-
+            {
+                LayoutManager.Instance.ActiveDeck.ResetTranslationCache(zElement);
+                LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElement.name);
+            });
             m_dictionaryControlActions.Add(numericElementH, zElement =>
-                LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElement.name));
+            {
+                LayoutManager.Instance.ActiveDeck.ResetTranslationCache(zElement);
+                LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElement.name);
+            });
 
             m_dictionaryControlActions.Add(numericElementOutLineThickness, zElement =>
                 LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElement.name));
@@ -1063,6 +1079,7 @@ namespace CardMaker.Forms
                 checkFontAutoScale.Checked = zElement.autoscalefont;
                 checkLockAspect.Checked = zElement.lockaspect;
                 checkKeepOriginalSize.Checked = zElement.keeporiginalsize;
+                checkCenterOnOrigin.Checked = zElement.centerimageonorigin;
                 numericElementOpacity.Value = (decimal)zElement.opacity;
                 comboTextHorizontalAlign.SelectedIndex = zElement.horizontalalign;
                 comboTextVerticalAlign.SelectedIndex = zElement.verticalalign;

@@ -274,12 +274,6 @@ namespace CardMaker.Card.Translation
 
 #endregion
 
-        public void ResetDeckCache()
-        {
-            ResetTranslationCache();
-            ResetMarkupCache();
-        }
-
 #region Markup Cache
 
         public void AddCachedMarkup(string sElementName, FormattedTextDataCache zFormattedData)

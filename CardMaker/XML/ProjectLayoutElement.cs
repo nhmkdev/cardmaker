@@ -128,6 +128,9 @@ namespace CardMaker.XML
         [XmlAttribute]
         public int mirrortype { get; set; }
 
+        [XmlAttribute]
+        public bool centerimageonorigin { get; set; }
+
         #endregion
 
         private Color m_colorElement = Color.Black;
@@ -178,6 +181,7 @@ namespace CardMaker.XML
             enabled = true;
             justifiedtext = false;
             mirrortype = (int)MirrorType.None;
+            centerimageonorigin = false;
 
             InitializeTranslatedFields();
         }
@@ -271,6 +275,7 @@ namespace CardMaker.XML
             layoutreference = zElement.layoutreference;
             elementreference = zElement.elementreference;
             mirrortype = zElement.mirrortype;
+            centerimageonorigin = zElement.centerimageonorigin;
 
             if (bInitializeTranslatedFields)
             {

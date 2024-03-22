@@ -55,35 +55,24 @@ namespace CardMaker.Card
 
             var zBmp = ImageCache.LoadCustomImageFromCache(sPath, zElement);
                 
-            var nWidth = zElement.width;
-            var nHeight = zElement.height;
-
-            // TODO: sub processor methods (at a minimum)
+            if (zElement.centerimageonorigin)
+            {
+                if (zElement.keeporiginalsize)
+                {
+                    DrawUncroppedCenteredGraphicOriginalSize(zGraphics, zBmp, zElement, nXGraphicOffset, nYGraphicOffset);
+                }
+                else
+                {
+                    DrawUncroppedCenteredGraphicScaledToElementSize(zGraphics, zBmp, zElement, nXGraphicOffset,
+                        nYGraphicOffset);
+                }
+                return;
+            }
 
             if (!string.IsNullOrWhiteSpace(zElement.tilesize) 
                 && zElement.tilesize.Trim() != "-")
             {
-                var zMatch = regexImageTile.Match(zElement.tilesize);
-                if (zMatch.Success)
-                {
-                    var nTileWidth = Math.Max(-1, ParseUtil.ParseDefault(zMatch.Groups[1].Value, -1));
-                    var nTileHeight = Math.Max(-1, ParseUtil.ParseDefault(zMatch.Groups[3].Value, -1));
-                    GetAspectRatioHeight(zBmp, nTileWidth, nTileHeight, out nTileWidth, out nTileHeight);
-                    // paranoia...
-                    nTileWidth = Math.Max(1, nTileWidth);
-                    nTileHeight = Math.Max(1, nTileHeight);
-
-                    zBmp = ImageCache.LoadCustomImageFromCache(sPath, zElement, nTileWidth, nTileHeight);
-                }
-                using (var zTextureBrush = new TextureBrush(zBmp, WrapMode.Tile))
-                {
-                    // backup the transform
-                    var zOriginalTransform = zGraphics.Transform;
-                    // need to translate so the tiling starts with a full image if offset
-                    zGraphics.TranslateTransform(nXGraphicOffset, nYGraphicOffset);
-                    zGraphics.FillRectangle(zTextureBrush, 0, 0, nWidth, nHeight);
-                    zGraphics.Transform = zOriginalTransform;
-                }
+                DrawGraphicTiled(zGraphics, zBmp, zElement, sPath, nXGraphicOffset, nYGraphicOffset);
                 return;
             }
 
@@ -92,6 +81,9 @@ namespace CardMaker.Card
                 DrawGraphicOriginalSize(zGraphics, zBmp, zElement);
                 return;
             }
+
+            var nWidth = zElement.width;
+            var nHeight = zElement.height;
 
             if (zElement.lockaspect)
             {
@@ -119,6 +111,70 @@ namespace CardMaker.Card
             {
                 nDestWidth = (int)((float)nHeight * fAspect);
                 nDestHeight = nHeight;
+            }
+        }
+
+        /// <summary>
+        /// Draws the image uncropped and centered on the element origin.
+        /// The image is always drawn in proper aspect ratio by this method.
+        /// </summary>
+        /// <param name="zGraphics"></param>
+        /// <param name="zBmp"></param>
+        /// <param name="zElement"></param>
+        private static void DrawUncroppedCenteredGraphicOriginalSize(Graphics zGraphics, Bitmap zBmp, ProjectLayoutElement zElement, int nXGraphicOffset, int nYGraphicOffset)
+        {
+            var nCenterX = zBmp.Width / 2;
+            var nCenterY = zBmp.Height / 2;
+            nXGraphicOffset -= nCenterX;
+            nYGraphicOffset -= nCenterY;
+
+            zGraphics.DrawImage(zBmp, new Point(nXGraphicOffset, nYGraphicOffset));
+        }
+
+        /// <summary>
+        /// Draws the image uncropped and centered on the element origin.
+        /// The image is drawn in the proper aspect ratio if the element is set to.
+        /// </summary>
+        /// <param name="zGraphics"></param>
+        /// <param name="zBmp"></param>
+        /// <param name="zElement"></param>
+        private static void DrawUncroppedCenteredGraphicScaledToElementSize(Graphics zGraphics, Bitmap zBmp, ProjectLayoutElement zElement, int nXGraphicOffset, int nYGraphicOffset)
+        {
+            var nWidth = zElement.width;
+            var nHeight = zElement.height;
+            if (zElement.lockaspect)
+            {
+                GetSizeFromAspectRatio((float)zBmp.Tag, nWidth, nHeight, out nWidth, out nHeight);
+            }
+            var nCenterX = nWidth / 2;
+            var nCenterY = nHeight / 2;
+            nXGraphicOffset -= nCenterX;
+            nYGraphicOffset -= nCenterY;
+            zGraphics.DrawImage(zBmp, new Rectangle(nXGraphicOffset, nYGraphicOffset, nWidth, nHeight));
+        }
+
+        private static void DrawGraphicTiled(Graphics zGraphics, Bitmap zBmp, ProjectLayoutElement zElement, string sPath, int nXGraphicOffset, int nYGraphicOffset)
+        {
+            var zMatch = regexImageTile.Match(zElement.tilesize);
+            if (zMatch.Success)
+            {
+                var nTileWidth = Math.Max(-1, ParseUtil.ParseDefault(zMatch.Groups[1].Value, -1));
+                var nTileHeight = Math.Max(-1, ParseUtil.ParseDefault(zMatch.Groups[3].Value, -1));
+                GetAspectRatioHeight(zBmp, nTileWidth, nTileHeight, out nTileWidth, out nTileHeight);
+                // paranoia...
+                nTileWidth = Math.Max(1, nTileWidth);
+                nTileHeight = Math.Max(1, nTileHeight);
+
+                zBmp = ImageCache.LoadCustomImageFromCache(sPath, zElement, nTileWidth, nTileHeight);
+            }
+            using (var zTextureBrush = new TextureBrush(zBmp, WrapMode.Tile))
+            {
+                // backup the transform
+                var zOriginalTransform = zGraphics.Transform;
+                // need to translate so the tiling starts with a full image if offset
+                zGraphics.TranslateTransform(nXGraphicOffset, nYGraphicOffset);
+                zGraphics.FillRectangle(zTextureBrush, 0, 0, zElement.width, zElement.height);
+                zGraphics.Transform = zOriginalTransform;
             }
         }
 

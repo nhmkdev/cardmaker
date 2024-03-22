@@ -1,5 +1,9 @@
 Card Maker Version History
 --------------------------
+1.4.0.0
+- Added ability to access element fields with &[fieldname]
+- Added new graphic element type option to draw the graphic at the element origin
+
 1.3.0.0
 - Overhaul to Google sheet selection due to security policy changes
 - Added detection for main window launch on non-existent screens (will re-position to 0,0)
