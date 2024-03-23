@@ -67,7 +67,7 @@ namespace CardMaker.Card.Translation
         };
         public static bool IsDisallowedReadField(string sField)
         {
-            return s_setDisallowedOverrideFields.Contains(sField);
+            return s_setDisallowedReadFields.Contains(sField);
         }
 
         protected TranslatorBase(Dictionary<string, int> dictionaryColumnNameToIndex, Dictionary<string, string> dictionaryDefines,
