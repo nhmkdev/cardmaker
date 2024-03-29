@@ -74,7 +74,16 @@ namespace CardMaker.XML
         [XmlAttribute]
         public string elementcolor { get; set; }
 
-        [XmlAttribute]
+		[XmlAttribute]
+		public bool usegradient { get; set; }
+
+		[XmlAttribute]
+		public string gradientcolor { get; set; }
+
+		[XmlAttribute]
+		public int gradientdir { get; set; }
+
+		[XmlAttribute]
         public string bordercolor { get; set; }
 
         [XmlAttribute]
@@ -134,7 +143,9 @@ namespace CardMaker.XML
         #endregion
 
         private Color m_colorElement = Color.Black;
-        private Color m_colorOutline = Color.Black;
+        private bool m_useGradient = false;
+		private Color m_colorGradient = Color.Black;
+		private Color m_colorOutline = Color.Black;
         private Color m_colorBorder = Color.Black;
         private Color m_colorBackground = CardMakerConstants.NoColor;
         private Font m_fontText;
@@ -165,7 +176,10 @@ namespace CardMaker.XML
             bordercolor = GetElementColorString(m_colorBorder);
             font = string.Empty;
             elementcolor = GetElementColorString(m_colorElement);
-            backgroundcolor = GetElementColorString(m_colorBackground);
+            usegradient = m_useGradient;
+            gradientdir = 0;
+			gradientcolor = GetElementColorString(m_colorGradient);
+			backgroundcolor = GetElementColorString(m_colorBackground);
             type = ElementType.Text.ToString();
             lineheight = 0;
             wordspace = 0;
@@ -194,9 +208,14 @@ namespace CardMaker.XML
         public Color GetElementColor()
         {
             return m_colorElement;
-        }
+		}
 
-        public Color GetElementOutlineColor()
+		public Color GetGradientColor()
+		{
+			return m_colorGradient;
+		}
+
+		public Color GetElementOutlineColor()
         {
             return m_colorOutline;
         }
@@ -233,7 +252,8 @@ namespace CardMaker.XML
         {
             SetElementBorderColor(TranslateColorString(bordercolor));
             SetElementColor(TranslateColorString(elementcolor));
-            SetElementOutlineColor(TranslateColorString(outlinecolor));
+            SetGradientColor(TranslateColorString(gradientcolor));
+			SetElementOutlineColor(TranslateColorString(outlinecolor));
             SetElementBackgroundColor(backgroundcolor == null ? Color.FromArgb(0,0,0,0) : TranslateColorString(backgroundcolor));
             m_fontText = !string.IsNullOrEmpty(font)
                 ? TranslateFontString(font)
@@ -260,7 +280,10 @@ namespace CardMaker.XML
             bordercolor = zElement.bordercolor;
             font = zElement.font;
             elementcolor = zElement.elementcolor;
-            backgroundcolor = zElement.backgroundcolor;
+            usegradient = zElement.usegradient;
+			gradientcolor = zElement.gradientcolor;
+            gradientdir = zElement.gradientdir;
+			backgroundcolor = zElement.backgroundcolor;
             type = zElement.type;
             autoscalefont = zElement.autoscalefont;
             lockaspect = zElement.lockaspect;
@@ -427,13 +450,23 @@ namespace CardMaker.XML
         {
             elementcolor = GetElementColorString(zColor);
             m_colorElement = zColor;
-        }
+		}
 
-        /// <summary>
-        /// Sets the outline color and color string
-        /// </summary>
-        /// <param name="zColor">The color to pull the values from</param>
-        public void SetElementOutlineColor(Color zColor)
+		/// <summary>
+		/// Sets the gradient color and gradient color string
+		/// </summary>
+		/// <param name="zColor">The color to pull the values from</param>
+		public void SetGradientColor(Color zColor)
+		{
+			gradientcolor = GetElementColorString(zColor);
+			m_colorGradient = zColor;
+		}
+
+		/// <summary>
+		/// Sets the outline color and color string
+		/// </summary>
+		/// <param name="zColor">The color to pull the values from</param>
+		public void SetElementOutlineColor(Color zColor)
         {
             outlinecolor = GetElementColorString(zColor);
             m_colorOutline = zColor;
