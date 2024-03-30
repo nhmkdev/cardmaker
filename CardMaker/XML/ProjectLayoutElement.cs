@@ -131,6 +131,9 @@ namespace CardMaker.XML
         [XmlAttribute]
         public bool centerimageonorigin { get; set; }
 
+        [XmlAttribute]
+        public string gradient { get; set; }
+
         #endregion
 
         private Color m_colorElement = Color.Black;
@@ -182,6 +185,7 @@ namespace CardMaker.XML
             justifiedtext = false;
             mirrortype = (int)MirrorType.None;
             centerimageonorigin = false;
+            gradient = string.Empty;
 
             InitializeTranslatedFields();
         }
@@ -276,6 +280,7 @@ namespace CardMaker.XML
             elementreference = zElement.elementreference;
             mirrortype = zElement.mirrortype;
             centerimageonorigin = zElement.centerimageonorigin;
+            gradient = zElement.gradient;
 
             if (bInitializeTranslatedFields)
             {

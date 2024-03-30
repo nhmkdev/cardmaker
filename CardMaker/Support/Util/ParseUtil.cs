@@ -57,6 +57,18 @@ namespace Support.Util
             return Decimal.TryParse(sValue.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out dValue);
         }
 
+        /// <summary>
+        /// Wraps double.TryParse to allow for different formatting for the decimal point. Commas/decimal points are not
+        /// supported for the other places in the string (like thousands)
+        /// </summary>
+        /// <param name="sValue">The string to parse the double from</param>
+        /// <param name="dValue">The value to populate</param>
+        /// <returns>true on success, false otherwise</returns>
+        public static bool ParseDouble(string sValue, out double dValue)
+        {
+            return Double.TryParse(sValue.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out dValue);
+        }
+
         public static int ParseDefault(string sVal, int nDefault)
         {
             int nVal = Int32.TryParse(sVal, out nVal) ? nVal : nDefault;

@@ -172,6 +172,18 @@
     <exportLayoutBorder>false</exportLayoutBorder>
     <exportLayoutBorderCrossSize>0</exportLayoutBorderCrossSize>
   </Layout>
+  <Layout combineReferences="false" width="1000" height="1000" buffer="0" Name="Gradient" defaultCount="1" dpi="300" drawBorder="true">
+    <Element name="GradientText" type="Text" x="106" y="34" width="607" height="92" variable="$[gradient:points;0xff0000;0;0;&amp;[width];&amp;[height]]This is a gradient that crosses the entire text string even with wrapping." font="Arial;24;0;0;0;0" elementcolor="0x000000FF" bordercolor="0x000000FF" backgroundcolor="0x00000000" borderthickness="0" rotation="0" horizontalalign="0" verticalalign="0" lineheight="14" wordspace="0" opacity="255" enabled="true" outlinecolor="0x000000FF" outlinethickness="0" justifiedtext="false" autoscalefont="false" lockaspect="false" keeporiginalsize="false" tilesize="" mirrortype="0" centerimageonorigin="false" gradient="" />
+    <Element name="Ipsum" type="Text" x="177" y="468" width="472" height="83" variable="$[gradient:lefttoright;-45;0xff00ff]Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." font="Arial;17;0;0;0;0" elementcolor="0x000000FF" bordercolor="0x000000FF" backgroundcolor="0x00000000" borderthickness="0" rotation="0" horizontalalign="0" verticalalign="0" lineheight="14" wordspace="0" opacity="255" enabled="true" outlinecolor="0x000000FF" outlinethickness="0" justifiedtext="false" autoscalefont="false" lockaspect="false" keeporiginalsize="false" tilesize="" mirrortype="0" centerimageonorigin="false" gradient="" />
+    <exportRotation>0</exportRotation>
+    <exportTransparentBackground>false</exportTransparentBackground>
+    <exportPDFAsPageBack>false</exportPDFAsPageBack>
+    <exportWidth>0</exportWidth>
+    <exportHeight>0</exportHeight>
+    <zoom>1</zoom>
+    <exportLayoutBorder>false</exportLayoutBorder>
+    <exportLayoutBorderCrossSize>0</exportLayoutBorderCrossSize>
+  </Layout>
   <translatorName>Incept</translatorName>
   <lastExportPath>C:\</lastExportPath>
   <exportNameFormat>##_#L</exportNameFormat>

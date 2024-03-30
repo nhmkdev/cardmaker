@@ -1,6 +1,7 @@
 Card Maker Version History
 --------------------------
 1.4.0.0
+- Added basic gradient functionality to Text elements (MarkVabulas)
 - Added ability to access element fields with &[fieldname]
 - Added new graphic element type option to draw the graphic at the element origin
 
