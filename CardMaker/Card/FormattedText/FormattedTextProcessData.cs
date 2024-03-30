@@ -30,6 +30,7 @@ using CardMaker.Card.FormattedText.Markup;
 using CardMaker.Data;
 using CardMaker.XML;
 using Support.IO;
+using Support.UI;
 
 namespace CardMaker.Card.FormattedText
 {
@@ -64,6 +65,11 @@ namespace CardMaker.Card.FormattedText
 
         public float CurrentLineHeight { get; set; }
         public StringAlignment CurrentStringAlignment { get; set; }
+
+        public bool InParagraph { get; set; }
+        public int ParagraphCharacterLineIndent { get; set; }
+        public int ParagraphStartCharacterIndent { get; set; }
+        public int ParagraphNextLineIndent { get; set; }
 
         public int CurrentLine { get; private set; }
         public MirrorType CurrentMirrorType { get; set; }
@@ -127,6 +133,11 @@ namespace CardMaker.Card.FormattedText
             CurrentLine++;
             CurrentY += CurrentLineHeight;
             CurrentX = 0;
+            if (InParagraph)
+            {
+                CurrentX += ParagraphNextLineIndent * FontSpaceWidth;
+                ParagraphNextLineIndent = ParagraphCharacterLineIndent;
+            }
             UpdateMargins(zElement, bFromMarginUpdate);
         }
 

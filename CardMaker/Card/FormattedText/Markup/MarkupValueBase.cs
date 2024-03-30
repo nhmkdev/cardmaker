@@ -30,6 +30,8 @@ namespace CardMaker.Card.FormattedText.Markup
 {
     public abstract class MarkupValueBase : MarkupBase
     {
+        // TODO: more things should use this
+        protected static readonly string[] PARAM_SPLITTER = new string[] { CardMakerConstants.FORMATTED_TEXT_PARAM_SEPARATOR };
         protected string m_sVariable;
 
         protected MarkupValueBase() { }

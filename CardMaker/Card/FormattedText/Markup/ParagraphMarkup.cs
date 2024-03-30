@@ -27,17 +27,52 @@ using CardMaker.XML;
 
 namespace CardMaker.Card.FormattedText.Markup
 {
-    public class NewlineMarkup : MarkupBase
+    public class ParagraphMarkup : MarkupValueBase
     {
+        public ParagraphMarkup(string sVariable) : base(sVariable) { }
+
+        private ProjectLayoutElement m_zElement;
+
         protected override bool ProcessMarkupHandler(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
             if (zProcessData.InParagraph)
             {
-                // reset the paragraph indent
-                zProcessData.ParagraphNextLineIndent = zProcessData.ParagraphStartCharacterIndent;
+                return false;
             }
-            zProcessData.MoveToNextLine(zElement);
-            return true;
+            var arrayParams = m_sVariable.Split(PARAM_SPLITTER, System.StringSplitOptions.RemoveEmptyEntries);
+            if (arrayParams.Length < 2)
+            {
+                return false;
+            }
+
+            m_zElement = zElement;
+
+            if (!int.TryParse(arrayParams[0], out var nParagraphStartIndent)
+                || !int.TryParse(arrayParams[1], out var nParagraphLineIndent))
+            {
+                nParagraphStartIndent = 4;
+                nParagraphLineIndent = 0;
+            }
+
+            zProcessData.InParagraph = true;
+
+            zProcessData.ParagraphStartCharacterIndent = nParagraphStartIndent;
+            zProcessData.ParagraphCharacterLineIndent = nParagraphLineIndent;
+            zProcessData.ParagraphNextLineIndent = nParagraphStartIndent;
+            zProcessData.MoveToNextLine(zElement, false);
+            return false;
+        }
+
+        public override void CloseMarkup(FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
+        {
+            zProcessData.InParagraph = false;
+            zProcessData.ParagraphStartCharacterIndent = 0;
+            zProcessData.ParagraphCharacterLineIndent = 0;
+            if (m_zElement != null)
+            {
+                zProcessData.MoveToNextLine(m_zElement);
+            }
+            
         }
     }
 }

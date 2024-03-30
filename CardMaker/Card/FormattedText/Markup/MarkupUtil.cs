@@ -48,6 +48,7 @@ namespace CardMaker.Card.FormattedText.Markup
             {"spc", typeof (SpaceMarkup)},
             {"push", typeof (PushMarkup)},
             {"px", typeof (PixelMarkup)},
+            {"p", typeof(ParagraphMarkup)},
             {"img", typeof (ImageMarkup)},
             {"ls", typeof(LineSpaceMarkup) },
             {"caps", typeof(AllCapsMarkup)},
