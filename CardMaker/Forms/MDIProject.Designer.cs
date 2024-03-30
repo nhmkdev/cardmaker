@@ -60,6 +60,20 @@ namespace CardMaker.Forms
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Node0");
+            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Node1");
+            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Node4");
+            System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Node7");
+            System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("Node8");
+            System.Windows.Forms.TreeNode treeNode6 = new System.Windows.Forms.TreeNode("Node5", new System.Windows.Forms.TreeNode[] {
+            treeNode4,
+            treeNode5});
+            System.Windows.Forms.TreeNode treeNode7 = new System.Windows.Forms.TreeNode("Node6");
+            System.Windows.Forms.TreeNode treeNode8 = new System.Windows.Forms.TreeNode("Node2", new System.Windows.Forms.TreeNode[] {
+            treeNode3,
+            treeNode6,
+            treeNode7});
+            System.Windows.Forms.TreeNode treeNode9 = new System.Windows.Forms.TreeNode("Node3");
             this.treeView = new System.Windows.Forms.TreeView();
             this.contextMenuStripProject = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addCardLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -88,6 +102,7 @@ namespace CardMaker.Forms
             this.contextMenuStripReference = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.setAsDefaultReferenceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeReferenceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.treeViewEx1 = new Support.UI.TreeViewEx();
             this.contextMenuStripProject.SuspendLayout();
             this.contextMenuStripLayout.SuspendLayout();
             this.contextMenuStripReference.SuspendLayout();
@@ -97,7 +112,6 @@ namespace CardMaker.Forms
             // 
             this.treeView.AllowDrop = true;
             this.treeView.ContextMenuStrip = this.contextMenuStripProject;
-            this.treeView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView.HideSelection = false;
             this.treeView.LabelEdit = true;
             this.treeView.Location = new System.Drawing.Point(0, 0);
@@ -198,7 +212,7 @@ namespace CardMaker.Forms
             this.toolStripMenuItemSetLayoutExport});
             this.contextMenuStripLayout.Name = "contextMenuStripLayout";
             this.contextMenuStripLayout.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.contextMenuStripLayout.Size = new System.Drawing.Size(269, 286);
+            this.contextMenuStripLayout.Size = new System.Drawing.Size(269, 264);
             // 
             // duplicateLayoutToolStripMenuItem
             // 
@@ -315,9 +329,42 @@ namespace CardMaker.Forms
             this.removeReferenceToolStripMenuItem.Text = "Remove Reference";
             this.removeReferenceToolStripMenuItem.Click += new System.EventHandler(this.removeReferenceToolStripMenuItem_Click);
             // 
+            // treeViewEx1
+            // 
+            this.treeViewEx1.CheckBoxes = true;
+            this.treeViewEx1.DrawMode = System.Windows.Forms.TreeViewDrawMode.OwnerDrawText;
+            this.treeViewEx1.Location = new System.Drawing.Point(238, 33);
+            this.treeViewEx1.Name = "treeViewEx1";
+            treeNode1.Name = "Node0";
+            treeNode1.Text = "Node0";
+            treeNode2.Name = "Node1";
+            treeNode2.Text = "Node1";
+            treeNode3.Name = "Node4";
+            treeNode3.Text = "Node4";
+            treeNode4.Name = "Node7";
+            treeNode4.Text = "Node7";
+            treeNode5.Name = "Node8";
+            treeNode5.Text = "Node8";
+            treeNode6.Name = "Node5";
+            treeNode6.Text = "Node5";
+            treeNode7.Name = "Node6";
+            treeNode7.Text = "Node6";
+            treeNode8.Name = "Node2";
+            treeNode8.Text = "Node2";
+            treeNode9.Name = "Node3";
+            treeNode9.Text = "Node3";
+            this.treeViewEx1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
+            treeNode1,
+            treeNode2,
+            treeNode8,
+            treeNode9});
+            this.treeViewEx1.Size = new System.Drawing.Size(224, 272);
+            this.treeViewEx1.TabIndex = 37;
+            // 
             // MDIProject
             // 
-            this.ClientSize = new System.Drawing.Size(192, 335);
+            this.ClientSize = new System.Drawing.Size(506, 335);
+            this.Controls.Add(this.treeViewEx1);
             this.Controls.Add(this.treeView);
             this.Name = "MDIProject";
             this.ShowIcon = false;
@@ -359,5 +406,6 @@ namespace CardMaker.Forms
         private ToolStripMenuItem duplicateLayoutCustomToolStripMenuItem;
         private ToolStripSeparator toolStripMenuItem6;
         private ToolStripMenuItem windowsExplorerToolStripMenuItem;
+        private Support.UI.TreeViewEx treeViewEx1;
     }
 }
