@@ -51,7 +51,7 @@ namespace CardMaker.Card
 
             var zBrush = GetTextBrush(zElement, zGraphics);
 
-            if (zElement.autoscalefont)
+			if (zElement.autoscalefont)
             {
                 SizeF zSize = zGraphics.MeasureString(sInput, zFont, new SizeF(zElement.width, int.MaxValue), zFormat);
 
@@ -159,6 +159,7 @@ namespace CardMaker.Card
                     // (note: this draws before the text so the line will have little bits missing)
                     zGraphics.DrawLine(new Pen(Brushes.LawnGreen, 3), zGradientDefinition.Start, zGradientDefinition.End);
 #endif
+                    zGradientDefinition.Brush.GammaCorrection = true;
                     return zGradientDefinition.Brush;
                 }
             }
