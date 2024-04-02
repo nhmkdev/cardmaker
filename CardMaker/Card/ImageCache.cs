@@ -31,6 +31,12 @@ using CardMaker.Data;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
 using PhotoshopFile;
+#if !MONO_BUILD
+using SkiaSharp;
+using SkiaSharp.Views.Desktop;
+#endif
+using Support.IO;
+using Support.UI;
 
 namespace CardMaker.Card
 {
@@ -171,13 +177,22 @@ namespace CardMaker.Card
                                 zSourceImage = ImageDecoder.DecodeImage(zFile);
                             }
                             break;
+#if !MONO_BUILD
+                        case ".webp":
+                            using (var zStream = SKFileStream.OpenStream(sFile))
+                            {
+                                zSourceImage = SKBitmap.Decode(zStream).ToBitmap();
+                            }
+                            break;
+#endif
                         default:
                             zSourceImage = new Bitmap(sFile);
                             break;
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    Logger.AddLogLine("Unable to load image: {0} - {1}".FormatString(sFile, ex.ToString()));
                     // return a purple bitmap to indicate an error
                     zBitmap = new Bitmap(1, 1);
                     Graphics.FromImage(zBitmap).FillRectangle(Brushes.Purple, 0, 0, zBitmap.Width, zBitmap.Height);

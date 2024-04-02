@@ -94,6 +94,7 @@
     <Compile Include="Card\DrawGraphic.cs" />
     <Compile Include="Card\DrawTextGraphics.cs" />
     <Compile Include="Card\DrawTextTextRenderer.cs" />
+    <Compile Include="Card\Export\ExportUtil.cs" />
     <Compile Include="Card\Export\FileCardClipboardExporter.cs" />
     <Compile Include="Card\Export\FileCardSingleExporter.cs" />
     <Compile Include="Card\Export\FileCardExporterFactory.cs" />
@@ -129,6 +130,7 @@
     <Compile Include="Card\FormattedText\Markup\MirrorHorizontalMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\MirrorMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\MirrorVerticalMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\ParagraphMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\PixelMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\MarginLeftMarkup.cs" />
     <Compile Include="Card\IDrawFormattedText.cs" />
@@ -175,6 +177,8 @@
     <Compile Include="Card\InlineBackgroundElementProcessor.cs" />
     <Compile Include="Card\MeasurementUtil.cs" />
     <Compile Include="Card\MirrorRender.cs" />
+    <Compile Include="Card\Render\Gradient\GradientDefinition.cs" />
+    <Compile Include="Card\Render\Gradient\GradientProcessor.cs" />
     <Compile Include="Card\Render\InputElementRenderProcessor.cs" />
     <Compile Include="Card\Render\IElementRenderProcessor.cs" />
     <Compile Include="Card\Render\BackgroundColorElementRenderProcessor.cs" />
@@ -483,6 +487,9 @@
     <PackageReference Include="PDFsharp-gdi">
       <Version>1.50.5147</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Card\Gradiant\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

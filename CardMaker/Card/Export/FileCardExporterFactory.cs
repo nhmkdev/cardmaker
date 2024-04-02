@@ -45,6 +45,7 @@ namespace CardMaker.Card.Export
             NameFormatOverride,
             Folder,
             StitchSkipIndex,
+            CardIndices
     }
 
         public static readonly ImageFormat[] AllowedImageFormats =
@@ -121,6 +122,7 @@ namespace CardMaker.Card.Export
             var nDefaultFormatIndex = GetLastFormatIndex();
 
             zQuery.AddPullDownBox("Format", AllowedImageFormatNames, nDefaultFormatIndex, ExportOptionKey.Format);
+            zQuery.AddTextBox("Export Indices", string.Empty, false, ExportOptionKey.CardIndices);
             zQuery.AddNumericBox("Stitch Skip Index", CardMakerSettings.ExportStitchSkipIndex, 0, 65535, 1, 0, ExportOptionKey.StitchSkipIndex);
             zQuery.AddTextBox("File Name Format (optional)", sDefinition ?? string.Empty, false, ExportOptionKey.NameFormat);
             zQuery.AddFolderBrowseBox("Output Folder", 
@@ -150,11 +152,28 @@ namespace CardMaker.Card.Export
                 return null;
             }
 
+            var zCardIndicesResult = ExportUtil.GetCardIndices(zQuery.GetString(ExportOptionKey.CardIndices));
+            int[] arrayExportCardIndices = null;
+            if (zCardIndicesResult != null)
+            {
+                if (!string.IsNullOrWhiteSpace(zCardIndicesResult.Item1))
+                {
+                    FormUtils.ShowErrorMessage("Unable to determine export indices: " + zCardIndicesResult.Item1);
+                    return null;
+                }
+                arrayExportCardIndices = zCardIndicesResult.Item2;
+            }
+
+
             CardMakerSettings.IniManager.SetValue(IniSettings.LastImageExportFormat, AllowedImageFormatNames[zQuery.GetIndex(ExportOptionKey.Format)]);
             CardMakerSettings.ExportStitchSkipIndex = (int)zQuery.GetDecimal(ExportOptionKey.StitchSkipIndex);
 
-            return new FileCardExporter(nLayoutIndex, nLayoutIndex, sFolder, zQuery.GetString(ExportOptionKey.NameFormat),
-                CardMakerSettings.ExportStitchSkipIndex, AllowedImageFormats[zQuery.GetIndex(ExportOptionKey.Format)]);
+            return new FileCardExporter(nLayoutIndex, nLayoutIndex, sFolder,
+                zQuery.GetString(ExportOptionKey.NameFormat),
+                CardMakerSettings.ExportStitchSkipIndex, AllowedImageFormats[zQuery.GetIndex(ExportOptionKey.Format)])
+            {
+                ExportCardIndices = arrayExportCardIndices
+            };
         }
 
         public static CardExportBase BuildImageExporter()

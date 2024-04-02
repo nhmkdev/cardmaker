@@ -94,6 +94,7 @@
     <Compile Include="Card\DrawGraphic.cs" />
     <Compile Include="Card\DrawTextGraphics.cs" />
     <Compile Include="Card\DrawTextTextRenderer.cs" />
+    <Compile Include="Card\Export\ExportUtil.cs" />
     <Compile Include="Card\Export\FileCardClipboardExporter.cs" />
     <Compile Include="Card\Export\FileCardSingleExporter.cs" />
     <Compile Include="Card\Export\FileCardExporterFactory.cs" />
@@ -120,6 +121,7 @@
     <Compile Include="Card\FormattedText\Markup\BaseAlignMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\AllCapsMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\FontScaleMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\ParagraphMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\ImageColorMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\BaseImageMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\LineSpaceMarkup.cs" />
@@ -175,6 +177,8 @@
     <Compile Include="Card\InlineBackgroundElementProcessor.cs" />
     <Compile Include="Card\MeasurementUtil.cs" />
     <Compile Include="Card\MirrorRender.cs" />
+    <Compile Include="Card\Render\Gradient\GradientDefinition.cs" />
+    <Compile Include="Card\Render\Gradient\GradientProcessor.cs" />
     <Compile Include="Card\Render\InputElementRenderProcessor.cs" />
     <Compile Include="Card\Render\IElementRenderProcessor.cs" />
     <Compile Include="Card\Render\BackgroundColorElementRenderProcessor.cs" />
@@ -485,7 +489,14 @@
     <PackageReference Include="PDFsharp-gdi">
       <Version>1.50.5147</Version>
     </PackageReference>
+    <PackageReference Include="SkiaSharp">
+      <Version>2.88.7</Version>
+    </PackageReference>
+    <PackageReference Include="SkiaSharp.Views.Desktop.Common">
+      <Version>2.88.7</Version>
+    </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -499,7 +510,7 @@
     </PreBuildEvent>
     <PostBuildEvent>IF $(ConfigurationName) == Release (
     DEL "$(SolutionDir)$(OutDir)*.zip"
-    "C:\Program Files\7-Zip\7z" a "$(TargetDir)CardMaker_X.X.X.X.zip" "$(TargetDir)CardMaker.ex*" "$(TargetDir)CardMaker_Mono.ex*" "$(TargetDir)*.dll" "$(TargetDir)*.so" "$(TargetDir)Card_Maker.pdf"     "$(TargetDir)Card_Maker_Basic_Project.pdf"  "$(TargetDir)Card_Maker_JavaScript.pdf" "$(TargetDir)Sample" "$(TargetDir)Readme.txt" "$(TargetDir)History.txt" "$(TargetDir)Licenses"     "$(TargetDir)images" "$(TargetDir)templates" -tzip -mx5
+    "C:\Program Files\7-Zip\7z" a "$(TargetDir)CardMaker_X.X.X.X.zip" "$(TargetDir)CardMaker.ex*" "$(TargetDir)CardMaker_Mono.ex*" "$(TargetDir)*.dll"  "$(TargetDir)*.so" "$(TargetDir)Card_Maker.pdf"     "$(TargetDir)Card_Maker_Basic_Project.pdf"  "$(TargetDir)Card_Maker_JavaScript.pdf" "$(TargetDir)Sample" "$(TargetDir)Readme.txt" "$(TargetDir)History.txt" "$(TargetDir)Licenses"     "$(TargetDir)images" "$(TargetDir)templates" "$(TargetDir)x64" -tzip -mx5
 ) ELSE (
   echo "Debug Build. Nothing to do!"
 )

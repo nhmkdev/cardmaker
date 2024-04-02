@@ -25,7 +25,7 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using CardMaker.Data;
+using CardMaker.Card.Render.Gradient;
 using CardMaker.XML;
 using Support.IO;
 using Support.UI;
@@ -37,7 +37,6 @@ namespace CardMaker.Card
         public void DrawText(Graphics zGraphics, ProjectLayoutElement zElement, string sInput)
         {
             var zFont = zElement.GetElementFont();
-            var colorFont = zElement.GetElementColor();
 
             if (null == zFont) // default to something!
             {
@@ -50,9 +49,7 @@ namespace CardMaker.Card
                 Alignment = zElement.GetHorizontalAlignment()
             };
 
-            var zBrush = 255 == zElement.opacity
-                ? new SolidBrush(colorFont)
-                : new SolidBrush(Color.FromArgb(zElement.opacity, colorFont));
+            var zBrush = GetTextBrush(zElement, zGraphics);
 
             if (zElement.autoscalefont)
             {
@@ -146,6 +143,28 @@ namespace CardMaker.Card
                     Logger.AddLogLine("Unable to render text (font issue?)");
                 }
             }
+        }
+
+        private Brush GetTextBrush(ProjectLayoutElement zElement, Graphics zGraphics)
+        {
+            var colorFont = zElement.GetElementColor();
+            if (!string.IsNullOrWhiteSpace(zElement.gradient))
+            {
+
+                var zGradientDefinition = GradientProcessor.ProcessGradientStringToBrush(zElement);
+                if (zGradientDefinition != null)
+                {
+#if false // temp for debugging 
+                    zGraphics.FillRectangle(zGradientDefinition.Brush, 0, 0, zElement.width, zElement.height);
+                    // (note: this draws before the text so the line will have little bits missing)
+                    zGraphics.DrawLine(new Pen(Brushes.LawnGreen, 3), zGradientDefinition.Start, zGradientDefinition.End);
+#endif
+                    return zGradientDefinition.Brush;
+                }
+            }
+            return 255 == zElement.opacity
+                ? new SolidBrush(colorFont)
+                : new SolidBrush(Color.FromArgb(zElement.opacity, colorFont));
         }
     }
 }

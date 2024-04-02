@@ -40,6 +40,7 @@ namespace CardMaker.Data
         public const string FORMATTED_TEXT_PARAM_SEPARATOR = ";";
         public static readonly string[] FORMATTED_TEXT_PARAM_SEPARATOR_ARRAY = {FORMATTED_TEXT_PARAM_SEPARATOR};
         public const char ALLOWED_COLUMN_SEPARATOR = ';';
+        public const string GRADIENT_PARAM_SEPARATOR = ";";
         public const string OVERRIDE_COLUMN = "override:";
 
         // Google connectivity constants

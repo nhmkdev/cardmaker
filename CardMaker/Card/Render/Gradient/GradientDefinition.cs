@@ -22,31 +22,16 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-
 using System.Drawing;
-using CardMaker.Data;
+using System.Drawing.Drawing2D;
 
-namespace CardMaker.Card.FormattedText.Markup
+namespace CardMaker.Card.Render.Gradient
 {
-    public abstract class MarkupValueBase : MarkupBase
+    public class GradientDefinition
     {
-        // TODO: more things should use this
-        protected static readonly string[] PARAM_SPLITTER = new string[] { CardMakerConstants.FORMATTED_TEXT_PARAM_SEPARATOR };
-        protected string m_sVariable;
-
-        protected MarkupValueBase() { }
-        protected MarkupValueBase(string sVariable)
-        {
-            m_sVariable = sVariable;
-        }
-
-        protected void RenderDebugBackground(Graphics zGraphics, Brush zBrush, float fXOffset, float fYOffset)
-        {
-            // draw border (debugging)
-            if (CardMakerInstance.DrawFormattedTextBorder)
-            {
-                zGraphics.FillRectangle(zBrush, TargetRect.X + fXOffset, TargetRect.Y + fYOffset, TargetRect.Width, TargetRect.Height);
-            }
-        }
+        public LinearGradientBrush Brush { get; set; }
+        // TODO: should this be an array of points? Need to learn more about types of gradients supported in .NET
+        public Point Start { get; set; }
+        public Point End { get; set; }
     }
 }
