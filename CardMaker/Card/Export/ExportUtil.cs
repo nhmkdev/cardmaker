@@ -74,7 +74,7 @@ namespace CardMaker.Card.Export
                     }
                 }
 
-                return new Tuple<string, int[]>(string.Empty, listCardIndices.ToArray());
+                return new Tuple<string, int[]>(string.Empty, listCardIndices.Count() == 0 ? null : listCardIndices.ToArray());
             }
 
             return null;
