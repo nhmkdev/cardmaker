@@ -76,8 +76,7 @@ namespace CardMaker.Forms
 
             btnElementBorderColor.Tag = panelBorderColor;
             btnElementFontColor.Tag = panelFontColor;
-			btnElementGradientColor.Tag = panelGradientColor;
-			btnElementShapeColor.Tag = panelShapeColor;
+            btnElementShapeColor.Tag = panelShapeColor;
             btnElementGraphicColor.Tag = panelGraphicColor;
             btnElementOutlineColor.Tag = panelOutlineColor;
             btnElementBackgroundColor.Tag = panelBackgroundColor;
@@ -224,12 +223,8 @@ namespace CardMaker.Forms
                 else if (btnClicked == btnElementFontColor || btnClicked == btnElementShapeColor || btnClicked == btnElementGraphicColor)
                 {
                     colorUndo = zElement.GetElementColor();
-				}
-				else if (btnClicked == btnElementGradientColor)
-				{
-					colorUndo = zElement.GetGradientColor();
-				}
-				dictionaryElementUndoColors.Add(zElementToChange, colorUndo);
+                }
+                dictionaryElementUndoColors.Add(zElementToChange, colorUndo);
             }
 
             zRGB.PreviewEvent += delegate(object o, Color color)
@@ -288,9 +283,9 @@ namespace CardMaker.Forms
 
             // perform the action as a redo now
             actionChangeColor(true);
-		}
+        }
 
-		private void btnNullBackgroundColor_Click(object sender, EventArgs e)
+        private void btnNullBackgroundColor_Click(object sender, EventArgs e)
         {
             // TODO: this and the above method are 80% the same...
             var listSelectedElements = ElementManager.Instance.SelectedElements;
@@ -753,12 +748,8 @@ namespace CardMaker.Forms
             if (btnClicked == btnElementBackgroundColor || btnClicked == btnNullBackgroundColor)
             {
                 zElement.SetElementBackgroundColor(color);
-			}
-			else if (btnClicked == btnElementGradientColor)
-			{
-				zElement.SetGradientColor(color);
-			}
-		}
+            }
+        }
 
         private void HandleTypeEnableStates()
         {
@@ -816,13 +807,7 @@ namespace CardMaker.Forms
                     lblLineSpace.Visible = false;
                     numericLineSpace.Visible = false;
                     checkJustifiedText.Visible = false;
-
-					btnElementGradientColor.Visible = true;
-					panelGradientColor.Visible = true;
-					checkBoxUseGradient.Visible = true;
-					labelGradientAngle.Visible = true;
-					numericGradientDegrees.Visible = true;
-					break;
+                    break;
                 case ElementType.FormattedText:
                     tabControl.TabPages.Add(tabPageFont);
                     checkFontAutoScale.Visible = true;
@@ -831,13 +816,7 @@ namespace CardMaker.Forms
                     numericLineSpace.Visible = true;
                     lblLineSpace.Visible = true;
                     checkJustifiedText.Visible = true;
-
-					btnElementGradientColor.Visible = false;
-					panelGradientColor.Visible = false;
-					checkBoxUseGradient.Visible = false;
-                    labelGradientAngle.Visible = false;
-					numericGradientDegrees.Visible = false;
-					break;
+                    break;
             }
 #endif
             tabControl.Enabled = true;
@@ -880,9 +859,7 @@ namespace CardMaker.Forms
             m_dictionaryControlField.Add(numericLineSpace, zType.GetProperty("lineheight"));
             m_dictionaryControlField.Add(numericWordSpace, zType.GetProperty("wordspace"));
             m_dictionaryControlField.Add(checkJustifiedText, zType.GetProperty("justifiedtext"));
-			m_dictionaryControlField.Add(checkBoxUseGradient, zType.GetProperty("usegradient"));
-			m_dictionaryControlField.Add(numericGradientDegrees, zType.GetProperty("gradientdir"));
-		}
+        }
 
         private void SetupControlActions()
         {
@@ -1114,8 +1091,6 @@ namespace CardMaker.Forms
                 txtElementVariable.SelectionStart = zElement.variable.Length;
                 txtElementVariable.SelectionLength = 0;
                 comboElementMirror.SelectedIndex = zElement.mirrortype;
-                checkBoxUseGradient.Checked = zElement.usegradient;
-                numericGradientDegrees.Value = zElement.gradientdir;
                 ElementType eType = EnumUtil.GetElementType(zElement.type);
                 switch (eType)
                 {
@@ -1134,32 +1109,20 @@ namespace CardMaker.Forms
                                 // associated the prop grid with this shape object
                                 propertyGridShape.SelectedObject = zShape;
                             }
-						}
-						break;
+                        }
+                        break;
                     case ElementType.Text:
                         checkFontAutoScale.Visible = true;
                         lblWordSpacing.Visible = false;
                         numericWordSpace.Visible = false;
                         checkJustifiedText.Visible = false;
-
-                        btnElementGradientColor.Visible = true;
-                        panelGradientColor.Visible = true;
-						checkBoxUseGradient.Visible = true;
-						labelGradientAngle.Visible = true;
-						numericGradientDegrees.Visible = true;
-						break;
+                        break;
                     case ElementType.FormattedText:
                         checkFontAutoScale.Visible = true;
                         lblWordSpacing.Visible = true;
                         numericWordSpace.Visible = true;
                         checkJustifiedText.Visible = true;
-
-						checkBoxUseGradient.Visible = false;
-						panelGradientColor.Visible = false;
-						btnElementGradientColor.Visible = false;
-						labelGradientAngle.Visible = false;
-						numericGradientDegrees.Visible = false;
-						break;
+                        break;
                 }
                 // this fires a change event on the combo box... seems like it might be wrong?
                 comboElementType.SelectedIndex = (int)eType;
@@ -1224,7 +1187,7 @@ namespace CardMaker.Forms
             panelOutlineColor.BackColor = zElement.GetElementOutlineColor();
             panelShapeColor.BackColor = zElement.GetElementColor();
             panelFontColor.BackColor = panelShapeColor.BackColor;
-			panelGradientColor.BackColor = zElement.GetGradientColor();
+            panelGraphicColor.BackColor = panelShapeColor.BackColor;
             panelBackgroundColor.BackColor = zElement.GetElementBackgroundColor() == CardMakerConstants.NoColor
                 ? Control.DefaultBackColor
                 : zElement.GetElementBackgroundColor();
@@ -1249,5 +1212,5 @@ namespace CardMaker.Forms
 #endif
             return arrayFontsCopy;
         }
-	}
+    }
 }

@@ -332,9 +332,9 @@ namespace CardMaker.Card
         /// <param name="color"></param>
         /// <returns></returns>
         public static Brush GetElementOpacityBrush(ProjectLayoutElement zElement, Color color)
-		{
-			return new SolidBrush(GetElementOpacityColor(zElement, color));
-		}
+        {
+            return new SolidBrush(GetElementOpacityColor(zElement, color));
+        }
 
         /// <summary>
         /// Gets a new pen based on the passed in element, color, and thickness.

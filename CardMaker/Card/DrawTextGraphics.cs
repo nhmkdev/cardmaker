@@ -34,44 +34,12 @@ namespace CardMaker.Card
 {
     public class DrawTextGraphics : IDrawText
     {
-		public static Point projectToRectEdgeRad(double theta, double width, double height)
-		{
-			double diag = Math.Atan2(height, width);
-			double tangent = Math.Tan(theta);
-
-            Point result = new Point(0, 0);
-
-			if (theta > -diag && theta <= diag)
-			{
-				result.X = (int)(width);
-				result.Y = (int)(width * tangent);
-			}
-			else if (theta > diag && theta <= Math.PI - diag)
-			{
-				result.X = (int)(height / tangent);
-				result.Y = (int)(height);
-			}
-			else if (theta > Math.PI - diag && theta <= Math.PI + diag)
-			{
-				result.X = (int)(-width);
-				result.Y = (int)(-width * tangent);
-			}
-			else
-			{
-				result.X = (int)(-height / tangent);
-				result.Y = (int)(-height);
-			}
-
-			return result;
-		}
-
-		public void DrawText(Graphics zGraphics, ProjectLayoutElement zElement, string sInput)
+        public void DrawText(Graphics zGraphics, ProjectLayoutElement zElement, string sInput)
         {
             var zFont = zElement.GetElementFont();
             var colorFont = zElement.GetElementColor();
-			var colorGradient = zElement.GetGradientColor();
 
-			if (null == zFont) // default to something!
+            if (null == zFont) // default to something!
             {
                 // font will show up in red if it's not yet set
                 zFont = FontLoader.DefaultFont;
@@ -82,39 +50,11 @@ namespace CardMaker.Card
                 Alignment = zElement.GetHorizontalAlignment()
             };
 
-			Brush zBrush;
-			if (zElement.usegradient)
-			{
-                // Convert to radians
-                double direction = (double)zElement.gradientdir * Math.PI / -180.0;
-                double max_length = Math.Sqrt(zElement.width * zElement.width + zElement.height * zElement.height);
+            var zBrush = 255 == zElement.opacity
+                ? new SolidBrush(colorFont)
+                : new SolidBrush(Color.FromArgb(zElement.opacity, colorFont));
 
-                // Get the proportional direction and size of the gradient
-                double x0 = 0.0;
-                double y0 = 0.0;
-
-				double x1 = Math.Cos(direction) * max_length;
-                double y1 = Math.Sin(direction) * max_length;
-
-                // Ensure we have the correct angle
-				if (y0 > y1) y0 = zElement.height;
-
-				// Define the points so we can reuse them in both cases
-				Point start = new Point((int)x0, (int)y0);
-                Point end = new Point((int)x1, (int)y1);
-
-				zBrush = 255 == zElement.opacity
-					? new LinearGradientBrush(start, end, colorFont, colorGradient)
-					: new LinearGradientBrush(start, end, Color.FromArgb(zElement.opacity, colorFont), colorGradient);
-			}
-			else
-			{
-				zBrush = 255 == zElement.opacity
-					? new SolidBrush(colorFont)
-					: new SolidBrush(Color.FromArgb(zElement.opacity, colorFont));
-			}
-
-			if (zElement.autoscalefont)
+            if (zElement.autoscalefont)
             {
                 SizeF zSize = zGraphics.MeasureString(sInput, zFont, new SizeF(zElement.width, int.MaxValue), zFormat);
 
