@@ -51,3 +51,7 @@ CardMaker/cardmaker_obj
 CardMaker/cardmaker_mono_obj
 CardMaker/bin/Release/ClearScriptV8.linux-x64.so
 CardMaker/bin/Release/exported_images_test
+CardMaker/bin/Release/arm64/libSkiaSharp.dll
+CardMaker/bin/Release/x64/libSkiaSharp.dll
+CardMaker/bin/Release/x86/libSkiaSharp.dll
+CardMaker/bin/Release/libSkiaSharp.dylib

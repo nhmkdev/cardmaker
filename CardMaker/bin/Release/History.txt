@@ -1,6 +1,8 @@
 Card Maker Version History
 --------------------------
 1.4.0.0
+- Added WebP image support (Windows only) via SkiaSharp (https://github.com/mono/SkiaSharp)
+- Added card index functionality for image export
 - Added basic gradient functionality to Text elements (MarkVabulas)
 - Added ability to access element fields with &[fieldname]
 - Added new graphic element type option to draw the graphic at the element origin

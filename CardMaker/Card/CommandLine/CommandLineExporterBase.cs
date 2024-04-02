@@ -29,6 +29,7 @@ using System.Linq;
 using CardMaker.Card.Export;
 using CardMaker.Data;
 using CardMaker.Events.Managers;
+using Google.Apis.Drive.v3.Data;
 using PdfSharp;
 using Support.Util;
 
@@ -100,47 +101,19 @@ namespace CardMaker.Card.CommandLine
         public int[] GetCardIndices()
         {
             var sCardIndices = CommandLineParser.GetStringArg(CommandLineArg.CardIndices);
-            var listCardIndices = new List<int>();
-            if (null != sCardIndices)
+            var zResult = ExportUtil.GetCardIndices(sCardIndices);
+            if (zResult == null)
             {
-                var arrayRanges = sCardIndices.Split(new [] {','}, StringSplitOptions.RemoveEmptyEntries);
-                foreach (var sRange in arrayRanges)
-                {
-                    var arrayEntries = sRange.Split(new[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
-                    int nStart;
-                    int nEnd;
-                    // NOTE: all of the inputs are cardId (1 based) -- converted to 0 based internally
-                    switch (arrayEntries.Length)
-                    {
-                        case 1:
-                            if (int.TryParse(arrayEntries[0], out nStart))
-                            {
-                                listCardIndices.Add(nStart - 1);
-                            }
-                            else
-                            {
-                                CommandLineUtil.ExitWithError("Invalid Card Index: " + sRange);
-                            }
-                            break;
-                        case 2:
-                            if (int.TryParse(arrayEntries[0], out nStart) && int.TryParse(arrayEntries[1], out nEnd))
-                            {
-                                listCardIndices.AddRange(Enumerable.Range(nStart - 1, (nEnd - nStart) + 1));
-                            }
-                            else
-                            {
-                                CommandLineUtil.ExitWithError("Invalid Card Index Range: " + sRange);
-                            }
-                            break;
-                        default:
-                            CommandLineUtil.ExitWithError("Invalid Card Index Range: " + sRange);
-                            break;
-                    }
-                }
-
-                return listCardIndices.ToArray();
+                return null;
             }
-
+            if (zResult != null)
+            {
+                if (!string.IsNullOrWhiteSpace(zResult.Item1))
+                {
+                    CommandLineUtil.ExitWithError(zResult.Item1);
+                }
+                return zResult.Item2;
+            }
             return null;
         }
 
