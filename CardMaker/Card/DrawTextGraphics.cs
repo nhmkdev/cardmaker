@@ -51,7 +51,7 @@ namespace CardMaker.Card
 
             var zBrush = GetTextBrush(zElement, zGraphics);
 
-			if (zElement.autoscalefont)
+            if (zElement.autoscalefont)
             {
                 SizeF zSize = zGraphics.MeasureString(sInput, zFont, new SizeF(zElement.width, int.MaxValue), zFormat);
 
