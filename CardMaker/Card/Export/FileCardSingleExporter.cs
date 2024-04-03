@@ -24,7 +24,6 @@
 
 using System;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using CardMaker.Data;
@@ -36,10 +35,10 @@ namespace CardMaker.Card.Export
     {
         private readonly string m_sExportFolder;
         private readonly string m_sOverrideStringFormat;
-        private readonly ImageFormat m_eImageFormat;
+        private readonly FileCardExporterFactory.CardMakerExportImageFormat m_eImageFormat;
         private readonly int m_nImageExportIndex;
 
-        public FileCardSingleExporter(int nLayoutStartIndex, int nLayoutEndIdx, string sExportFolder, string sOverrideStringFormat, ImageFormat eImageFormat, int nImageExportIndex)
+        public FileCardSingleExporter(int nLayoutStartIndex, int nLayoutEndIdx, string sExportFolder, string sOverrideStringFormat, FileCardExporterFactory.CardMakerExportImageFormat eImageFormat, int nImageExportIndex)
             : base(nLayoutStartIndex, nLayoutEndIdx)
         {
             if (!sExportFolder.EndsWith(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture)))
@@ -74,7 +73,6 @@ namespace CardMaker.Card.Export
             CurrentDeck.ResetDeckCache();
             CurrentDeck.CardPrintIndex = nCardIdx++;
             CardRenderer.DrawPrintLineToGraphics(zGraphics, 0, 0, !CurrentDeck.CardLayout.exportTransparentBackground);
-            m_zExportCardBuffer.SetResolution(CurrentDeck.CardLayout.dpi, CurrentDeck.CardLayout.dpi);
 
             ProgressReporter.ProgressStep(progressCardIdx);
 
@@ -99,10 +97,10 @@ namespace CardMaker.Card.Export
             try
             {
                 ProcessRotateExport(m_zExportCardBuffer, CurrentDeck.CardLayout, false);
-                m_zExportCardBuffer.Save(
-                    m_sExportFolder + sFileName +
-                    "." + m_eImageFormat.ToString().ToLower(),
-                    m_eImageFormat);
+                Save(m_zExportCardBuffer,
+                    m_sExportFolder + sFileName + "." + m_eImageFormat.ToString().ToLower(),
+                    m_eImageFormat,
+                    CurrentDeck.CardLayout.dpi);
                 ProcessRotateExport(m_zExportCardBuffer, CurrentDeck.CardLayout, true);
             }
             catch (Exception e)

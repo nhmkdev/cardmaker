@@ -22,12 +22,19 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using CardMaker.Data;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
+#if !MONO_BUILD
+using SkiaSharp;
+using SkiaSharp.Views.Desktop;
+#endif
 using Support.Progress;
+using Support.UI;
 
 namespace CardMaker.Card.Export
 {
@@ -119,5 +126,47 @@ namespace CardMaker.Card.Export
         /// The primary entry point for the export processing
         /// </summary>
         public abstract void ExportThread();
+
+        public void Save(Bitmap zBmp, string sPath, FileCardExporterFactory.CardMakerExportImageFormat eImageFormat, int nTargetDPI)
+        {
+            switch (eImageFormat)
+            {
+                // Note: SkiaSharp does not support DPI on Webp files (!)
+#if !MONO_BUILD
+                case FileCardExporterFactory.CardMakerExportImageFormat.Webp:
+                    var zEncoderOptions = new SKWebpEncoderOptions(
+                        CardMakerSettings.ExportWebPLossless
+                            ? SKWebpEncoderCompression.Lossless
+                            : SKWebpEncoderCompression.Lossy,
+                        CardMakerSettings.ExportWebPLossless
+                            ? 100
+                            : CardMakerSettings.ExportWebPQuality);
+                    using (var outFile = new FileInfo(sPath).Create())
+                    {
+                        zBmp.ToSKBitmap().PeekPixels()
+                            .Encode(zEncoderOptions)
+                            .SaveTo(outFile);
+                    }
+                    break;
+#endif
+                default:
+                    
+                    var nOriginalHorizontalResolution = zBmp.HorizontalResolution;
+                    var nOriginalVerticalResolution = zBmp.VerticalResolution;
+                    var eExportImageFormat =
+                        FileCardExporterFactory.CardMakerImageExportFormatToImageFormatDictionary[eImageFormat];
+                    if (eExportImageFormat == null)
+                    {
+                        ProgressReporter.AddIssue("Unsupported image format detected (likely a bug): {0}".FormatString(eImageFormat.ToString()));
+                        return;
+                    }
+
+                    // resolution is only set after everything is rendered to the bitmap (and then reverted after save)
+                    zBmp.SetResolution(nTargetDPI, nTargetDPI);
+                    zBmp.Save(sPath, eExportImageFormat);
+                    zBmp.SetResolution(nOriginalHorizontalResolution, nOriginalVerticalResolution);
+                    break;
+            }
+        }
     }
 }

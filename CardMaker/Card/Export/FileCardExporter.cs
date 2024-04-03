@@ -24,7 +24,6 @@
 
 using System;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -37,18 +36,18 @@ namespace CardMaker.Card.Export
     {
         private readonly string m_sExportFolder;
         private readonly string m_sOverrideStringFormat;
-        private readonly ImageFormat m_eImageFormat;
+        private readonly FileCardExporterFactory.CardMakerExportImageFormat m_eImageFormat;
         private readonly int m_nSkipStitchIndex;
         public int[] ExportCardIndices { get; set; }
 
-        public FileCardExporter(int nLayoutStartIndex, int nLayoutEndIdx, string sExportFolder, string sOverrideStringFormat, int nSkipStitchIndex, ImageFormat eImageFormat) 
+        public FileCardExporter(int nLayoutStartIndex, int nLayoutEndIdx, string sExportFolder, string sOverrideStringFormat, int nSkipStitchIndex, FileCardExporterFactory.CardMakerExportImageFormat eImageFormat) 
             : this(Enumerable.Range(nLayoutStartIndex, (nLayoutEndIdx - nLayoutStartIndex) + 1).ToArray(), sExportFolder, sOverrideStringFormat, nSkipStitchIndex, eImageFormat)
         {
 
         }
 
         public FileCardExporter(int[] arrayExportLayoutIndices, string sExportFolder, string sOverrideStringFormat, int
-            nSkipStitchIndex, ImageFormat eImageFormat)
+            nSkipStitchIndex, FileCardExporterFactory.CardMakerExportImageFormat eImageFormat)
             : base(arrayExportLayoutIndices)
         {
             if (!sExportFolder.EndsWith(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture)))
@@ -109,7 +108,6 @@ namespace CardMaker.Card.Export
                 UpdateBufferBitmap(exportContainerWidth, exportContainerHeight);
                 // The graphics must be initialized BEFORE the resolution of the bitmap is set (graphics will be the same DPI as the application/card)
                 var zContainerGraphics = Graphics.FromImage(m_zExportCardBuffer);
-                m_zExportCardBuffer.SetResolution(CurrentDeck.CardLayout.dpi, CurrentDeck.CardLayout.dpi);
                 var arrayCardIndices = GetCardIndicesArray(CurrentDeck);
                 for(var nCardArrayIdx = 0; nCardArrayIdx < arrayCardIndices.Length; nCardArrayIdx++)
                 {
@@ -195,10 +193,10 @@ namespace CardMaker.Card.Export
                     
                     try
                     {
-                        m_zExportCardBuffer.Save(
-                            m_sExportFolder + sFileName +
-                            "." + m_eImageFormat.ToString().ToLower(),
-                            m_eImageFormat);
+                        Save(m_zExportCardBuffer, 
+                            m_sExportFolder + sFileName + "." + m_eImageFormat.ToString().ToLower(),
+                            m_eImageFormat,
+                            CurrentDeck.CardLayout.dpi);
                     }
                     catch (Exception ex)
                     {

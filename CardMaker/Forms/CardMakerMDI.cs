@@ -25,7 +25,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -394,6 +393,13 @@ namespace CardMaker.Forms
             zQuery.AddCheckBox("Show Canvas Mouse Location", CardMakerSettings.ShowCanvasXY, IniSettings.ShowCanvasXY);
 
 #if !MONO_BUILD
+            zQuery.AddTab("WebP Export Settings");
+            zQuery.AddCheckBox("Export WebP Lossless", CardMakerSettings.ExportWebPLossless,
+                IniSettings.ExportWebPLossless);
+            zQuery.AddNumericBox("Export WebP Quality (lossy)", CardMakerSettings.ExportWebPQuality, 0, 100, 1, 0, IniSettings.ExportWebPQuality);
+#endif
+
+#if !MONO_BUILD
             zQuery.AddTab("PDF Export");
 #else
             zQuery.AddVerticalSpace(20);
@@ -420,6 +426,10 @@ namespace CardMaker.Forms
                 CardMakerSettings.PrintPageVerticalMargin = zQuery.GetDecimal(IniSettings.PrintPageVerticalMargin);
                 CardMakerSettings.PrintAutoHorizontalCenter = zQuery.GetBool(IniSettings.PrintAutoCenterLayout);
                 CardMakerSettings.PrintLayoutsOnNewPage = zQuery.GetBool(IniSettings.PrintLayoutsOnNewPage);
+#if !MONO_BUILD
+                CardMakerSettings.ExportWebPLossless = zQuery.GetBool(IniSettings.ExportWebPLossless);
+                CardMakerSettings.ExportWebPQuality = (int)zQuery.GetDecimal(IniSettings.ExportWebPQuality);
+#endif
                 CardMakerSettings.DefaultTranslatorType = (TranslatorType)zQuery.GetIndex(IniSettings.DefaultTranslator);
                 CardMakerSettings.LogInceptTranslation = zQuery.GetBool(IniSettings.LogInceptTranslation);
                 CardMakerSettings.ShowCanvasXY = zQuery.GetBool(IniSettings.ShowCanvasXY);

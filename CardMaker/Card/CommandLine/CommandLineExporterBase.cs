@@ -23,13 +23,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
-using System.Drawing.Imaging;
 using System.Linq;
 using CardMaker.Card.Export;
 using CardMaker.Data;
 using CardMaker.Events.Managers;
-using Google.Apis.Drive.v3.Data;
 using PdfSharp;
 using Support.Util;
 
@@ -179,13 +176,13 @@ namespace CardMaker.Card.CommandLine
         /// Gets the image format from the command line
         /// </summary>
         /// <returns>The image format (default: png)</returns>
-        protected ImageFormat GetImageFormat()
+        protected FileCardExporterFactory.CardMakerExportImageFormat GetImageFormat()
         {
             var sExportFormat = CommandLineParser.GetStringArg(CommandLineArg.ExportFormat);
-            ImageFormat eImageFormat;
-            return FileCardExporterFactory.AllowedImageFormatDictionary.TryGetValue(sExportFormat.ToUpper(), out eImageFormat)
+            FileCardExporterFactory.CardMakerExportImageFormat eImageFormat;
+            return FileCardExporterFactory.StringToCardMakerImageExportFormatDictionary.TryGetValue(sExportFormat.ToUpper(), out eImageFormat)
                 ? eImageFormat
-                : ImageFormat.Png;
+                : FileCardExporterFactory.CardMakerExportImageFormat.Png;
         }
     }
 }

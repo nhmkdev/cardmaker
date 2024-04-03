@@ -46,9 +46,9 @@ namespace CardMaker.Card.Export
             Folder,
             StitchSkipIndex,
             CardIndices
-    }
+        }
 
-        public static readonly ImageFormat[] AllowedImageFormats =
+        public static readonly HashSet<ImageFormat> SupportedSystemDrawingImageFormat = new HashSet<ImageFormat>
         {
             ImageFormat.Bmp,
             ImageFormat.Emf,
@@ -61,10 +61,42 @@ namespace CardMaker.Card.Export
             ImageFormat.Wmf
         };
 
-        public static readonly string[] AllowedImageFormatNames = AllowedImageFormats.Select(zFormat => zFormat.ToString()).ToArray();
+        private static readonly Dictionary<string, ImageFormat> StringToImageFormatDictionary =
+            SupportedSystemDrawingImageFormat.ToList().ToDictionary(
+                i => i.ToString(), i => i);
 
-        public static readonly Dictionary<string, ImageFormat> AllowedImageFormatDictionary =
-            AllowedImageFormats.ToDictionary(zFormat => zFormat.ToString().ToUpper(), zFormat => zFormat);
+        public enum CardMakerExportImageFormat
+        {
+            Bmp,
+            Emf,
+            Exif,
+            Gif,
+            Icon,
+            Jpeg,
+            Png,
+            Tiff,
+            Wmf,
+#if !MONO_BUILD
+            Webp,
+#endif
+        }
+
+        public static readonly Dictionary<CardMakerExportImageFormat, ImageFormat> CardMakerImageExportFormatToImageFormatDictionary =
+            Enum.GetValues(typeof(CardMakerExportImageFormat))
+                .Cast<CardMakerExportImageFormat>()
+                .ToList()
+                .ToDictionary(e => e, e => StringToImageFormatDictionary.TryGetValue(e.ToString(), out var eFormat) ? eFormat : null);
+
+        public static readonly Dictionary<string, CardMakerExportImageFormat>
+            StringToCardMakerImageExportFormatDictionary = Enum.GetValues(typeof(CardMakerExportImageFormat))
+                .Cast<CardMakerExportImageFormat>()
+                .ToList().ToDictionary(e => e.ToString().ToLower(), e => e);
+
+        public static string[] AllowedImageFormatNames = Enum.GetValues(typeof(CardMakerExportImageFormat))
+            .Cast<CardMakerExportImageFormat>().Select(e => e.ToString()).ToArray();
+
+        public static CardMakerExportImageFormat[] AllowedImageFormats = Enum.GetValues(typeof(CardMakerExportImageFormat))
+            .Cast<CardMakerExportImageFormat>().ToArray();
 
         public static CardExportBase BuildFileCardExporter(bool bExportAllLayouts)
         {

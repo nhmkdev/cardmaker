@@ -87,6 +87,8 @@ namespace CardMaker.Data
         AutoSaveEnabled,
         AutoSaveIntervalMinutes,
         LastImageExportFormat,
+        ExportWebPLossless,
+        ExportWebPQuality,
         PrintLayoutsOnNewPage,
         EnableGoogleCache,
         DefaultTranslator,

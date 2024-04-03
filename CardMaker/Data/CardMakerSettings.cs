@@ -203,5 +203,25 @@ namespace CardMaker.Data
             }
             set { s_zIniManager.SetValue(IniSettings.AutoSaveIntervalMinutes, value.ToString()); }
         }
+
+        public static bool ExportWebPLossless
+        {
+            get { return s_zIniManager.GetValue(IniSettings.ExportWebPLossless, bool.TrueString).Equals(bool.TrueString); }
+            set { s_zIniManager.SetValue(IniSettings.ExportWebPLossless, value.ToString()); }
+        }
+
+        public static int ExportWebPQuality
+        {
+            get
+            {
+                int nValue;
+                if (int.TryParse(s_zIniManager.GetValue(IniSettings.ExportWebPQuality, "100"), out nValue))
+                {
+                    return nValue;
+                }
+                return 0;
+            }
+            set { s_zIniManager.SetValue(IniSettings.ExportWebPQuality, value.ToString()); }
+        }
     }
 }
