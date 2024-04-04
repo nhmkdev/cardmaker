@@ -222,12 +222,7 @@ namespace CardMaker.Card.Export
         {
             if (ExportCardIndices != null)
             {
-                if (ExportCardIndices.Any(i => i >= zDeck.CardCount || i < 0))
-                {
-                    throw new Exception("Invalid card indices specified.");
-                }
-
-                return ExportCardIndices;
+                return ExportCardIndices.Where(i => i < zDeck.CardCount && i >= 0).ToArray();
             }
             else
             {
