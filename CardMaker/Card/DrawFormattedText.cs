@@ -28,6 +28,7 @@ using System.Drawing;
 using CardMaker.Card.FormattedText;
 using CardMaker.Card.FormattedText.Alignment;
 using CardMaker.Card.FormattedText.Markup;
+using CardMaker.Card.Render.Gradient;
 using CardMaker.XML;
 using Support.IO;
 
@@ -171,9 +172,15 @@ namespace CardMaker.Card
         protected List<MarkupBase> processMarkupDefinition(Graphics zGraphics, ProjectLayoutElement zElement, float fMainFontSize, FormattedTextData zFormattedTextData)
         {
             var colorFont = zElement.GetElementColor();
-            var zBrush = 255 == zElement.opacity
+            Brush zBrush = 255 == zElement.opacity
                 ? new SolidBrush(colorFont)
                 : new SolidBrush(Color.FromArgb(zElement.opacity, colorFont));
+
+            if (!string.IsNullOrWhiteSpace(zElement.gradient))
+            {
+                var zGradientDefinition = GradientProcessor.ProcessGradientStringToBrush(zElement);
+                zBrush = zGradientDefinition == null ? zBrush : zGradientDefinition.Brush;
+            }
 
             var zProcessData = new FormattedTextProcessData
             {
