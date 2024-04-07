@@ -175,8 +175,8 @@ namespace CardMaker.Card.Translation
         private static Dictionary<string, Func<TranslationContext, string>> s_dictTranslateCardVariables =
             new Dictionary<string, Func<TranslationContext, string>>()
             {
-                {"cardindex", (zTranslationContext) =>  (zTranslationContext.CardIndex + 1).ToString()},
-                {"deckindex", (zTranslationContext) => (zTranslationContext.DeckLine.RowSubIndex + 1).ToString() },
+                {"deckindex", (zTranslationContext) =>  (zTranslationContext.CardIndex + 1).ToString()},
+                {"cardindex", (zTranslationContext) =>  (zTranslationContext.DeckLine.RowSubIndex + 1).ToString()},
                 {"cardcount", (zTranslationContext) =>  zTranslationContext.Deck.CardCount.ToString() },
                 {"elementname", (zTranslationContext) => zTranslationContext.Element.name },
                 {"refname", (zTranslationContext) => zTranslationContext.DeckLine.Reference == null

@@ -67,10 +67,10 @@ namespace CardMaker.Card.Translation
         /// <param name="dictionaryColumnNameToIndex"></param>
         /// <param name="zLayout"></param>
         /// <returns></returns>
-        public static string TranslateFileNameString(string sRawString, int nCardNumber, int nLeftPad, DeckLine zCurrentPrintLine, Dictionary<string, string> dictionaryDefines,
+        public static string TranslateFileNameString(string sRawString, int nCardNumber, int nLeftPad, Dictionary<string, string> dictionaryDefines,
             Dictionary<string, int> dictionaryColumnNameToIndex, Deck zDeck, ProjectLayout zLayout)
         {
-            string sOutput = sRawString;
+            var sOutput = sRawString;
 
             // Translate named items (column names / defines)
             //Groups
@@ -85,7 +85,7 @@ namespace CardMaker.Card.Translation
                 {
                     sOutput = zMatch.Groups[1] + sNamedValue.Trim() + zMatch.Groups[5];
                 }
-                else if (zDeck.GetColumnValue(sKey, dictionaryColumnNameToIndex, zCurrentPrintLine.LineColumns, out sNamedValue))
+                else if (zDeck.GetColumnValue(sKey, dictionaryColumnNameToIndex, zDeck.CurrentPrintLine.LineColumns, out sNamedValue))
                 {
                     sOutput = zMatch.Groups[1] + sNamedValue.Trim() + zMatch.Groups[5];
                 }
@@ -97,7 +97,7 @@ namespace CardMaker.Card.Translation
             // replace ##, #L, Newlines
             sOutput = 
                 sOutput.Replace("##", nCardNumber.ToString(CultureInfo.InvariantCulture).PadLeft(nLeftPad, '0'))
-                .Replace("#SC", (zCurrentPrintLine.RowSubIndex + 1).ToString(CultureInfo.InvariantCulture).PadLeft(nLeftPad, '0'))
+                .Replace("#SC", (zDeck.CurrentPrintLine.RowSubIndex + 1).ToString(CultureInfo.InvariantCulture).PadLeft(nLeftPad, '0'))
                 .Replace("#L", zLayout.Name)
                 .Replace(Environment.NewLine, string.Empty);
 

@@ -1,6 +1,8 @@
 Card Maker Version History
 --------------------------
 1.4.0.0
+- Fixed ![deckindex] and ![cardindex] (they were swapped)
+- Fixed rare/intermittent issue with reference reads
 - Added preliminary SubLayout element functionality [needs documentation]
 - Adjusted Image Cache to track last updated times on files
 - Added WebP image support (import/export & Windows only) via SkiaSharp (https://github.com/mono/SkiaSharp)

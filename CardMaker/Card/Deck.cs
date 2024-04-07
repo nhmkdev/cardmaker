@@ -296,7 +296,7 @@ namespace CardMaker.Card
         public string TranslateFileNameString(string sRawString, int nCardNumber, int nLeftPad)
         {
 #warning this takes an awkward path to the translator and back
-            return FilenameTranslator.TranslateFileNameString(sRawString, nCardNumber, nLeftPad, CurrentPrintLine,
+            return FilenameTranslator.TranslateFileNameString(sRawString, nCardNumber, nLeftPad,
                 Translator.DictionaryDefines, Translator.DictionaryColumnNameToIndex, this, CardLayout);
         }
 

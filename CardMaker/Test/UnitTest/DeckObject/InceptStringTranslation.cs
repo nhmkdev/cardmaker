@@ -41,6 +41,7 @@ namespace UnitTest.DeckObject
     internal class InceptStringTranslation
     {
         private const string TEST_ELEMENT_NAME = "testElement";
+        private const int DECKLINE_SUBINDEX = 4;
 
         private TestDeck _testDeck;
         private DeckLine _testLine;
@@ -53,7 +54,7 @@ namespace UnitTest.DeckObject
             _mockProgressReporterProxy = new Mock<ProgressReporterProxy>();
             _testDeck = new TestDeck();
             _testDeck.SetProgressReporterProxy(_mockProgressReporterProxy.Object);
-            _testLine = new DeckLine(ReferenceLine.CreateDefaultInternalReferenceLine(new List<string>()));
+            _testLine = new DeckLine(DECKLINE_SUBINDEX, ReferenceLine.CreateDefaultInternalReferenceLine(new List<string>()));
             _testElement = new ProjectLayoutElement(TEST_ELEMENT_NAME)
             {
                 x = 15,
@@ -118,12 +119,13 @@ namespace UnitTest.DeckObject
 
         [TestCase("![cardcount]", ExpectedResult = "10")]
         [TestCase("![elementname]", ExpectedResult = TEST_ELEMENT_NAME)]
-        [TestCase("![cardIndex]", ExpectedResult = "0")]
-        [TestCase("![deckIndex]", ExpectedResult = "1")]
+        [TestCase("![deckIndex]", ExpectedResult = "2")]
+        [TestCase("![cardIndex]", ExpectedResult = "5")]
         [TestCase("![layoutname]", ExpectedResult = TestDeck.LAYOUT_NAME)]
         public string ValidateCardVariable(string input)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
+            _testDeck.CardIndex = 1;
             var result = _testDeck.TranslateString(input, _testLine, _testElement, false);
             return result.String;
         }
