@@ -22,6 +22,8 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+//#define LOG_CACHE_MISSES
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -42,11 +44,23 @@ namespace CardMaker.Card
 {
     public static class ImageCache
     {
+        private class BitmapCacheEntry
+        {
+            public DateTime LastWriteTimestamp { get; }
+            public Bitmap Bitmap { get; }
+
+            public BitmapCacheEntry(Bitmap zBitmap, DateTime dtLastWriteTimestamp)
+            {
+                LastWriteTimestamp = dtLastWriteTimestamp;
+                Bitmap = zBitmap;
+            }
+        }
+
         private const int IMAGE_CACHE_MAX = 100;
         // cache of plain images (no adjustments)
-        private static readonly Dictionary<string, Bitmap> s_dictionaryImages = new Dictionary<string, Bitmap>();
+        private static readonly Dictionary<string, BitmapCacheEntry> s_dictionaryImages = new Dictionary<string, BitmapCacheEntry>();
         // cache of images with in-memory tweaks
-        private static readonly Dictionary<string, Bitmap> s_dictionaryCustomImages = new Dictionary<string, Bitmap>();
+        private static readonly Dictionary<string, BitmapCacheEntry> s_dictionaryCustomImages = new Dictionary<string, BitmapCacheEntry>();
 
         public static void ClearImageCaches()
         {
@@ -65,7 +79,7 @@ namespace CardMaker.Card
             var sKey = sFile.ToLower() + ":" + zElement.opacity + ":" + nTargetWidth + ":" + nTargetHeight + ProjectLayoutElement.GetElementColorString(colorOverride) + 
                        ":" + eMirrorType;
 
-            if (s_dictionaryCustomImages.TryGetValue(sKey, out var zDestinationBitmap))
+            if (GetCacheEntry(s_dictionaryCustomImages, sKey, sFile, out var zDestinationBitmap))
             {
                 return zDestinationBitmap;
             }
@@ -140,90 +154,140 @@ namespace CardMaker.Card
             // draw the source image into the destination with the desired opacity
             zGraphics.DrawImage(zSourceBitmap, new Rectangle(0, 0, nTargetWidth, nTargetHeight), 0, 0, zSourceBitmap.Width, zSourceBitmap.Height, GraphicsUnit.Pixel,
                 zImageAttributes);
-            CacheImage(s_dictionaryCustomImages, sKey, zDestinationBitmap);
+            CacheImage(s_dictionaryCustomImages, sKey, sFile, zDestinationBitmap);
 
             return zDestinationBitmap;
         }
 
         private static Bitmap LoadImageFromCache(string sFile)
         {
-            Bitmap zBitmap;
             var sKey = sFile.ToLower();
-            if (!s_dictionaryImages.TryGetValue(sKey, out zBitmap))
+            if (GetCacheEntry(s_dictionaryImages, sKey, sFile, out var zBitmap))
             {
-                if (s_dictionaryImages.Count > IMAGE_CACHE_MAX)
-                {
-                    // TODO: this is a terrible eviction strategy
-                    DumpImagesFromDictionary(s_dictionaryImages);
-                }
-                if (!File.Exists(sFile))
-                {
-                    sFile = ProjectManager.Instance.ProjectPath + sFile;
-                    if (!File.Exists(sFile))
-                    {
-                        return null;
-                    }
-                }
-
-                Bitmap zSourceImage;
-                try
-                {
-                    switch (Path.GetExtension(sFile).ToLower())
-                    {
-                        case ".psd":
-                            {
-                                var zFile = new PsdFile();
-                                zFile.Load(sFile);
-                                zSourceImage = ImageDecoder.DecodeImage(zFile);
-                            }
-                            break;
-#if !MONO_BUILD
-                        case ".webp":
-                            using (var zStream = SKFileStream.OpenStream(sFile))
-                            {
-                                zSourceImage = SKBitmap.Decode(zStream).ToBitmap();
-                            }
-                            break;
-#endif
-                        default:
-                            zSourceImage = new Bitmap(sFile);
-                            break;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.AddLogLine("Unable to load image: {0} - {1}".FormatString(sFile, ex.ToString()));
-                    // return a purple bitmap to indicate an error
-                    zBitmap = new Bitmap(1, 1);
-                    Graphics.FromImage(zBitmap).FillRectangle(Brushes.Purple, 0, 0, zBitmap.Width, zBitmap.Height);
-                    return zBitmap;
-                }
-
-                zBitmap = new Bitmap(zSourceImage.Width, zSourceImage.Height);
-
-                // copy the contents into the image
-                Graphics zGraphics = Graphics.FromImage(zBitmap);
-                zGraphics.DrawImage(zSourceImage, new Rectangle(0, 0, zBitmap.Width, zBitmap.Height), 0, 0, zBitmap.Width, zBitmap.Height, GraphicsUnit.Pixel);
-
-                // duping the image into a memory copy allows the file to change (not locked by the application)
-                zSourceImage.Dispose();
-                CacheImage(s_dictionaryImages, sKey, zBitmap);
+                return zBitmap;
             }
+            
+            if (s_dictionaryImages.Count > IMAGE_CACHE_MAX)
+            {
+                // TODO: this is a terrible eviction strategy
+                DumpImagesFromDictionary(s_dictionaryImages);
+            }
+
+            sFile = GetExistingFilePath(sFile);
+            if(sFile == null)
+            {
+                return null;
+            }
+            
+            Bitmap zSourceImage;
+            try
+            {
+                switch (Path.GetExtension(sFile).ToLower())
+                {
+                    case ".psd":
+                        {
+                            var zFile = new PsdFile();
+                            zFile.Load(sFile);
+                            zSourceImage = ImageDecoder.DecodeImage(zFile);
+                        }
+                        break;
+#if !MONO_BUILD
+                    case ".webp":
+                        using (var zStream = SKFileStream.OpenStream(sFile))
+                        {
+                            zSourceImage = SKBitmap.Decode(zStream).ToBitmap();
+                        }
+                        break;
+#endif
+                    default:
+                        zSourceImage = new Bitmap(sFile);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.AddLogLine("Unable to load image: {0} - {1}".FormatString(sFile, ex.ToString()));
+                // return a purple bitmap to indicate an error
+                zBitmap = new Bitmap(1, 1);
+                Graphics.FromImage(zBitmap).FillRectangle(Brushes.Purple, 0, 0, zBitmap.Width, zBitmap.Height);
+                return zBitmap;
+            }
+
+            zBitmap = new Bitmap(zSourceImage.Width, zSourceImage.Height);
+
+            // copy the contents into the image
+            var zGraphics = Graphics.FromImage(zBitmap);
+            zGraphics.DrawImage(zSourceImage, new Rectangle(0, 0, zBitmap.Width, zBitmap.Height), 0, 0, zBitmap.Width, zBitmap.Height, GraphicsUnit.Pixel);
+
+            // duping the image into a memory copy allows the file to change (not locked by the application)
+            zSourceImage.Dispose();
+            CacheImage(s_dictionaryImages, sKey, sFile, zBitmap);
             return zBitmap;
         }
 
-        private static void CacheImage(IDictionary<string, Bitmap> dictionaryImageCache, string sKey, Bitmap zBitmap)
+        private static bool GetCacheEntry(IDictionary<string, BitmapCacheEntry> dictionaryImageCache, string sKey, string sFile, out Bitmap zBitmap)
         {
-            // preserve the aspect ratio on the tag
-            zBitmap.Tag = (float)zBitmap.Width / (float)zBitmap.Height;
-            dictionaryImageCache.Add(sKey, zBitmap);
+            zBitmap = null;
+            if (dictionaryImageCache.TryGetValue(sKey, out var zCacheEntry))
+            {
+                try
+                {
+                    sFile = GetExistingFilePath(sFile);
+                    if (File.GetLastWriteTimeUtc(sFile) == zCacheEntry.LastWriteTimestamp)
+                    {
+                        zBitmap = zCacheEntry.Bitmap;
+                        return true;
+                    }
+#if LOG_CACHE_MISSES
+                    Logger.AddLogLine($"Image Cache Miss[timestamp]: {sFile}");
+#endif
+                    return false;
+                }
+                catch (Exception)
+                {
+                    // not this method's problem
+                }
+            }
+#if LOG_CACHE_MISSES
+            Logger.AddLogLine($"Image Cache Miss: {sFile}");
+#endif
+
+            return false;
         }
 
-        private static void DumpImagesFromDictionary(Dictionary<string, Bitmap> dictionaryImages)
+        private static void CacheImage(IDictionary<string, BitmapCacheEntry> dictionaryImageCache, string sKey, string sFile, Bitmap zBitmap)
         {
-            foreach (var zBitmap in dictionaryImages.Values)
+            var sExistingFilePath = GetExistingFilePath(sFile);
+            if (sExistingFilePath == null)
             {
-                zBitmap.Dispose();
+                // do not cache missing files
+                return;
+            }
+
+            // preserve the aspect ratio on the tag
+            zBitmap.Tag = (float)zBitmap.Width / (float)zBitmap.Height;
+            dictionaryImageCache[sKey] = new BitmapCacheEntry(zBitmap, File.GetLastWriteTimeUtc(sFile));
+        }
+
+        private static string GetExistingFilePath(string sFile)
+        {
+            if (!File.Exists(sFile))
+            {
+                sFile = Path.Combine(ProjectManager.Instance.ProjectPath,sFile);
+                if (!File.Exists(sFile))
+                {
+                    return null;
+                }
+            }
+
+            return sFile;
+        }
+
+        private static void DumpImagesFromDictionary(Dictionary<string, BitmapCacheEntry> dictionaryImages)
+        {
+            foreach (var zCacheEntry in dictionaryImages.Values)
+            {
+                zCacheEntry.Bitmap.Dispose();
             }
             dictionaryImages.Clear();
         }
