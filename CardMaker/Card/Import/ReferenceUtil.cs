@@ -77,19 +77,16 @@ namespace CardMaker.Card.Import
         public static string ConvertRelativeProjectPathToFullPath(string sPath)
         {
             string sFullPath;
-            var previousCurrentDirectory = Directory.GetCurrentDirectory();
             if (null != ProjectManager.Instance.ProjectPath && Directory.Exists(ProjectManager.Instance.ProjectPath))
             {
-                Directory.SetCurrentDirectory(ProjectManager.Instance.ProjectPath);
                 sFullPath = File.Exists(sPath)
                     ? Path.GetFullPath(sPath)
-                    : ProjectManager.Instance.ProjectPath + sPath;
+                    : Path.Combine(ProjectManager.Instance.ProjectPath, sPath);
             }
             else
             {
                 sFullPath = File.Exists(sPath) ? Path.GetFullPath(sPath) : sPath;
             }
-            Directory.SetCurrentDirectory(previousCurrentDirectory);
             return sFullPath;
         }
 
