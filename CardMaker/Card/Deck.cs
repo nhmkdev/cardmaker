@@ -41,6 +41,8 @@ namespace CardMaker.Card
     {
         public const string DEFINES_DATA_SUFFIX = "_defines";
 
+        private List<OverrideLine> OverrideLines { get; set; }
+
         protected int m_nCardIndex = -1;
         protected int m_nCardPrintIndex;
 
@@ -53,6 +55,7 @@ namespace CardMaker.Card
         public List<DeckLine> ValidLines { get; }
 
         public Dictionary<string, string> Defines => Translator.DictionaryDefines;
+        public Dictionary<string, int> DictionaryColumnNameToIndex => Translator.DictionaryColumnNameToIndex;
 
         public bool EmptyReference { get; set; }
 
@@ -141,6 +144,42 @@ namespace CardMaker.Card
         public ProjectLayoutElement GetVariableOverrideElement(ProjectLayoutElement zElement, Dictionary<string, string> dictionaryOverrideFieldToValue)
         {
             return Translator.GetVariableOverrideElement(zElement, dictionaryOverrideFieldToValue);
+        }
+
+        public bool GetColumnValue(string sColumn, Dictionary<string, int> dictionaryColumnNameToIndex,
+            IReadOnlyList<string> listLineColumns, out string sValue)
+        {
+            if (OverrideLines != null)
+            {
+                foreach (var zLine in OverrideLines)
+                {
+                    if (TryGetColumnValue(zLine.DictionaryColumnNameToIndex, zLine.LineColumns, sColumn, out sValue))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            if (TryGetColumnValue(dictionaryColumnNameToIndex, listLineColumns, sColumn, out sValue))
+            {
+                return true;
+            }
+
+            sValue = string.Empty;
+            return false;
+        }
+
+        private static bool TryGetColumnValue(Dictionary<string, int> dictionaryColumnNameToIndex,
+            IReadOnlyList<string> listLineColumns, string sColumn, out string sValue)
+        {
+            if (dictionaryColumnNameToIndex.TryGetValue(sColumn, out var nIdx))
+            {
+                sValue = nIdx >= listLineColumns.Count ? string.Empty : (listLineColumns[nIdx] ?? "").Trim();
+                return true;
+            }
+
+            sValue = string.Empty;
+            return false;
         }
 
         /// <summary>
@@ -256,11 +295,36 @@ namespace CardMaker.Card
 
         public string TranslateFileNameString(string sRawString, int nCardNumber, int nLeftPad)
         {
+#warning this takes an awkward path to the translator and back
             return FilenameTranslator.TranslateFileNameString(sRawString, nCardNumber, nLeftPad, CurrentPrintLine,
-                Translator.DictionaryDefines, Translator.DictionaryColumnNameToIndex,
-                CardLayout);
+                Translator.DictionaryDefines, Translator.DictionaryColumnNameToIndex, this, CardLayout);
         }
 
-#endregion
+        #endregion
+
+        #region Line Overrides (SubLayout support)
+
+        public void AddOverrideLine(Dictionary<string, int> dictionaryColumnNameToIndex, List<string> lineColumns)
+        {
+            if (OverrideLines == null)
+            {
+                OverrideLines = new List<OverrideLine>();
+            }
+
+            OverrideLines.Add(new OverrideLine(dictionaryColumnNameToIndex, lineColumns));
+        }
+
+        class OverrideLine
+        {
+            public Dictionary<string, int> DictionaryColumnNameToIndex { get; }
+            public List<string> LineColumns { get; }
+            public OverrideLine(Dictionary<string, int> dictionaryColumnNameToIndex, List<string> lineColumns)
+            {
+                DictionaryColumnNameToIndex = dictionaryColumnNameToIndex;
+                LineColumns = lineColumns;
+            }
+        }
+
+        #endregion
     }
 }

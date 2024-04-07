@@ -681,6 +681,9 @@ namespace CardMaker.Forms
                         break;
                     case ElementType.Shape:
                         break;
+                    case ElementType.SubLayout:
+                        //TODO: add all the layout names?
+                        break;
                 }
             }
             else if (TranslatorType.JavaScript == ProjectManager.Instance.LoadedProjectTranslatorType)
@@ -771,6 +774,9 @@ namespace CardMaker.Forms
                     break;
                 case ElementType.Shape:
                     tabControl.SelectedTab = tabPageShape;
+                    break;
+                case ElementType.SubLayout:
+                    tabControl.SelectedTab = null;
                     break;
                 case ElementType.Text:
                     tabControl.SelectedTab = tabPageFont;

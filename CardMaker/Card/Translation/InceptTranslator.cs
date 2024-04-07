@@ -217,7 +217,7 @@ namespace CardMaker.Card.Translation
             //    1    2    3   4   5
             //@"(.*)(@\[)(.+?)(\])(.*)"
             int nIndex;
-            string sDefineValue;
+            string sNamedValue;
             var sKey = zMatch.Groups[3].ToString();
 
             // check the key for define parameters
@@ -229,26 +229,29 @@ namespace CardMaker.Card.Translation
 
             sKey = sKey.ToLower();
 
-            if (zTranslationContext.TranslatorBase.DictionaryDefines.TryGetValue(sKey, out sDefineValue))
+            if (zTranslationContext.TranslatorBase.DictionaryDefines.TryGetValue(sKey, out sNamedValue))
             {
             }
-            else if (zTranslationContext.TranslatorBase.DictionaryColumnNameToIndex.TryGetValue(sKey, out nIndex))
+            else if(zTranslationContext.Deck.GetColumnValue(
+                        sKey, 
+                        zTranslationContext.TranslatorBase.DictionaryColumnNameToIndex, 
+                        zTranslationContext.DeckLine.LineColumns, 
+                        out sNamedValue))
             {
-                sDefineValue = (nIndex >= zTranslationContext.DeckLine.LineColumns.Count ? string.Empty : (zTranslationContext.DeckLine.LineColumns[nIndex] ?? "").Trim());
             }
             else
             {
                 IssueManager.Instance.FireAddIssueEvent("Bad reference name: " + sKey);
-                sDefineValue = "[BAD NAME: " + sKey + "]";
+                sNamedValue = "[BAD NAME: " + sKey + "]";
             }
             if (arrayParams.Length > 1)
             {
                 for (int nIdx = 1; nIdx < arrayParams.Length; nIdx++)
                 {
-                    sDefineValue = sDefineValue.Replace("{" + nIdx + "}", arrayParams[nIdx]);
+                    sNamedValue = sNamedValue.Replace("{" + nIdx + "}", arrayParams[nIdx]);
                 }
             }
-            var result = zMatch.Groups[1] + sDefineValue + zMatch.Groups[5];
+            var result = zMatch.Groups[1] + sNamedValue + zMatch.Groups[5];
             // perform the #empty replace every time a define is unwrapped
             return result.Replace("#empty", string.Empty);
         }

@@ -36,6 +36,7 @@ namespace CardMaker.Card.Render
             {
                 case ElementType.Graphic:
                 case ElementType.Shape:
+                case ElementType.SubLayout:
                     // these types should never require the whitespace
                     sInput = sInput.Trim();
                     break;

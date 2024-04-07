@@ -29,6 +29,7 @@ using System.IO;
 using System.Linq;
 using CardMaker.Data;
 using Support.IO;
+using Support.Progress;
 
 namespace CardMaker.Card.Export
 {
@@ -105,6 +106,8 @@ namespace CardMaker.Card.Export
                     (currentCardWidth, currentCardHeight) = (currentCardHeight, currentCardWidth);
                 }
 
+                var listSubLayouts = GetSubLayouts();
+
                 UpdateBufferBitmap(exportContainerWidth, exportContainerHeight);
                 // The graphics must be initialized BEFORE the resolution of the bitmap is set (graphics will be the same DPI as the application/card)
                 var zContainerGraphics = Graphics.FromImage(m_zExportCardBuffer);
@@ -123,6 +126,16 @@ namespace CardMaker.Card.Export
                         CurrentDeck.ResetDeckCache();
                         // HACK - the printcard index is 0 based but all other uses of nCardId are 1 based (so ++ it!)
                         CurrentDeck.CardPrintIndex = nCardId++;
+
+                        // loop through SubLayouts and export them
+                        foreach (var nSubIdx in listSubLayouts)
+                        {
+                            var zSubLayoutExporter = new FileCardExporter(nSubIdx, nSubIdx, m_sExportFolder, null, -1, m_eImageFormat);
+                            zSubLayoutExporter.CurrentDeck.AddOverrideLine(CurrentDeck.DictionaryColumnNameToIndex, CurrentDeck.CurrentPrintLine.LineColumns);
+                            zSubLayoutExporter.ProgressReporter = new LogOnlyProgressReporter();
+                            zSubLayoutExporter.ExportThread();
+                        }
+
                         nCardsExportedInImage++;
 #warning TODO: optimize this by only creating the bitmap when necessary                        
                         var bitmapSingleCard = new Bitmap(CurrentDeck.CardLayout.width, CurrentDeck.CardLayout.height);

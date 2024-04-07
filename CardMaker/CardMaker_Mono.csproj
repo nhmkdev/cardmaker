@@ -311,6 +311,7 @@
     <Compile Include="Support\IO\Logger.cs" />
     <Compile Include="Support\IO\SerializationUtils.cs" />
     <Compile Include="Support\Progress\ConsoleProgressReporter.cs" />
+    <Compile Include="Support\Progress\LogOnlyProgressReporter.cs" />
     <Compile Include="Support\Progress\ProgressReporterProxy.cs" />
     <Compile Include="Support\Progress\WaitDialogLineProgressReporterFactory.cs" />
     <Compile Include="Support\Progress\ConsoleProgressReporterFactory.cs" />

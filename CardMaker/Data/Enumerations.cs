@@ -55,6 +55,7 @@ namespace CardMaker.Data
         FormattedText,
         Graphic,
         Shape,
+        SubLayout,
         End
     }
 

@@ -1,6 +1,7 @@
 Card Maker Version History
 --------------------------
 1.4.0.0
+- Added preliminary SubLayout element functionality [needs documentation]
 - Adjusted Image Cache to track last updated times on files
 - Added WebP image support (import/export & Windows only) via SkiaSharp (https://github.com/mono/SkiaSharp)
 - Added card index functionality for image export

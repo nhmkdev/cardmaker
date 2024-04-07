@@ -22,33 +22,70 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Drawing;
-using CardMaker.Data;
-using CardMaker.XML;
+using Support.IO;
 
-namespace CardMaker.Card.Render
+namespace Support.Progress
 {
-    class BackgroundColorElementRenderProcessor : IElementRenderProcessor
+    class LogOnlyProgressReporter : IProgressReporter
     {
-        public string Render(Graphics zGraphics, ProjectLayoutElement zElement, Deck zDeck, string sInput, int nX, int nY, bool bExport)
-        {
-            switch (EnumUtil.GetElementType(zElement.type))
-            {
-                case ElementType.Shape:
-                case ElementType.SubLayout:
-                    // these never render the background
-                    return sInput;
-            }
+        public bool ThreadSuccess { get; set; }
 
-            // render the background color
-            if (CardMakerConstants.NoColor != zElement.GetElementBackgroundColor())
-            {
-                var zBackgroundBrush = 255 != zElement.opacity
-                    ? new SolidBrush(Color.FromArgb(zElement.opacity, zElement.GetElementBackgroundColor()))
-                    : new SolidBrush(zElement.GetElementBackgroundColor());
-                zGraphics.FillRectangle(zBackgroundBrush, 0, 0, zElement.width, zElement.height);
-            }
-            return sInput;
+        public bool Canceled { get; set; }
+
+        public bool CancelButtonVisible { get; set; }
+
+        public int GetProgressCount()
+        {
+            return 0;
+        }
+
+
+        public int GetProgressIndex(string sProgressName)
+        {
+            return 0;
+        }
+
+
+        public void SetStatusText(string sText)
+        {
+        }
+
+
+        public void ProgressReset(int nProgressBar, int nMin, int nMax, int nStartVal)
+        {
+        }
+
+
+        public void ProgressSet(int nProgressBar, int nValue)
+        {
+        }
+
+
+        public void ProgressStep(int nProgressBar)
+        {
+        }
+
+
+        public int ProgressGet(int nProgressBar)
+        {
+            return 0;
+        }
+
+
+        public void StartProcessing(object initializationObject)
+        {
+
+        }
+
+
+        public void AddIssue(string sIssue)
+        {
+            Logger.AddLogLine(sIssue);
+        }
+
+
+        public void Shutdown()
+        {
         }
     }
 }
