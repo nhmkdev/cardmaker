@@ -70,17 +70,17 @@ namespace CardMaker.Card
         public Deck CurrentDeck { get; set; }
         public float ZoomLevel { get; set; }
 
-        public void DrawPrintLineToGraphics(Graphics zGraphics)
+        public bool DrawPrintLineToGraphics(Graphics zGraphics)
         {
-            DrawCard(0, 0, zGraphics, CurrentDeck.CurrentPrintLine, true, true);
+            return DrawCard(0, 0, zGraphics, CurrentDeck.CurrentPrintLine, true, true);
         }
 
-        public void DrawPrintLineToGraphics(Graphics zGraphics, int nX, int nY, bool bDrawBackground)
+        public bool DrawPrintLineToGraphics(Graphics zGraphics, int nX, int nY, bool bDrawBackground)
         {
-            DrawCard(nX, nY, zGraphics, CurrentDeck.CurrentPrintLine, true, bDrawBackground);
+            return DrawCard(nX, nY, zGraphics, CurrentDeck.CurrentPrintLine, true, bDrawBackground);
         }
 
-        public void DrawCard(int nX, int nY, Graphics zGraphics, DeckLine zDeckLine, bool bExport, bool bDrawBackground)
+        public bool DrawCard(int nX, int nY, Graphics zGraphics, DeckLine zDeckLine, bool bExport, bool bDrawBackground)
         {
             // Custom Graphics Setting
             zGraphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
@@ -107,8 +107,9 @@ namespace CardMaker.Card
                     CurrentDeck.CardLayout.height);
             }
 
-            // All drawing is handled in reverse element order
+            var bExportCard = true;
 
+            // All drawing is handled in reverse element order
             if (null != CurrentDeck.CardLayout.Element)
             {
                 for (var nIdx = CurrentDeck.CardLayout.Element.Length - 1; nIdx > -1; nIdx--)
@@ -124,6 +125,11 @@ namespace CardMaker.Card
 
                         // translate any index values in the csv
                         var zElementString = CurrentDeck.TranslateString(zDrawElement.variable, zDeckLine, zDrawElement, bExport);
+                        if (!zElementString.DrawCard)
+                        {
+                            bExportCard = false;
+                            break;
+                        }
 
                         // get override Element (based on any overrides in the element variable string)
                         zDrawElement = CurrentDeck.GetVariableOverrideElement(zDrawElement, zElementString.OverrideFieldToValueDictionary);
@@ -163,6 +169,7 @@ namespace CardMaker.Card
             DrawBorder(zGraphics, nX, nY, CurrentDeck.CardLayout.width, CurrentDeck.CardLayout.height, CurrentDeck.CardLayout, bExport);
 
             zGraphics.Transform = matrixOriginal;
+            return bExportCard;
         }
 
         /// <summary>

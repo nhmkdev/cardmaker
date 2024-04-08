@@ -136,87 +136,96 @@ namespace CardMaker.Card.Export
                             zSubLayoutExporter.ExportThread();
                         }
 
-                        nCardsExportedInImage++;
 #warning TODO: optimize this by only creating the bitmap when necessary                        
                         var bitmapSingleCard = new Bitmap(CurrentDeck.CardLayout.width, CurrentDeck.CardLayout.height);
                         var zSingleCardGraphics = Graphics.FromImage(bitmapSingleCard);
                         ClearGraphics(zSingleCardGraphics);
-                        CardRenderer.DrawPrintLineToGraphics(zSingleCardGraphics, 0, 0, !CurrentDeck.CardLayout.exportTransparentBackground);
-                        ProcessRotateExport(bitmapSingleCard, CurrentDeck.CardLayout, false);
-                        zContainerGraphics.DrawImage(bitmapSingleCard, nX, nY);
-
-                        ProgressReporter.ProgressStep(progressCardIdx);
-
-                        var nMoveCount = 1;
-                        if (m_nSkipStitchIndex > 0)
+                        var bExportCard = CardRenderer.DrawPrintLineToGraphics(zSingleCardGraphics, 0, 0, !CurrentDeck.CardLayout.exportTransparentBackground);
+                        if (bExportCard)
                         {
-                            var x = ((nCardsExportedInImage + 1)%m_nSkipStitchIndex);
-                            if (x == 0)
+                            ProcessRotateExport(bitmapSingleCard, CurrentDeck.CardLayout, false);
+                            zContainerGraphics.DrawImage(bitmapSingleCard, nX, nY);
+
+                            ProgressReporter.ProgressStep(progressCardIdx);
+
+                            nCardsExportedInImage++;
+
+                            var nMoveCount = 1;
+                            if (m_nSkipStitchIndex > 0)
                             {
-                                // shift forward an extra spot to ignore the dummy index
-                                nMoveCount = 2;
+                                var x = ((nCardsExportedInImage + 1) % m_nSkipStitchIndex);
+                                if (x == 0)
+                                {
+                                    // shift forward an extra spot to ignore the dummy index
+                                    nMoveCount = 2;
+                                }
                             }
-                        }
 
-                        var bOutOfSpace = false;
+                            var bOutOfSpace = false;
 
-                        for (var nShift = 0; nShift < nMoveCount; nShift++)
-                        {
+                            for (var nShift = 0; nShift < nMoveCount; nShift++)
+                            {
 #warning this is messed up for rotated layouts
-                            nX += currentCardWidth + CurrentDeck.CardLayout.buffer;
-                            if (nX + currentCardWidth > exportContainerWidth)
-                            {
-                                nX = 0;
-                                nY += currentCardHeight + CurrentDeck.CardLayout.buffer;
+                                nX += currentCardWidth + CurrentDeck.CardLayout.buffer;
+                                if (nX + currentCardWidth > exportContainerWidth)
+                                {
+                                    nX = 0;
+                                    nY += currentCardHeight + CurrentDeck.CardLayout.buffer;
+                                }
+
+                                if (nY + currentCardHeight > exportContainerHeight)
+                                {
+                                    // no more space
+                                    bOutOfSpace = true;
+                                    break;
+                                }
                             }
-                            if (nY + currentCardHeight > exportContainerHeight)
+
+                            if (bOutOfSpace)
                             {
-                                // no more space
-                                bOutOfSpace = true;
                                 break;
                             }
                         }
 
-                        if (bOutOfSpace)
-                        {
-                            break;
-                        }
                         // increment and continue to add cards to this buffer
                         nCardArrayIdx++;
                     } while (nCardArrayIdx < arrayCardIndices.Length);
 
-                    string sFileName;
+                    if (nCardsExportedInImage > 0)
+                    {
+                        string sFileName;
 
-                    // NOTE: nCardId at this point is 1 more than the actual index ... how convenient for export file names...
+                        // NOTE: nCardId at this point is 1 more than the actual index ... how convenient for export file names...
 
-                    if (!string.IsNullOrEmpty(m_sOverrideStringFormat))
-                    {
-                        // check for the super override
-                        sFileName = CurrentDeck.TranslateFileNameString(m_sOverrideStringFormat, nCardId, nCardCountPadSize);
-                    }
-                    else if (!string.IsNullOrEmpty(CurrentDeck.CardLayout.exportNameFormat))
-                    {
-                        // check for the per layout override
-                        sFileName = CurrentDeck.TranslateFileNameString(CurrentDeck.CardLayout.exportNameFormat, nCardId, nCardCountPadSize);
-                    }
-                    else // default
-                    {
-                        sFileName = CurrentDeck.CardLayout.Name + "_" + (nCardId).ToString(CultureInfo.InvariantCulture).PadLeft(nCardCountPadSize, '0');
-                    }
-                    
-                    try
-                    {
-                        Save(m_zExportCardBuffer, 
-                            m_sExportFolder + sFileName + "." + m_eImageFormat.ToString().ToLower(),
-                            m_eImageFormat,
-                            CurrentDeck.CardLayout.dpi);
-                    }
-                    catch (Exception ex)
-                    {
-                        ProgressReporter.AddIssue("Invalid Filename or IO error: " + sFileName + " :: " + ex.Message);
-                        ProgressReporter.ThreadSuccess = false;
-                        ProgressReporter.Shutdown();
-                        return;
+                        if (!string.IsNullOrEmpty(m_sOverrideStringFormat))
+                        {
+                            // check for the super override
+                            sFileName = CurrentDeck.TranslateFileNameString(m_sOverrideStringFormat, nCardId, nCardCountPadSize);
+                        }
+                        else if (!string.IsNullOrEmpty(CurrentDeck.CardLayout.exportNameFormat))
+                        {
+                            // check for the per layout override
+                            sFileName = CurrentDeck.TranslateFileNameString(CurrentDeck.CardLayout.exportNameFormat, nCardId, nCardCountPadSize);
+                        }
+                        else // default
+                        {
+                            sFileName = CurrentDeck.CardLayout.Name + "_" + (nCardId).ToString(CultureInfo.InvariantCulture).PadLeft(nCardCountPadSize, '0');
+                        }
+                        try
+                        {
+                            Save(m_zExportCardBuffer,
+                                m_sExportFolder + sFileName + "." + m_eImageFormat.ToString().ToLower(),
+                                m_eImageFormat,
+                                CurrentDeck.CardLayout.dpi);
+                        }
+                        catch (Exception ex)
+                        {
+                            ProgressReporter.AddIssue(
+                                "Invalid Filename or IO error: " + sFileName + " :: " + ex.Message);
+                            ProgressReporter.ThreadSuccess = false;
+                            ProgressReporter.Shutdown();
+                            return;
+                        }
                     }
                 }
                 ProgressReporter.ProgressStep(progressLayoutIdx);

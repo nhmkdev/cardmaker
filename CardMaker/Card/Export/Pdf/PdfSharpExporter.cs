@@ -188,6 +188,7 @@ namespace CardMaker.Card.Export.Pdf
                     // minor optimization, reuse the same bitmap (for drawing sake the DPI has to be reset)
                     zBuffer.SetResolution(fOriginalXDpi, fOriginalYDpi);
 #endif
+                    var bRenderCard = true;
                     // Draw the image into the buffer
                     if(nCardIdx == -1)
                     {
@@ -196,30 +197,33 @@ namespace CardMaker.Card.Export.Pdf
                     }
                     else
                     {
-                        CardRenderer.DrawPrintLineToGraphics(Graphics.FromImage(zBuffer), -rectCrop.X, -rectCrop.Y, true);
+                        bRenderCard = CardRenderer.DrawPrintLineToGraphics(Graphics.FromImage(zBuffer), -rectCrop.X, -rectCrop.Y, true);
                         // if cropping the border needs to be drawn to the cropped size
-                        if (rectCrop != Rectangle.Empty)
+                        if (bRenderCard && rectCrop != Rectangle.Empty)
                             CardRenderer.DrawBorder(Graphics.FromImage(zBuffer), 0, 0, zBuffer.Width, zBuffer.Height, CurrentDeck.CardLayout, true);
                     }
 
-                    // apply any export rotation
-                    ProcessRotateExport(zBuffer, CurrentDeck.CardLayout, false);
+                    if (bRenderCard)
+                    {
+                        // apply any export rotation
+                        ProcessRotateExport(zBuffer, CurrentDeck.CardLayout, false);
 
-                    // before rendering to the PDF bump the DPI to the desired value
-                    zBuffer.SetResolution(CurrentDeck.CardLayout.dpi, CurrentDeck.CardLayout.dpi);
+                        // before rendering to the PDF bump the DPI to the desired value
+                        zBuffer.SetResolution(CurrentDeck.CardLayout.dpi, CurrentDeck.CardLayout.dpi);
 
-                    var xImage = XImage.FromGdiPlusImage(zBuffer);
+                        var xImage = XImage.FromGdiPlusImage(zBuffer);
 
-                    // before drawing make sure there is space (will move to next row/page)
-                    EvaluateDrawLocation(nNextExportIndex, zRowExporter);
+                        // before drawing make sure there is space (will move to next row/page)
+                        EvaluateDrawLocation(nNextExportIndex, zRowExporter);
 
-                    m_zPageGfx.DrawImage(xImage, m_zExportData.DrawX, m_zExportData.DrawY);
+                        m_zPageGfx.DrawImage(xImage, m_zExportData.DrawX, m_zExportData.DrawY);
 
-                    // any next row movement is dealt with independent of this call
-                    zRowExporter.MoveXToNextColumnPosition();
+                        // any next row movement is dealt with independent of this call
+                        zRowExporter.MoveXToNextColumnPosition();
 
-                    // undo any export rotation
-                    ProcessRotateExport(zBuffer, CurrentDeck.CardLayout, true);
+                        // undo any export rotation
+                        ProcessRotateExport(zBuffer, CurrentDeck.CardLayout, true);
+                    }
 
                     nNextExportIndex++;
 

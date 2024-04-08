@@ -36,11 +36,13 @@ namespace CardMaker.Card
         {
             String = null;
             DrawElement = true;
+            DrawCard = true;
             OverrideFieldToValueDictionary = null;
         }
 
         public string String { get; set; }
         public bool DrawElement { get; set; }
+        public bool DrawCard { get; set; }
         public Dictionary<string, string> OverrideFieldToValueDictionary { get; set; }
     }
 }

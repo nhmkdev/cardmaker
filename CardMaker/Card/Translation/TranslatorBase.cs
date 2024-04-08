@@ -96,6 +96,10 @@ namespace CardMaker.Card.Translation
             {
                 zElementString.DrawElement = false;
             }
+            if (zElementString.String.Contains("#noexport"))
+            {
+                zElementString.DrawCard = false;
+            }
 
             // all translators perform this post replacement operation
             switch ((ElementType)Enum.Parse(typeof(ElementType), zElement.type))
