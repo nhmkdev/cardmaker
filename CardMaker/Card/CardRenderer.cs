@@ -128,7 +128,11 @@ namespace CardMaker.Card
                         if (!zElementString.DrawCard)
                         {
                             bExportCard = false;
-                            break;
+                            // only stop processing elements on exports
+                            if (bExport)
+                            {
+                                break;
+                            }
                         }
 
                         // get override Element (based on any overrides in the element variable string)

@@ -37,6 +37,8 @@ namespace CardMaker.Card
 
         private readonly Size m_zDefaultNoLayoutSize = new Size(320, 80);
 
+        public bool CardExported { get; private set; }
+
         public CardCanvas()
         {
             m_zCardRenderer = new CardRenderer
@@ -79,13 +81,14 @@ namespace CardMaker.Card
             {
                 e.Graphics.FillRectangle(Brushes.White, 0, 0, Size.Width, Size.Height);
                 e.Graphics.DrawString("Select a Layout in the Project Window", new Font(DefaultFont.FontFamily, 20), Brushes.Red, new RectangleF(10, 10, Size.Width - 10, Size.Height - 10));
+                CardExported = true;
                 return;
             }
             
             if (-1 != ActiveDeck.CardIndex && ActiveDeck.CardIndex < ActiveDeck.CardCount)
             {
                 e.Graphics.FillRectangle(Brushes.White, 0, 0, Size.Width, Size.Height);
-                m_zCardRenderer.DrawCard(0, 0, e.Graphics, ActiveDeck.CurrentLine, false, true);
+                CardExported = !m_zCardRenderer.DrawCard(0, 0, e.Graphics, ActiveDeck.CurrentLine, false, true);
             }
         }
 

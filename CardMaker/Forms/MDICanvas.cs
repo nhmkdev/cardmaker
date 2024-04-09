@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Text;
 using System.Windows.Forms;
 using CardMaker.Card;
 using CardMaker.Data;
@@ -1113,31 +1114,39 @@ namespace CardMaker.Forms
 
         public void UpdateFormText()
         {
+            var zBuilder = new StringBuilder();
             switch (m_eMouseMode)
             {
                 case MouseMode.Move:
-                    Text = "Canvas [Mode: Move-only]";
+                    zBuilder.Append("Canvas [Mode: Move-only]");
                     TriggerMouseMoveAtMouseLocation();
                     break;
                 case MouseMode.MoveResize:
-                    Text = "Canvas [Mode: Normal]";
+                    zBuilder.Append("Canvas [Mode: Normal]");
                     TriggerMouseMoveAtMouseLocation();
                     break;
                 case MouseMode.Rotate:
-                    Text = "Canvas [Mode: Rotate-only]";
+                    zBuilder.Append("Canvas [Mode: Rotate-only]");
                     Cursor = new Cursor(Properties.Resources.RotateCursor.Handle);
                     break;
             }
 
-            Text += " [AutoSave: {0}]".FormatString(
+            if (!m_zCardCanvas.CardExported)
+            {
+                zBuilder.Append(" [#NOEXPORT]");
+            }
+#warning Should these strings move to another spot? Reference in particular is massive
+            zBuilder.Append(" [AutoSave: {0}]".FormatString(
                 AutoSaveManager.Instance.IsEnabled()
                     ? "Enabled"
-                    : "Disabled");
+                    : "Disabled"));
             var zReferenceLine = m_zCardCanvas.CardRenderer?.CurrentDeck?.CurrentLine?.ReferenceLine;
             if (zReferenceLine != null)
             {
-                Text += " [Reference Line: {1} / {0}]".FormatString(zReferenceLine.Source, zReferenceLine.LineNumber);
+                zBuilder.Append(" [Reference Line: {1} / {0}]".FormatString(zReferenceLine.Source, zReferenceLine.LineNumber));
             }
+
+            Text = zBuilder.ToString();
         }
 
         private bool CheckAllSelectedElementsEnabled(bool bShowWarning)
