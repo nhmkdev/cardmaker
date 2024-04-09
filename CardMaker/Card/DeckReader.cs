@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CardMaker.Card.Import;
 using CardMaker.Data;
@@ -41,6 +42,8 @@ namespace CardMaker.Card
 {
     public class DeckReader
     {
+        private static readonly Regex s_regexColumnVariable = new Regex(@"(.*)(@\[)(.+?)(\])(.*)", RegexOptions.Compiled);
+
         protected ProgressReporterProxy m_zReporterProxy;
         private readonly Deck m_zDeck;
         private ReferenceReader m_zErrorReferenceReader;
@@ -251,7 +254,7 @@ namespace CardMaker.Card
                 // remove any layout elements that do not match the card layout
                 if (-1 != nAllowedLayoutColumn)
                 {
-                    int nLine = 0;
+                    var nLine = 0;
 
                     while (nLine < listLines.Count)
                     {
@@ -273,7 +276,41 @@ namespace CardMaker.Card
                 {
                     IssueManager.Instance.FireAddIssueEvent("No lines found?! allowed_layout may be cutting them!");
                 }
+            }
 
+            // Define Processing
+            if (listDefineLines.Count > 0)
+            {
+                // Note: the removal of the first row happens in the reader(s) for defines
+                foreach (var zReferenceDefineLine in listDefineLines)
+                {
+                    var listRowEntries = zReferenceDefineLine.Entries;
+                    if (listRowEntries.Count >= 1)
+                    {
+                        string sKey = listRowEntries[0];
+                        int nIdx;
+                        string sVal;
+                        if (dictionaryDefines.TryGetValue(sKey.ToLower(), out sVal))
+                        {
+                            var sMsg = "Duplicate define found: " + sKey;
+                            IssueManager.Instance.FireAddIssueEvent(sMsg);
+                            m_zReporterProxy.AddIssue(sMsg);
+                        }
+                        else if (dictionaryColumnNames.TryGetValue(sKey.ToLower(), out nIdx))
+                        {
+                            var sMsg = "Overlapping column name and define found in: " + zReferenceDefineLine.Source + "::" + "Column [" + nIdx + "]: " + sKey;
+                            IssueManager.Instance.FireAddIssueEvent(sMsg);
+                            m_zReporterProxy.AddIssue(sMsg);
+                        }
+                        else
+                        {
+                            // add the define value or empty string
+                            dictionaryDefines.Add(sKey.ToLower(),
+                                listRowEntries.Count == 1 ? string.Empty : listRowEntries[1]
+                            );
+                        }
+                    }
+                }
             }
 
             m_zDeck.ValidLines.Clear();
@@ -284,12 +321,7 @@ namespace CardMaker.Card
                 var listRowEntries = zReferenceLine.Entries;
                 if (0 < listRowEntries.Count)
                 {
-                    int nNumber;
-                    if (!int.TryParse(listRowEntries[0].Trim(), out nNumber))
-                    {
-                        IssueManager.Instance.FireAddIssueEvent("Invalid card count found: [" + listRowEntries[0] + "] The first column should always have a number value.");
-                        nNumber = 1;
-                    }
+                    var nNumber = GetCardCount(listRowEntries[0].Trim(), dictionaryDefines);
                     for (var nSubRow = 0; nSubRow < nNumber; nSubRow++)
                     {
                         m_zDeck.ValidLines.Add(new DeckLine(nSubRow, zReferenceLine, listColumnNames, m_zReporterProxy));
@@ -326,42 +358,6 @@ namespace CardMaker.Card
                     {
                         IssueManager.Instance.FireAddIssueEvent(
                             "No lines found for this layout! Generated {0} lines".FormatString(nDefaultCount));
-                    }
-                }
-            }
-
-            // Define Processing
-            // remove the column names
-            if (listDefineLines.Count > 0)
-            {
-                // Note: the removal of the first row happens in the reader(s) for defines
-                foreach (var zReferenceDefineLine in listDefineLines)
-                {
-                    var listRowEntries = zReferenceDefineLine.Entries;
-                    if (listRowEntries.Count >= 1) 
-                    {
-                        string sKey = listRowEntries[0];
-                        int nIdx;
-                        string sVal;
-                        if (dictionaryDefines.TryGetValue(sKey.ToLower(), out sVal))
-                        {
-                            var sMsg = "Duplicate define found: " + sKey;
-                            IssueManager.Instance.FireAddIssueEvent(sMsg);
-                            m_zReporterProxy.AddIssue(sMsg);
-                        }
-                        else if (dictionaryColumnNames.TryGetValue(sKey.ToLower(), out nIdx))
-                        {
-                            var sMsg = "Overlapping column name and define found in: " + zReferenceDefineLine.Source + "::" + "Column [" + nIdx + "]: " + sKey;
-                            IssueManager.Instance.FireAddIssueEvent(sMsg);
-                            m_zReporterProxy.AddIssue(sMsg);
-                        }
-                        else
-                        {
-                            // add the define value or empty string
-                            dictionaryDefines.Add(sKey.ToLower(), 
-                                listRowEntries.Count == 1 ? string.Empty : listRowEntries[1]
-                                );
-                        }
                     }
                 }
             }
@@ -436,6 +432,24 @@ namespace CardMaker.Card
             return null != arrayAllowedLayouts.FirstOrDefault((sAllowedLayout) =>
                 m_zDeck.CardLayout.Name.Equals(sAllowedLayout, StringComparison.CurrentCultureIgnoreCase)
             );
+        }
+
+        private int GetCardCount(string sCountString, Dictionary<string, string> dictionaryDefines)
+        {
+            var sInterpretedCount = sCountString;
+            if (s_regexColumnVariable.IsMatch(sCountString))
+            {
+                var zMatch = s_regexColumnVariable.Match(sCountString);
+                var sKey = zMatch.Groups[3].ToString().ToLower();
+                m_zDeck.GetDefineValue(sKey, dictionaryDefines, out sInterpretedCount);
+            }
+            if (!int.TryParse(sInterpretedCount.Trim(), out var nCount))
+            {
+                IssueManager.Instance.FireAddIssueEvent("Invalid card count found: [" + sInterpretedCount + "] The first column should always have a number value.");
+                nCount = 1;
+            }
+
+            return nCount;
         }
     }
 }
