@@ -88,7 +88,7 @@ namespace CardMaker.Card
             if (-1 != ActiveDeck.CardIndex && ActiveDeck.CardIndex < ActiveDeck.CardCount)
             {
                 e.Graphics.FillRectangle(Brushes.White, 0, 0, Size.Width, Size.Height);
-                CardExported = !m_zCardRenderer.DrawCard(0, 0, e.Graphics, ActiveDeck.CurrentLine, false, true);
+                CardExported = m_zCardRenderer.DrawCard(0, 0, e.Graphics, ActiveDeck.CurrentLine, false, true);
             }
         }
 
