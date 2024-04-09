@@ -71,11 +71,10 @@ namespace CardMaker.Card.Translation
         }
 
         protected TranslatorBase(Dictionary<string, int> dictionaryColumnNameToIndex, Dictionary<string, string> dictionaryDefines,
-            Dictionary<string, Dictionary<string, int>> dictionaryElementToFieldColumnOverrides, List<string> listColumnNames)
+            List<string> listColumnNames)
         {
             DictionaryColumnNameToIndex = dictionaryColumnNameToIndex;
             DictionaryDefines = dictionaryDefines;
-            DictionaryElementToFieldColumnOverrides = dictionaryElementToFieldColumnOverrides;
             ListColumnNames = listColumnNames;
         }
 
@@ -84,8 +83,7 @@ namespace CardMaker.Card.Translation
             var sCacheKey = zElement.name + sCacheSuffix;
 
             // pull from translated string cache
-            ElementString zCached;
-            if (m_dictionaryElementStringCache.TryGetValue(sCacheKey, out zCached))
+            if (m_dictionaryElementStringCache.TryGetValue(sCacheKey, out var zCached))
             {
                 return zCached;
             }
@@ -128,11 +126,11 @@ namespace CardMaker.Card.Translation
         protected abstract ElementString TranslateToElementString(Deck zDeck, string sRawString, int nCardIndex, DeckLine zDeckLine,
             ProjectLayoutElement zElement);
 
-        public ProjectLayoutElement GetOverrideElement(Deck zDeck, ProjectLayoutElement zElement, int nCardIndex, List<string> arrayLine, DeckLine zDeckLine)
+        public ProjectLayoutElement GetOverrideElement(Deck zDeck, ProjectLayoutElement zElement, int nCardIndex, Dictionary<string, Dictionary<string, string>> dictionaryElementToOverrideFieldsToValues, DeckLine zDeckLine)
         {
-            Dictionary<string, int> dictionaryOverrideColumns;
-
-            DictionaryElementToFieldColumnOverrides.TryGetValue(zElement.name.ToLower(), out dictionaryOverrideColumns);
+            dictionaryElementToOverrideFieldsToValues.TryGetValue(
+                zElement.name.ToLower(), 
+                out var dictionaryOverrideFieldsToValues);
 
             zElement = ProjectManager.Instance.LookupElementReference(zElement);
 
@@ -140,19 +138,14 @@ namespace CardMaker.Card.Translation
             zOverrideElement.DeepCopy(zElement, false);
             zOverrideElement.name = zElement.name;
 
-            if (null != dictionaryOverrideColumns)
+            if (null != dictionaryOverrideFieldsToValues)
             {
-                foreach (var sKey in dictionaryOverrideColumns.Keys)
+                foreach (var sKey in dictionaryOverrideFieldsToValues.Keys)
                 {
                     var zProperty = typeof(ProjectLayoutElement).GetProperty(sKey);
                     if (null != zProperty && zProperty.CanWrite)
                     {
-                        int nOverrideValueColumnIdx = dictionaryOverrideColumns[sKey];
-                        if (arrayLine.Count <= nOverrideValueColumnIdx)
-                        {
-                            continue;
-                        }
-                        string sValue = arrayLine[nOverrideValueColumnIdx].Trim();
+                        var sValue = dictionaryOverrideFieldsToValues[sKey].Trim();
 
                         // Note: TranslateString maintains an element name based cache, the key is critical to make this translation unique
                         sValue = TranslateString(zDeck, sValue, nCardIndex, zDeckLine, zOverrideElement, sKey).String;

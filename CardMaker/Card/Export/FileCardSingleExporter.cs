@@ -27,6 +27,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using CardMaker.Data;
+using Support.Progress;
 using Support.UI;
 
 namespace CardMaker.Card.Export
@@ -72,6 +73,16 @@ namespace CardMaker.Card.Export
                 Color.White);
             CurrentDeck.ResetDeckCache();
             CurrentDeck.CardPrintIndex = nCardIdx++;
+
+            // loop through SubLayouts and export them
+            foreach (var nSubIdx in GetSubLayouts())
+            {
+                var zSubLayoutExporter = new FileCardExporter(nSubIdx, nSubIdx, m_sExportFolder, null, -1, m_eImageFormat);
+                zSubLayoutExporter.CurrentDeck.ApplySubLayoutOverrides(CurrentDeck.Defines, CurrentDeck.CurrentPrintLine.ColumnsToValues, CurrentDeck);
+                zSubLayoutExporter.ProgressReporter = new LogOnlyProgressReporter();
+                zSubLayoutExporter.ExportThread();
+            }
+
             CardRenderer.DrawPrintLineToGraphics(zGraphics, 0, 0, !CurrentDeck.CardLayout.exportTransparentBackground);
 
             ProgressReporter.ProgressStep(progressCardIdx);

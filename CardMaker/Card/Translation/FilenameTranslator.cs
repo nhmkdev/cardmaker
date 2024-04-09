@@ -81,11 +81,8 @@ namespace CardMaker.Card.Translation
                 var zMatch = s_regexColumnVariable.Match(sOutput);
                 string sNamedValue;
                 var sKey = zMatch.Groups[3].ToString().ToLower();
-                if (dictionaryDefines.TryGetValue(sKey, out sNamedValue))
-                {
-                    sOutput = zMatch.Groups[1] + sNamedValue.Trim() + zMatch.Groups[5];
-                }
-                else if (zDeck.GetColumnValue(sKey, dictionaryColumnNameToIndex, zDeck.CurrentPrintLine.LineColumns, out sNamedValue))
+                if (zDeck.GetDefineValue(sKey, dictionaryDefines, out sNamedValue)
+                    || zDeck.GetColumnValue(sKey, zDeck.CurrentPrintLine.ColumnsToValues, out sNamedValue))
                 {
                     sOutput = zMatch.Groups[1] + sNamedValue.Trim() + zMatch.Groups[5];
                 }

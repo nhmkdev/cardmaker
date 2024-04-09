@@ -29,7 +29,6 @@ namespace CardMaker.Card.Translation
     public interface ITranslatorFactory
     {
         TranslatorBase GetTranslator(Dictionary<string, int> dictionaryColumnNames,
-            Dictionary<string, string> dictionaryDefines,
-            Dictionary<string, Dictionary<string, int>> dictionaryElementOverrides, List<string> listColumnNames);
+            Dictionary<string, string> dictionaryDefines, List<string> listColumnNames);
     }
 }

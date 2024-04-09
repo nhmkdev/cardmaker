@@ -37,8 +37,8 @@ namespace CardMaker.Card.Translation
         private const string FUNCTION_PREFIX = "function(";
 
         public JavaScriptTranslator(Dictionary<string, int> dictionaryColumnNameToIndex, Dictionary<string, string> dictionaryDefines,
-            Dictionary<string, Dictionary<string, int>> dictionaryElementToFieldColumnOverrides, List<string> listColumnNames)
-            : base(dictionaryColumnNameToIndex, dictionaryDefines, dictionaryElementToFieldColumnOverrides, listColumnNames)
+            List<string> listColumnNames)
+            : base(dictionaryColumnNameToIndex, dictionaryDefines, listColumnNames)
         {
 
         }
@@ -88,14 +88,14 @@ namespace CardMaker.Card.Translation
             AddNumericVar(zBuilder, "deckIndex", (nCardIndex + 1).ToString());
             AddNumericVar(zBuilder, "cardIndex", (zDeckLine.RowSubIndex + 1).ToString());
 
-            foreach (var sKey in DictionaryDefines.Keys)
+            foreach (var kvp in DictionaryDefines)
             {
-                AddVar(zBuilder, sKey, DictionaryDefines[sKey]);
+                AddVar(zBuilder, kvp.Key, kvp.Value);
             }
 
-            for (int nIdx = 0; nIdx < ListColumnNames.Count; nIdx++)
+            foreach (var kvp in zDeckLine.ColumnsToValues)
             {
-                AddVar(zBuilder, ListColumnNames[nIdx], zDeckLine.LineColumns.Count > nIdx ? zDeckLine.LineColumns[nIdx] : "");
+                AddVar(zBuilder, kvp.Key, kvp.Value);
             }
             zBuilder.Append(sDefintion);
             return zBuilder.ToString();

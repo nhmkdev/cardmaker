@@ -32,7 +32,7 @@ namespace CardMaker.Card.Translation
     public class TranslatorFactory : ITranslatorFactory
     {
         public TranslatorBase GetTranslator(Dictionary<string, int> dictionaryColumnNames, Dictionary<string, string> dictionaryDefines,
-            Dictionary<string, Dictionary<string, int>> dictionaryElementOverrides, List<string> listColumnNames)
+            List<string> listColumnNames)
         {
             TranslatorType eTranslator;
             if (ProjectManager.Instance.LoadedProject == null ||
@@ -47,9 +47,9 @@ namespace CardMaker.Card.Translation
             switch (eTranslator)
             {
                 case TranslatorType.JavaScript:
-                    return new JavaScriptTranslator(dictionaryColumnNames, dictionaryDefines, dictionaryElementOverrides, listColumnNames);
+                    return new JavaScriptTranslator(dictionaryColumnNames, dictionaryDefines, listColumnNames);
                 default:
-                    return new InceptTranslator(dictionaryColumnNames, dictionaryDefines, dictionaryElementOverrides, listColumnNames);
+                    return new InceptTranslator(dictionaryColumnNames, dictionaryDefines, listColumnNames);
             }
         }
     }

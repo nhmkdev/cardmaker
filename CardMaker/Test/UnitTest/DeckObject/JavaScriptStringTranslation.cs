@@ -55,7 +55,8 @@ namespace UnitTest.DeckObject
             _mockProgressReporterProxy = new Mock<ProgressReporterProxy>();
             _testDeck = new TestDeck(new JavaScriptTranslatorFactory());
             _testDeck.SetProgressReporterProxy(_mockProgressReporterProxy.Object);
-            _testLine = new DeckLine(ReferenceLine.CreateDefaultInternalReferenceLine(new List<string>()));
+#warning: _testLine is a bad idea, _testDeck should be calling something like  _testDeck.ProcessLinesPublic, then _testDeck.CardIndex = 0;
+            _testLine = new DeckLine(0, ReferenceLine.CreateDefaultInternalReferenceLine(new List<string>()), new List<string>(), _mockProgressReporterProxy.Object);
             _testElement = new ProjectLayoutElement(TEST_ELEMENT_NAME);
         }
 
@@ -111,8 +112,8 @@ namespace UnitTest.DeckObject
             _testDeck.ProcessLinesPublic(
                 new List<List<string>>()
                 {
-                    new List<string>(){keyName},
-                    new List<string>() {keyValue}
+                    new List<string>(){"count", keyName},
+                    new List<string>() {"1", keyValue}
                 },
                 new List<List<string>>(),
                 null);

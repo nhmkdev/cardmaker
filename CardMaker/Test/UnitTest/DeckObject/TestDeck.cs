@@ -78,10 +78,16 @@ namespace UnitTest.DeckObject
             return listLines.Select((list, i) => new ReferenceLine(list, sRefName, i + 1)).ToList();
         }
 
-        public string GetDefine(string key)
+        /// <summary>
+        /// Wrapper for GetDefineValue
+        /// </summary>
+        /// <param name="sKey"></param>
+        /// <returns></returns>
+        public string GetDefine(string sKey)
         {
-            string value;
-            return Translator.DictionaryDefines.TryGetValue(key, out value) ? value : null;
+#warning should the tests use the translator object and call this directly?
+            GetDefineValue(sKey, Translator.DictionaryDefines, out var sValue);
+            return sValue;
         }
 
         public void SetDisallowedCharReplacement(char c, string replacement)

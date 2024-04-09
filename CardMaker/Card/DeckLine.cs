@@ -24,33 +24,61 @@
 
 using System.Collections.Generic;
 using CardMaker.Card.Import;
+using CardMaker.Data;
+using Support.Progress;
+using Support.UI;
 
 namespace CardMaker.Card
 {
     public class DeckLine
     {
-        public List<string> LineColumns
-        {
-            get { return Reference.Entries; }
-        }
+        public Dictionary<string, string> ColumnsToValues { get; private set; }
+        public Dictionary<string, Dictionary<string, string>> ElementToOverrideFieldsToValues { get; private set; }
+
         public int RowSubIndex { get; private set; }
-        public ReferenceLine Reference { get; private set; }
+        public ReferenceLine ReferenceLine { get; private set; }
 
-        private DeckLine()
+        public DeckLine(int nRowSubIndex, ReferenceLine zReferenceLine, IReadOnlyList<string> listColumnNames, ProgressReporterProxy zReporterProxy) :base()
         {
-            
-        }
-
-        public DeckLine(ReferenceLine zReference)
-        {
-            RowSubIndex = 0;
-            Reference = zReference;
-        }
-
-        public DeckLine(int nRowSubIndex, ReferenceLine zReference)
-        {
+            ElementToOverrideFieldsToValues = new Dictionary<string, Dictionary<string, string>>();
+            ColumnsToValues = new Dictionary<string, string>();
             RowSubIndex = nRowSubIndex;
-            Reference = zReference;
+            ReferenceLine = zReferenceLine;
+            // place all the line entries into the appropriate Dictionary
+            for (var nIdx = 1; nIdx < listColumnNames.Count; nIdx++)
+            {
+                var sColumn = listColumnNames[nIdx];
+                var bAssigned = false;
+#warning find another home for this logic maybe?
+                if (sColumn.StartsWith(CardMakerConstants.OVERRIDE_COLUMN))
+                {
+                    var arraySplit = sColumn.Split(new char[] { ':' });
+                    if (3 == arraySplit.Length)
+                    {
+                        var sElementName = arraySplit[1].Trim();
+                        var sElementItemOverride = arraySplit[2].Trim();
+                        if (!ElementToOverrideFieldsToValues.ContainsKey(sElementName))
+                        {
+                            ElementToOverrideFieldsToValues.Add(sElementName, new Dictionary<string, string>());
+                        }
+                        var dictionaryElementOverrides = ElementToOverrideFieldsToValues[sElementName];
+                        if (dictionaryElementOverrides.ContainsKey(sElementItemOverride))
+                        {
+                            zReporterProxy.AddIssue($"Duplicate override found: {sElementItemOverride}");
+                        }
+                        dictionaryElementOverrides[sElementItemOverride] = zReferenceLine.Entries.Count > nIdx
+                            ? zReferenceLine.Entries[nIdx]
+                            : string.Empty;
+                        bAssigned = true;
+                    }
+                }
+                if(!bAssigned)
+                {
+                    ColumnsToValues[sColumn] = zReferenceLine.Entries.Count > nIdx
+                        ? zReferenceLine.Entries[nIdx]
+                        : string.Empty;
+                }
+            }
         }
     }
 }

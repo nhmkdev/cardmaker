@@ -191,7 +191,6 @@ namespace CardMaker.Card
             var nDefaultCount = m_zDeck.CardLayout.defaultCount;
             var listColumnNames = new List<string>();
             var dictionaryColumnNames = new Dictionary<string, int>();
-            var dictionaryElementOverrides = new Dictionary<string, Dictionary<string, int>>();
             var dictionaryDefines = new Dictionary<string, string>();
 
             // Line Processing
@@ -220,30 +219,6 @@ namespace CardMaker.Card
                 if (!dictionaryColumnNames.TryGetValue(CardMakerConstants.ALLOWED_LAYOUT_COLUMN, out nAllowedLayoutColumn))
                 {
                     nAllowedLayoutColumn = -1;
-                }
-
-                // construct the override dictionary
-                foreach (string sKey in listColumnNames)
-                {
-                    if (sKey.StartsWith(CardMakerConstants.OVERRIDE_COLUMN))
-                    {
-                        string[] arraySplit = sKey.Split(new char[] { ':' });
-                        if (3 == arraySplit.Length)
-                        {
-                            string sElementName = arraySplit[1].Trim();
-                            string sElementItemOverride = arraySplit[2].Trim();
-                            if (!dictionaryElementOverrides.ContainsKey(sElementName))
-                            {
-                                dictionaryElementOverrides.Add(sElementName, new Dictionary<string, int>());
-                            }
-                            Dictionary<string, int> dictionaryOverrides = dictionaryElementOverrides[sElementName];
-                            if (dictionaryOverrides.ContainsKey(sElementItemOverride))
-                            {
-                                m_zReporterProxy.AddIssue("Duplicate override found: {0}".FormatString(sElementItemOverride));
-                            }
-                            dictionaryOverrides[sElementItemOverride] = dictionaryColumnNames[sKey];
-                        }
-                    }
                 }
 
                 // remove the columns
@@ -317,7 +292,7 @@ namespace CardMaker.Card
                     }
                     for (var nSubRow = 0; nSubRow < nNumber; nSubRow++)
                     {
-                        m_zDeck.ValidLines.Add(new DeckLine(nSubRow, zReferenceLine));
+                        m_zDeck.ValidLines.Add(new DeckLine(nSubRow, zReferenceLine, listColumnNames, m_zReporterProxy));
                     }
                 }
             }
@@ -340,11 +315,11 @@ namespace CardMaker.Card
                             {
                                 arrayDefaultLine.Add(string.Empty);
                             }
-                            m_zDeck.ValidLines.Add(new DeckLine(ReferenceLine.CreateDefaultInternalReferenceLine(arrayDefaultLine)));
+                            m_zDeck.ValidLines.Add(new DeckLine(0, ReferenceLine.CreateDefaultInternalReferenceLine(arrayDefaultLine), listColumnNames, m_zReporterProxy));
                         }
                         else // no columns just create an empty row
                         {
-                            m_zDeck.ValidLines.Add(new DeckLine(ReferenceLine.CreateDefaultInternalReferenceLine(new List<string>())));
+                            m_zDeck.ValidLines.Add(new DeckLine(0, ReferenceLine.CreateDefaultInternalReferenceLine(new List<string>()), new List<string>(), m_zReporterProxy));
                         }
                     }
                     if (bHasReferences)
@@ -391,7 +366,7 @@ namespace CardMaker.Card
                 }
             }
 
-            m_zDeck.Translator = m_zDeck.TranslatorFactory.GetTranslator(dictionaryColumnNames, dictionaryDefines, dictionaryElementOverrides, listColumnNames);
+            m_zDeck.Translator = m_zDeck.TranslatorFactory.GetTranslator(dictionaryColumnNames, dictionaryDefines, listColumnNames);
 
 #if MONO_BUILD
             Thread.Sleep(100);

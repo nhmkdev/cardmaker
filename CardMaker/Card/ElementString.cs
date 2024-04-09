@@ -43,6 +43,7 @@ namespace CardMaker.Card
         public string String { get; set; }
         public bool DrawElement { get; set; }
         public bool DrawCard { get; set; }
+        // collection of overrides provided by the element variable
         public Dictionary<string, string> OverrideFieldToValueDictionary { get; set; }
     }
 }

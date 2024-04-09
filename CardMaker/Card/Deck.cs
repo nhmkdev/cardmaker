@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 using CardMaker.Card.FormattedText;
 using CardMaker.Card.Translation;
@@ -41,7 +42,7 @@ namespace CardMaker.Card
     {
         public const string DEFINES_DATA_SUFFIX = "_defines";
 
-        private List<OverrideLine> OverrideLines { get; set; }
+        private readonly ReferenceTranslationOverride m_zReferenceTranslationOverride = new ReferenceTranslationOverride();
 
         protected int m_nCardIndex = -1;
         protected int m_nCardPrintIndex;
@@ -55,7 +56,6 @@ namespace CardMaker.Card
         public List<DeckLine> ValidLines { get; }
 
         public Dictionary<string, string> Defines => Translator.DictionaryDefines;
-        public Dictionary<string, int> DictionaryColumnNameToIndex => Translator.DictionaryColumnNameToIndex;
 
         public bool EmptyReference { get; set; }
 
@@ -76,6 +76,7 @@ namespace CardMaker.Card
             }
         }
 
+#warning TODO: investigate the complete removal of the CardPrintIndex (may no longer be required)
         // NOTE - the CardPrintIndex is critical to printing as the value is allowed to equal ValidLines.Count unlike CardIndex (necessary for layout transition etc.)
         public int CardPrintIndex
         {
@@ -138,7 +139,7 @@ namespace CardMaker.Card
 
         public ProjectLayoutElement GetOverrideElement(ProjectLayoutElement zElement, DeckLine zDeckLine, bool bExport)
         {
-            return Translator.GetOverrideElement(this, zElement, bExport ? m_nCardPrintIndex : m_nCardIndex, zDeckLine.LineColumns, zDeckLine);
+            return Translator.GetOverrideElement(this, zElement, bExport ? m_nCardPrintIndex : m_nCardIndex, zDeckLine.ElementToOverrideFieldsToValues, zDeckLine);
         }
 
         public ProjectLayoutElement GetVariableOverrideElement(ProjectLayoutElement zElement, Dictionary<string, string> dictionaryOverrideFieldToValue)
@@ -146,35 +147,27 @@ namespace CardMaker.Card
             return Translator.GetVariableOverrideElement(zElement, dictionaryOverrideFieldToValue);
         }
 
-        public bool GetColumnValue(string sColumn, Dictionary<string, int> dictionaryColumnNameToIndex,
-            IReadOnlyList<string> listLineColumns, out string sValue)
+        public bool GetDefineValue(string sDefine, Dictionary<string, string> dictionaryDefineToValue, out string sValue)
         {
-            if (OverrideLines != null)
-            {
-                foreach (var zLine in OverrideLines)
-                {
-                    if (TryGetColumnValue(zLine.DictionaryColumnNameToIndex, zLine.LineColumns, sColumn, out sValue))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            if (TryGetColumnValue(dictionaryColumnNameToIndex, listLineColumns, sColumn, out sValue))
-            {
-                return true;
-            }
-
-            sValue = string.Empty;
-            return false;
+            return GetDictionaryValue(sDefine,
+                m_zReferenceTranslationOverride.DefinesToValues,
+                dictionaryDefineToValue,
+                out sValue);
         }
 
-        private static bool TryGetColumnValue(Dictionary<string, int> dictionaryColumnNameToIndex,
-            IReadOnlyList<string> listLineColumns, string sColumn, out string sValue)
+        public bool GetColumnValue(string sColumn, Dictionary<string, string> dictionaryColumnToValue, out string sValue)
         {
-            if (dictionaryColumnNameToIndex.TryGetValue(sColumn, out var nIdx))
+            return GetDictionaryValue(sColumn,
+                m_zReferenceTranslationOverride.ColumnsToValues,
+                dictionaryColumnToValue,
+                out sValue);
+        }
+
+        private bool GetDictionaryValue(string sKey, Dictionary<string, string> dictionaryPrimary,
+            Dictionary<string, string> dictionarySecondary, out string sValue)
+        {
+            if (dictionaryPrimary.TryGetValue(sKey, out sValue) || dictionarySecondary.TryGetValue(sKey, out sValue))
             {
-                sValue = nIdx >= listLineColumns.Count ? string.Empty : (listLineColumns[nIdx] ?? "").Trim();
                 return true;
             }
 
@@ -209,10 +202,10 @@ namespace CardMaker.Card
 
             if (-1 != m_nCardIndex)
             {
-                var listLines = CurrentLine.LineColumns;
-                if (listLines.Count > 0)
+                var listColumns = CurrentLine.ReferenceLine.Entries;
+                if (listColumns.Count > 0)
                 {
-                    listView.Items.Add(new ListViewItem(listLines.GetRange(1, listLines.Count - 1).ToArray()));
+                    listView.Items.Add(new ListViewItem(listColumns.GetRange(1, listColumns.Count - 1).ToArray()));
                 }
             }
         }
@@ -302,29 +295,51 @@ namespace CardMaker.Card
 
         #endregion
 
-        #region Line Overrides (SubLayout support)
-
-        public void AddOverrideLine(Dictionary<string, int> dictionaryColumnNameToIndex, List<string> lineColumns)
+        public void ApplySubLayoutOverrides(Dictionary<string, string> dictionaryDefinesToValues,
+            Dictionary<string, string> dictionaryColumnsToValues, Deck zParentDeck)
         {
-            if (OverrideLines == null)
-            {
-                OverrideLines = new List<OverrideLine>();
-            }
+            // layer in the parent overrides (this should be the first call so all should be applied)
+            AppendDictionaryWithNewKeys(
+                zParentDeck.m_zReferenceTranslationOverride.DefinesToValues,
+                m_zReferenceTranslationOverride.DefinesToValues);
+            AppendDictionaryWithNewKeys(
+                zParentDeck.m_zReferenceTranslationOverride.ColumnsToValues,
+                m_zReferenceTranslationOverride.ColumnsToValues);
 
-            OverrideLines.Add(new OverrideLine(dictionaryColumnNameToIndex, lineColumns));
+            // layer in the parent current line overrides
+            AppendDictionaryWithNewKeys(
+                dictionaryDefinesToValues,
+                m_zReferenceTranslationOverride.DefinesToValues);
+            AppendDictionaryWithNewKeys(
+                dictionaryColumnsToValues,
+                m_zReferenceTranslationOverride.ColumnsToValues);
+
         }
 
-        class OverrideLine
+        private static void AppendDictionaryWithNewKeys(Dictionary<string, string> dictionarySource,
+            Dictionary<string, string> dictionaryDestination)
         {
-            public Dictionary<string, int> DictionaryColumnNameToIndex { get; }
-            public List<string> LineColumns { get; }
-            public OverrideLine(Dictionary<string, int> dictionaryColumnNameToIndex, List<string> lineColumns)
+            dictionarySource.ToList().ForEach(
+                kvp =>
+                {
+                    if (!dictionaryDestination.ContainsKey(kvp.Key))
+                    {
+                        dictionaryDestination[kvp.Key] = kvp.Value;
+                    }
+                });
+        }
+
+        class ReferenceTranslationOverride
+        {
+            public Dictionary<string, string> DefinesToValues { get; private set; }
+            public Dictionary<string, string> ColumnsToValues { get; private set; }
+
+            public ReferenceTranslationOverride()
             {
-                DictionaryColumnNameToIndex = dictionaryColumnNameToIndex;
-                LineColumns = lineColumns;
+                DefinesToValues = new Dictionary<string, string>();
+                ColumnsToValues = new Dictionary<string, string>();
             }
         }
 
-        #endregion
     }
 }

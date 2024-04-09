@@ -77,7 +77,8 @@ namespace CardMaker.Card.Export
                 });
         }
 
-        protected Deck CurrentDeck => CardRenderer.CurrentDeck;
+#warning reconsider how this is accessed via public (probably should have some methods to apply things)
+        public Deck CurrentDeck => CardRenderer.CurrentDeck;
 
         ~CardExportBase()
         {

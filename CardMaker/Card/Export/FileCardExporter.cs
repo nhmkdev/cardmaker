@@ -131,7 +131,7 @@ namespace CardMaker.Card.Export
                         foreach (var nSubIdx in listSubLayouts)
                         {
                             var zSubLayoutExporter = new FileCardExporter(nSubIdx, nSubIdx, m_sExportFolder, null, -1, m_eImageFormat);
-                            zSubLayoutExporter.CurrentDeck.AddOverrideLine(CurrentDeck.DictionaryColumnNameToIndex, CurrentDeck.CurrentPrintLine.LineColumns);
+                            zSubLayoutExporter.CurrentDeck.ApplySubLayoutOverrides(CurrentDeck.Defines, CurrentDeck.CurrentPrintLine.ColumnsToValues, CurrentDeck);
                             zSubLayoutExporter.ProgressReporter = new LogOnlyProgressReporter();
                             zSubLayoutExporter.ExportThread();
                         }

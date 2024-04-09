@@ -84,10 +84,8 @@ namespace CardMaker.Card.Translation
 
         public InceptTranslator(Dictionary<string, int> dictionaryColumnNameToIndex,
             Dictionary<string, string> dictionaryDefines,
-            Dictionary<string, Dictionary<string, int>> dictionaryElementToFieldColumnOverrides,
             List<string> listColumnNames)
-            : base(dictionaryColumnNameToIndex, dictionaryDefines, dictionaryElementToFieldColumnOverrides,
-                listColumnNames)
+            : base(dictionaryColumnNameToIndex, dictionaryDefines, listColumnNames)
         {
 
         }
@@ -179,12 +177,12 @@ namespace CardMaker.Card.Translation
                 {"cardindex", (zTranslationContext) =>  (zTranslationContext.DeckLine.RowSubIndex + 1).ToString()},
                 {"cardcount", (zTranslationContext) =>  zTranslationContext.Deck.CardCount.ToString() },
                 {"elementname", (zTranslationContext) => zTranslationContext.Element.name },
-                {"refname", (zTranslationContext) => zTranslationContext.DeckLine.Reference == null
+                {"refname", (zTranslationContext) => zTranslationContext.DeckLine.ReferenceLine == null
                     ? "No reference info."
-                    : zTranslationContext.DeckLine.Reference.Source },
-                {"refline", (zTranslationContext) => zTranslationContext.DeckLine.Reference == null
+                    : zTranslationContext.DeckLine.ReferenceLine.Source },
+                {"refline", (zTranslationContext) => zTranslationContext.DeckLine.ReferenceLine == null
                     ? "No reference info."
-                    : zTranslationContext.DeckLine.Reference.LineNumber.ToString() },
+                    : zTranslationContext.DeckLine.ReferenceLine.LineNumber.ToString() },
                 {"layoutname", (zTranslationContext) => zTranslationContext.Deck.CardLayout.Name },
             };
 
@@ -229,13 +227,15 @@ namespace CardMaker.Card.Translation
 
             sKey = sKey.ToLower();
 
-            if (zTranslationContext.TranslatorBase.DictionaryDefines.TryGetValue(sKey, out sNamedValue))
+            if (zTranslationContext.Deck.GetDefineValue(
+                    sKey, 
+                    zTranslationContext.TranslatorBase.DictionaryDefines, 
+                    out sNamedValue))
             {
             }
             else if(zTranslationContext.Deck.GetColumnValue(
-                        sKey, 
-                        zTranslationContext.TranslatorBase.DictionaryColumnNameToIndex, 
-                        zTranslationContext.DeckLine.LineColumns, 
+                        sKey,
+                        zTranslationContext.DeckLine.ColumnsToValues, 
                         out sNamedValue))
             {
             }
