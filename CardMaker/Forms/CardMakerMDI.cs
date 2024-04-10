@@ -760,6 +760,7 @@ namespace CardMaker.Forms
             const string ORIENTATION = "orientation";
             const string OUTPUT_FILE = "output_file";
             const string OPEN_ON_EXPORT = "open_on_export";
+            const string EXPORT_INDICES = "export_indices";
 
             var nStartLayoutIdx = 0;
             var nEndLayoutIdx = ProjectManager.Instance.LoadedProject.Layout.Length;
@@ -777,6 +778,7 @@ namespace CardMaker.Forms
                 }
                 nStartLayoutIdx = nIdx;
                 nEndLayoutIdx = nIdx + 1;
+                zQuery.AddTextBox("Export Indices", string.Empty, false, EXPORT_INDICES);
                 if (!string.IsNullOrWhiteSpace(zLayout.exportNameFormat))
                 {
                     // add option for export name on last export path
@@ -823,6 +825,7 @@ namespace CardMaker.Forms
                 },
                 m_nPdfExportLastOrientationIndex,
                 ORIENTATION);
+
             zQuery.AddFileBrowseComboBox("Output File", listDefaultFileOptions.ToArray(), "PDF files (*.pdf)|*.pdf|All files (*.*)|*.*", OUTPUT_FILE);
             zQuery.AddCheckBox("Open PDF on Export", m_bPdfExportLastOpen, OPEN_ON_EXPORT);
 
@@ -835,12 +838,32 @@ namespace CardMaker.Forms
             m_bPdfExportLastOpen = zQuery.GetBool(OPEN_ON_EXPORT);
             m_nPdfExportLastOrientationIndex = zQuery.GetIndex(ORIENTATION);
 
+            int[] arrayExportCardIndices = null;
+            if (!bExportAllLayouts)
+            {
+                var zCardIndicesResult = ExportUtil.GetCardIndices(zQuery.GetString(EXPORT_INDICES));
+                if (zCardIndicesResult != null)
+                {
+                    if (!string.IsNullOrWhiteSpace(zCardIndicesResult.Item1))
+                    {
+                        FormUtils.ShowErrorMessage("Unable to determine export indices: " + zCardIndicesResult.Item1);
+                        return;
+                    }
+
+                    arrayExportCardIndices = zCardIndicesResult.Item2;
+                }
+            }
+
+
             if (!m_sPdfExportLastFile.EndsWith(".pdf", StringComparison.CurrentCultureIgnoreCase))
             {
                 m_sPdfExportLastFile += ".pdf";
             }
 
-            var zFileCardExporter = new PdfSharpExporter(nStartLayoutIdx, nEndLayoutIdx, m_sPdfExportLastFile, zQuery.GetString(ORIENTATION));
+            var zFileCardExporter = new PdfSharpExporter(nStartLayoutIdx, nEndLayoutIdx, m_sPdfExportLastFile, zQuery.GetString(ORIENTATION))
+            {
+                ExportCardIndices = arrayExportCardIndices,
+            };
             var zWait = CardMakerInstance.ProgressReporterFactory.CreateReporter(
                 "Export",
                 new string[] { ProgressName.LAYOUT, ProgressName.REFERENCE_DATA, ProgressName.CARD },

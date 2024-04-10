@@ -48,6 +48,7 @@ namespace CardMaker.Card.Export.Pdf
         private PdfPage m_zCurrentPage;
         private XGraphics m_zPageGfx;
         private readonly string m_sExportFile;
+        public int[] ExportCardIndices { get; set; }
 
         private readonly PageOrientation m_ePageOrientation = PageOrientation.Portrait;
 
@@ -177,7 +178,7 @@ namespace CardMaker.Card.Export.Pdf
                 var fOriginalYDpi = zBuffer.VerticalResolution;
 #endif
 
-                foreach (var nCardIdx in GetExportIndices())
+                foreach (var nCardIdx in GetExportIndices(ExportCardIndices))
                 {
                     CurrentDeck.CardPrintIndex = nCardIdx;
 
@@ -254,34 +255,30 @@ namespace CardMaker.Card.Export.Pdf
         /// Gets the indices to export (order may vary depending on the context)
         /// </summary>
         /// <returns>List of indices to export</returns>
-        private IEnumerable<int> GetExportIndices()
+        private IEnumerable<int> GetExportIndices(int[] arrayOverrideIndices)
         {
-            var listExportIndices = new List<int>();
             var nItemsThisRow = m_zExportData.GetItemsPerRow(0);
+
+            var arrayCardIndicies = GetCardIndicesArray(CurrentDeck, arrayOverrideIndices).ToList();
 
             // if exporting layouts as backs adjust the sequence for each row
             if (CurrentDeck.CardLayout.exportPDFAsPageBack && CardMakerSettings.PrintAutoHorizontalCenter)
             {
-                for (var nCardIdx = 0; nCardIdx < CurrentDeck.CardCount; nCardIdx += nItemsThisRow)
+                var listExportIndices = new List<int>();
+                for (var nCardIdx = 0; nCardIdx < arrayCardIndicies.Count; nCardIdx += nItemsThisRow)
                 {
                     // juggle the sequence a bit to support printed and glued together (or more risky -- double sided)
                     for (var nSubIdx = (nCardIdx + nItemsThisRow) - 1; nSubIdx >= nCardIdx; nSubIdx--)
                     {
-                        if (nSubIdx < CurrentDeck.CardCount)
+                        if (nSubIdx < arrayCardIndicies.Count)
                         {
                             listExportIndices.Add(nSubIdx);
                         }
                     }
                 }
+                return listExportIndices;
             }
-            else
-            {
-                for (var nCardIdx = 0; nCardIdx < CurrentDeck.CardCount; nCardIdx++)
-                {
-                    listExportIndices.Add(nCardIdx);
-                }
-            }
-            return listExportIndices;
+            return arrayCardIndicies;
         }
 
         /// <summary>

@@ -170,5 +170,23 @@ namespace CardMaker.Card.Export
                     break;
             }
         }
+
+        /// <summary>
+        /// Gets the array of indices to export
+        /// </summary>
+        /// <param name="zDeck">The deck to use if no indices are specified</param>
+        /// <param name="arrayExportCardIndices">The array of desired indices</param>
+        /// <returns>Array of card indices to export (validated)</returns>
+        protected int[] GetCardIndicesArray(Deck zDeck, int[] arrayExportCardIndices)
+        {
+            if (arrayExportCardIndices != null)
+            {
+                return arrayExportCardIndices.Where(i => i < zDeck.CardCount && i >= 0).ToArray();
+            }
+            else
+            {
+                return Enumerable.Range(0, zDeck.CardCount).ToArray();
+            }
+        }
     }
 }

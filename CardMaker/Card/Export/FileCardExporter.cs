@@ -111,7 +111,7 @@ namespace CardMaker.Card.Export
                 UpdateBufferBitmap(exportContainerWidth, exportContainerHeight);
                 // The graphics must be initialized BEFORE the resolution of the bitmap is set (graphics will be the same DPI as the application/card)
                 var zContainerGraphics = Graphics.FromImage(m_zExportCardBuffer);
-                var arrayCardIndices = GetCardIndicesArray(CurrentDeck);
+                var arrayCardIndices = GetCardIndicesArray(CurrentDeck, ExportCardIndices);
                 for(var nCardArrayIdx = 0; nCardArrayIdx < arrayCardIndices.Length; nCardArrayIdx++)
                 {
                     int nCardId;
@@ -234,23 +234,6 @@ namespace CardMaker.Card.Export
 
             ProgressReporter.ThreadSuccess = true;
             ProgressReporter.Shutdown();
-        }
-
-        /// <summary>
-        /// Gets the array of indices to export
-        /// </summary>
-        /// <param name="zDeck">The deck to use if no indices are specified</param>
-        /// <returns>Array of card indices to export</returns>
-        private int[] GetCardIndicesArray(Deck zDeck)
-        {
-            if (ExportCardIndices != null)
-            {
-                return ExportCardIndices.Where(i => i < zDeck.CardCount && i >= 0).ToArray();
-            }
-            else
-            {
-                return Enumerable.Range(0, zDeck.CardCount).ToArray();
-            }
         }
 
         /// <summary>
