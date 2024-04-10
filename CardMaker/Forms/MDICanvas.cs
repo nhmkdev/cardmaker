@@ -144,7 +144,8 @@ namespace CardMaker.Forms
             LayoutManager.Instance.DeckIndexChanged += DeckIndex_Changed;
             ElementManager.Instance.ElementSelected += Element_Selected;
             ProjectManager.Instance.ProjectOpened += Project_Opened;
-            m_zCardCanvas.OnCardStatusChanged += CardCanvas_OnCardStatusChanged;
+#warning if this is enabled the canvas input gets messed up
+            //m_zCardCanvas.OnCardStatusChanged += CardCanvas_OnCardStatusChanged;
 
             verticalCenterButton.Image = Properties.Resources.VerticalAlign.ToBitmap();
             customVerticalAlignButton.Image = Properties.Resources.VerticalCustomAlign.ToBitmap();
