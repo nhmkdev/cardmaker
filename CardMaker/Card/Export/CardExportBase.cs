@@ -22,8 +22,6 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -34,6 +32,7 @@ using CardMaker.XML;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 #endif
+using Support.IO;
 using Support.Progress;
 using Support.UI;
 
@@ -44,7 +43,8 @@ namespace CardMaker.Card.Export
         protected Bitmap m_zExportCardBuffer;
         protected int[] ExportLayoutIndices { get; private set; }
         protected CardRenderer CardRenderer { get; }
-        
+        protected SubLayoutExportContext SubLayoutExportContext { get; set; }
+
         public IProgressReporter ProgressReporter { get; set; }
 
         protected CardExportBase(int nLayoutStartIndex, int nLayoutEndIndex) : this(Enumerable.Range(nLayoutStartIndex, nLayoutEndIndex - nLayoutStartIndex).ToArray())
@@ -187,6 +187,21 @@ namespace CardMaker.Card.Export
             {
                 return Enumerable.Range(0, zDeck.CardCount).ToArray();
             }
+        }
+
+        protected bool CreateUpdatedSubLayoutExportContext(SubLayoutExportDefinition zSubLayoutExportDefinition, out SubLayoutExportContext zSubLayoutExportContext)
+        {
+            zSubLayoutExportContext = null == SubLayoutExportContext
+                ? new SubLayoutExportContext(CurrentDeck.CardLayout.Name)
+                : new SubLayoutExportContext(SubLayoutExportContext, CurrentDeck.CardLayout.Name);
+
+            if (zSubLayoutExportContext.LayoutNames.Contains(zSubLayoutExportDefinition.LayoutName))
+            {
+                zSubLayoutExportContext = null;
+                return false;
+            }
+
+            return true;
         }
     }
 }

@@ -68,6 +68,9 @@ namespace CardMaker.Card.Export
             var progressLayoutIdx = ProgressReporter.GetProgressIndex(ProgressName.LAYOUT);
             var progressCardIdx = ProgressReporter.GetProgressIndex(ProgressName.CARD);
 
+#warning this other exporters will need this
+            CurrentDeck.SubLayoutExportContext = SubLayoutExportContext;
+
             // Exports may put multiple cards into a single exported image (referred to as a container below)
 
             ProgressReporter.ProgressReset(progressLayoutIdx, 0, ExportLayoutIndices.Length, 0);
@@ -125,11 +128,22 @@ namespace CardMaker.Card.Export
                         // HACK - the printcard index is 0 based but all other uses of nCardId are 1 based (so ++ it!)
                         CurrentDeck.CardPrintIndex = nCardId++;
 
-                        // loop through SubLayouts and export them
-                        foreach (var zSubLayoutContext in SubLayoutExportContext.CreateSubLayoutContexts(CurrentDeck, ProgressReporter))
+#warning If this code is nearly the same in all the exporters move it up to the base in a central method
+                        // loop through SubLayouts and export them (based on current index)
+                        foreach (var zSubLayoutExportDefinition in SubLayoutExportDefinition.CreateSubLayoutExportDefinitions(CurrentDeck, ProgressReporter))
                         {
-                            var zSubLayoutExporter = new FileCardExporter(zSubLayoutContext.LayoutIndex, zSubLayoutContext.LayoutIndex, m_sExportFolder, null, -1, m_eImageFormat);
-                            zSubLayoutExporter.CurrentDeck.ApplySubLayoutDefinesOverrides(zSubLayoutContext.DefineOverrides);
+                            if (!CreateUpdatedSubLayoutExportContext(zSubLayoutExportDefinition, out var zNewSubLayoutExportContext))
+                            {
+                                ProgressReporter.AddIssue(
+                                    $"SubLayout export cycle detected with layout {CurrentDeck.CardLayout.Name} -> {zSubLayoutExportDefinition.LayoutName}");
+                                continue;
+                            }
+                            var zSubLayoutExporter = new FileCardExporter(zSubLayoutExportDefinition.LayoutIndex,
+                                zSubLayoutExportDefinition.LayoutIndex, m_sExportFolder, null, -1, m_eImageFormat)
+                            {
+                                SubLayoutExportContext = zNewSubLayoutExportContext
+                            };
+                            zSubLayoutExporter.CurrentDeck.ApplySubLayoutDefinesOverrides(zSubLayoutExportDefinition.DefineOverrides);
                             zSubLayoutExporter.CurrentDeck.ApplySubLayoutOverrides(CurrentDeck.Defines, CurrentDeck.CurrentPrintLine.ColumnsToValues, CurrentDeck);
                             zSubLayoutExporter.ProgressReporter = new LogOnlyProgressReporter();
                             zSubLayoutExporter.ExportThread();

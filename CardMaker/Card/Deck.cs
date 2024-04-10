@@ -25,6 +25,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using CardMaker.Card.Export;
 using CardMaker.Card.FormattedText;
 using CardMaker.Card.Translation;
 using CardMaker.XML;
@@ -56,6 +57,8 @@ namespace CardMaker.Card
         public List<DeckLine> ValidLines { get; }
 
         public Dictionary<string, string> Defines => Translator.DictionaryDefines;
+
+        public SubLayoutExportContext SubLayoutExportContext { get; set; }
 
         public bool EmptyReference { get; set; }
 

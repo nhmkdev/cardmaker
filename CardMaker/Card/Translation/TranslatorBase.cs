@@ -45,7 +45,6 @@ namespace CardMaker.Card.Translation
         // spreadsheet based overrides
         public Dictionary<string, int> DictionaryColumnNameToIndex { get; private set; }
         public Dictionary<string, string> DictionaryDefines { get; private set; }
-        protected Dictionary<string, Dictionary<string, int>> DictionaryElementToFieldColumnOverrides { get; }
         public List<string> ListColumnNames { get; private set; }
 
         protected readonly Dictionary<string, ElementString> m_dictionaryElementStringCache = new Dictionary<string, ElementString>();

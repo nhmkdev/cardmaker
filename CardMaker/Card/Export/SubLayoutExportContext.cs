@@ -22,74 +22,28 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using CardMaker.Events.Managers;
-using Support.Progress;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using CardMaker.Data;
 
 namespace CardMaker.Card.Export
 {
     public class SubLayoutExportContext
     {
-        public int LayoutIndex { get; private set; }
-        public Dictionary<string, string> DefineOverrides { get; private set; }
+        public List<string> LayoutNames { get; private set; }
 
+        public string RootLayoutName => LayoutNames[0];
+        public string ParentLayoutName => LayoutNames[LayoutNames.Count - 1];
 
-        public SubLayoutExportContext(int nLayoutIndex, Dictionary<string, string> dictionaryDefineOverrides)
+        public SubLayoutExportContext(string sLayout)
         {
-            LayoutIndex = nLayoutIndex;
-            DefineOverrides = dictionaryDefineOverrides;
+            LayoutNames = new List<string>();
+            LayoutNames.Add(sLayout);
         }
 
-        public static List<SubLayoutExportContext> CreateSubLayoutContexts(Deck zDeck, IProgressReporter zProgressReporter)
+        public SubLayoutExportContext(SubLayoutExportContext zExistingContext, string sLayout)
         {
-            var listSubLayoutContexts = new List<SubLayoutExportContext>();
-
-            var nIdx = 0;
-            var dictionaryLayoutNameToLayout =
-                ProjectManager.Instance.LoadedProject.Layout.ToDictionary(layout => layout.Name.ToUpper(), layout => nIdx++);
-            foreach (var zElement in zDeck.CardLayout.Element.Where(e => e.type == ElementType.SubLayout.ToString()))
-            {
-                var dictionryDefineOverrides = new Dictionary<string, string>();
-#warning translation is based on current line and forced print (does that matter?)
-                var zElementString = zDeck.TranslateString(zElement.variable, zDeck.CurrentPrintLine, zElement, true, string.Empty, true);
-                var arraySplit = zElementString.String.Split(new string[] { "::" }, StringSplitOptions.None);
-                var sLayoutName = string.Empty;
-                if (arraySplit.Length >= 1)
-                {
-                    sLayoutName = arraySplit[0].Trim();
-                }
-                if (arraySplit.Length >= 2)
-                {
-                    // nothing yet, parameters are future work
-                }
-
-                if (arraySplit.Length >= 3)
-                {
-                    var arrayDefinesSplit = arraySplit[2].Split(new string[] { ";" }, StringSplitOptions.None);
-                    for (var nDefineIdx = 0; nDefineIdx < arrayDefinesSplit.Length; nDefineIdx += 2)
-                    {
-                        var sKey = arrayDefinesSplit[nDefineIdx];
-                        var sValue = nDefineIdx + 1 >= arrayDefinesSplit.Length
-                            ? string.Empty
-                            : arrayDefinesSplit[nDefineIdx + 1];
-                        dictionryDefineOverrides[sKey] = sValue;
-                    }
-                }
-                if (dictionaryLayoutNameToLayout.TryGetValue(sLayoutName.ToUpper(), out var nLayoutIdx))
-                {
-                    listSubLayoutContexts.Add(new SubLayoutExportContext(nLayoutIdx, dictionryDefineOverrides));
-                }
-                else
-                {
-                    zProgressReporter.AddIssue(
-                        $"Invalid layout specified {zElement.variable} in element {zElement.name}");
-                }
-            }
-
-            return listSubLayoutContexts;
+            LayoutNames = zExistingContext.LayoutNames.ToList();
+            LayoutNames.Add(sLayout);
         }
     }
 }

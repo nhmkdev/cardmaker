@@ -34,6 +34,7 @@ using PdfSharp;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using Support.IO;
+using Support.Progress;
 using Support.UI;
 
 namespace CardMaker.Card.Export.Pdf
@@ -177,10 +178,22 @@ namespace CardMaker.Card.Export.Pdf
                 var fOriginalXDpi = zBuffer.HorizontalResolution;
                 var fOriginalYDpi = zBuffer.VerticalResolution;
 #endif
+                var listSubLayoutContexts = SubLayoutExportDefinition.CreateSubLayoutExportDefinitions(CurrentDeck, ProgressReporter);
 
                 foreach (var nCardIdx in GetExportIndices(ExportCardIndices))
                 {
                     CurrentDeck.CardPrintIndex = nCardIdx;
+
+                    // loop through SubLayouts and export them
+                    foreach (var zSubLayoutContext in listSubLayoutContexts)
+                    {
+#warning this path/format is not great
+                        var zSubLayoutExporter = new FileCardExporter(zSubLayoutContext.LayoutIndex, zSubLayoutContext.LayoutIndex, Path.GetDirectoryName(m_sExportFile), null, -1, FileCardExporterFactory.CardMakerExportImageFormat.Png);
+                        zSubLayoutExporter.CurrentDeck.ApplySubLayoutDefinesOverrides(zSubLayoutContext.DefineOverrides);
+                        zSubLayoutExporter.CurrentDeck.ApplySubLayoutOverrides(CurrentDeck.Defines, CurrentDeck.CurrentPrintLine.ColumnsToValues, CurrentDeck);
+                        zSubLayoutExporter.ProgressReporter = new LogOnlyProgressReporter();
+                        zSubLayoutExporter.ExportThread();
+                    }
 
 #if MONO_BUILD
                     // mono build won't support the optimization so re-create the buffer
