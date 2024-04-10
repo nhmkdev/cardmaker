@@ -103,6 +103,7 @@
     <Compile Include="Card\Export\Pdf\RightAlignPdfRowExporter.cs" />
     <Compile Include="Card\Export\Pdf\CenterAlignPdfRowExporter.cs" />
     <Compile Include="Card\Export\Pdf\PdfRowExporter.cs" />
+    <Compile Include="Card\Export\SubLayoutExportContext.cs" />
     <Compile Include="Card\FontLoader.cs" />
     <Compile Include="Card\FormattedText\Alignment\AlignmentController.cs" />
     <Compile Include="Card\FormattedText\Alignment\HorizontalLeftAlignmentProcessor.cs" />

@@ -129,29 +129,6 @@ namespace CardMaker.Card.Export
         /// </summary>
         public abstract void ExportThread();
 
-        protected List<int> GetSubLayouts()
-        {
-            var listSubLayouts = new List<int>();
-
-            var nIdx = 0;
-            var dictionaryLayoutNameToLayout =
-                ProjectManager.Instance.LoadedProject.Layout.ToDictionary(layout => layout.Name.ToUpper(), layout => nIdx++);
-            foreach(var zElement in CurrentDeck.CardLayout.Element.Where(e => e.type == ElementType.SubLayout.ToString()))
-            {
-                if (dictionaryLayoutNameToLayout.TryGetValue(zElement.variable.ToUpper(), out var nLayoutIdx))
-                {
-                    listSubLayouts.Add(nLayoutIdx);
-                }
-                else
-                {
-                    ProgressReporter.AddIssue(
-                        $"Invalid layout specified {zElement.variable} in element {zElement.name}");
-                }
-            }
-
-            return listSubLayouts;
-        }
-
         public void Save(Bitmap zBmp, string sPath, FileCardExporterFactory.CardMakerExportImageFormat eImageFormat, int nTargetDPI)
         {
             switch (eImageFormat)

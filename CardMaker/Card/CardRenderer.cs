@@ -107,7 +107,7 @@ namespace CardMaker.Card
                     CurrentDeck.CardLayout.height);
             }
 
-            var bExportCard = true;
+            var bContinueCardExportFromTranslation = true;
 
             // All drawing is handled in reverse element order
             if (null != CurrentDeck.CardLayout.Element)
@@ -127,7 +127,7 @@ namespace CardMaker.Card
                         var zElementString = CurrentDeck.TranslateString(zDrawElement.variable, zDeckLine, zDrawElement, bExport);
                         if (!zElementString.DrawCard)
                         {
-                            bExportCard = false;
+                            bContinueCardExportFromTranslation = false;
                             // only stop processing elements on exports
                             if (bExport)
                             {
@@ -173,7 +173,7 @@ namespace CardMaker.Card
             DrawBorder(zGraphics, nX, nY, CurrentDeck.CardLayout.width, CurrentDeck.CardLayout.height, CurrentDeck.CardLayout, bExport);
 
             zGraphics.Transform = matrixOriginal;
-            return bExportCard;
+            return bContinueCardExportFromTranslation;
         }
 
         /// <summary>

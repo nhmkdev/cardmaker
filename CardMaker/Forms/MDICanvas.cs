@@ -144,6 +144,7 @@ namespace CardMaker.Forms
             LayoutManager.Instance.DeckIndexChanged += DeckIndex_Changed;
             ElementManager.Instance.ElementSelected += Element_Selected;
             ProjectManager.Instance.ProjectOpened += Project_Opened;
+            m_zCardCanvas.OnCardStatusChanged += CardCanvas_OnCardStatusChanged;
 
             verticalCenterButton.Image = Properties.Resources.VerticalAlign.ToBitmap();
             customVerticalAlignButton.Image = Properties.Resources.VerticalCustomAlign.ToBitmap();
@@ -302,6 +303,11 @@ namespace CardMaker.Forms
         {
             m_zCardCanvas.Reset(null);
             Redraw();
+        }
+
+        private void CardCanvas_OnCardStatusChanged(object sender, CardCanvas.CardStatusEventArgs args)
+        {
+            UpdateFormText();
         }
 
         #endregion
@@ -1131,7 +1137,7 @@ namespace CardMaker.Forms
                     break;
             }
 
-            if (!m_zCardCanvas.CardExported)
+            if (!m_zCardCanvas.CardExportContinue)
             {
                 zBuilder.Append(" [#NOEXPORT]");
             }

@@ -22,6 +22,9 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+using CardMaker.Events.Args;
+using CardMaker.XML;
+using Support.IO;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -30,14 +33,38 @@ namespace CardMaker.Card
     public class CardCanvas : UserControl
     {
         private readonly CardRenderer m_zCardRenderer;
-
+        public bool CardExportContinue { get; private set; }
         private Deck ActiveDeck => m_zCardRenderer.CurrentDeck;
+        private readonly Size m_zDefaultNoLayoutSize = new Size(320, 80);
 
         public CardRenderer CardRenderer => m_zCardRenderer;
 
-        private readonly Size m_zDefaultNoLayoutSize = new Size(320, 80);
+        /// <summary>
+        /// Fired when a card's status changes during drawing
+        /// </summary>
+        public event CardStatusChanged OnCardStatusChanged;
 
-        public bool CardExported { get; private set; }
+        public delegate void CardStatusChanged(object sender, CardStatusEventArgs args);
+
+        public class CardStatusEventArgs
+        {
+            public bool CardTaggedAsExport { get; private set; }
+
+            public CardStatusEventArgs(bool bCardTaggedAsNoExport)
+            {
+                CardTaggedAsExport = bCardTaggedAsNoExport;
+            }
+        }
+
+        public void FireCardTaggedAsExport(bool bExport)
+        {
+            if (bExport != CardExportContinue)
+            {
+                CardExportContinue = bExport;
+            }
+
+            OnCardStatusChanged?.Invoke(this, new CardStatusEventArgs(CardExportContinue));
+        }
 
         public CardCanvas()
         {
@@ -81,14 +108,15 @@ namespace CardMaker.Card
             {
                 e.Graphics.FillRectangle(Brushes.White, 0, 0, Size.Width, Size.Height);
                 e.Graphics.DrawString("Select a Layout in the Project Window", new Font(DefaultFont.FontFamily, 20), Brushes.Red, new RectangleF(10, 10, Size.Width - 10, Size.Height - 10));
-                CardExported = true;
+                FireCardTaggedAsExport(true);
                 return;
             }
             
             if (-1 != ActiveDeck.CardIndex && ActiveDeck.CardIndex < ActiveDeck.CardCount)
             {
                 e.Graphics.FillRectangle(Brushes.White, 0, 0, Size.Width, Size.Height);
-                CardExported = m_zCardRenderer.DrawCard(0, 0, e.Graphics, ActiveDeck.CurrentLine, false, true);
+                var bContinueWithCardExport = m_zCardRenderer.DrawCard(0, 0, e.Graphics, ActiveDeck.CurrentLine, false, true);
+                FireCardTaggedAsExport(bContinueWithCardExport);
             }
         }
 

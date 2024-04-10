@@ -75,9 +75,10 @@ namespace CardMaker.Card.Export
             CurrentDeck.CardPrintIndex = nCardIdx++;
 
             // loop through SubLayouts and export them
-            foreach (var nSubIdx in GetSubLayouts())
+            foreach (var zSubLayoutContext in SubLayoutExportContext.CreateSubLayoutContexts(CurrentDeck, ProgressReporter))
             {
-                var zSubLayoutExporter = new FileCardExporter(nSubIdx, nSubIdx, m_sExportFolder, null, -1, m_eImageFormat);
+                var zSubLayoutExporter = new FileCardExporter(zSubLayoutContext.LayoutIndex, zSubLayoutContext.LayoutIndex, m_sExportFolder, null, -1, m_eImageFormat);
+                zSubLayoutExporter.CurrentDeck.ApplySubLayoutDefinesOverrides(zSubLayoutContext.DefineOverrides);
                 zSubLayoutExporter.CurrentDeck.ApplySubLayoutOverrides(CurrentDeck.Defines, CurrentDeck.CurrentPrintLine.ColumnsToValues, CurrentDeck);
                 zSubLayoutExporter.ProgressReporter = new LogOnlyProgressReporter();
                 zSubLayoutExporter.ExportThread();

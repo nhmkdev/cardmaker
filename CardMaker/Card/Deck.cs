@@ -113,9 +113,9 @@ namespace CardMaker.Card
             TranslatorFactory = new TranslatorFactory();
         }
 
-        public ElementString TranslateString(string sRawString, DeckLine zDeckLine, ProjectLayoutElement zElement, bool bPrint, string sCacheSuffix = "")
+        public ElementString TranslateString(string sRawString, DeckLine zDeckLine, ProjectLayoutElement zElement, bool bPrint, string sCacheSuffix = "", bool bSkipCache = false)
         {
-            return Translator.TranslateString(this, sRawString, bPrint ? m_nCardPrintIndex : m_nCardIndex, zDeckLine, zElement, sCacheSuffix);
+            return Translator.TranslateString(this, sRawString, bPrint ? m_nCardPrintIndex : m_nCardIndex, zDeckLine, zElement, sCacheSuffix, bSkipCache);
         }
 
         public ElementString GetStringFromTranslationCache(string sKey)
@@ -147,6 +147,7 @@ namespace CardMaker.Card
             return Translator.GetVariableOverrideElement(zElement, dictionaryOverrideFieldToValue);
         }
 
+#warning rename to Try..
         public bool GetDefineValue(string sDefine, Dictionary<string, string> dictionaryDefineToValue, out string sValue)
         {
             return GetDictionaryValue(sDefine,
@@ -155,6 +156,7 @@ namespace CardMaker.Card
                 out sValue);
         }
 
+#warning rename to Try..
         public bool GetColumnValue(string sColumn, Dictionary<string, string> dictionaryColumnToValue, out string sValue)
         {
             return GetDictionaryValue(sColumn,
@@ -163,6 +165,7 @@ namespace CardMaker.Card
                 out sValue);
         }
 
+#warning rename to Try..
         private bool GetDictionaryValue(string sKey, Dictionary<string, string> dictionaryPrimary,
             Dictionary<string, string> dictionarySecondary, out string sValue)
         {
@@ -294,6 +297,13 @@ namespace CardMaker.Card
         }
 
         #endregion
+
+        public void ApplySubLayoutDefinesOverrides(Dictionary<string, string> dictionaryDefinesToValues)
+        {
+            AppendDictionaryWithNewKeys(
+                dictionaryDefinesToValues,
+                m_zReferenceTranslationOverride.DefinesToValues);
+        }
 
         public void ApplySubLayoutOverrides(Dictionary<string, string> dictionaryDefinesToValues,
             Dictionary<string, string> dictionaryColumnsToValues, Deck zParentDeck)

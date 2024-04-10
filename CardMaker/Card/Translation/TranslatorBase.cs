@@ -78,12 +78,12 @@ namespace CardMaker.Card.Translation
             ListColumnNames = listColumnNames;
         }
 
-        public ElementString TranslateString(Deck zDeck, string sRawString, int nCardIndex, DeckLine zDeckLine, ProjectLayoutElement zElement, string sCacheSuffix = "")
+        public ElementString TranslateString(Deck zDeck, string sRawString, int nCardIndex, DeckLine zDeckLine, ProjectLayoutElement zElement, string sCacheSuffix = "", bool bSkipCache = false)
         {
             var sCacheKey = zElement.name + sCacheSuffix;
 
             // pull from translated string cache
-            if (m_dictionaryElementStringCache.TryGetValue(sCacheKey, out var zCached))
+            if (!bSkipCache && m_dictionaryElementStringCache.TryGetValue(sCacheKey, out var zCached))
             {
                 return zCached;
             }
