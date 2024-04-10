@@ -106,8 +106,6 @@ namespace CardMaker.Card.Export
                     (currentCardWidth, currentCardHeight) = (currentCardHeight, currentCardWidth);
                 }
 
-                var listSubLayoutContexts = SubLayoutExportContext.CreateSubLayoutContexts(CurrentDeck, ProgressReporter);
-
                 UpdateBufferBitmap(exportContainerWidth, exportContainerHeight);
                 // The graphics must be initialized BEFORE the resolution of the bitmap is set (graphics will be the same DPI as the application/card)
                 var zContainerGraphics = Graphics.FromImage(m_zExportCardBuffer);
@@ -128,7 +126,7 @@ namespace CardMaker.Card.Export
                         CurrentDeck.CardPrintIndex = nCardId++;
 
                         // loop through SubLayouts and export them
-                        foreach (var zSubLayoutContext in listSubLayoutContexts)
+                        foreach (var zSubLayoutContext in SubLayoutExportContext.CreateSubLayoutContexts(CurrentDeck, ProgressReporter))
                         {
                             var zSubLayoutExporter = new FileCardExporter(zSubLayoutContext.LayoutIndex, zSubLayoutContext.LayoutIndex, m_sExportFolder, null, -1, m_eImageFormat);
                             zSubLayoutExporter.CurrentDeck.ApplySubLayoutDefinesOverrides(zSubLayoutContext.DefineOverrides);
