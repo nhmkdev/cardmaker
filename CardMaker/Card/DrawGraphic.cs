@@ -46,15 +46,14 @@ namespace CardMaker.Card
             {
                 return;
             }
-            sPath = CardPathUtil.getPath(sPath);
-            if (!File.Exists(sPath))
+
+            var zBmp = ImageCache.LoadCustomImageFromCache(sPath, zElement);
+            if (zBmp == null)
             {
                 IssueManager.Instance.FireAddIssueEvent("Image file not found: " + sPath);
                 return;
             }
 
-            var zBmp = ImageCache.LoadCustomImageFromCache(sPath, zElement);
-                
             if (zElement.centerimageonorigin)
             {
                 if (zElement.keeporiginalsize)

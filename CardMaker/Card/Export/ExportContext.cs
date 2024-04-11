@@ -22,25 +22,32 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Collections.Generic;
-using System.Linq;
-
 namespace CardMaker.Card.Export
 {
-    public class SubLayoutExportContext
+    public class ExportContext
     {
-        public List<string> LayoutNames { get; private set; }
-        public SubLayoutExportSettings Settings { get; private set; }
-        public string RootLayoutName => LayoutNames[0];
-        public string ParentLayoutName => LayoutNames[LayoutNames.Count - 1];
+#warning This probably should contain the SubLayoutExportContext (just for organizatoin)
+        private FileCardExporterFactory.CardMakerExportImageFormat m_eExportImageFormat;
+        private bool m_bExportFile = false;
 
-        public SubLayoutExportContext(SubLayoutExportContext zExistingContext, string sLayout, SubLayoutExportSettings zSettings)
+        public ExportContext()
         {
-            LayoutNames = zExistingContext == null 
-                ? new List<string>()
-                : zExistingContext.LayoutNames.ToList();
-            LayoutNames.Add(sLayout);
-            Settings = zSettings;
+            m_bExportFile = false;
+        }
+
+        public ExportContext(FileCardExporterFactory.CardMakerExportImageFormat eExportImageFormat)
+        {
+            m_bExportFile = true;
+            m_eExportImageFormat = eExportImageFormat;
+        }
+
+        public string GetExportImageFormatString()
+        {
+            if (m_bExportFile)
+            {
+                return m_eExportImageFormat.ToString().ToLower();
+            }
+            return string.Empty;
         }
     }
 }

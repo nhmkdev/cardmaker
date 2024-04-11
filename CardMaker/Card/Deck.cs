@@ -60,6 +60,8 @@ namespace CardMaker.Card
 
         public SubLayoutExportContext SubLayoutExportContext { get; set; }
 
+        public ExportContext ExportContext { get; set; }
+
         public bool EmptyReference { get; set; }
 
         public int CardIndex

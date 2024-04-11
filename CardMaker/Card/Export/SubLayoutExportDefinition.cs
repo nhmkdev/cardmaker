@@ -35,19 +35,28 @@ namespace CardMaker.Card.Export
     {
         public int LayoutIndex { get; private set; }
         public string LayoutName { get; private set; }
+        public SubLayoutExportSettings Settings { get; private set; }
         public Dictionary<string, string> DefineOverrides { get; private set; }
 
+        private SubLayoutExportDefinition()
+        {
+        }
 
-        public SubLayoutExportDefinition(int nLayoutIndex, string sLayoutName, Dictionary<string, string> dictionaryDefineOverrides)
+        public SubLayoutExportDefinition(
+            int nLayoutIndex, 
+            string sLayoutName, 
+            Dictionary<string, string> dictionaryDefineOverrides,
+            SubLayoutExportSettings zSettings)
         {
             LayoutIndex = nLayoutIndex;
             LayoutName = sLayoutName;
             DefineOverrides = dictionaryDefineOverrides;
+            Settings = zSettings;
         }
 
         public static List<SubLayoutExportDefinition> CreateSubLayoutExportDefinitions(Deck zDeck, IProgressReporter zProgressReporter)
         {
-            var listSubLayoutContexts = new List<SubLayoutExportDefinition>();
+            var listSubLayoutExportDefinitions = new List<SubLayoutExportDefinition>();
 
             var nIdx = 0;
 #warning optimize this by having it centralized and based on current project state
@@ -55,6 +64,7 @@ namespace CardMaker.Card.Export
                 ProjectManager.Instance.LoadedProject.Layout.ToDictionary(layout => layout.Name.ToUpper(), layout => nIdx++);
             foreach (var zElement in zDeck.CardLayout.Element.Where(e => e.type == ElementType.SubLayout.ToString()))
             {
+                var zSettings = new SubLayoutExportSettings();
                 var dictionaryDefineOverrides = new Dictionary<string, string>();
 #warning translation is based on current line and forced print (does that matter?)
                 var zElementString = zDeck.TranslateString(zElement.variable, zDeck.CurrentPrintLine, zElement, true, string.Empty, true);
@@ -66,12 +76,12 @@ namespace CardMaker.Card.Export
                 }
                 if (arraySplit.Length >= 2)
                 {
-                    // nothing yet, parameters are future work
+                    zSettings.ApplySettings(arraySplit[1].Trim());
                 }
 
                 if (arraySplit.Length >= 3)
                 {
-                    var arrayDefinesSplit = arraySplit[2].Split(new string[] { ";" }, StringSplitOptions.None);
+                    var arrayDefinesSplit = arraySplit[2].Split(new string[] { ";;" }, StringSplitOptions.None);
                     for (var nDefineIdx = 0; nDefineIdx < arrayDefinesSplit.Length; nDefineIdx += 2)
                     {
                         var sKey = arrayDefinesSplit[nDefineIdx];
@@ -83,10 +93,11 @@ namespace CardMaker.Card.Export
                 }
                 if (dictionaryLayoutNameToLayout.TryGetValue(sLayoutName.ToUpper(), out var nLayoutIdx))
                 {
-                    listSubLayoutContexts.Add(new SubLayoutExportDefinition(
+                    listSubLayoutExportDefinitions.Add(new SubLayoutExportDefinition(
                         nLayoutIdx, 
                         ProjectManager.Instance.LoadedProject.Layout[nLayoutIdx].Name, 
-                        dictionaryDefineOverrides));
+                        dictionaryDefineOverrides,
+                        zSettings));
                 }
                 else
                 {
@@ -95,7 +106,7 @@ namespace CardMaker.Card.Export
                 }
             }
 
-            return listSubLayoutContexts;
+            return listSubLayoutExportDefinitions;
         }
     }
 }

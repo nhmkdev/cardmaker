@@ -61,6 +61,7 @@ namespace CardMaker.Card.Export
 
             m_nSkipStitchIndex = nSkipStitchIndex;
             m_eImageFormat = eImageFormat;
+            CurrentDeck.ExportContext = new ExportContext(m_eImageFormat);
         }
 
         public override void ExportThread()
@@ -128,29 +129,10 @@ namespace CardMaker.Card.Export
                         // HACK - the printcard index is 0 based but all other uses of nCardId are 1 based (so ++ it!)
                         CurrentDeck.CardPrintIndex = nCardId++;
 
-#warning If this code is nearly the same in all the exporters move it up to the base in a central method
-                        // loop through SubLayouts and export them (based on current index)
-                        foreach (var zSubLayoutExportDefinition in SubLayoutExportDefinition.CreateSubLayoutExportDefinitions(CurrentDeck, ProgressReporter))
-                        {
-                            if (!CreateUpdatedSubLayoutExportContext(zSubLayoutExportDefinition, out var zNewSubLayoutExportContext))
-                            {
-                                ProgressReporter.AddIssue(
-                                    $"SubLayout export cycle detected with layout {CurrentDeck.CardLayout.Name} -> {zSubLayoutExportDefinition.LayoutName}");
-                                continue;
-                            }
-                            var zSubLayoutExporter = new FileCardExporter(zSubLayoutExportDefinition.LayoutIndex,
-                                zSubLayoutExportDefinition.LayoutIndex, m_sExportFolder, null, -1, m_eImageFormat)
-                            {
-                                SubLayoutExportContext = zNewSubLayoutExportContext
-                            };
-                            zSubLayoutExporter.CurrentDeck.ApplySubLayoutDefinesOverrides(zSubLayoutExportDefinition.DefineOverrides);
-                            zSubLayoutExporter.CurrentDeck.ApplySubLayoutOverrides(CurrentDeck.Defines, CurrentDeck.CurrentPrintLine.ColumnsToValues, CurrentDeck);
-                            zSubLayoutExporter.ProgressReporter = new LogOnlyProgressReporter();
-                            zSubLayoutExporter.ExportThread();
-                        }
+                        ProcessSubLayoutExports(m_sExportFolder);
 
 #warning TODO: optimize this by only creating the bitmap when necessary                        
-                        var bitmapSingleCard = new Bitmap(CurrentDeck.CardLayout.width, CurrentDeck.CardLayout.height);
+                                                var bitmapSingleCard = new Bitmap(CurrentDeck.CardLayout.width, CurrentDeck.CardLayout.height);
                         var zSingleCardGraphics = Graphics.FromImage(bitmapSingleCard);
                         ClearGraphics(zSingleCardGraphics);
                         var bExportCard = CardRenderer.DrawPrintLineToGraphics(zSingleCardGraphics, 0, 0, !CurrentDeck.CardLayout.exportTransparentBackground);

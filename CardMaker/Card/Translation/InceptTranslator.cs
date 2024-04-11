@@ -184,8 +184,17 @@ namespace CardMaker.Card.Translation
                     ? "No reference info."
                     : zTranslationContext.DeckLine.ReferenceLine.LineNumber.ToString() },
                 {"layoutname", (zTranslationContext) => zTranslationContext.Deck.CardLayout.Name },
-                {"rootlayout", (zTranslationContext) =>  zTranslationContext.Deck.SubLayoutExportContext?.RootLayoutName ?? string.Empty },
                 {"parentlayout", (zTranslationContext) =>  zTranslationContext.Deck.SubLayoutExportContext?.ParentLayoutName ?? string.Empty },
+                {"rootlayout", (zTranslationContext) =>  zTranslationContext.Deck.SubLayoutExportContext?.RootLayoutName ?? string.Empty },
+                {"exporting", (zTranslationContext) =>  null == zTranslationContext.Deck.ExportContext 
+                    ? string.Empty
+                    : "1"
+                },
+                {
+                    "exportformat", (zTranslationContext) =>  null == zTranslationContext.Deck.ExportContext
+                    ? string.Empty
+                    : zTranslationContext.Deck.ExportContext.GetExportImageFormatString()
+                },
             };
 
         private static string TranslateCardVariables(Match zMatch, TranslationContext zTranslationContext)

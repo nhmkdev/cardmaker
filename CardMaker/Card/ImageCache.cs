@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using CardMaker.Data;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
@@ -44,19 +45,37 @@ namespace CardMaker.Card
 {
     public static class ImageCache
     {
+        public enum ImageCacheEntryType
+        {
+            File,
+            InMemory,
+            Missing,
+        }
+
+        // NOTE: this entire cache is not thread safe (not critical at this point)
+
+        // If this gets any more complex split it into implementations (in memory, file)
         private class BitmapCacheEntry
         {
             public DateTime LastWriteTimestamp { get; }
             public Bitmap Bitmap { get; }
+            public ImageCacheEntryType EntryType { get; }
+            public HashSet<string> DependentCustomCacheKeys { get; } = new HashSet<string>();
 
-            public BitmapCacheEntry(Bitmap zBitmap, DateTime dtLastWriteTimestamp)
+            public BitmapCacheEntry(Bitmap zBitmap, DateTime dtLastWriteTimestamp, ImageCacheEntryType eEntryType)
             {
                 LastWriteTimestamp = dtLastWriteTimestamp;
                 Bitmap = zBitmap;
+                EntryType = eEntryType;
+            }
+
+            public void AddDependentCustomCacheKey(string sKey)
+            {
+                DependentCustomCacheKeys.Add(sKey);
             }
         }
 
-        private const int IMAGE_CACHE_MAX = 100;
+        private const int IMAGE_CACHE_MAX = 500;
         // cache of plain images (no adjustments)
         private static readonly Dictionary<string, BitmapCacheEntry> s_dictionaryImages = new Dictionary<string, BitmapCacheEntry>();
         // cache of images with in-memory tweaks
@@ -79,18 +98,20 @@ namespace CardMaker.Card
             var sKey = sFile.ToLower() + ":" + zElement.opacity + ":" + nTargetWidth + ":" + nTargetHeight + ProjectLayoutElement.GetElementColorString(colorOverride) + 
                        ":" + eMirrorType;
 
-            if (GetCacheEntry(s_dictionaryCustomImages, sKey, sFile, out var zDestinationBitmap))
+            if (GetCacheEntry(s_dictionaryCustomImages, sKey, sFile, out var zCacheEntry))
             {
-                return zDestinationBitmap;
+                return zCacheEntry.Bitmap;
             }
 
             var zElementType = EnumUtil.GetElementType(zElement.type);
 
-            var zSourceBitmap = LoadImageFromCache(sFile);
-            if (null == zSourceBitmap)
+            var zBaseImageCacheEntry = LoadImageFromCache(sFile);
+            if (null == zBaseImageCacheEntry)
             {
                 return null;
             }
+
+            var zSourceBitmap = zBaseImageCacheEntry.Bitmap;
             // if the desired width/height/opacity match the 'plain' cached copy just return it (or special color handling for certain element types)
             // TODO: make a method for this just to shrink all this logic down
             if (
@@ -146,7 +167,7 @@ namespace CardMaker.Card
             nTargetWidth = nTargetWidth == -1 ? zSourceBitmap.Width : nTargetWidth;
             nTargetHeight = nTargetHeight == -1 ? zSourceBitmap.Height : nTargetHeight;
 
-            zDestinationBitmap = new Bitmap(nTargetWidth, nTargetHeight); // target image
+            var zDestinationBitmap = new Bitmap(nTargetWidth, nTargetHeight); // target image
             var zGraphics = Graphics.FromImage(zDestinationBitmap);
 
             MirrorRender.MirrorElementGraphicTransform(zGraphics, zElement, eMirrorType, nTargetWidth, nTargetHeight);
@@ -154,17 +175,17 @@ namespace CardMaker.Card
             // draw the source image into the destination with the desired opacity
             zGraphics.DrawImage(zSourceBitmap, new Rectangle(0, 0, nTargetWidth, nTargetHeight), 0, 0, zSourceBitmap.Width, zSourceBitmap.Height, GraphicsUnit.Pixel,
                 zImageAttributes);
-            CacheImage(s_dictionaryCustomImages, sKey, sFile, zDestinationBitmap);
-
+            CacheImage(s_dictionaryCustomImages, sKey, sFile, zDestinationBitmap, zBaseImageCacheEntry.EntryType);
+            zBaseImageCacheEntry.AddDependentCustomCacheKey(sKey);
             return zDestinationBitmap;
         }
 
-        private static Bitmap LoadImageFromCache(string sFile)
+        private static BitmapCacheEntry LoadImageFromCache(string sFile)
         {
             var sKey = sFile.ToLower();
-            if (GetCacheEntry(s_dictionaryImages, sKey, sFile, out var zBitmap))
+            if (GetCacheEntry(s_dictionaryImages, sKey, sFile, out var zCacheEntry))
             {
-                return zBitmap;
+                return zCacheEntry;
             }
             
             if (s_dictionaryImages.Count > IMAGE_CACHE_MAX)
@@ -207,40 +228,42 @@ namespace CardMaker.Card
             catch (Exception ex)
             {
                 Logger.AddLogLine("Unable to load image: {0} - {1}".FormatString(sFile, ex.ToString()));
-                // return a purple bitmap to indicate an error
-                zBitmap = new Bitmap(1, 1);
-                Graphics.FromImage(zBitmap).FillRectangle(Brushes.Purple, 0, 0, zBitmap.Width, zBitmap.Height);
-                return zBitmap;
+                return null;
             }
 
-            zBitmap = new Bitmap(zSourceImage.Width, zSourceImage.Height);
+            var zDestinationBitmap = new Bitmap(zSourceImage.Width, zSourceImage.Height);
 
             // copy the contents into the image
-            var zGraphics = Graphics.FromImage(zBitmap);
-            zGraphics.DrawImage(zSourceImage, new Rectangle(0, 0, zBitmap.Width, zBitmap.Height), 0, 0, zBitmap.Width, zBitmap.Height, GraphicsUnit.Pixel);
+            var zGraphics = Graphics.FromImage(zDestinationBitmap);
+            zGraphics.DrawImage(zSourceImage, new Rectangle(0, 0, zDestinationBitmap.Width, zDestinationBitmap.Height), 
+                0, 0, zDestinationBitmap.Width, zDestinationBitmap.Height, GraphicsUnit.Pixel);
 
             // duping the image into a memory copy allows the file to change (not locked by the application)
             zSourceImage.Dispose();
-            CacheImage(s_dictionaryImages, sKey, sFile, zBitmap);
-            return zBitmap;
+            return CacheImage(s_dictionaryImages, sKey, sFile, zDestinationBitmap, ImageCacheEntryType.File);
         }
 
-        private static bool GetCacheEntry(IDictionary<string, BitmapCacheEntry> dictionaryImageCache, string sKey, string sFile, out Bitmap zBitmap)
+        private static bool GetCacheEntry(IDictionary<string, BitmapCacheEntry> dictionaryImageCache, string sKey, string sFile, out BitmapCacheEntry zCacheEntry)
         {
-            zBitmap = null;
-            if (dictionaryImageCache.TryGetValue(sKey, out var zCacheEntry))
+            zCacheEntry = null;
+            if (dictionaryImageCache.TryGetValue(sKey, out zCacheEntry))
             {
+                if (zCacheEntry.EntryType == ImageCacheEntryType.InMemory)
+                {
+                    return true;
+                }
+
                 try
                 {
                     sFile = GetExistingFilePath(sFile);
                     if (File.GetLastWriteTimeUtc(sFile) == zCacheEntry.LastWriteTimestamp)
                     {
-                        zBitmap = zCacheEntry.Bitmap;
                         return true;
                     }
 #if LOG_CACHE_MISSES
                     Logger.AddLogLine($"Image Cache Miss[timestamp]: {sFile}");
 #endif
+                    RemoveCacheEntry(dictionaryImageCache, sKey);
                     return false;
                 }
                 catch (Exception)
@@ -255,18 +278,43 @@ namespace CardMaker.Card
             return false;
         }
 
-        private static void CacheImage(IDictionary<string, BitmapCacheEntry> dictionaryImageCache, string sKey, string sFile, Bitmap zBitmap)
+        public static void AddInMemoryImageToCache(string sFile, Bitmap zBitmap)
         {
-            var sExistingFilePath = GetExistingFilePath(sFile);
-            if (sExistingFilePath == null)
+            var sKey = Path.GetFileNameWithoutExtension(sFile).ToLower();
+            if (s_dictionaryImages.ContainsKey(sKey))
             {
-                // do not cache missing files
-                return;
+                RemoveCacheEntry(s_dictionaryImages, sKey);
+            }
+            ApplyBitmapTags(zBitmap);
+            s_dictionaryImages[sKey] = new BitmapCacheEntry(zBitmap, DateTime.UtcNow, ImageCacheEntryType.InMemory);
+        }
+
+        private static BitmapCacheEntry CacheImage(Dictionary<string, BitmapCacheEntry> dictionaryCache, string sKey, string sFile, Bitmap zBitmap, ImageCacheEntryType eEntryType)
+        {
+            switch (eEntryType)
+            {
+                case ImageCacheEntryType.InMemory:
+                    break;
+                case ImageCacheEntryType.File:
+                    var sExistingFilePath = GetExistingFilePath(sFile);
+                    if (sExistingFilePath == null)
+                    {
+                        // do not cache missing files
+                        return null;
+                    }
+                    break;
+                default:
+                    return null;
             }
 
-            // preserve the aspect ratio on the tag
-            zBitmap.Tag = (float)zBitmap.Width / (float)zBitmap.Height;
-            dictionaryImageCache[sKey] = new BitmapCacheEntry(zBitmap, File.GetLastWriteTimeUtc(sFile));
+            ApplyBitmapTags(zBitmap);
+            var zCacheEntry = new BitmapCacheEntry(zBitmap, File.GetLastWriteTimeUtc(sFile), eEntryType);
+            if (dictionaryCache.ContainsKey(sKey))
+            {
+                RemoveCacheEntry(dictionaryCache, sKey);
+            }
+            dictionaryCache[sKey] = zCacheEntry;
+            return zCacheEntry;
         }
 
         private static string GetExistingFilePath(string sFile)
@@ -283,13 +331,45 @@ namespace CardMaker.Card
             return sFile;
         }
 
-        private static void DumpImagesFromDictionary(Dictionary<string, BitmapCacheEntry> dictionaryImages)
+        private static void RemoveCacheEntry(IDictionary<string, BitmapCacheEntry> dictionaryImages,
+            string sKey)
+        {
+            if (dictionaryImages.TryGetValue(sKey, out var zEntry))
+            {
+                dictionaryImages.Remove(sKey);
+                DisposeEntry(zEntry);
+                foreach (var sDependentKey in zEntry.DependentCustomCacheKeys)
+                {
+                    RemoveCacheEntry(s_dictionaryCustomImages, sDependentKey);
+                }
+            }
+        }
+
+        private static void ApplyBitmapTags(Bitmap zBitmap)
+        {
+            // preserve the aspect ratio on the tag
+            zBitmap.Tag = (float)zBitmap.Width / (float)zBitmap.Height;
+        }
+
+        private static void DumpImagesFromDictionary(IDictionary<string, BitmapCacheEntry> dictionaryImages)
         {
             foreach (var zCacheEntry in dictionaryImages.Values)
             {
-                zCacheEntry.Bitmap.Dispose();
+                DisposeEntry(zCacheEntry);
             }
             dictionaryImages.Clear();
+        }
+
+        private static void DisposeEntry(BitmapCacheEntry zCacheEntry)
+        {
+            try
+            {
+                zCacheEntry.Bitmap.Dispose();
+            }
+            catch (Exception)
+            {
+                // do not care... (how bad is this?)
+            }
         }
     }
 }

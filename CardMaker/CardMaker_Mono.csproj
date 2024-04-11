@@ -94,6 +94,7 @@
     <Compile Include="Card\DrawGraphic.cs" />
     <Compile Include="Card\DrawTextGraphics.cs" />
     <Compile Include="Card\DrawTextTextRenderer.cs" />
+    <Compile Include="Card\Export\ExportContext.cs" />
     <Compile Include="Card\Export\ExportUtil.cs" />
     <Compile Include="Card\Export\FileCardClipboardExporter.cs" />
     <Compile Include="Card\Export\FileCardSingleExporter.cs" />
@@ -105,6 +106,7 @@
     <Compile Include="Card\Export\Pdf\PdfRowExporter.cs" />
     <Compile Include="Card\Export\SubLayoutExportContext.cs" />
     <Compile Include="Card\Export\SubLayoutExportDefinition.cs" />
+    <Compile Include="Card\Export\SubLayoutExportSettings.cs" />
     <Compile Include="Card\FontLoader.cs" />
     <Compile Include="Card\FormattedText\Alignment\AlignmentController.cs" />
     <Compile Include="Card\FormattedText\Alignment\HorizontalLeftAlignmentProcessor.cs" />
