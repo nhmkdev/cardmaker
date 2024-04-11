@@ -144,8 +144,7 @@ namespace CardMaker.Forms
             LayoutManager.Instance.DeckIndexChanged += DeckIndex_Changed;
             ElementManager.Instance.ElementSelected += Element_Selected;
             ProjectManager.Instance.ProjectOpened += Project_Opened;
-#warning if this is enabled the canvas input gets messed up
-            //m_zCardCanvas.OnCardStatusChanged += CardCanvas_OnCardStatusChanged;
+            m_zCardCanvas.OnCardStatusChanged += CardCanvas_OnCardStatusChanged;
 
             verticalCenterButton.Image = Properties.Resources.VerticalAlign.ToBitmap();
             customVerticalAlignButton.Image = Properties.Resources.VerticalCustomAlign.ToBitmap();
@@ -1116,6 +1115,18 @@ namespace CardMaker.Forms
                 return;
             }
             m_eMouseMode = eDestinationMode;
+            switch (m_eMouseMode)
+            {
+                case MouseMode.Move:
+                    TriggerMouseMoveAtMouseLocation();
+                    break;
+                case MouseMode.MoveResize:
+                    TriggerMouseMoveAtMouseLocation();
+                    break;
+                case MouseMode.Rotate:
+                    Cursor = new Cursor(Properties.Resources.RotateCursor.Handle);
+                    break;
+            }
             UpdateFormText();
         }
 
@@ -1126,15 +1137,12 @@ namespace CardMaker.Forms
             {
                 case MouseMode.Move:
                     zBuilder.Append("Canvas [Mode: Move-only]");
-                    TriggerMouseMoveAtMouseLocation();
                     break;
                 case MouseMode.MoveResize:
                     zBuilder.Append("Canvas [Mode: Normal]");
-                    TriggerMouseMoveAtMouseLocation();
                     break;
                 case MouseMode.Rotate:
                     zBuilder.Append("Canvas [Mode: Rotate-only]");
-                    Cursor = new Cursor(Properties.Resources.RotateCursor.Handle);
                     break;
             }
 
