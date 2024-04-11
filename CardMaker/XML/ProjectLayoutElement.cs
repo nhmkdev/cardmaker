@@ -239,9 +239,13 @@ namespace CardMaker.XML
             SetElementColor(TranslateColorString(elementcolor));
             SetElementOutlineColor(TranslateColorString(outlinecolor));
             SetElementBackgroundColor(backgroundcolor == null ? Color.FromArgb(0,0,0,0) : TranslateColorString(backgroundcolor));
-            m_fontText = !string.IsNullOrEmpty(font)
-                ? TranslateFontString(font)
-                : null;
+            Font zNewFont = null;
+            if (!string.IsNullOrEmpty(font))
+            {
+                zNewFont = TranslateFontString(font);
+            }
+            SetElementFont(zNewFont);
+
         }
 
         /// <summary>
@@ -460,6 +464,11 @@ namespace CardMaker.XML
         /// <param name="zFont">The font to pull the settings from</param>
         public void SetElementFont(Font zFont)
         {
+            if (zFont == null)
+            {
+                zFont = FontLoader.DefaultFont;
+            }
+
             font = zFont.Name + ";" + zFont.Size + ";" +
                    (zFont.Bold ? "1" : "0") + ";" +
                    (zFont.Underline ? "1" : "0") + ";" +
