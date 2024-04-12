@@ -85,7 +85,16 @@ namespace CardMaker.Card
             // Custom Graphics Setting
             zGraphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
             zGraphics.SmoothingMode = SmoothingMode.AntiAlias;
-            //zGraphics.SmoothingMode = SmoothingMode.HighQuality;
+
+            if (CardMakerSettings.CompositingQualityGammaCorrected)
+            {
+                zGraphics.CompositingQuality = CompositingQuality.GammaCorrected;
+            }
+
+            if (CardMakerSettings.PixelOffsetModeHighQuality)
+            {
+                zGraphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+            }
 
             var matrixOriginal = zGraphics.Transform;
 

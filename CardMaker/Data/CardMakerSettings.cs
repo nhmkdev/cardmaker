@@ -22,6 +22,7 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+using System.Drawing.Drawing2D;
 using System.Globalization;
 using CardMaker.Events.Managers;
 using Support.IO;
@@ -222,6 +223,18 @@ namespace CardMaker.Data
                 return 0;
             }
             set { s_zIniManager.SetValue(IniSettings.ExportWebPQuality, value.ToString()); }
+        }
+
+        public static bool CompositingQualityGammaCorrected
+        {
+            get { return s_zIniManager.GetValue(IniSettings.CompositingQualityGammaCorrected, bool.FalseString).Equals(bool.TrueString); }
+            set { s_zIniManager.SetValue(IniSettings.CompositingQualityGammaCorrected, value.ToString()); }
+        }
+
+        public static bool PixelOffsetModeHighQuality
+        {
+            get { return s_zIniManager.GetValue(IniSettings.PixelOffsetModeHighQuality, bool.FalseString).Equals(bool.TrueString); }
+            set { s_zIniManager.SetValue(IniSettings.PixelOffsetModeHighQuality, value.ToString()); }
         }
     }
 }

@@ -417,6 +417,11 @@ namespace CardMaker.Forms
             zQuery.AddCheckBox("Enable AutoSave", CardMakerSettings.AutoSaveEnabled, IniSettings.AutoSaveEnabled);
             zQuery.AddNumericBox("AutoSave Interval (Minutes)", CardMakerSettings.AutoSaveIntervalMinutes, 1, 60, 1, 0, IniSettings.AutoSaveIntervalMinutes);
 
+            zQuery.AddTab("Graphic Settings");
+            zQuery.AddCheckBox("CompositingQuality: GammaCorrected", CardMakerSettings.CompositingQualityGammaCorrected, IniSettings.CompositingQualityGammaCorrected);
+            zQuery.AddCheckBox("PixelOffsetMode: HighQuality", CardMakerSettings.PixelOffsetModeHighQuality, IniSettings.PixelOffsetModeHighQuality);
+            zQuery.AddLabel("NOTE: These settings may affect element and layout rendering. Please review your layouts if you adjust them.", 50);
+
             if (DialogResult.OK == zQuery.ShowDialog(this))
             {
                 CardMakerSettings.PrintPageMeasurementUnit = (MeasurementUnit)zQuery.GetIndex(IniSettings.PrintPageMeasurementUnit);
@@ -436,12 +441,17 @@ namespace CardMaker.Forms
                 CardMakerSettings.AutoSaveIntervalMinutes = (int)zQuery.GetDecimal(IniSettings.AutoSaveIntervalMinutes);
                 AutoSaveManager.Instance.EnableAutoSave(zQuery.GetBool(IniSettings.AutoSaveEnabled));
 
+                CardMakerSettings.CompositingQualityGammaCorrected = zQuery.GetBool(IniSettings.CompositingQualityGammaCorrected);
+                CardMakerSettings.PixelOffsetModeHighQuality = zQuery.GetBool(IniSettings.PixelOffsetModeHighQuality);
+
                 var bWasGoogleCacheEnabled = CardMakerSettings.EnableGoogleCache;
                 CardMakerSettings.EnableGoogleCache = zQuery.GetBool(IniSettings.EnableGoogleCache);
                 if (!CardMakerSettings.EnableGoogleCache && bWasGoogleCacheEnabled)
                 {
                     GoogleReferenceCache.DeleteGoogleCache();
                 }
+
+                LayoutManager.Instance.FireLayoutRenderUpdatedEvent();
             }
         }
 

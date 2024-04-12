@@ -90,6 +90,8 @@ namespace CardMaker.Data
         LastImageExportFormat,
         ExportWebPLossless,
         ExportWebPQuality,
+        CompositingQualityGammaCorrected,
+        PixelOffsetModeHighQuality,
         PrintLayoutsOnNewPage,
         EnableGoogleCache,
         DefaultTranslator,
