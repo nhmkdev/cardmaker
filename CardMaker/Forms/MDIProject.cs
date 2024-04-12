@@ -50,6 +50,8 @@ namespace CardMaker.Forms
 
         private TreeNode m_tnCurrentLayout;
 
+        private bool m_bUpdatingTreeNodes = false;
+
         public MDIProject()
         {
             InitializeComponent();
@@ -616,7 +618,36 @@ namespace CardMaker.Forms
             ProcessUtil.StartProcess(ProjectManager.Instance.ProjectPath, "open");
         }
 
-#endregion
+        private void expandAllNodesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            m_bUpdatingTreeNodes = true;
+            treeView.ExpandAll();
+            m_bUpdatingTreeNodes = false;
+            UpdateProjectCollapsedNodes();
+            ProjectManager.Instance.FireProjectUpdated(true);
+        }
+
+        private void collapseAllNodesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            m_bUpdatingTreeNodes = true;
+            treeView.CollapseAll();
+            treeView.Nodes[0].Expand();
+            m_bUpdatingTreeNodes = false;
+            UpdateProjectCollapsedNodes();
+            ProjectManager.Instance.FireProjectUpdated(true);
+        }
+
+        private void treeView_AfterCollapseOrExpand(object sender, TreeViewEventArgs e)
+        {
+            if (m_bUpdatingTreeNodes)
+            {
+                return;
+            }
+            UpdateProjectCollapsedNodes();
+            ProjectManager.Instance.FireProjectUpdated(true);
+        }
+
+        #endregion
 
         /// <summary>
         /// Updates the selected layout node color (if applicable)
@@ -642,6 +673,7 @@ namespace CardMaker.Forms
         {
             if (null != treeView)
             {
+                m_bUpdatingTreeNodes = true;
                 treeView.Nodes.Clear();
                 var tnRoot = new TreeNode("Layouts")
                 {
@@ -655,7 +687,10 @@ namespace CardMaker.Forms
 
                     LayoutManager.InitializeElementCache(zLayout);
                 }
-                tnRoot.ExpandAll();
+
+                tnRoot.Expand();
+                m_bUpdatingTreeNodes = false;
+                RestoreProjectCollapsedNodes();
             }
             m_tnCurrentLayout = null;
         }
@@ -754,5 +789,63 @@ namespace CardMaker.Forms
 
             return tnReference;
         }
+
+        #region Collapsed Node Handling
+        /// <summary>
+        /// Updates the project tracking of the collapsed nodes
+        /// </summary>
+        private void UpdateProjectCollapsedNodes()
+        {
+            if (treeView.Nodes.Count == 0)
+            {
+                return;
+            }
+            var listCollapsedNodes = new List<int>();
+            var zChildNodes = treeView.Nodes[0].Nodes;
+            for (var nIdx = 0; nIdx < zChildNodes.Count; nIdx++)
+            {
+                if (!zChildNodes[nIdx].IsExpanded)
+                {
+                    listCollapsedNodes.Add(nIdx);
+                }
+            }
+
+            ProjectManager.Instance.LoadedProject.collapsedNodes = string.Join(";", listCollapsedNodes);
+        }
+
+        /// <summary>
+        /// Restores the tree node states based on the project
+        /// </summary>
+        private void RestoreProjectCollapsedNodes()
+        {
+            if (treeView.Nodes.Count == 0)
+            {
+                return;
+            }
+            m_bUpdatingTreeNodes = true;
+            var sCollapsedNodes = ProjectManager.Instance.LoadedProject.collapsedNodes ?? string.Empty;
+
+            var enumerableIndices = sCollapsedNodes.Split(new char[] { ';' }).ToList().Select(sNodeIndex =>
+            {
+                if (int.TryParse(sNodeIndex, out var nIdx))
+                {
+                    return nIdx;
+                }
+
+                return -1;
+            });
+            var setCollapsedNodes = new HashSet<int>(enumerableIndices);
+            var zChildNodes = treeView.Nodes[0].Nodes;
+            for (var nIdx = 0; nIdx < zChildNodes.Count; nIdx++)
+            {
+                if (setCollapsedNodes.Contains(nIdx))
+                {
+                    zChildNodes[nIdx].Collapse(true);
+                }
+            }
+            m_bUpdatingTreeNodes = false;
+        }
+        #endregion
+
     }
 }

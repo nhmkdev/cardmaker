@@ -50,6 +50,8 @@ namespace CardMaker.XML
 
         public bool jsKeepFunctions { get; set; } = true;
 
+        public string collapsedNodes { get; set; }
+
         #endregion
 
         /// <summary>

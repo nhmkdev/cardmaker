@@ -69,6 +69,9 @@ namespace CardMaker.Forms
             this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripSeparator();
             this.projectSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem6 = new System.Windows.Forms.ToolStripSeparator();
+            this.expandAllNodesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.collapseAllNodesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
             this.windowsExplorerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStripLayout = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.duplicateLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -83,7 +86,7 @@ namespace CardMaker.Forms
             this.addReferenceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addExcelReferenceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addGoogleSpreadsheetReferenceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripMenuItem8 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItemSetLayoutExport = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStripReference = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.setAsDefaultReferenceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -107,6 +110,8 @@ namespace CardMaker.Forms
             this.treeView.TabIndex = 1;
             this.treeView.BeforeLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView_BeforeLabelEdit);
             this.treeView.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView_AfterLabelEdit);
+            this.treeView.AfterCollapse += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterCollapseOrExpand);
+            this.treeView.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterCollapseOrExpand);
             this.treeView.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.treeView_ItemDrag);
             this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
             this.treeView.DragDrop += new System.Windows.Forms.DragEventHandler(this.treeView_DragDrop);
@@ -123,10 +128,13 @@ namespace CardMaker.Forms
             this.toolStripMenuItem5,
             this.projectSettingsToolStripMenuItem,
             this.toolStripMenuItem6,
+            this.expandAllNodesToolStripMenuItem,
+            this.collapseAllNodesToolStripMenuItem,
+            this.toolStripMenuItem3,
             this.windowsExplorerToolStripMenuItem});
             this.contextMenuStripProject.Name = "contextMenuStripTreeView";
             this.contextMenuStripProject.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.contextMenuStripProject.Size = new System.Drawing.Size(255, 132);
+            this.contextMenuStripProject.Size = new System.Drawing.Size(255, 182);
             this.contextMenuStripProject.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStripTreeView_Opening);
             // 
             // addCardLayoutToolStripMenuItem
@@ -172,6 +180,25 @@ namespace CardMaker.Forms
             this.toolStripMenuItem6.Name = "toolStripMenuItem6";
             this.toolStripMenuItem6.Size = new System.Drawing.Size(251, 6);
             // 
+            // expandAllNodesToolStripMenuItem
+            // 
+            this.expandAllNodesToolStripMenuItem.Name = "expandAllNodesToolStripMenuItem";
+            this.expandAllNodesToolStripMenuItem.Size = new System.Drawing.Size(254, 22);
+            this.expandAllNodesToolStripMenuItem.Text = "Expand all Nodes";
+            this.expandAllNodesToolStripMenuItem.Click += new System.EventHandler(this.expandAllNodesToolStripMenuItem_Click);
+            // 
+            // collapseAllNodesToolStripMenuItem
+            // 
+            this.collapseAllNodesToolStripMenuItem.Name = "collapseAllNodesToolStripMenuItem";
+            this.collapseAllNodesToolStripMenuItem.Size = new System.Drawing.Size(254, 22);
+            this.collapseAllNodesToolStripMenuItem.Text = "Collapse All Nodes";
+            this.collapseAllNodesToolStripMenuItem.Click += new System.EventHandler(this.collapseAllNodesToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem3
+            // 
+            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(251, 6);
+            // 
             // windowsExplorerToolStripMenuItem
             // 
             this.windowsExplorerToolStripMenuItem.Name = "windowsExplorerToolStripMenuItem";
@@ -194,11 +221,11 @@ namespace CardMaker.Forms
             this.addReferenceToolStripMenuItem,
             this.addExcelReferenceToolStripMenuItem,
             this.addGoogleSpreadsheetReferenceToolStripMenuItem,
-            this.toolStripMenuItem3,
+            this.toolStripMenuItem8,
             this.toolStripMenuItemSetLayoutExport});
             this.contextMenuStripLayout.Name = "contextMenuStripLayout";
             this.contextMenuStripLayout.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.contextMenuStripLayout.Size = new System.Drawing.Size(269, 286);
+            this.contextMenuStripLayout.Size = new System.Drawing.Size(269, 264);
             // 
             // duplicateLayoutToolStripMenuItem
             // 
@@ -280,10 +307,10 @@ namespace CardMaker.Forms
             this.addGoogleSpreadsheetReferenceToolStripMenuItem.Text = "Add Google Spreadsheet Reference...";
             this.addGoogleSpreadsheetReferenceToolStripMenuItem.Click += new System.EventHandler(this.addGoogleSpreadsheetReferenceToolStripMenuItem_Click);
             // 
-            // toolStripMenuItem3
+            // toolStripMenuItem8
             // 
-            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(265, 6);
+            this.toolStripMenuItem8.Name = "toolStripMenuItem8";
+            this.toolStripMenuItem8.Size = new System.Drawing.Size(265, 6);
             // 
             // toolStripMenuItemSetLayoutExport
             // 
@@ -347,7 +374,6 @@ namespace CardMaker.Forms
         private ToolStripMenuItem setAsDefaultReferenceToolStripMenuItem;
         private ToolStripMenuItem removeReferenceToolStripMenuItem;
         private ToolStripSeparator toolStripMenuItem1;
-        private ToolStripSeparator toolStripMenuItem3;
         private ToolStripMenuItem toolStripMenuItemSetLayoutExport;
         private ToolStripSeparator toolStripMenuItem2;
         private ToolStripSeparator toolStripMenuItem4;
@@ -359,5 +385,9 @@ namespace CardMaker.Forms
         private ToolStripMenuItem duplicateLayoutCustomToolStripMenuItem;
         private ToolStripSeparator toolStripMenuItem6;
         private ToolStripMenuItem windowsExplorerToolStripMenuItem;
+        private ToolStripSeparator toolStripMenuItem8;
+        private ToolStripMenuItem expandAllNodesToolStripMenuItem;
+        private ToolStripMenuItem collapseAllNodesToolStripMenuItem;
+        private ToolStripSeparator toolStripMenuItem3;
     }
 }
