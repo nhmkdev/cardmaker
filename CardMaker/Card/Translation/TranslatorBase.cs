@@ -150,7 +150,9 @@ namespace CardMaker.Card.Translation
                     }
                     else
                     {
-                        Logger.AddLogLine("Unrecognized data-based override: [{0}] for element: [{1}]".FormatString(sKey, zElement.name));
+                        IssueManager.Instance.FireAddIssueEvent(
+                            "Unrecognized data-based override: [{0}] for element: [{1}]".FormatString(sKey,
+                                zElement.name));
                     }
                 }
             }
@@ -178,7 +180,9 @@ namespace CardMaker.Card.Translation
                     }
                     else
                     {
-                        Logger.AddLogLine("Unrecognized definition/variable override: [{0}] for element: [{1}]".FormatString(zKvp.Key, zElement.name));
+                        IssueManager.Instance.FireAddIssueEvent(
+                            "Unrecognized definition/variable override: [{0}] for element: [{1}]".FormatString(zKvp.Key,
+                                zElement.name));
                     }
                 }
             }

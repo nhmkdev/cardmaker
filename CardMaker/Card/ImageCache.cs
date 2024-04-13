@@ -324,6 +324,23 @@ namespace CardMaker.Card
                 sFile = Path.Combine(ProjectManager.Instance.ProjectPath,sFile);
                 if (!File.Exists(sFile))
                 {
+                    if (sFile.Length > 1)
+                    {
+                        switch (sFile[0])
+                        {
+                            case '/':
+                            case '\\':
+                                // last ditch effort (support for files like this: "/file.png"
+                                sFile = Path.Combine(ProjectManager.Instance.ProjectPath, sFile.Substring(1));
+                                if (File.Exists(sFile))
+                                {
+                                    return sFile;
+                                }
+                                break;
+                            default:
+                                return null;
+                        }
+                    }
                     return null;
                 }
             }

@@ -10,7 +10,7 @@ Card Maker Version History
 - Added preliminary SubLayout element functionality [needs even more documentation]
 - Adjusted Image Cache to track last updated times on files
 - Added WebP image support (import/export & Windows only) via SkiaSharp (https://github.com/mono/SkiaSharp)
-- Added card index functionality for image export
+- Added card index functionality for image export / pdf export
 - Added basic gradient functionality to Text elements (MarkVabulas)
 - Added ability to access element fields with &[fieldname]
 - Added FormattedText paragraph tag (see manual)
