@@ -1150,7 +1150,7 @@ namespace CardMaker.Forms
             {
                 zBuilder.Append(" [#NOEXPORT]");
             }
-#warning Should these strings move to another spot? Reference in particular is massive
+#warning Should these strings move to another spot in the UI? Reference in particular is massive
             zBuilder.Append(" [AutoSave: {0}]".FormatString(
                 AutoSaveManager.Instance.IsEnabled()
                     ? "Enabled"

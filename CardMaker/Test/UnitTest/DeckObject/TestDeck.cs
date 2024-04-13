@@ -86,7 +86,7 @@ namespace UnitTest.DeckObject
         public string GetDefine(string sKey)
         {
 #warning should the tests use the translator object and call this directly?
-            GetDefineValue(sKey, Translator.DictionaryDefines, out var sValue);
+            TryGetDefineValue(sKey, Translator.DictionaryDefines, out var sValue);
             return sValue;
         }
 

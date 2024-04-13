@@ -82,10 +82,10 @@ namespace CardMaker.Card.Translation
         private static readonly string[] ArrayDelimiter_string = new string[] { ARRAY_DELIMITER.ToString() };
         private static readonly char[] ArrayDelimiter_char = new char[] { ARRAY_DELIMITER };
 
-        public InceptTranslator(Dictionary<string, int> dictionaryColumnNameToIndex,
+        public InceptTranslator(
             Dictionary<string, string> dictionaryDefines,
             List<string> listColumnNames)
-            : base(dictionaryColumnNameToIndex, dictionaryDefines, listColumnNames)
+            : base(dictionaryDefines, listColumnNames)
         {
 
         }
@@ -225,7 +225,6 @@ namespace CardMaker.Card.Translation
             //Groups
             //    1    2    3   4   5
             //@"(.*)(@\[)(.+?)(\])(.*)"
-            int nIndex;
             string sNamedValue;
             var sKey = zMatch.Groups[3].ToString();
 
@@ -238,13 +237,13 @@ namespace CardMaker.Card.Translation
 
             sKey = sKey.ToLower();
 
-            if (zTranslationContext.Deck.GetDefineValue(
+            if (zTranslationContext.Deck.TryGetDefineValue(
                     sKey, 
                     zTranslationContext.TranslatorBase.DictionaryDefines, 
                     out sNamedValue))
             {
             }
-            else if(zTranslationContext.Deck.GetColumnValue(
+            else if(zTranslationContext.Deck.TryGetColumnValue(
                         sKey,
                         zTranslationContext.DeckLine.ColumnsToValues, 
                         out sNamedValue))

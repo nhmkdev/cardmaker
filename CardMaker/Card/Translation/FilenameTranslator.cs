@@ -64,11 +64,10 @@ namespace CardMaker.Card.Translation
         /// <param name="nLeftPad"></param>
         /// <param name="zCurrentPrintLine"></param>
         /// <param name="dictionaryDefines"></param>
-        /// <param name="dictionaryColumnNameToIndex"></param>
         /// <param name="zLayout"></param>
         /// <returns></returns>
-        public static string TranslateFileNameString(string sRawString, int nCardNumber, int nLeftPad, Dictionary<string, string> dictionaryDefines,
-            Dictionary<string, int> dictionaryColumnNameToIndex, Deck zDeck, ProjectLayout zLayout)
+        public static string TranslateFileNameString(string sRawString, int nCardNumber, int nLeftPad, Dictionary<string, string> dictionaryDefines, 
+            Deck zDeck, ProjectLayout zLayout)
         {
             var sOutput = sRawString;
 
@@ -81,8 +80,8 @@ namespace CardMaker.Card.Translation
                 var zMatch = s_regexColumnVariable.Match(sOutput);
                 string sNamedValue;
                 var sKey = zMatch.Groups[3].ToString().ToLower();
-                if (zDeck.GetDefineValue(sKey, dictionaryDefines, out sNamedValue)
-                    || zDeck.GetColumnValue(sKey, zDeck.CurrentPrintLine.ColumnsToValues, out sNamedValue))
+                if (zDeck.TryGetDefineValue(sKey, dictionaryDefines, out sNamedValue)
+                    || zDeck.TryGetColumnValue(sKey, zDeck.CurrentPrintLine.ColumnsToValues, out sNamedValue))
                 {
                     sOutput = zMatch.Groups[1] + sNamedValue.Trim() + zMatch.Groups[5];
                 }

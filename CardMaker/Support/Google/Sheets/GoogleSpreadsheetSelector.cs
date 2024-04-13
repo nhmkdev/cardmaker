@@ -27,9 +27,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
 using CardMaker.Card.Import;
-using CardMaker.Data;
 using Support.IO;
-using Support.Progress;
 using Support.UI;
 
 namespace Support.Google.Sheets
@@ -38,8 +36,6 @@ namespace Support.Google.Sheets
     {
         private readonly bool m_bRequireSheetSelect;
 
-        private IProgressReporter m_zProgressReporter;
-        private List<GoogleSheetInfo> m_listGoogleSheets;
         private GoogleSpreadsheet m_zGoogleSpreadsheet;
         public GoogleSheetInfo SelectedSpreadsheet { get; private set;}
         public string SelectedSheet => listViewSheets.SelectedItems.Count == 0 ? null : (string)listViewSheets.SelectedItems[0].Tag;

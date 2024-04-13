@@ -43,7 +43,6 @@ namespace CardMaker.Card.Translation
 
 
         // spreadsheet based overrides
-        public Dictionary<string, int> DictionaryColumnNameToIndex { get; private set; }
         public Dictionary<string, string> DictionaryDefines { get; private set; }
         public List<string> ListColumnNames { get; private set; }
 
@@ -69,10 +68,8 @@ namespace CardMaker.Card.Translation
             return s_setDisallowedReadFields.Contains(sField);
         }
 
-        protected TranslatorBase(Dictionary<string, int> dictionaryColumnNameToIndex, Dictionary<string, string> dictionaryDefines,
-            List<string> listColumnNames)
+        protected TranslatorBase(Dictionary<string, string> dictionaryDefines, List<string> listColumnNames)
         {
-            DictionaryColumnNameToIndex = dictionaryColumnNameToIndex;
             DictionaryDefines = dictionaryDefines;
             ListColumnNames = listColumnNames;
         }

@@ -29,10 +29,9 @@ namespace UnitTest.DeckObject
 {
     class JavaScriptTranslatorFactory : ITranslatorFactory
     {
-        public TranslatorBase GetTranslator(Dictionary<string, int> dictionaryColumnNames, Dictionary<string, string> dictionaryDefines,
-            List<string> listColumnNames)
+        public TranslatorBase GetTranslator(Dictionary<string, string> dictionaryDefines, List<string> listColumnNames)
         {
-            return new JavaScriptTranslator(dictionaryColumnNames, dictionaryDefines, listColumnNames);
+            return new JavaScriptTranslator(dictionaryDefines, listColumnNames);
         }
     }
 }

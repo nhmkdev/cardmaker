@@ -362,7 +362,7 @@ namespace CardMaker.Card
                 }
             }
 
-            m_zDeck.Translator = m_zDeck.TranslatorFactory.GetTranslator(dictionaryColumnNames, dictionaryDefines, listColumnNames);
+            m_zDeck.Translator = m_zDeck.TranslatorFactory.GetTranslator(dictionaryDefines, listColumnNames);
 
 #if MONO_BUILD
             Thread.Sleep(100);
@@ -441,12 +441,12 @@ namespace CardMaker.Card
             {
                 var zMatch = s_regexColumnVariable.Match(sCountString);
                 var sKey = zMatch.Groups[3].ToString().ToLower();
-                m_zDeck.GetDefineValue(sKey, dictionaryDefines, out sInterpretedCount);
+                m_zDeck.TryGetDefineValue(sKey, dictionaryDefines, out sInterpretedCount);
             }
             if (!int.TryParse(sInterpretedCount.Trim(), out var nCount))
             {
                 IssueManager.Instance.FireAddIssueEvent("Invalid card count found: [" + sInterpretedCount + "] The first column should always have a number value.");
-                nCount = 0;
+                nCount = 1;
             }
 
             return nCount;

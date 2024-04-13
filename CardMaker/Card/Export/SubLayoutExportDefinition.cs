@@ -66,7 +66,7 @@ namespace CardMaker.Card.Export
             {
                 var zSettings = new SubLayoutExportSettings();
                 var dictionaryDefineOverrides = new Dictionary<string, string>();
-#warning translation is based on current line and forced print (does that matter?)
+                // key point: skipping cache
                 var zElementString = zDeck.TranslateString(zElement.variable, zDeck.CurrentPrintLine, zElement, true, string.Empty, true);
                 var arraySplit = zElementString.String.Split(new string[] { "::" }, StringSplitOptions.None);
                 var sLayoutName = string.Empty;

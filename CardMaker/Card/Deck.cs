@@ -152,26 +152,23 @@ namespace CardMaker.Card
             return Translator.GetVariableOverrideElement(zElement, dictionaryOverrideFieldToValue);
         }
 
-#warning rename to Try..
-        public bool GetDefineValue(string sDefine, Dictionary<string, string> dictionaryDefineToValue, out string sValue)
+        public bool TryGetDefineValue(string sDefine, Dictionary<string, string> dictionaryDefineToValue, out string sValue)
         {
-            return GetDictionaryValue(sDefine,
+            return TryGetDictionaryValue(sDefine,
                 m_zReferenceTranslationOverride.DefinesToValues,
                 dictionaryDefineToValue,
                 out sValue);
         }
 
-#warning rename to Try..
-        public bool GetColumnValue(string sColumn, Dictionary<string, string> dictionaryColumnToValue, out string sValue)
+        public bool TryGetColumnValue(string sColumn, Dictionary<string, string> dictionaryColumnToValue, out string sValue)
         {
-            return GetDictionaryValue(sColumn,
+            return TryGetDictionaryValue(sColumn,
                 m_zReferenceTranslationOverride.ColumnsToValues,
                 dictionaryColumnToValue,
                 out sValue);
         }
 
-#warning rename to Try..
-        private bool GetDictionaryValue(string sKey, Dictionary<string, string> dictionaryPrimary,
+        private bool TryGetDictionaryValue(string sKey, Dictionary<string, string> dictionaryPrimary,
             Dictionary<string, string> dictionarySecondary, out string sValue)
         {
             if (dictionaryPrimary.TryGetValue(sKey, out sValue) || dictionarySecondary.TryGetValue(sKey, out sValue))
@@ -298,7 +295,7 @@ namespace CardMaker.Card
         {
 #warning this takes an awkward path to the translator and back
             return FilenameTranslator.TranslateFileNameString(sRawString, nCardNumber, nLeftPad,
-                Translator.DictionaryDefines, Translator.DictionaryColumnNameToIndex, this, CardLayout);
+                Translator.DictionaryDefines, this, CardLayout);
         }
 
         #endregion
