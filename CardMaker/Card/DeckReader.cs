@@ -446,7 +446,7 @@ namespace CardMaker.Card
             if (!int.TryParse(sInterpretedCount.Trim(), out var nCount))
             {
                 IssueManager.Instance.FireAddIssueEvent("Invalid card count found: [" + sInterpretedCount + "] The first column should always have a number value.");
-                nCount = 1;
+                nCount = 0;
             }
 
             return nCount;
