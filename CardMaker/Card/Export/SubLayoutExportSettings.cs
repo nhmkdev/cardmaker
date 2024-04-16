@@ -29,6 +29,8 @@ namespace CardMaker.Card.Export
 {
     public class SubLayoutExportSettings
     {
+        public bool ApplyReferenceValues { get; private set; } = true;
+        public bool ApplyDefineValues { get; private set; } = true;
         public bool WriteFile { get; private set; } = false;
         public FileCardExporterFactory.CardMakerExportImageFormat ImageFormat { get; private set; }
         public bool WriteMemoryImage { get; private set; } = true;
@@ -60,6 +62,12 @@ namespace CardMaker.Card.Export
             }
             switch (arrayFeatureParameters[0].ToLower())
             {
+                case "skipreferences":
+                    ApplyReferenceValues = false;
+                    break;
+                case "skipdefines":
+                    ApplyDefineValues = false;
+                    break;
                 case "nomemexport":
                     WriteMemoryImage = false;
                     break;

@@ -307,25 +307,29 @@ namespace CardMaker.Card
                 m_zReferenceTranslationOverride.DefinesToValues);
         }
 
-        public void ApplySubLayoutOverrides(Dictionary<string, string> dictionaryDefinesToValues,
-            Dictionary<string, string> dictionaryColumnsToValues, Deck zParentDeck)
+        public void ApplySubLayoutOverrides(Deck zParentDeck, SubLayoutExportSettings zSettings)
         {
-            // layer in the parent overrides (this should be the first call so all should be applied)
-            AppendDictionaryWithNewKeys(
-                zParentDeck.m_zReferenceTranslationOverride.DefinesToValues,
-                m_zReferenceTranslationOverride.DefinesToValues);
-            AppendDictionaryWithNewKeys(
-                zParentDeck.m_zReferenceTranslationOverride.ColumnsToValues,
-                m_zReferenceTranslationOverride.ColumnsToValues);
+            if (zSettings.ApplyDefineValues)
+            {
+                // parent most defines are applied first
+                AppendDictionaryWithNewKeys(
+                    zParentDeck.m_zReferenceTranslationOverride.DefinesToValues,
+                    m_zReferenceTranslationOverride.DefinesToValues);
+                AppendDictionaryWithNewKeys(
+                    zParentDeck.Defines,
+                    m_zReferenceTranslationOverride.DefinesToValues);
+            }
 
-            // layer in the parent current line overrides
-            AppendDictionaryWithNewKeys(
-                dictionaryDefinesToValues,
-                m_zReferenceTranslationOverride.DefinesToValues);
-            AppendDictionaryWithNewKeys(
-                dictionaryColumnsToValues,
-                m_zReferenceTranslationOverride.ColumnsToValues);
-
+            if (zSettings.ApplyReferenceValues)
+            {
+                // parent most reference values applied first
+                AppendDictionaryWithNewKeys(
+                    zParentDeck.m_zReferenceTranslationOverride.ColumnsToValues,
+                    m_zReferenceTranslationOverride.ColumnsToValues);
+                AppendDictionaryWithNewKeys(
+                    zParentDeck.CurrentPrintLine.ColumnsToValues,
+                    m_zReferenceTranslationOverride.ColumnsToValues);
+            }
         }
 
         private static void AppendDictionaryWithNewKeys(Dictionary<string, string> dictionarySource,

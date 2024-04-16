@@ -218,7 +218,7 @@ namespace CardMaker.Card.Export
                     SubLayoutExportContext = zNewSubLayoutExportContext
                 };
                 zSubLayoutExporter.CurrentDeck.ApplySubLayoutDefinesOverrides(zSubLayoutExportDefinition.DefineOverrides);
-                zSubLayoutExporter.CurrentDeck.ApplySubLayoutOverrides(CurrentDeck.Defines, CurrentDeck.CurrentPrintLine.ColumnsToValues, CurrentDeck);
+                zSubLayoutExporter.CurrentDeck.ApplySubLayoutOverrides(CurrentDeck, zSubLayoutExportDefinition.Settings);
                 zSubLayoutExporter.ProgressReporter = new LogOnlyProgressReporter();
                 zSubLayoutExporter.ExportThread();
             }
