@@ -27,7 +27,6 @@ using System.Windows.Forms;
 using CardMaker.Card.Import;
 using CardMaker.Data;
 using CardMaker.Events.Managers;
-using CardMaker.Properties;
 using Support.Google.Sheets;
 using Support.UI;
 

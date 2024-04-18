@@ -96,14 +96,14 @@ namespace CardMaker.Card
         public static Bitmap LoadCustomImageFromCache(string sFile, ProjectLayoutElement zElement, Color colorOverride, int nTargetWidth = -1, int nTargetHeight = -1, MirrorType eMirrorType = MirrorType.None)
         {
             var sKey = sFile.ToLower() + ":" + zElement.opacity + ":" + nTargetWidth + ":" + nTargetHeight + ProjectLayoutElement.GetElementColorString(colorOverride) + 
-                       ":" + eMirrorType;
+                       ":" + eMirrorType + ":" + zElement.colortype + ":" + zElement.colormatrix;
 
             if (GetCacheEntry(s_dictionaryCustomImages, sKey, sFile, out var zCacheEntry))
             {
                 return zCacheEntry.Bitmap;
             }
 
-            var zElementType = EnumUtil.GetElementType(zElement.type);
+            var eElementType = EnumUtil.GetElementType(zElement.type);
 
             var zBaseImageCacheEntry = LoadImageFromCache(sFile);
             if (null == zBaseImageCacheEntry)
@@ -122,11 +122,11 @@ namespace CardMaker.Card
                 )
             )
             {
-                switch (zElementType)
+                switch (eElementType)
                 {
                     case ElementType.FormattedText:
                     case ElementType.Graphic:
-                        if (colorOverride == Color.Black)
+                        if (!IsColorSet(colorOverride))
                         {
                             return zSourceBitmap;
                         }
@@ -144,25 +144,8 @@ namespace CardMaker.Card
             }
 
             var zImageAttributes = new ImageAttributes();
-            var zColor = new ColorMatrix();
-            if (255 != zElement.opacity)
-            {
-                zColor.Matrix33 = (float) zElement.opacity / 255.0f;
-            }
-            // special color handling for certain element types
-            if (colorOverride != Color.Black)
-            {
-                switch (zElementType)
-                {
-                    case ElementType.FormattedText:
-                    case ElementType.Graphic:
-                        zColor.Matrix40 = (float)colorOverride.R / 255.0f;
-                        zColor.Matrix41 = (float)colorOverride.G / 255.0f;
-                        zColor.Matrix42 = (float)colorOverride.B / 255.0f;
-                        break;
-                }
-            }
-            zImageAttributes.SetColorMatrix(zColor);
+            var zColorMatrix = GenerateColorMatrix(zElement, eElementType, colorOverride);
+            zImageAttributes.SetColorMatrix(zColorMatrix);
 
             nTargetWidth = nTargetWidth == -1 ? zSourceBitmap.Width : nTargetWidth;
             nTargetHeight = nTargetHeight == -1 ? zSourceBitmap.Height : nTargetHeight;
@@ -387,6 +370,51 @@ namespace CardMaker.Card
             {
                 // do not care... (how bad is this?)
             }
+        }
+
+        private static ColorMatrix GenerateColorMatrix(ProjectLayoutElement zElement, ElementType eElementType, Color colorOverride)
+        {
+            if (zElement.colortype == (int)ElementColorType.Matrix)
+            {
+                return zElement.GetColorMatrix() ?? new ColorMatrix();
+            }
+
+            var zColorMatrix = new ColorMatrix();
+            if (255 != zElement.opacity || 255 != colorOverride.A)
+            {
+                zColorMatrix.Matrix33 =
+                    ((float)zElement.opacity / 255.0f) *
+                    ((float)colorOverride.A / 255.0f);
+            }
+            // special color handling for certain element types
+            if (IsColorSet(colorOverride))
+            {
+                switch (eElementType)
+                {
+                    case ElementType.FormattedText:
+                    case ElementType.Graphic:
+                        switch (zElement.colortype)
+                        {
+                            case (int)ElementColorType.Add:
+                                zColorMatrix.Matrix40 = (float)colorOverride.R / 255.0f;
+                                zColorMatrix.Matrix41 = (float)colorOverride.G / 255.0f;
+                                zColorMatrix.Matrix42 = (float)colorOverride.B / 255.0f;
+                                break;
+                            case (int)ElementColorType.Multiply:
+                                zColorMatrix.Matrix00 = (float)colorOverride.R / 255.0f;
+                                zColorMatrix.Matrix11 = (float)colorOverride.G / 255.0f;
+                                zColorMatrix.Matrix22 = (float)colorOverride.B / 255.0f;
+                                break;
+                        }
+                        break;
+                }
+            }
+            return zColorMatrix;
+        }
+
+        private static bool IsColorSet(Color color)
+        {
+            return color.ToArgb() != Color.Black.ToArgb();
         }
     }
 }

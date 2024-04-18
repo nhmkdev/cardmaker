@@ -25,8 +25,11 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Drawing.Text;
+using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Windows.Forms;
 using CardMaker.Card;
 using CardMaker.Card.Shapes;
@@ -36,6 +39,7 @@ using CardMaker.Events.Managers;
 using CardMaker.XML;
 using Support.IO;
 using Support.UI;
+using Support.Util;
 
 namespace CardMaker.Forms
 {
@@ -186,6 +190,58 @@ namespace CardMaker.Forms
         {
             HandleElementValueChange(sender, e);
             HandleTypeEnableStates();
+        }
+
+        private void btnColorMatrix_Click(object sender, EventArgs e)
+        {
+#warning TODO: create a custom dialog like the RGB dialog and allow for previewing of the color matrix (when valid)
+            var listSelectedElements = ElementManager.Instance.SelectedElements;
+            if (null == listSelectedElements)
+            {
+                MessageBox.Show(this, "Please select at least one enabled Element.");
+                return;
+            }
+
+            var zElement = listSelectedElements[0];
+            var arrayCurrentMatrixValues = zElement.colormatrix.Split(new char[] { ';' }, StringSplitOptions.None);
+            if (arrayCurrentMatrixValues.Length != 25)
+            {
+                arrayCurrentMatrixValues = Enumerable.Repeat((0.0f).ToString(), 25).ToArray();
+            }
+
+            var zQuery =
+                FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("Configure ColorMatrix", 450, false));
+            const string MATRIX = "matrix";
+            var zFont = FontLoader.GetFont(FontFamily.GenericMonospace, 12, FontStyle.Regular);
+            var zBuilder = new StringBuilder();
+            for (var y = 0; y < 5; y++)
+            {
+                zBuilder.AppendLine(string.Join(";", arrayCurrentMatrixValues, y * 5, 5));
+            }
+            zQuery.AddMultiLineTextBox("Color Matrix", zBuilder.ToString(), 150, MATRIX).Font = zFont;
+            if (DialogResult.OK == zQuery.ShowDialog(this))
+            {
+                var arrayEntries = zQuery.GetString(MATRIX).Split(new char[] {';','\n','\r'}, StringSplitOptions.RemoveEmptyEntries);
+                if (arrayEntries.Length != 25)
+                {
+                    Logger.AddLogLine("Failed to parse valid color matrix");
+                    return;
+                }
+                else
+                {
+                    foreach (var sEntry in arrayEntries)
+                    {
+                        if (!ParseUtil.ParseFloat(sEntry, out var fValue))
+                        {
+                            Logger.AddLogLine($"Failed to parse float value from color matrix: {sEntry}");
+                            return;
+                        }
+                    }
+                }
+
+                // this will trigger a call to HandleElementValueChanged
+                txtColorMatrix.Text = string.Join(";", arrayEntries);
+            }
         }
 
         private void btnColor_Click(object sender, EventArgs e)
@@ -385,6 +441,11 @@ namespace CardMaker.Forms
                 comboElementType.Items.Add(((ElementType)nIdx).ToString());
             }
 
+            for (var nIdx = 0; nIdx < (int)ElementColorType.End; nIdx++)
+            {
+                comboColorType.Items.Add(((ElementColorType)nIdx).ToString());
+            }
+
             for (var nIdx = 0; nIdx < (int)MirrorType.End; nIdx++)
             {
                 comboElementMirror.Items.Add(((MirrorType)nIdx).ToString());
@@ -487,6 +548,12 @@ namespace CardMaker.Forms
         {
             SetupElementFont(null);
             HandleFontSettingChange(sender, e);
+        }
+
+        private void comboColorType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            btnColorMatrix.Enabled = comboColorType.SelectedIndex == (int)ElementColorType.Matrix;
+            HandleElementValueChange(sender, e);
         }
 
         private void comboFontName_DropDownClosed(object sender, EventArgs e)
@@ -764,6 +831,7 @@ namespace CardMaker.Forms
             comboTextVerticalAlign.SelectedIndex = zElement.verticalalign;
             comboGraphicHorizontalAlign.SelectedIndex = zElement.horizontalalign;
             comboGraphicVerticalAlign.SelectedIndex = zElement.verticalalign;
+            comboColorType.SelectedIndex = zElement.colortype;
 
             tabControl.Enabled = false;
 #if MONO_BUILD
@@ -855,6 +923,8 @@ namespace CardMaker.Forms
             m_dictionaryControlField.Add(numericElementRotation, zType.GetProperty("rotation"));
             m_dictionaryControlField.Add(comboGraphicHorizontalAlign, zType.GetProperty("horizontalalign"));
             m_dictionaryControlField.Add(comboGraphicVerticalAlign, zType.GetProperty("verticalalign"));
+            m_dictionaryControlField.Add(comboColorType, zType.GetProperty("colortype"));
+            m_dictionaryControlField.Add(txtColorMatrix, zType.GetProperty("colormatrix"));
             m_dictionaryControlField.Add(comboTextHorizontalAlign, zType.GetProperty("horizontalalign"));
             m_dictionaryControlField.Add(comboTextVerticalAlign, zType.GetProperty("verticalalign"));
             m_dictionaryControlField.Add(numericElementOpacity, zType.GetProperty("opacity"));
@@ -1091,6 +1161,7 @@ namespace CardMaker.Forms
                 comboTextVerticalAlign.SelectedIndex = zElement.verticalalign;
                 comboGraphicHorizontalAlign.SelectedIndex = zElement.horizontalalign;
                 comboGraphicVerticalAlign.SelectedIndex = zElement.verticalalign;
+                comboColorType.SelectedIndex = zElement.colortype;
                 txtTileSize.Text = zElement.tilesize;
                 checkJustifiedText.Checked = zElement.justifiedtext;
                 txtElementVariable.Text = zElement.variable;

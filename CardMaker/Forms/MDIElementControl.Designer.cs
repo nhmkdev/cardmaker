@@ -88,10 +88,11 @@ namespace CardMaker.Forms
             this.btnElementShapeColor = new System.Windows.Forms.Button();
             this.propertyGridShape = new System.Windows.Forms.PropertyGrid();
             this.tabPageGraphic = new System.Windows.Forms.TabPage();
+            this.comboColorType = new System.Windows.Forms.ComboBox();
             this.checkCenterOnOrigin = new System.Windows.Forms.CheckBox();
             this.panelGraphicColor = new System.Windows.Forms.Panel();
             this.btnElementGraphicColor = new System.Windows.Forms.Button();
-            this.label9 = new System.Windows.Forms.Label();
+            this.lblTileSize = new System.Windows.Forms.Label();
             this.txtTileSize = new System.Windows.Forms.TextBox();
             this.checkKeepOriginalSize = new System.Windows.Forms.CheckBox();
             this.btnSetSizeToImage = new System.Windows.Forms.Button();
@@ -130,6 +131,9 @@ namespace CardMaker.Forms
             this.comboElementType = new System.Windows.Forms.ComboBox();
             this.contextMenuReferenceStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.contextMenuStripAssist = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.btnColorMatrix = new System.Windows.Forms.Button();
+            this.tabPageHidden = new System.Windows.Forms.TabPage();
+            this.txtColorMatrix = new System.Windows.Forms.TextBox();
             this.groupBoxElement.SuspendLayout();
             this.groupBackgroundColor.SuspendLayout();
             this.tabControl.SuspendLayout();
@@ -149,6 +153,7 @@ namespace CardMaker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.numericElementW)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericElementY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericElementX)).BeginInit();
+            this.tabPageHidden.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBoxElement
@@ -262,6 +267,7 @@ namespace CardMaker.Forms
             this.tabControl.Controls.Add(this.tabPageFont);
             this.tabControl.Controls.Add(this.tabPageShape);
             this.tabControl.Controls.Add(this.tabPageGraphic);
+            this.tabControl.Controls.Add(this.tabPageHidden);
             this.tabControl.Location = new System.Drawing.Point(12, 97);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
@@ -572,10 +578,12 @@ namespace CardMaker.Forms
             // 
             // tabPageGraphic
             // 
+            this.tabPageGraphic.Controls.Add(this.btnColorMatrix);
+            this.tabPageGraphic.Controls.Add(this.comboColorType);
             this.tabPageGraphic.Controls.Add(this.checkCenterOnOrigin);
             this.tabPageGraphic.Controls.Add(this.panelGraphicColor);
             this.tabPageGraphic.Controls.Add(this.btnElementGraphicColor);
-            this.tabPageGraphic.Controls.Add(this.label9);
+            this.tabPageGraphic.Controls.Add(this.lblTileSize);
             this.tabPageGraphic.Controls.Add(this.txtTileSize);
             this.tabPageGraphic.Controls.Add(this.checkKeepOriginalSize);
             this.tabPageGraphic.Controls.Add(this.btnSetSizeToImage);
@@ -591,6 +599,17 @@ namespace CardMaker.Forms
             this.tabPageGraphic.Text = "Graphic";
             this.tabPageGraphic.UseVisualStyleBackColor = true;
             // 
+            // comboColorType
+            // 
+            this.comboColorType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.comboColorType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboColorType.FormattingEnabled = true;
+            this.comboColorType.Location = new System.Drawing.Point(83, 36);
+            this.comboColorType.Name = "comboColorType";
+            this.comboColorType.Size = new System.Drawing.Size(80, 21);
+            this.comboColorType.TabIndex = 47;
+            this.comboColorType.SelectedIndexChanged += new System.EventHandler(this.comboColorType_SelectedIndexChanged);
+            // 
             // checkCenterOnOrigin
             // 
             this.checkCenterOnOrigin.Location = new System.Drawing.Point(298, 4);
@@ -603,14 +622,14 @@ namespace CardMaker.Forms
             // 
             // panelGraphicColor
             // 
-            this.panelGraphicColor.Location = new System.Drawing.Point(57, 40);
+            this.panelGraphicColor.Location = new System.Drawing.Point(57, 37);
             this.panelGraphicColor.Name = "panelGraphicColor";
             this.panelGraphicColor.Size = new System.Drawing.Size(20, 20);
             this.panelGraphicColor.TabIndex = 45;
             // 
             // btnElementGraphicColor
             // 
-            this.btnElementGraphicColor.Location = new System.Drawing.Point(0, 40);
+            this.btnElementGraphicColor.Location = new System.Drawing.Point(2, 37);
             this.btnElementGraphicColor.Name = "btnElementGraphicColor";
             this.btnElementGraphicColor.Size = new System.Drawing.Size(49, 20);
             this.btnElementGraphicColor.TabIndex = 44;
@@ -618,20 +637,20 @@ namespace CardMaker.Forms
             this.btnElementGraphicColor.UseVisualStyleBackColor = true;
             this.btnElementGraphicColor.Click += new System.EventHandler(this.btnColor_Click);
             // 
-            // label9
+            // lblTileSize
             // 
-            this.label9.Location = new System.Drawing.Point(134, 32);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(130, 21);
-            this.label9.TabIndex = 43;
-            this.label9.Text = "Tile Size:";
-            this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblTileSize.Location = new System.Drawing.Point(316, 32);
+            this.lblTileSize.Name = "lblTileSize";
+            this.lblTileSize.Size = new System.Drawing.Size(63, 21);
+            this.lblTileSize.TabIndex = 43;
+            this.lblTileSize.Text = "Tile Size:";
+            this.lblTileSize.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // txtTileSize
             // 
-            this.txtTileSize.Location = new System.Drawing.Point(270, 32);
+            this.txtTileSize.Location = new System.Drawing.Point(385, 32);
             this.txtTileSize.Name = "txtTileSize";
-            this.txtTileSize.Size = new System.Drawing.Size(100, 20);
+            this.txtTileSize.Size = new System.Drawing.Size(70, 20);
             this.txtTileSize.TabIndex = 42;
             this.txtTileSize.TextChanged += new System.EventHandler(this.HandleElementValueChange);
             // 
@@ -1076,6 +1095,34 @@ namespace CardMaker.Forms
             this.contextMenuStripAssist.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this.contextMenuStripAssist.Size = new System.Drawing.Size(61, 4);
             // 
+            // btnColorMatrix
+            // 
+            this.btnColorMatrix.Location = new System.Drawing.Point(169, 36);
+            this.btnColorMatrix.Name = "btnColorMatrix";
+            this.btnColorMatrix.Size = new System.Drawing.Size(82, 20);
+            this.btnColorMatrix.TabIndex = 48;
+            this.btnColorMatrix.Text = "Color Matrix";
+            this.btnColorMatrix.UseVisualStyleBackColor = true;
+            this.btnColorMatrix.Click += new System.EventHandler(this.btnColorMatrix_Click);
+            // 
+            // tabPageHidden
+            // 
+            this.tabPageHidden.Controls.Add(this.txtColorMatrix);
+            this.tabPageHidden.Location = new System.Drawing.Point(4, 22);
+            this.tabPageHidden.Name = "tabPageHidden";
+            this.tabPageHidden.Size = new System.Drawing.Size(722, 60);
+            this.tabPageHidden.TabIndex = 3;
+            this.tabPageHidden.Text = "Hidden";
+            this.tabPageHidden.UseVisualStyleBackColor = true;
+            // 
+            // txtColorMatrix
+            // 
+            this.txtColorMatrix.Location = new System.Drawing.Point(3, 3);
+            this.txtColorMatrix.Name = "txtColorMatrix";
+            this.txtColorMatrix.Size = new System.Drawing.Size(100, 20);
+            this.txtColorMatrix.TabIndex = 0;
+            this.txtColorMatrix.TextChanged += new System.EventHandler(this.HandleElementValueChange);
+            // 
             // MDIElementControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1108,6 +1155,8 @@ namespace CardMaker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.numericElementW)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericElementY)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericElementX)).EndInit();
+            this.tabPageHidden.ResumeLayout(false);
+            this.tabPageHidden.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1184,12 +1233,16 @@ namespace CardMaker.Forms
         private System.Windows.Forms.Button btnNullBackgroundColor;
         private System.Windows.Forms.Panel panelBackgroundColor;
         private System.Windows.Forms.Button btnElementBackgroundColor;
-        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label lblTileSize;
         private System.Windows.Forms.TextBox txtTileSize;
         private System.Windows.Forms.Panel panelGraphicColor;
         private System.Windows.Forms.Button btnElementGraphicColor;
         private System.Windows.Forms.ComboBox comboElementMirror;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.CheckBox checkCenterOnOrigin;
+        private System.Windows.Forms.ComboBox comboColorType;
+        private System.Windows.Forms.Button btnColorMatrix;
+        private System.Windows.Forms.TabPage tabPageHidden;
+        private System.Windows.Forms.TextBox txtColorMatrix;
     }
 }

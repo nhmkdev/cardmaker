@@ -80,6 +80,7 @@ namespace CardMaker.Card.FormattedText
             FontScaleY = 1f;
             CurrentX = 0;
             CurrentY = 0;
+            ImageColor = Color.Black;
         }
 
         public void SetFont(Font zFont, Graphics zGraphics)

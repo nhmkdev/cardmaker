@@ -67,6 +67,14 @@ namespace CardMaker.Data
         End
     }
 
+    public enum ElementColorType
+    {
+        Add = 0, // default
+        Multiply,
+        Matrix,
+        End
+    }
+
     public enum MeasurementUnit
     {
         Inch,

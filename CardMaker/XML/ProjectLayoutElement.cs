@@ -25,7 +25,9 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Reflection;
+using System.Text;
 using System.Xml.Serialization;
 using CardMaker.Card;
 using CardMaker.Data;
@@ -134,12 +136,19 @@ namespace CardMaker.XML
         [XmlAttribute]
         public string gradient { get; set; }
 
+        [XmlAttribute]
+        public int colortype { get; set; }
+
+        [XmlAttribute]
+        public string colormatrix { get; set; }
+
         #endregion
 
         private Color m_colorElement = Color.Black;
         private Color m_colorOutline = Color.Black;
         private Color m_colorBorder = Color.Black;
         private Color m_colorBackground = CardMakerConstants.NoColor;
+        private ColorMatrix m_colorMatrix = null;
         private Font m_fontText;
 
         public override string ToString()
@@ -186,6 +195,8 @@ namespace CardMaker.XML
             mirrortype = (int)MirrorType.None;
             centerimageonorigin = false;
             gradient = string.Empty;
+            colormatrix = string.Empty;
+            colortype = (int)ElementColorType.Add;
 
             InitializeTranslatedFields();
         }
@@ -198,6 +209,11 @@ namespace CardMaker.XML
         public Color GetElementColor()
         {
             return m_colorElement;
+        }
+
+        public ColorMatrix GetColorMatrix()
+        {
+            return m_colorMatrix;
         }
 
         public Color GetElementOutlineColor()
@@ -239,6 +255,7 @@ namespace CardMaker.XML
             SetElementColor(TranslateColorString(elementcolor));
             SetElementOutlineColor(TranslateColorString(outlinecolor));
             SetElementBackgroundColor(backgroundcolor == null ? Color.FromArgb(0,0,0,0) : TranslateColorString(backgroundcolor));
+            SetElementColorMatrix(TranslateColorMatrixString(colormatrix));
             Font zNewFont = null;
             if (!string.IsNullOrEmpty(font))
             {
@@ -285,6 +302,8 @@ namespace CardMaker.XML
             mirrortype = zElement.mirrortype;
             centerimageonorigin = zElement.centerimageonorigin;
             gradient = zElement.gradient;
+            colortype = zElement.colortype;
+            colormatrix = zElement.colormatrix;
 
             if (bInitializeTranslatedFields)
             {
@@ -299,9 +318,9 @@ namespace CardMaker.XML
         /// <returns>The color, or Color.Black by default</returns>
         public static Color TranslateColorString(string sColor, int defaultAlpha = 255)
         {
-            var bSucceeded = false;
-            return TranslateColorString(sColor, defaultAlpha, out bSucceeded);
+            return TranslateColorString(sColor, defaultAlpha, out var bSucceeded);
         }
+
         public static Color TranslateColorString(string sColor, int defaultAlpha, out bool bSucceeded)
         {
             if (string.IsNullOrEmpty(sColor))
@@ -382,6 +401,39 @@ namespace CardMaker.XML
             return colorResult;
         }
 
+        public static ColorMatrix TranslateColorMatrixString(string sColorMatrix)
+        {
+            if (string.IsNullOrWhiteSpace(sColorMatrix))
+            {
+                return null;
+            }
+
+            var arraySplit = sColorMatrix.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+            if (arraySplit.Length == 25)
+            {
+                var zColorMatrix = new ColorMatrix();
+                var nIdx = 0;
+                for (var y = 0; y < 5; y++)
+                {
+                    for (var x = 0; x < 5; x++)
+                    {
+                        if (ParseUtil.ParseFloat(arraySplit[nIdx], out var fVal))
+                        {
+                            zColorMatrix[y, x] = fVal;
+                            nIdx++;
+                        }
+                        else
+                        {
+                            return null;
+                        }
+                    }
+                }
+
+                return zColorMatrix;
+            }
+            return null;
+        }
+
         /// <summary>
         /// Converts a color to the a color formatted string for serialization across the app (0x hex form)
         /// </summary>
@@ -436,6 +488,30 @@ namespace CardMaker.XML
         {
             elementcolor = GetElementColorString(zColor);
             m_colorElement = zColor;
+        }
+
+        public void SetElementColorMatrix(ColorMatrix zColorMatrix)
+        {
+            if (zColorMatrix == null)
+            {
+                colormatrix = string.Empty;
+                m_colorMatrix = null;
+            }
+            else
+            {
+                var listEntries = new List<string>(25);
+                for (var y = 0; y < 5; y++)
+                {
+                    for (var x = 0; x < 5; x++)
+                    {
+                        listEntries.Add(zColorMatrix[y, x].ToString());
+                    }
+                }
+
+                colormatrix = string.Join(";", listEntries);
+                m_colorMatrix = zColorMatrix;
+
+            }
         }
 
         /// <summary>
