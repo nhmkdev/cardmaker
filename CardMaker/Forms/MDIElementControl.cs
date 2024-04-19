@@ -34,9 +34,12 @@ using System.Windows.Forms;
 using CardMaker.Card;
 using CardMaker.Card.Shapes;
 using CardMaker.Data;
+using CardMaker.Data.Serialization;
 using CardMaker.Events.Args;
 using CardMaker.Events.Managers;
+using CardMaker.Properties;
 using CardMaker.XML;
+using DocumentFormat.OpenXml.Vml.Spreadsheet;
 using Support.IO;
 using Support.UI;
 using Support.Util;
@@ -194,7 +197,6 @@ namespace CardMaker.Forms
 
         private void btnColorMatrix_Click(object sender, EventArgs e)
         {
-#warning TODO: create a custom dialog like the RGB dialog and allow for previewing of the color matrix (when valid)
             var listSelectedElements = ElementManager.Instance.SelectedElements;
             if (null == listSelectedElements)
             {
@@ -202,46 +204,54 @@ namespace CardMaker.Forms
                 return;
             }
 
-            var zElement = listSelectedElements[0];
-            var arrayCurrentMatrixValues = zElement.colormatrix.Split(new char[] { ';' }, StringSplitOptions.None);
-            if (arrayCurrentMatrixValues.Length != 25)
-            {
-                arrayCurrentMatrixValues = Enumerable.Repeat((0.0f).ToString(), 25).ToArray();
-            }
+            var dictionaryElementToOriginalColorMatrix = 
+                listSelectedElements.ToDictionary(zElement => zElement, zElement => zElement.GetColorMatrix());
 
-            var zQuery =
-                FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("Configure ColorMatrix", 450, false));
-            const string MATRIX = "matrix";
-            var zFont = FontLoader.GetFont(FontFamily.GenericMonospace, 12, FontStyle.Regular);
-            var zBuilder = new StringBuilder();
-            for (var y = 0; y < 5; y++)
+            var zColorMatrixDialog = new ColorMatrixDialog(listSelectedElements[0].GetColorMatrix());
+            zColorMatrixDialog.Icon = Resources.CardMakerIcon;
+            zColorMatrixDialog.PreviewEvent += delegate(object o, ColorMatrix zColorMatrix)
             {
-                zBuilder.AppendLine(string.Join(";", arrayCurrentMatrixValues, y * 5, 5));
-            }
-            zQuery.AddMultiLineTextBox("Color Matrix", zBuilder.ToString(), 150, MATRIX).Font = zFont;
-            if (DialogResult.OK == zQuery.ShowDialog(this))
-            {
-                var arrayEntries = zQuery.GetString(MATRIX).Split(new char[] {';','\n','\r'}, StringSplitOptions.RemoveEmptyEntries);
-                if (arrayEntries.Length != 25)
+                // note: this bypasses the undo (intentionally)
+                foreach (var zElement in listSelectedElements)
                 {
-                    Logger.AddLogLine("Failed to parse valid color matrix");
-                    return;
+                    zElement.SetElementColorMatrix(zColorMatrix);
                 }
-                else
+                LayoutManager.Instance.FireLayoutUpdatedEvent(false);
+            };
+            if (DialogResult.OK != zColorMatrixDialog.ShowDialog(this))
+            {
+                dictionaryElementToOriginalColorMatrix.ToList()
+                    .ForEach(kvp => kvp.Key.SetElementColorMatrix(kvp.Value));
+                LayoutManager.Instance.FireLayoutUpdatedEvent(false);
+                return;
+            }
+            // handle undo/redo
+            var zColorMatrixRedo = zColorMatrixDialog.ResultColorMatrix;
+            var listActions = UserAction.CreateActionList();
+
+            foreach (var zElement in listSelectedElements)
+            {
+                var zElementToChange = zElement;
+                listActions.Add(bRedo =>
                 {
-                    foreach (var sEntry in arrayEntries)
+                    if (null != LayoutManager.Instance.ActiveDeck)
                     {
-                        if (!ParseUtil.ParseFloat(sEntry, out var fValue))
-                        {
-                            Logger.AddLogLine($"Failed to parse float value from color matrix: {sEntry}");
-                            return;
-                        }
+                        LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElementToChange.name);
                     }
-                }
 
-                // this will trigger a call to HandleElementValueChanged
-                txtColorMatrix.Text = string.Join(";", arrayEntries);
+                    var zColorMatrixUndo = dictionaryElementToOriginalColorMatrix[zElementToChange];
+                    zElementToChange.SetElementColorMatrix(bRedo ? zColorMatrixRedo : zColorMatrixUndo);
+                });
             }
+            Action<bool> actionChangeColorMatrix = bRedo =>
+            {
+                listActions.ForEach(action => action(bRedo));
+                LayoutManager.Instance.FireLayoutUpdatedEvent(true);
+            };
+            UserAction.PushAction(actionChangeColorMatrix);
+
+            // perform the action as a redo now
+            actionChangeColorMatrix(true);
         }
 
         private void btnColor_Click(object sender, EventArgs e)
@@ -924,7 +934,6 @@ namespace CardMaker.Forms
             m_dictionaryControlField.Add(comboGraphicHorizontalAlign, zType.GetProperty("horizontalalign"));
             m_dictionaryControlField.Add(comboGraphicVerticalAlign, zType.GetProperty("verticalalign"));
             m_dictionaryControlField.Add(comboColorType, zType.GetProperty("colortype"));
-            m_dictionaryControlField.Add(txtColorMatrix, zType.GetProperty("colormatrix"));
             m_dictionaryControlField.Add(comboTextHorizontalAlign, zType.GetProperty("horizontalalign"));
             m_dictionaryControlField.Add(comboTextVerticalAlign, zType.GetProperty("verticalalign"));
             m_dictionaryControlField.Add(numericElementOpacity, zType.GetProperty("opacity"));

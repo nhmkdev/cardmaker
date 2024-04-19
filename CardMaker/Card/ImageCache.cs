@@ -126,7 +126,7 @@ namespace CardMaker.Card
                 {
                     case ElementType.FormattedText:
                     case ElementType.Graphic:
-                        if (!IsColorSet(colorOverride))
+                        if (!IsColorSet(colorOverride, zElement.colortype))
                         {
                             return zSourceBitmap;
                         }
@@ -387,7 +387,7 @@ namespace CardMaker.Card
                     ((float)colorOverride.A / 255.0f);
             }
             // special color handling for certain element types
-            if (IsColorSet(colorOverride))
+            if (IsColorSet(colorOverride, zElement.colortype))
             {
                 switch (eElementType)
                 {
@@ -412,9 +412,10 @@ namespace CardMaker.Card
             return zColorMatrix;
         }
 
-        private static bool IsColorSet(Color color)
+        private static bool IsColorSet(Color color, int nColorType)
         {
-            return color.ToArgb() != Color.Black.ToArgb();
+            return nColorType == (int)ElementColorType.Matrix 
+                   || color.ToArgb() != Color.Black.ToArgb();
         }
     }
 }
