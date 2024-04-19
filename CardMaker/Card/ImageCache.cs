@@ -29,8 +29,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
 using CardMaker.Data;
+using CardMaker.Data.Serialization;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
 using PhotoshopFile;
@@ -90,13 +90,38 @@ namespace CardMaker.Card
         public static Bitmap LoadCustomImageFromCache(string sFile, ProjectLayoutElement zElement,
             int nTargetWidth = -1, int nTargetHeight = -1)
         {
-            return LoadCustomImageFromCache(sFile, zElement, zElement.GetElementColor(), nTargetWidth, nTargetHeight, zElement.GetMirrorType());
+            return LoadCustomImageFromCache(
+                sFile,
+                zElement,
+                zElement.GetElementColor(),
+                zElement.GetColorMatrix(),
+                (ElementColorType)zElement.colortype,
+                nTargetWidth, 
+                nTargetHeight, 
+                zElement.GetMirrorType());
         }
 
-        public static Bitmap LoadCustomImageFromCache(string sFile, ProjectLayoutElement zElement, Color colorOverride, int nTargetWidth = -1, int nTargetHeight = -1, MirrorType eMirrorType = MirrorType.None)
+        public static Bitmap LoadCustomImageFromCache(
+            string sFile, 
+            ProjectLayoutElement zElement, 
+            Color colorOverride,
+            ColorMatrix zColorMatrix,
+            ElementColorType eColorType,
+            int nTargetWidth = -1, 
+            int nTargetHeight = -1, 
+            MirrorType eMirrorType = MirrorType.None
+        )
         {
-            var sKey = sFile.ToLower() + ":" + zElement.opacity + ":" + nTargetWidth + ":" + nTargetHeight + ProjectLayoutElement.GetElementColorString(colorOverride) + 
-                       ":" + eMirrorType + ":" + zElement.colortype + ":" + zElement.colormatrix;
+#warning move key gen to another function
+            var sColorMatrixKeyComponent = ColorMatrixSerializer.SerializeToString(zColorMatrix);
+            var sKey = sFile.ToLower() +
+                       ":" + zElement.opacity +
+                       ":" + ProjectLayoutElement.GetElementColorString(colorOverride) +
+                       ":" + sColorMatrixKeyComponent +
+                       ":" + (int)eColorType +
+                       ":" + nTargetWidth +
+                       ":" + nTargetHeight +
+                       ":" + eMirrorType;
 
             if (GetCacheEntry(s_dictionaryCustomImages, sKey, sFile, out var zCacheEntry))
             {
@@ -126,7 +151,7 @@ namespace CardMaker.Card
                 {
                     case ElementType.FormattedText:
                     case ElementType.Graphic:
-                        if (!IsColorSet(colorOverride, zElement.colortype))
+                        if (!IsColorSet(colorOverride, eColorType))
                         {
                             return zSourceBitmap;
                         }
@@ -144,8 +169,8 @@ namespace CardMaker.Card
             }
 
             var zImageAttributes = new ImageAttributes();
-            var zColorMatrix = GenerateColorMatrix(zElement, eElementType, colorOverride);
-            zImageAttributes.SetColorMatrix(zColorMatrix);
+            zImageAttributes.SetColorMatrix(
+                GenerateColorMatrix(zElement, eElementType, eColorType, colorOverride, zColorMatrix));
 
             nTargetWidth = nTargetWidth == -1 ? zSourceBitmap.Width : nTargetWidth;
             nTargetHeight = nTargetHeight == -1 ? zSourceBitmap.Height : nTargetHeight;
@@ -372,11 +397,16 @@ namespace CardMaker.Card
             }
         }
 
-        private static ColorMatrix GenerateColorMatrix(ProjectLayoutElement zElement, ElementType eElementType, Color colorOverride)
+        private static ColorMatrix GenerateColorMatrix(
+            ProjectLayoutElement zElement, 
+            ElementType eElementType,
+            ElementColorType eColorType,
+            Color colorOverride,
+            ColorMatrix colorMatrixOverride)
         {
-            if (zElement.colortype == (int)ElementColorType.Matrix)
+            if(ElementColorType.Matrix == eColorType)
             {
-                return zElement.GetColorMatrix() ?? new ColorMatrix();
+                return colorMatrixOverride ?? zElement.GetColorMatrix() ?? ColorMatrixSerializer.GetIdentityColorMatrix();
             }
 
             var zColorMatrix = new ColorMatrix();
@@ -387,20 +417,20 @@ namespace CardMaker.Card
                     ((float)colorOverride.A / 255.0f);
             }
             // special color handling for certain element types
-            if (IsColorSet(colorOverride, zElement.colortype))
+            if (IsColorSet(colorOverride, eColorType))
             {
                 switch (eElementType)
                 {
                     case ElementType.FormattedText:
                     case ElementType.Graphic:
-                        switch (zElement.colortype)
+                        switch (eColorType)
                         {
-                            case (int)ElementColorType.Add:
+                            case ElementColorType.Add:
                                 zColorMatrix.Matrix40 = (float)colorOverride.R / 255.0f;
                                 zColorMatrix.Matrix41 = (float)colorOverride.G / 255.0f;
                                 zColorMatrix.Matrix42 = (float)colorOverride.B / 255.0f;
                                 break;
-                            case (int)ElementColorType.Multiply:
+                            case ElementColorType.Multiply:
                                 zColorMatrix.Matrix00 = (float)colorOverride.R / 255.0f;
                                 zColorMatrix.Matrix11 = (float)colorOverride.G / 255.0f;
                                 zColorMatrix.Matrix22 = (float)colorOverride.B / 255.0f;
@@ -412,9 +442,9 @@ namespace CardMaker.Card
             return zColorMatrix;
         }
 
-        private static bool IsColorSet(Color color, int nColorType)
+        private static bool IsColorSet(Color color, ElementColorType eColorType)
         {
-            return nColorType == (int)ElementColorType.Matrix 
+            return ElementColorType.Matrix == eColorType
                    || color.ToArgb() != Color.Black.ToArgb();
         }
     }

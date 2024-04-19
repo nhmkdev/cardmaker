@@ -29,6 +29,8 @@ using CardMaker.Card.FormattedText;
 using CardMaker.Card.FormattedText.Alignment;
 using CardMaker.Card.FormattedText.Markup;
 using CardMaker.Card.Render.Gradient;
+using CardMaker.Data;
+using CardMaker.Data.Serialization;
 using CardMaker.XML;
 using Support.IO;
 
@@ -188,7 +190,12 @@ namespace CardMaker.Card
                 CurrentLineHeight = zElement.lineheight,
                 CurrentStringAlignment = zElement.GetHorizontalAlignment(),
                 CurrentMarginLeft = 0,
-                CurrentMarginRight = zElement.width
+                CurrentMarginRight = zElement.width,
+                // these are defaulted because FormattedText elements cannot set these in the UI
+                // (ie. don't use stuff set when the element was a Graphic, if it ever was)
+                ImageColor = Color.Black,
+                CurrentColorMatrix = ColorMatrixSerializer.GetIdentityColorMatrix(),
+                CurrentColorType = ElementColorType.Add
             };
 
             var zFont = zElement.GetElementFont();

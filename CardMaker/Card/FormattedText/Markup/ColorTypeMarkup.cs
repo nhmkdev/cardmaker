@@ -22,40 +22,36 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Collections.Generic;
+using System;
 using System.Drawing;
-using System.Drawing.Imaging;
-using CardMaker.Data;
 using CardMaker.XML;
+using CardMaker.Data;
 
 namespace CardMaker.Card.FormattedText.Markup
 {
-    public abstract class BaseImageMarkup : MarkupValueBase
+    internal class ColorTypeMarkup : MarkupValueBase
     {
-        protected string m_sImageFile;
-        protected Color m_colorImage = Color.Black;
-        protected ElementColorType m_eColorType = ElementColorType.Add;
-        protected ColorMatrix m_zColorMatrix = null;
-        protected MirrorType m_eMirrorType = MirrorType.None;
+        private ElementColorType m_ePreviousColorType;
 
-        protected BaseImageMarkup(string sVariable) : base(sVariable) { }
-
-        public override bool PostProcessMarkupRectangle(ProjectLayoutElement zElement, List<MarkupBase> listAllMarkups, int nMarkup)
+        public ColorTypeMarkup(string sVariable) : base(sVariable)
         {
-            return true;
         }
 
-        protected Bitmap LoadImage(ProjectLayoutElement zElement)
+        protected override bool ProcessMarkupHandler(ProjectLayoutElement zElement, FormattedTextData zData,
+            FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
-            return ImageCache.LoadCustomImageFromCache(
-                m_sImageFile, 
-                zElement, 
-                m_colorImage,
-                m_zColorMatrix,
-                m_eColorType,
-                -1, 
-                -1, 
-                m_eMirrorType);
+            m_ePreviousColorType = zProcessData.CurrentColorType;
+            if (Enum.TryParse(m_sVariable, out ElementColorType eColorType))
+            {
+                zProcessData.CurrentColorType = eColorType;
+            }
+            return false;
+        }
+
+        public override void CloseMarkup(FormattedTextData zData, FormattedTextProcessData zProcessData,
+            Graphics zGraphics)
+        {
+            zProcessData.CurrentColorType = m_ePreviousColorType;
         }
     }
 }

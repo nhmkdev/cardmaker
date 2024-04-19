@@ -22,40 +22,34 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using CardMaker.Data;
+using CardMaker.Data.Serialization;
 using CardMaker.XML;
 
 namespace CardMaker.Card.FormattedText.Markup
 {
-    public abstract class BaseImageMarkup : MarkupValueBase
+    public class ColorMatrixMarkup : MarkupValueBase
     {
-        protected string m_sImageFile;
-        protected Color m_colorImage = Color.Black;
-        protected ElementColorType m_eColorType = ElementColorType.Add;
-        protected ColorMatrix m_zColorMatrix = null;
-        protected MirrorType m_eMirrorType = MirrorType.None;
+        private ColorMatrix m_zPreviousColorMatrix;
 
-        protected BaseImageMarkup(string sVariable) : base(sVariable) { }
-
-        public override bool PostProcessMarkupRectangle(ProjectLayoutElement zElement, List<MarkupBase> listAllMarkups, int nMarkup)
+        public ColorMatrixMarkup(string sVariable) : base(sVariable)
         {
-            return true;
         }
 
-        protected Bitmap LoadImage(ProjectLayoutElement zElement)
+        protected override bool ProcessMarkupHandler(ProjectLayoutElement zElement, FormattedTextData zData,
+            FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
-            return ImageCache.LoadCustomImageFromCache(
-                m_sImageFile, 
-                zElement, 
-                m_colorImage,
-                m_zColorMatrix,
-                m_eColorType,
-                -1, 
-                -1, 
-                m_eMirrorType);
+            m_zPreviousColorMatrix = zProcessData.CurrentColorMatrix;
+            zProcessData.CurrentColorMatrix =
+                ColorMatrixSerializer.DeserializeFromString(m_sVariable, zProcessData.CurrentColorMatrix);
+            return false;
+        }
+
+        public override void CloseMarkup(FormattedTextData zData, FormattedTextProcessData zProcessData,
+            Graphics zGraphics)
+        {
+            zProcessData.CurrentColorMatrix = m_zPreviousColorMatrix;
         }
     }
 }

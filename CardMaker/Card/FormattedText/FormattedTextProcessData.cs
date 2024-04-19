@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using CardMaker.Data;
 using CardMaker.XML;
@@ -71,6 +72,8 @@ namespace CardMaker.Card.FormattedText
 
         public int CurrentLine { get; private set; }
         public MirrorType CurrentMirrorType { get; set; }
+        public ElementColorType CurrentColorType { get; set; }
+        public ColorMatrix CurrentColorMatrix { get; set; }
 
         const string FontStringToTest = "]"; // TODO: is there a large box character with the bounds?
 
@@ -80,7 +83,6 @@ namespace CardMaker.Card.FormattedText
             FontScaleY = 1f;
             CurrentX = 0;
             CurrentY = 0;
-            ImageColor = Color.Black;
         }
 
         public void SetFont(Font zFont, Graphics zGraphics)

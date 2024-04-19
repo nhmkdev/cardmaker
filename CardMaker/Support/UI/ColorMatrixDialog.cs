@@ -47,7 +47,7 @@ namespace Support.UI
             OriginalColorMatrix = zColorMatrix;
         }
 
-        private void PopulateColorMatrixText(ColorMatrix zColorMatrix)
+        private void PopulateColorMatrixText(ColorMatrix zColorMatrix, bool bSkipEvents = true)
         {
             if (null == zColorMatrix)
             {
@@ -68,7 +68,7 @@ namespace Support.UI
                 zBuilder.AppendLine(string.Join(";", arrayCurrentMatrixValues, y * 5, 5));
             }
 
-            m_bSkipTextEvents = true;
+            m_bSkipTextEvents = bSkipEvents & true;
             txtColorMatrix.Text = zBuilder.ToString();
             m_bSkipTextEvents = false;
         }
@@ -109,6 +109,28 @@ namespace Support.UI
         {
             DialogResult = DialogResult.Cancel;
             Close();
+        }
+
+        private void btnReset_Click(object sender, EventArgs e)
+        {
+            PopulateColorMatrixText(OriginalColorMatrix, false);
+        }
+
+        private void btnIdentity_Click(object sender, EventArgs e)
+        {
+            PopulateColorMatrixText(ColorMatrixSerializer.GetIdentityColorMatrix(), false);
+        }
+
+        private void btnClipboard_Click(object sender, EventArgs e)
+        {
+            var zColorMatrix = ColorMatrixSerializer.DeserializeFromString(txtColorMatrix.Text);
+            if (null == zColorMatrix)
+            {
+                FormUtils.ShowErrorMessage("Invalid Color Matrix specified");
+                return;
+            }
+
+            Clipboard.SetText(ColorMatrixSerializer.SerializeToString(zColorMatrix));
         }
     }
 }

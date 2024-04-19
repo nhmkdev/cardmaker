@@ -124,6 +124,8 @@
     <Compile Include="Card\FormattedText\Markup\AlignRightMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\AllCapsMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\BaseAlignMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\ColorMatrixMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\ColorTypeMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\FontScaleMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\ImageColorMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\BaseImageMarkup.cs" />

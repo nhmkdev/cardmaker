@@ -44,6 +44,8 @@ namespace CardMaker.Card.FormattedText.Markup
             {"br", typeof (NewlineMarkup)},
             {"bgc", typeof (BackgroundColorMarkup)},
             {"bgi", typeof (BackgroundImageMarkup)},
+            {"ct", typeof(ColorTypeMarkup)},
+            {"cm", typeof(ColorMatrixMarkup)},
             {"ic", typeof(ImageColorMarkup)},
             {"spc", typeof (SpaceMarkup)},
             {"push", typeof (PushMarkup)},
