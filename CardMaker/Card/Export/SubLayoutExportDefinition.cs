@@ -62,7 +62,9 @@ namespace CardMaker.Card.Export
 #warning optimize this by having it centralized and based on current project state
             var dictionaryLayoutNameToLayout =
                 ProjectManager.Instance.LoadedProject.Layout.ToDictionary(layout => layout.Name.ToUpper(), layout => nIdx++);
-            foreach (var zElement in zDeck.CardLayout.Element.Where(e => e.type == ElementType.SubLayout.ToString()))
+            foreach (var zElement in zDeck.CardLayout.Element.Where(e => 
+                         e.enabled
+                         && e.type == ElementType.SubLayout.ToString()))
             {
                 var zSettings = new SubLayoutExportSettings();
                 var dictionaryDefineOverrides = new Dictionary<string, string>();
