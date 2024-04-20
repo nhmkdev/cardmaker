@@ -878,7 +878,7 @@ namespace CardMaker.Forms
                 "Export",
                 new string[] { ProgressName.LAYOUT, ProgressName.REFERENCE_DATA, ProgressName.CARD },
                 zFileCardExporter.ExportThread);
-            ReferenceCache.Enabled = true;
+            //ReferenceCache.Enabled = true;
 #if true
             zFileCardExporter.ProgressReporter = zWait;
             zWait.StartProcessing(this);
@@ -901,7 +901,7 @@ namespace CardMaker.Forms
             {
                 return;
             }
-            ReferenceCache.Enabled = true;
+            //ReferenceCache.Enabled = true;
 #if true
             var zWait = CardMakerInstance.ProgressReporterFactory.CreateReporter(
                 "Export",
