@@ -878,12 +878,14 @@ namespace CardMaker.Forms
                 "Export",
                 new string[] { ProgressName.LAYOUT, ProgressName.REFERENCE_DATA, ProgressName.CARD },
                 zFileCardExporter.ExportThread);
+            ReferenceCache.Enabled = true;
 #if true
             zFileCardExporter.ProgressReporter = zWait;
             zWait.StartProcessing(this);
 #else
             zFileCardExporter.ExportThread();
 #endif
+            ReferenceCache.Enabled = false;
 
             if (zWait.ThreadSuccess && 
                 m_bPdfExportLastOpen &&
@@ -899,7 +901,7 @@ namespace CardMaker.Forms
             {
                 return;
             }
-
+            ReferenceCache.Enabled = true;
 #if true
             var zWait = CardMakerInstance.ProgressReporterFactory.CreateReporter(
                 "Export",
@@ -910,6 +912,7 @@ namespace CardMaker.Forms
 #else // non threaded
             zFileCardExporter.ExportThread();
 #endif
+            ReferenceCache.Enabled = false;
         }
 
         private T SetupMDIForm<T>(T zForm, bool bDefaultShow) where T : Form

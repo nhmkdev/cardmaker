@@ -169,6 +169,7 @@
     <Compile Include="Card\Export\FileCardExporter.cs" />
     <Compile Include="Card\IInlineBackgroundElementProcessor.cs" />
     <Compile Include="Card\ImageCache.cs" />
+    <Compile Include="Card\Import\ReferenceCache.cs" />
     <Compile Include="Card\Import\CSVReferenceReader.cs" />
     <Compile Include="Card\Import\CSVSpreadsheetReference.cs" />
     <Compile Include="Card\Import\ExcelReferenceReader.cs" />

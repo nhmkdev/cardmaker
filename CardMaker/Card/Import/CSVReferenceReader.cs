@@ -51,8 +51,15 @@ namespace CardMaker.Card.Import
             CSVFile zCSVParser = null;
             var listReferenceLines = new List<ReferenceLine>();
             var bTryCopy = false;
+            // TODO: should this be using ReferenceUtil.ConvertRelativeProjectPathToFullPath
             var sCombinedPath =
                 Path.GetDirectoryName(sPath) + Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(sPath) + nameAppend + Path.GetExtension(sPath);
+
+            if (ReferenceCache.TryGetCachedReference(sCombinedPath, out var listCachedReferenceLines))
+            {
+                return listCachedReferenceLines;
+            }
+
             if (!File.Exists(sCombinedPath))
             {
                 if (bLogNotFound)
@@ -86,6 +93,7 @@ namespace CardMaker.Card.Import
                 listReferenceLines.Add(new ReferenceLine(zCSVParser.GetRow(nRow), sPath, nRow));
             }
 
+            ReferenceCache.CacheReference(sCombinedPath, listReferenceLines);
             return listReferenceLines;
         }
 

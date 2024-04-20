@@ -49,8 +49,14 @@ namespace CardMaker.Card.Import
 
         public List<ReferenceLine> GetData(string sPath, bool bLogNotFound, string sSheetName, int nStartRow, string sNameAppend = "")
         {
-            sSheetName = sSheetName + sNameAppend;
+            sSheetName += sNameAppend;
             var listReferenceLines = new List<ReferenceLine>();
+
+            var sCacheKey = sPath + "::" + sSheetName;
+            if (ReferenceCache.TryGetCachedReference(sCacheKey, out var listCachedReferenceLines))
+            {
+                return listCachedReferenceLines;
+            }
 
             // This covers the case where we try to open the project level defines.
             if (!File.Exists(sPath))
@@ -112,6 +118,8 @@ namespace CardMaker.Card.Import
             {
                 ProgressReporter.AddIssue("Failed to load any data from Excel Spreadsheet." + "[" + sPath + "," + sSheetName + "]");
             }
+
+            ReferenceCache.CacheReference(sCacheKey, listReferenceLines);
             return listReferenceLines;
         }
 

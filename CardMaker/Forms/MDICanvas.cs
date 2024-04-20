@@ -30,6 +30,7 @@ using System.Drawing.Drawing2D;
 using System.Text;
 using System.Windows.Forms;
 using CardMaker.Card;
+using CardMaker.Card.Import;
 using CardMaker.Data;
 using CardMaker.Events.Args;
 using CardMaker.Events.Managers;
@@ -998,6 +999,8 @@ namespace CardMaker.Forms
 
         private void toolStripButtonReloadReferences_Click(object sender, EventArgs e)
         {
+            // this clear is overkill as any export should have already turned off ReferenceCache 
+            ReferenceCache.Enabled = false;
             LayoutManager.Instance.RefreshActiveLayout();
         }
 
