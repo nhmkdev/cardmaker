@@ -22,7 +22,10 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+using DocumentFormat.OpenXml.Office2010.ExcelAc;
+using Support.IO;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace CardMaker.Card.Export
@@ -32,6 +35,7 @@ namespace CardMaker.Card.Export
         public bool ApplyReferenceValues { get; private set; } = true;
         public bool ApplyDefineValues { get; private set; } = true;
         public bool WriteFile { get; private set; } = false;
+        public int[] ExportIndices { get; private set; }
         public FileCardExporterFactory.CardMakerExportImageFormat ImageFormat { get; private set; }
         public bool WriteMemoryImage { get; private set; } = true;
 
@@ -67,6 +71,23 @@ namespace CardMaker.Card.Export
                     break;
                 case "skipdefines":
                     ApplyDefineValues = false;
+                    break;
+                case "exportindices":
+                    if (arrayFeatureParameters.Length > 1)
+                    {
+                        var zCardIndicesResult = ExportUtil.GetCardIndices(arrayFeatureParameters[1]);
+                        if (zCardIndicesResult != null)
+                        {
+                            if (!string.IsNullOrWhiteSpace(zCardIndicesResult.Item1))
+                            {
+                                Logger.AddLogLine("Unable to determine export indices: " + zCardIndicesResult.Item1);
+                            }
+                            else
+                            {
+                                ExportIndices = zCardIndicesResult.Item2;
+                            }
+                        }
+                    }
                     break;
                 case "nomemexport":
                     WriteMemoryImage = false;

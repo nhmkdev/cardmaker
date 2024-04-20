@@ -215,7 +215,8 @@ namespace CardMaker.Card.Export
                 var zSubLayoutExporter = new FileCardExporter(zSubLayoutExportDefinition.LayoutIndex,
                     zSubLayoutExportDefinition.LayoutIndex, sExportFolder, null, -1, zSubLayoutExportDefinition.Settings.ImageFormat)
                 {
-                    SubLayoutExportContext = zNewSubLayoutExportContext
+                    SubLayoutExportContext = zNewSubLayoutExportContext,
+                    ExportCardIndices = zSubLayoutExportDefinition.Settings.ExportIndices,
                 };
                 zSubLayoutExporter.CurrentDeck.ApplySubLayoutDefinesOverrides(zSubLayoutExportDefinition.DefineOverrides);
                 zSubLayoutExporter.CurrentDeck.ApplySubLayoutOverrides(CurrentDeck, zSubLayoutExportDefinition.Settings);

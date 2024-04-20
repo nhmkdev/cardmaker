@@ -51,17 +51,22 @@ namespace CardMaker.Card.Import
         private static Dictionary<string, List<ReferenceLine>> s_dictionaryReferenceCache =
             new Dictionary<string, List<ReferenceLine>>();
 
-        public static bool TryGetCachedReference(string sKey, out List<ReferenceLine> listCachedReferenceLines)
+        public static bool TryGetCachedReference(string sKey, out List<ReferenceLine> listReferenceLines)
         {
-            if (!Enabled)
+            if (Enabled)
             {
-                listCachedReferenceLines = null;
-                return false;
+                lock (s_lock)
+                {
+                    if (s_dictionaryReferenceCache.TryGetValue(sKey, out var listCachedReferenceLines))
+                    {
+#warning DeckReader trashes these lists (so dupe them) - Doesn't affect google cache due to List<ReferenceLine> create
+                        listReferenceLines = new List<ReferenceLine>(listCachedReferenceLines);
+                        return true;
+                    }
+                }
             }
-            lock (s_lock)
-            {
-                return s_dictionaryReferenceCache.TryGetValue(sKey, out listCachedReferenceLines);
-            }
+            listReferenceLines = null;
+            return false;
         }
 
         public static void CacheReference(string sKey, List<ReferenceLine> listCachedReferenceLines)
@@ -72,7 +77,8 @@ namespace CardMaker.Card.Import
             }
             lock (s_lock)
             {
-                s_dictionaryReferenceCache[sKey] = listCachedReferenceLines;
+#warning DeckReader trashes these lists (so dupe them) - Doesn't affect google cache due to List<ReferenceLine> create
+                s_dictionaryReferenceCache[sKey] = new List<ReferenceLine>(listCachedReferenceLines);
             }
         }
 
