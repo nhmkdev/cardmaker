@@ -56,13 +56,13 @@ namespace CardMaker.Card.Shapes
             }
         }
 
-        public void HandleShapeRender(Graphics zGraphics, string sShapeInfo, ProjectLayoutElement zElement, int nXOffset = 0, int nYOffset = 0)
+        public void HandleShapeRender(GraphicsContext zGraphicsContext, string sShapeInfo, ProjectLayoutElement zElement, int nXOffset = 0, int nYOffset = 0)
         {
             if (!s_regexShapes.IsMatch(sShapeInfo))
             {
                 return;
             }
-
+            var zGraphics = zGraphicsContext.Graphics;
             var zMatch = s_regexShapes.Match(sShapeInfo);
             ShapeInfo zShapeInfo = null;
             var bParse = false;

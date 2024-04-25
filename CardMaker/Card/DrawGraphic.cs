@@ -25,10 +25,12 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.IO;
+using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
+using Support.IO;
 using Support.Util;
 
 namespace CardMaker.Card
@@ -38,8 +40,9 @@ namespace CardMaker.Card
         //                                                          1    2  3
         private static readonly Regex regexImageTile = new Regex(@"(.+?)(x)(.+)", RegexOptions.Compiled);
 
-        public void DrawGraphicFile(Graphics zGraphics, string sFile, ProjectLayoutElement zElement, int nXGraphicOffset = 0, int nYGraphicOffset = 0)
+        public void DrawGraphicFile(GraphicsContext zGraphicsContext, string sFile, ProjectLayoutElement zElement, int nXGraphicOffset = 0, int nYGraphicOffset = 0)
         {
+            var zGraphics = zGraphicsContext.Graphics;
             var sPath = sFile;
             if (string.IsNullOrEmpty(sPath)
                 || sPath.Equals("none", StringComparison.CurrentCultureIgnoreCase))
@@ -53,6 +56,14 @@ namespace CardMaker.Card
                 IssueManager.Instance.FireAddIssueEvent("Image file not found: " + sPath);
                 return;
             }
+
+#if false // this is a temp hack to test masks
+            if (sPath.ToLower().Contains("mask"))
+            {
+                RenderAsMask(zGraphicsContext, zBmp, zElement);
+                return;
+            }
+#endif
 
             if (zElement.centerimageonorigin)
             {
@@ -96,6 +107,65 @@ namespace CardMaker.Card
             UpdateAlignmentValue(zElement.GetHorizontalAlignment(), ref nX, zElement.width, nWidth);
             UpdateAlignmentValue(zElement.GetVerticalAlignment(), ref nY, zElement.height, nHeight);
             zGraphics.DrawImage(zBmp, nX + nXGraphicOffset, nY + nYGraphicOffset, nWidth, nHeight);
+        }
+
+        private static void RenderAsMask(GraphicsContext zGraphicsContext, Bitmap zBitmapMask, ProjectLayoutElement zElement)
+        {
+            var zBitmapSurface = zGraphicsContext.Bitmap;
+
+            try
+            {
+#warning TODO: this full sized mask image should be cached (expand image cache to support creation/storage of this)
+                // create a full size mask to match the destination surface (simplifies logic around transforms)
+                var zBitmapFullMask = new Bitmap(zGraphicsContext.Bitmap.Width, zGraphicsContext.Bitmap.Height);
+                var zMaskGraphics = Graphics.FromImage(zBitmapFullMask);
+
+                // mark everything outside the element region (mask) as a white pixel to indicate no masking
+                var zRegion = new Region();
+                zRegion.Transform(zGraphicsContext.Graphics.Transform);
+                zRegion.Union(new Rectangle(0, 0, zGraphicsContext.Bitmap.Width, zGraphicsContext.Bitmap.Height));
+                zRegion.Exclude(new Rectangle(0, 0, zElement.width, zElement.height));
+                zMaskGraphics.Transform = zGraphicsContext.Graphics.Transform;
+                zMaskGraphics.FillRegion(Brushes.White, zRegion);
+                
+                // render the mask into the element region
+                zMaskGraphics.DrawImage(zBitmapMask, new Rectangle(0,0, zElement.width, zElement.height));
+
+                // lock bits (full images)
+                var bitsSurface = zBitmapSurface.LockBits(
+                    new Rectangle(0, 0, zBitmapSurface.Width, zBitmapSurface.Height),
+                    ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+                var bitsMask = zBitmapFullMask.LockBits(
+                    new Rectangle(0, 0, zBitmapFullMask.Width, zBitmapFullMask.Height),
+                    ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+
+                var arraySize = zBitmapSurface.Width * zBitmapSurface.Height * 4;
+                var arraySurface = new byte[arraySize];
+                var arrayMask = new byte[arraySize];
+                Marshal.Copy(bitsSurface.Scan0, arraySurface, 0, arraySurface.Length);
+                Marshal.Copy(bitsMask.Scan0, arrayMask, 0, arrayMask.Length);
+#warning: optimization would be to jump into this at least where the mask starts and end after the mask ends
+                // iterate over all color channel bytes and multiple them
+                for (var nIdx = 0; nIdx < arraySurface.Length; nIdx += 4)
+                {
+                    for (var nComponent = 0; nComponent < 4; nComponent++)
+                    {
+                        var nArrayIdx = nIdx + nComponent;
+                        var fMaskR = arrayMask[nArrayIdx] / 255f;
+                        var fSurfaceR = arraySurface[nArrayIdx] / 255f;
+                        arraySurface[nArrayIdx] = (byte)((fMaskR * fSurfaceR) * 255);
+                    }
+                }
+                // copy the resulting array back to the surface
+                Marshal.Copy(arraySurface, 0, bitsSurface.Scan0, arraySurface.Length);
+                zBitmapFullMask.UnlockBits(bitsMask);
+                zBitmapSurface.UnlockBits(bitsSurface);
+                zBitmapFullMask.Dispose();
+            }
+            catch (Exception ex)
+            {
+                Logger.AddLogLine($"Error processing mask: {ex.ToString()}");
+            }
         }
 
         private static void GetSizeFromAspectRatio(float fAspect, int nWidth, int nHeight, out int nDestWidth, out int nDestHeight)

@@ -28,7 +28,6 @@ using System.Threading;
 using System.Windows.Forms;
 using CardMaker.Data;
 using Support.IO;
-using Support.Progress;
 
 namespace CardMaker.Card.Export
 {
@@ -64,7 +63,7 @@ namespace CardMaker.Card.Export
             // special case for clipboard exports... need to write files somewhere (need to document this)
             ProcessSubLayoutExports(CardMakerInstance.StartupPath);
 
-            CardRenderer.DrawPrintLineToGraphics(zGraphics, 0, 0, !CurrentDeck.CardLayout.exportTransparentBackground);
+            CardRenderer.DrawPrintLineToGraphics(new GraphicsContext(zGraphics, m_zExportCardBuffer), 0, 0, !CurrentDeck.CardLayout.exportTransparentBackground);
             m_zExportCardBuffer.SetResolution(CurrentDeck.CardLayout.dpi, CurrentDeck.CardLayout.dpi);
 
             ProgressReporter.ProgressStep(progressLayoutIdx);

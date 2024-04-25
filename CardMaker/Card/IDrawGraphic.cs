@@ -22,14 +22,13 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Drawing;
 using CardMaker.XML;
 
 namespace CardMaker.Card
 {
     public interface IDrawGraphic
     {
-        void DrawGraphicFile(Graphics zGraphics, string sFile, ProjectLayoutElement zElement, int nXGraphicOffset = 0,
+        void DrawGraphicFile(GraphicsContext zGraphicsContext, string sFile, ProjectLayoutElement zElement, int nXGraphicOffset = 0,
             int nYGraphicOffset = 0);
     }
 }

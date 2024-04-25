@@ -27,7 +27,6 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using CardMaker.Data;
-using Support.Progress;
 using Support.UI;
 
 namespace CardMaker.Card.Export
@@ -76,7 +75,7 @@ namespace CardMaker.Card.Export
 
             ProcessSubLayoutExports(m_sExportFolder);
 
-            CardRenderer.DrawPrintLineToGraphics(zGraphics, 0, 0, !CurrentDeck.CardLayout.exportTransparentBackground);
+            CardRenderer.DrawPrintLineToGraphics(new GraphicsContext(zGraphics, m_zExportCardBuffer), 0, 0, !CurrentDeck.CardLayout.exportTransparentBackground);
 
             ProgressReporter.ProgressStep(progressCardIdx);
 

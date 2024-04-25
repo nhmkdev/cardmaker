@@ -24,7 +24,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Text.RegularExpressions;
 using CardMaker.Card.Shapes;
 using CardMaker.Data;
@@ -134,7 +133,7 @@ namespace CardMaker.Card
                     })
             };
 
-        public string ProcessInlineBackgroundGraphic(IDrawGraphic zDrawGraphic, Graphics zGraphics, ProjectLayoutElement zElement, string sInput)
+        public string ProcessInlineBackgroundGraphic(IDrawGraphic zDrawGraphic, GraphicsContext zGraphicsContext, ProjectLayoutElement zElement, string sInput)
         {
             var kvpMatchedProcessor = new KeyValuePair<Regex, Action<Match, ProjectLayoutElement, ProjectLayoutElement, PointOffset>>();
             Match zMatch = null;
@@ -160,12 +159,12 @@ namespace CardMaker.Card
 
             kvpMatchedProcessor.Value(zMatch, zBgGraphicElement, zElement, pointOffset);
 
-            zDrawGraphic.DrawGraphicFile(zGraphics, zBgGraphicElement.variable, zBgGraphicElement, pointOffset.X, pointOffset.Y);
+            zDrawGraphic.DrawGraphicFile(zGraphicsContext, zBgGraphicElement.variable, zBgGraphicElement, pointOffset.X, pointOffset.Y);
 
             return sInput.Replace(sToReplace, string.Empty);
         }
 
-        public string ProcessInlineShape(IShapeRenderer zShapeRenderer, Graphics zGraphics, ProjectLayoutElement zElement, string sInput)
+        public string ProcessInlineShape(IShapeRenderer zShapeRenderer, GraphicsContext zGraphicsContext, ProjectLayoutElement zElement, string sInput)
         {
             var kvpMatchedProcessor = new KeyValuePair<Regex, Action<Match, ProjectLayoutElement, ProjectLayoutElement, PointOffset>>();
             Match zMatch = null;
@@ -197,7 +196,7 @@ namespace CardMaker.Card
             if(zBgShapeElement.opacity == -1)
                 zBgShapeElement.opacity = zBgShapeElement.GetElementColor().A;
 
-            zShapeRenderer.HandleShapeRender(zGraphics, zBgShapeElement.variable, zBgShapeElement, pointOffset.X, pointOffset.Y);
+            zShapeRenderer.HandleShapeRender(zGraphicsContext, zBgShapeElement.variable, zBgShapeElement, pointOffset.X, pointOffset.Y);
 
             return sInput.Replace(sToReplace, string.Empty);
         }

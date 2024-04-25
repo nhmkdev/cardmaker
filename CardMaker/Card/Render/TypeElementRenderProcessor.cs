@@ -22,7 +22,6 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Drawing;
 using CardMaker.Card.Shapes;
 using CardMaker.Data;
 using CardMaker.XML;
@@ -46,21 +45,21 @@ namespace CardMaker.Card.Render
             m_zDrawText = zDrawText;
         }
 
-        public string Render(Graphics zGraphics, ProjectLayoutElement zElement, Deck zDeck, string sInput, int nX, int nY, bool bExport)
+        public string Render(GraphicsContext zGraphicsContext, ProjectLayoutElement zElement, Deck zDeck, string sInput, int nX, int nY, bool bExport)
         {
             switch (EnumUtil.GetElementType(zElement.type))
             {
                 case ElementType.Text:
-                    m_zDrawText.DrawText(zGraphics, zElement, sInput);
+                    m_zDrawText.DrawText(zGraphicsContext, zElement, sInput);
                     break;
                 case ElementType.FormattedText:
-                    m_zDrawFormattedText.Draw(zGraphics, zDeck, zElement, sInput);
+                    m_zDrawFormattedText.Draw(zGraphicsContext, zDeck, zElement, sInput);
                     break;
                 case ElementType.Graphic:
-                    m_zDrawGraphic.DrawGraphicFile(zGraphics, sInput, zElement);
+                    m_zDrawGraphic.DrawGraphicFile(zGraphicsContext, sInput, zElement);
                     break;
                 case ElementType.Shape:
-                    m_zShapeRenderer.HandleShapeRender(zGraphics, sInput.ToLower(), zElement);
+                    m_zShapeRenderer.HandleShapeRender(zGraphicsContext, sInput.ToLower(), zElement);
                     break;
             }
             return sInput;

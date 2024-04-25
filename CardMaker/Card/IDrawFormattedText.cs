@@ -22,13 +22,12 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Drawing;
 using CardMaker.XML;
 
 namespace CardMaker.Card
 {
     interface IDrawFormattedText
     {
-        void Draw(Graphics zGraphics, Deck zDeck, ProjectLayoutElement zElement, string sInput);
+        void Draw(GraphicsContext zGraphicsContext, Deck zDeck, ProjectLayoutElement zElement, string sInput);
     }
 }

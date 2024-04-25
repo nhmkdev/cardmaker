@@ -22,13 +22,12 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Drawing;
 using CardMaker.XML;
 
 namespace CardMaker.Card.Render
 {
     interface IElementRenderProcessor
     {
-        string Render(Graphics zGraphics, ProjectLayoutElement zElement, Deck zDeck, string sInput, int nX, int nY, bool bExport);
+        string Render(GraphicsContext zGraphicsContext, ProjectLayoutElement zElement, Deck zDeck, string sInput, int nX, int nY, bool bExport);
     }
 }

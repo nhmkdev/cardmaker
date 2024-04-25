@@ -40,8 +40,9 @@ namespace CardMaker.Card
     /// </summary>
     public class DrawTextTextRenderer : IDrawText
     {
-        public void DrawText(Graphics zGraphics, ProjectLayoutElement zElement, string sInput)
+        public void DrawText(GraphicsContext zGraphicsContext, ProjectLayoutElement zElement, string sInput)
         {
+            var zGraphics = zGraphicsContext.Graphics;
             var zFont = zElement.GetElementFont();
             var colorFont = zElement.GetElementColor();
 

@@ -114,15 +114,7 @@ namespace CardMaker.Forms
         public MDICanvas()
         {
             InitializeComponent();
-            var zBitmap = new Bitmap(32, 32);
-            Graphics zGraphics = Graphics.FromImage(zBitmap);
-            Brush zBlack = new SolidBrush(Color.LightGray);
-            Brush zWhite = new SolidBrush(Color.White);
-            zGraphics.FillRectangle(zBlack, 0, 0, 16, 16);
-            zGraphics.FillRectangle(zWhite, 16, 0, 16, 16);
-            zGraphics.FillRectangle(zBlack, 16, 16, 16, 16);
-            zGraphics.FillRectangle(zWhite, 0, 16, 16, 16);
-            panelCardCanvas.BackgroundImage = zBitmap;
+            panelCardCanvas.BackgroundImage = CardMakerConstants.GridBackground;
             CardMakerInstance.CanvasUserAction = false;
             // m_zCardCanvas is a panel within the panelCardCanvas
             m_zCardCanvas = new CardCanvas

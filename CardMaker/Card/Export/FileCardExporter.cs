@@ -29,7 +29,6 @@ using System.IO;
 using System.Linq;
 using CardMaker.Data;
 using Support.IO;
-using Support.Progress;
 
 namespace CardMaker.Card.Export
 {
@@ -132,10 +131,10 @@ namespace CardMaker.Card.Export
                         ProcessSubLayoutExports(m_sExportFolder);
 
 #warning TODO: optimize this by only creating the bitmap when necessary                        
-                                                var bitmapSingleCard = new Bitmap(CurrentDeck.CardLayout.width, CurrentDeck.CardLayout.height);
+                        var bitmapSingleCard = new Bitmap(CurrentDeck.CardLayout.width, CurrentDeck.CardLayout.height);
                         var zSingleCardGraphics = Graphics.FromImage(bitmapSingleCard);
                         ClearGraphics(zSingleCardGraphics);
-                        var bExportCard = CardRenderer.DrawPrintLineToGraphics(zSingleCardGraphics, 0, 0, !CurrentDeck.CardLayout.exportTransparentBackground);
+                        var bExportCard = CardRenderer.DrawPrintLineToGraphics(new GraphicsContext(zSingleCardGraphics, bitmapSingleCard), 0, 0, !CurrentDeck.CardLayout.exportTransparentBackground);
                         if (bExportCard)
                         {
                             ProcessRotateExport(bitmapSingleCard, CurrentDeck.CardLayout, false);

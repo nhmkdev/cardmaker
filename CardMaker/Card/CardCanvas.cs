@@ -22,9 +22,7 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using CardMaker.Events.Args;
-using CardMaker.XML;
-using Support.IO;
+using CardMaker.Data;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -36,6 +34,7 @@ namespace CardMaker.Card
         public bool CardExportContinue { get; private set; }
         private Deck ActiveDeck => m_zCardRenderer.CurrentDeck;
         private readonly Size m_zDefaultNoLayoutSize = new Size(320, 80);
+        private Bitmap m_zCardBuffer;
 
         public CardRenderer CardRenderer => m_zCardRenderer;
 
@@ -98,6 +97,20 @@ namespace CardMaker.Card
             Size = ActiveDeck?.CardLayout != null 
                 ? new Size((int)((float)ActiveDeck.CardLayout.width * m_zCardRenderer.ZoomLevel), (int)((float)ActiveDeck.CardLayout.height * m_zCardRenderer.ZoomLevel)) 
                 : m_zDefaultNoLayoutSize;
+            UpdateCardBuffer();
+        }
+
+        private void UpdateCardBuffer()
+        {
+            try
+            {
+                m_zCardBuffer?.Dispose();
+            }
+            catch { }
+
+            m_zCardBuffer = new Bitmap(
+                Size.Width == 0 ? m_zDefaultNoLayoutSize.Width : Size.Width, 
+                Size.Height == 0 ? m_zDefaultNoLayoutSize.Height : Size.Height);
         }
 
         #region paint overrides
@@ -114,8 +127,22 @@ namespace CardMaker.Card
             
             if (-1 != ActiveDeck.CardIndex && ActiveDeck.CardIndex < ActiveDeck.CardCount)
             {
-                e.Graphics.FillRectangle(Brushes.White, 0, 0, Size.Width, Size.Height);
-                var bContinueWithCardExport = m_zCardRenderer.DrawCard(0, 0, e.Graphics, ActiveDeck.CurrentLine, false, true);
+                if (m_zCardBuffer == null)
+                {
+                    UpdateCardBuffer();
+                }
+
+                if(ActiveDeck.CardLayout.exportTransparentBackground)
+                {
+                    e.Graphics.FillRectangle(CardMakerConstants.GridBackgroundBrush, 0, 0, Size.Width, Size.Height);
+                } 
+                else
+                {
+                    e.Graphics.FillRectangle(Brushes.White, 0, 0, Size.Width, Size.Height);
+                }
+                var bContinueWithCardExport = m_zCardRenderer.DrawCard(0, 0, 
+                    new GraphicsContext(Graphics.FromImage(m_zCardBuffer), m_zCardBuffer), ActiveDeck.CurrentLine, false, true);
+                e.Graphics.DrawImageUnscaled(m_zCardBuffer, 0, 0);
                 FireCardTaggedAsExport(bContinueWithCardExport);
             }
         }

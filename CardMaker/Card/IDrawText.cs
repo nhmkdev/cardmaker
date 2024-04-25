@@ -22,13 +22,12 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Drawing;
 using CardMaker.XML;
 
 namespace CardMaker.Card
 {
     public interface IDrawText
     {
-        void DrawText(Graphics zGraphics, ProjectLayoutElement zElement, string sInput);
+        void DrawText(GraphicsContext zGraphicsContext, ProjectLayoutElement zElement, string sInput);
     }
 }

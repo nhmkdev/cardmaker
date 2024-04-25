@@ -22,7 +22,6 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Drawing;
 using CardMaker.Card.Shapes;
 using CardMaker.XML;
 
@@ -30,7 +29,7 @@ namespace CardMaker.Card
 {
     interface IInlineBackgroundElementProcessor
     {
-        string ProcessInlineBackgroundGraphic(IDrawGraphic zDrawGraphic, Graphics zGraphics, ProjectLayoutElement zElement, string sInput);
-        string ProcessInlineShape(IShapeRenderer zShapeRenderer, Graphics zGraphics, ProjectLayoutElement zElement, string sInput);
+        string ProcessInlineBackgroundGraphic(IDrawGraphic zDrawGraphic, GraphicsContext zGraphicsContext, ProjectLayoutElement zElement, string sInput);
+        string ProcessInlineShape(IShapeRenderer zShapeRenderer, GraphicsContext zGraphicsContext, ProjectLayoutElement zElement, string sInput);
     }
 }

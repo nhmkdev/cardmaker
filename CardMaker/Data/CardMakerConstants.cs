@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Text;
 using Google.Apis.Sheets.v4;
 
@@ -48,6 +49,22 @@ namespace CardMaker.Data
 
         public static readonly string[] GOOGLE_SCOPES = new string[]
             {SheetsService.Scope.SpreadsheetsReadonly};
+
+        public static readonly Bitmap GridBackground;
+        public static readonly TextureBrush GridBackgroundBrush;
+
+        static CardMakerConstants()
+        {
+            GridBackground = new Bitmap(32, 32);
+            var zGraphics = Graphics.FromImage(GridBackground);
+            Brush zBlack = new SolidBrush(Color.LightGray);
+            Brush zWhite = new SolidBrush(Color.White);
+            zGraphics.FillRectangle(zBlack, 0, 0, 16, 16);
+            zGraphics.FillRectangle(zWhite, 16, 0, 16, 16);
+            zGraphics.FillRectangle(zBlack, 16, 16, 16, 16);
+            zGraphics.FillRectangle(zWhite, 0, 16, 16, 16);
+            GridBackgroundBrush = new TextureBrush(GridBackground, WrapMode.Tile);
+        }
 
     }
 

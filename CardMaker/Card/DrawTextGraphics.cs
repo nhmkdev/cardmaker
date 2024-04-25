@@ -34,8 +34,9 @@ namespace CardMaker.Card
 {
     public class DrawTextGraphics : IDrawText
     {
-        public void DrawText(Graphics zGraphics, ProjectLayoutElement zElement, string sInput)
+        public void DrawText(GraphicsContext zGraphicsContext, ProjectLayoutElement zElement, string sInput)
         {
+            var zGraphics = zGraphicsContext.Graphics;
             var zFont = zElement.GetElementFont();
 
             if (null == zFont) // default to something!

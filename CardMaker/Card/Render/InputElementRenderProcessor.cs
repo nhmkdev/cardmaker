@@ -22,7 +22,6 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Drawing;
 using CardMaker.Data;
 using CardMaker.XML;
 
@@ -30,7 +29,7 @@ namespace CardMaker.Card.Render
 {
     class InputElementRenderProcessor : IElementRenderProcessor
     {
-        public string Render(Graphics zGraphics, ProjectLayoutElement zElement, Deck zDeck, string sInput, int nX, int nY, bool bExport)
+        public string Render(GraphicsContext zGraphicsContext, ProjectLayoutElement zElement, Deck zDeck, string sInput, int nX, int nY, bool bExport)
         {
             switch (EnumUtil.GetElementType(zElement.type))
             {

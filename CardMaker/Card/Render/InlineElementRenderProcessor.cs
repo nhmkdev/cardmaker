@@ -22,7 +22,6 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Drawing;
 using CardMaker.Card.Shapes;
 using CardMaker.XML;
 
@@ -42,14 +41,14 @@ namespace CardMaker.Card.Render
             m_zDrawGraphic = zDrawGraphic;
         }
 
-        public string Render(Graphics zGraphics, ProjectLayoutElement zElement, Deck zDeck, string sInput, int nX, int nY, bool bExport)
+        public string Render(GraphicsContext zGraphicsContext, ProjectLayoutElement zElement, Deck zDeck, string sInput, int nX, int nY, bool bExport)
         {
             // TODO: this should just be a sequence of processors 1) transform 2) background 3) background shape 4) render 5) blah
             // render any inline shape (max of 1)
-            sInput = s_zInlineBackgroundElementProcessor.ProcessInlineShape(m_zShapeRenderer, zGraphics, zElement, sInput);
+            sInput = s_zInlineBackgroundElementProcessor.ProcessInlineShape(m_zShapeRenderer, zGraphicsContext, zElement, sInput);
 
             // render any inline background image (max of 1)
-            sInput = s_zInlineBackgroundElementProcessor.ProcessInlineBackgroundGraphic(m_zDrawGraphic, zGraphics, zElement, sInput);
+            sInput = s_zInlineBackgroundElementProcessor.ProcessInlineBackgroundGraphic(m_zDrawGraphic, zGraphicsContext, zElement, sInput);
 
             return sInput;
         }

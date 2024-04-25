@@ -38,7 +38,12 @@ namespace UnitTest.DeckObject
         private Mock<IShapeRenderer> m_mockShapeRenderer = new Mock<IShapeRenderer>();
 
         private InlineBackgroundElementProcessor backgroundElementProcessor = new InlineBackgroundElementProcessor();
-        private Graphics m_zGraphics = Graphics.FromImage(new Bitmap(1024, 1024));
+
+        private GraphicsContext CreateGraphicsContext()
+        {
+            var m_zBitmapBuffer = new Bitmap(1024, 1024);
+            return new GraphicsContext(Graphics.FromImage(m_zBitmapBuffer), m_zBitmapBuffer);
+        }
 
         [TestCase("aaa#bggraphic::images/Faction_empire.bmp#bbb", "images/Faction_empire.bmp", ExpectedResult = "aaabbb")]
         [TestCase("#bggraphic::images/Faction_empire.bmp#bbb", "images/Faction_empire.bmp", ExpectedResult = "bbb")]
@@ -48,11 +53,12 @@ namespace UnitTest.DeckObject
         {
             var zTestElement = new ProjectLayoutElement();
             ProjectLayoutElement zBgElement = null;
-            m_mockDrawGraphic.Setup(h => h.DrawGraphicFile(It.IsAny<Graphics>(), It.IsAny<string>(),
+            m_mockDrawGraphic.Setup(h => h.DrawGraphicFile(It.IsAny<GraphicsContext>(), It.IsAny<string>(),
                     It.IsAny<ProjectLayoutElement>(), It.IsAny<int>(), It.IsAny<int>()))
-                .Callback<Graphics, string, ProjectLayoutElement, int, int>((g, s, p, x, y) => zBgElement = p);
+                .Callback<GraphicsContext, string, ProjectLayoutElement, int, int>((g, s, p, x, y) => zBgElement = p);
 
-            var result = backgroundElementProcessor.ProcessInlineBackgroundGraphic(m_mockDrawGraphic.Object, m_zGraphics, zTestElement, sInput);
+            var result = backgroundElementProcessor.ProcessInlineBackgroundGraphic(
+                m_mockDrawGraphic.Object, CreateGraphicsContext(), zTestElement, sInput);
 
             Assert.NotNull(zBgElement);
             Assert.AreEqual(sExpectedElementDefinition, zBgElement.variable);
@@ -70,9 +76,9 @@ namespace UnitTest.DeckObject
             var zTestElement = new ProjectLayoutElement();
             ProjectLayoutElement zBgElement = null;
             int nResultXOffset = 0, nResultYOffset = 0;
-            m_mockDrawGraphic.Setup(h => h.DrawGraphicFile(It.IsAny<Graphics>(), It.IsAny<string>(),
+            m_mockDrawGraphic.Setup(h => h.DrawGraphicFile(It.IsAny<GraphicsContext>(), It.IsAny<string>(),
                     It.IsAny<ProjectLayoutElement>(), It.IsAny<int>(), It.IsAny<int>()))
-                .Callback<Graphics, string, ProjectLayoutElement, int, int>((g, s, p, x, y) =>
+                .Callback<GraphicsContext, string, ProjectLayoutElement, int, int>((g, s, p, x, y) =>
                     {
                         zBgElement = p;
                         nResultXOffset = x;
@@ -80,7 +86,8 @@ namespace UnitTest.DeckObject
                     }
                 );
 
-            var result = backgroundElementProcessor.ProcessInlineBackgroundGraphic(m_mockDrawGraphic.Object, m_zGraphics, zTestElement, sInput);
+            var result = backgroundElementProcessor.ProcessInlineBackgroundGraphic(
+                m_mockDrawGraphic.Object, CreateGraphicsContext(), zTestElement, sInput);
 
             Assert.NotNull(zBgElement);
             Assert.AreEqual(sVariable, zBgElement.variable);
@@ -106,15 +113,16 @@ namespace UnitTest.DeckObject
         {
             var zTestElement = new ProjectLayoutElement();
             ProjectLayoutElement zBgElement = null;
-            m_mockShapeRenderer.Setup(h => h.HandleShapeRender(It.IsAny<Graphics>(), It.IsAny<string>(),
+            m_mockShapeRenderer.Setup(h => h.HandleShapeRender(It.IsAny<GraphicsContext>(), It.IsAny<string>(),
                     It.IsAny<ProjectLayoutElement>(), It.IsAny<int>(), It.IsAny<int>()))
-                .Callback<Graphics, string, ProjectLayoutElement, int, int>((g, s, p, x, y) =>
+                .Callback<GraphicsContext, string, ProjectLayoutElement, int, int>((g, s, p, x, y) =>
                     {
                         zBgElement = p;
                     }
                 );
 
-            var result = backgroundElementProcessor.ProcessInlineShape(m_mockShapeRenderer.Object, m_zGraphics, zTestElement, sInput);
+            var result = backgroundElementProcessor.ProcessInlineShape(
+                m_mockShapeRenderer.Object, CreateGraphicsContext(), zTestElement, sInput);
 
             Assert.NotNull(zBgElement);
             Assert.AreEqual(sVariable, zBgElement.variable);
@@ -134,9 +142,9 @@ namespace UnitTest.DeckObject
             var zTestElement = new ProjectLayoutElement();
             ProjectLayoutElement zBgElement = null;
             int nResultXOffset = 0, nResultYOffset = 0;
-            m_mockShapeRenderer.Setup(h => h.HandleShapeRender(It.IsAny<Graphics>(), It.IsAny<string>(),
+            m_mockShapeRenderer.Setup(h => h.HandleShapeRender(It.IsAny<GraphicsContext>(), It.IsAny<string>(),
                     It.IsAny<ProjectLayoutElement>(), It.IsAny<int>(), It.IsAny<int>()))
-                .Callback<Graphics, string, ProjectLayoutElement, int, int>((g, s, p, x, y) =>
+                .Callback<GraphicsContext, string, ProjectLayoutElement, int, int>((g, s, p, x, y) =>
                     {
                         zBgElement = p;
                         nResultXOffset = x;
@@ -144,7 +152,8 @@ namespace UnitTest.DeckObject
                     }
                 );
 
-            var result = backgroundElementProcessor.ProcessInlineShape(m_mockShapeRenderer.Object, m_zGraphics, zTestElement, sInput);
+            var result = backgroundElementProcessor.ProcessInlineShape(
+                m_mockShapeRenderer.Object, CreateGraphicsContext(), zTestElement, sInput);
 
             Assert.NotNull(zBgElement);
             Assert.AreEqual(sVariable, zBgElement.variable);

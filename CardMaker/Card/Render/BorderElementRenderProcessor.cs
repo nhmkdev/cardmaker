@@ -29,12 +29,12 @@ namespace CardMaker.Card.Render
 {
     class BorderElementRenderProcessor : IElementRenderProcessor
     {
-        public string Render(Graphics zGraphics, ProjectLayoutElement zElement, Deck zDeck, string sInput, int nX, int nY, bool bExport)
+        public string Render(GraphicsContext zGraphicsContext, ProjectLayoutElement zElement, Deck zDeck, string sInput, int nX, int nY, bool bExport)
         {
             if (0 != zElement.borderthickness)
             {
                 // note that the border is inclusive in the width/height consuming 2 pixels (0 to total-1)
-                zGraphics.DrawRectangle(
+                zGraphicsContext.Graphics.DrawRectangle(
                     255 == zElement.opacity
                         ? new Pen(zElement.GetElementBorderColor(), zElement.borderthickness)
                         : new Pen(Color.FromArgb(zElement.opacity, zElement.GetElementBorderColor()), zElement.borderthickness),

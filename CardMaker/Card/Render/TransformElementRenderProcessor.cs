@@ -30,8 +30,9 @@ namespace CardMaker.Card.Render
 {
     class TransformElementRenderProcessor : IElementRenderProcessor
     {
-        public string Render(Graphics zGraphics, ProjectLayoutElement zElement, Deck zDeck, string sInput, int nX, int nY, bool bExport)
+        public string Render(GraphicsContext zGraphicsContext, ProjectLayoutElement zElement, Deck zDeck, string sInput, int nX, int nY, bool bExport)
         {
+            var zGraphics = zGraphicsContext.Graphics;
             if (0 != zElement.rotation)
             {
                 var fTranslateX = (float) zElement.width / 2f;

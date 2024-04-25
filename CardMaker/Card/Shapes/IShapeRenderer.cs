@@ -22,13 +22,12 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Drawing;
 using CardMaker.XML;
 
 namespace CardMaker.Card.Shapes
 {
     public interface IShapeRenderer
     {
-        void HandleShapeRender(Graphics zGraphics, string sShapeInfo, ProjectLayoutElement zElement, int nXOffset = 0, int nYOffset = 0);
+        void HandleShapeRender(GraphicsContext zGraphicsContext, string sShapeInfo, ProjectLayoutElement zElement, int nXOffset = 0, int nYOffset = 0);
     }
 }

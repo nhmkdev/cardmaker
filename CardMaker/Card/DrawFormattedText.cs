@@ -38,8 +38,9 @@ namespace CardMaker.Card
 {
     class DrawFormattedText : IDrawFormattedText
     {
-        public void Draw(Graphics zGraphics, Deck zDeck, ProjectLayoutElement zElement, string sInput)
+        public void Draw(GraphicsContext zGraphicsContext, Deck zDeck, ProjectLayoutElement zElement, string sInput)
         {
+            var zGraphics = zGraphicsContext.Graphics;
 #if true
             // check the cache for this item
             var zDataFormattedCache = zDeck.GetCachedMarkup(zElement.name);

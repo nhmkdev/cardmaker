@@ -30,7 +30,7 @@ namespace CardMaker.Card.Render
 {
     class BackgroundColorElementRenderProcessor : IElementRenderProcessor
     {
-        public string Render(Graphics zGraphics, ProjectLayoutElement zElement, Deck zDeck, string sInput, int nX, int nY, bool bExport)
+        public string Render(GraphicsContext zGraphicsContext, ProjectLayoutElement zElement, Deck zDeck, string sInput, int nX, int nY, bool bExport)
         {
             switch (EnumUtil.GetElementType(zElement.type))
             {
@@ -46,7 +46,7 @@ namespace CardMaker.Card.Render
                 var zBackgroundBrush = 255 != zElement.opacity
                     ? new SolidBrush(Color.FromArgb(zElement.opacity, zElement.GetElementBackgroundColor()))
                     : new SolidBrush(zElement.GetElementBackgroundColor());
-                zGraphics.FillRectangle(zBackgroundBrush, 0, 0, zElement.width, zElement.height);
+                zGraphicsContext.Graphics.FillRectangle(zBackgroundBrush, 0, 0, zElement.width, zElement.height);
             }
             return sInput;
         }

@@ -35,6 +35,18 @@ using CardMaker.XML;
 
 namespace CardMaker.Card
 {
+    public class GraphicsContext
+    {
+        public Graphics Graphics { get; }
+        public Bitmap Bitmap { get; }
+        public float Scale { get; set; } = 1.0f;
+        public GraphicsContext(Graphics zGraphics, Bitmap zBitmap)
+        {
+            Graphics = zGraphics;
+            Bitmap = zBitmap;
+        }
+    }
+
     public class CardRenderer
     {
         private static readonly Pen s_zPenDebugBorder = new Pen(Color.FromArgb(196, Color.Red), 1);
@@ -70,18 +82,20 @@ namespace CardMaker.Card
         public Deck CurrentDeck { get; set; }
         public float ZoomLevel { get; set; }
 
-        public bool DrawPrintLineToGraphics(Graphics zGraphics)
+        public bool DrawPrintLineToGraphics(GraphicsContext zGraphicsContext)
         {
-            return DrawCard(0, 0, zGraphics, CurrentDeck.CurrentPrintLine, true, true);
+            return DrawCard(0, 0, zGraphicsContext, CurrentDeck.CurrentPrintLine, true, true);
         }
 
-        public bool DrawPrintLineToGraphics(Graphics zGraphics, int nX, int nY, bool bDrawBackground)
+        public bool DrawPrintLineToGraphics(GraphicsContext zGraphicsContext, int nX, int nY, bool bDrawBackground)
         {
-            return DrawCard(nX, nY, zGraphics, CurrentDeck.CurrentPrintLine, true, bDrawBackground);
+            return DrawCard(nX, nY, zGraphicsContext, CurrentDeck.CurrentPrintLine, true, bDrawBackground);
         }
 
-        public bool DrawCard(int nX, int nY, Graphics zGraphics, DeckLine zDeckLine, bool bExport, bool bDrawBackground)
+        public bool DrawCard(int nX, int nY, GraphicsContext zGraphicsContext, DeckLine zDeckLine, bool bExport, bool bDrawBackground)
         {
+            var zGraphics = zGraphicsContext.Graphics;
+
             // Custom Graphics Setting
             zGraphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
             zGraphics.SmoothingMode = SmoothingMode.AntiAlias;
@@ -156,7 +170,7 @@ namespace CardMaker.Card
                         // initialize the translated fields on the element to draw
                         zDrawElement.InitializeTranslatedFields();
                    
-                        DrawElement(zGraphics, CurrentDeck, zDrawElement, nX, nY, zElementString.String, bExport);
+                        DrawElement(zGraphicsContext, CurrentDeck, zDrawElement, nX, nY, zElementString.String, bExport);
                         if (!bExport)
                         {
                             zGraphics.ScaleTransform(ZoomLevel, ZoomLevel);
@@ -265,16 +279,16 @@ namespace CardMaker.Card
         /// <param name="nY">The y position to render at</param>
         /// <param name="sInput">The input string to render the element with</param>
         /// <param name="bExport">Flag indicating if this is an export</param>
-        private void DrawElement(Graphics zGraphics, Deck zDeck, ProjectLayoutElement zElement,
+        private void DrawElement(GraphicsContext zGraphicsContext, Deck zDeck, ProjectLayoutElement zElement,
             int nX, int nY, string sInput, bool bExport)
         {
             foreach (var zRenderProcessor in s_listElementRenderProcessors)
             {
-                sInput = zRenderProcessor.Render(zGraphics, zElement, zDeck, sInput, nX, nY, bExport);
+                sInput = zRenderProcessor.Render(zGraphicsContext, zElement, zDeck, sInput, nX, nY, bExport);
             }
 
             // always reset the transform
-            zGraphics.ResetTransform();
+            zGraphicsContext.Graphics.ResetTransform();
         }
 
         private void DrawLayoutDividers(Graphics zGraphics, bool bExport)

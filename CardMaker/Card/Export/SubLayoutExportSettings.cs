@@ -22,10 +22,8 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using DocumentFormat.OpenXml.Office2010.ExcelAc;
 using Support.IO;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace CardMaker.Card.Export
