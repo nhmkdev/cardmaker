@@ -22,17 +22,16 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using CardMaker.Card;
 using CardMaker.XML;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using CardMaker.Card.Import;
 using CardMaker.Data;
 using Moq;
 using Support.Progress;
 using Support.UI;
+using CardMaker.Card.Translation;
 
 namespace UnitTest.DeckObject
 {
@@ -41,7 +40,6 @@ namespace UnitTest.DeckObject
     internal class InceptStringTranslation
     {
         private const string TEST_ELEMENT_NAME = "testElement";
-        private const int DECKLINE_SUBINDEX = 4;
 
         private TestDeck _testDeck;
         private ProjectLayoutElement _testElement;
@@ -322,6 +320,24 @@ namespace UnitTest.DeckObject
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
             var result = _testDeck.TranslateString(input, _testDeck.CurrentPrintLine, _testElement, false);
             Assert.AreEqual(expectedDrawElement, result.DrawElement);
+            return result.String;
+        }
+
+        [TestCase("aa#cnva;0xff00ff#bb", ExpectedResult = "aa1bb")]
+        [TestCase("aa#cnva;0xff00ff#", ExpectedResult = "aa1")]
+        [TestCase("#cnva;0xff00ff#bb", ExpectedResult = "1bb")]
+        [TestCase("#cnv;0x804020ff#", ExpectedResult = "0.5019608;0.2509804;0.1254902;1")]
+        [TestCase("#cnvrgba;0x804020ff#", ExpectedResult = "0.5019608;0.2509804;0.1254902;1")]
+        [TestCase("#cnvargb;0x804020ff#", ExpectedResult = "1;0.5019608;0.2509804;0.1254902")]
+        [TestCase("#cnva;0x804020ff#", ExpectedResult = "1")]
+        [TestCase("#cnvr;0x804020ff#", ExpectedResult = "0.5019608")]
+        [TestCase("#cnvg;0x804020ff#", ExpectedResult = "0.2509804")]
+        [TestCase("#cnvb;0x804020ff#", ExpectedResult = "0.1254902")]
+        [TestCase("#cnvb;20ff#", ExpectedResult = InceptTranslator.CNV_BAD_COLOR_VALUE)]
+        public string ValidateColorNormalizedValue(string input)
+        {
+            _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
+            var result = _testDeck.TranslateString(input, _testDeck.CurrentPrintLine, _testElement, false);
             return result.String;
         }
 

@@ -61,6 +61,7 @@ namespace CardMaker.Card.Translation
         private static readonly Regex s_regexElementOverride = new Regex(@"(.*)(\$\[)(.+?):(.*?)(\])(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexCardCounter = new Regex(@"(.*)(##)(\d+)(;)(\d+)(;)(\d+)(#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexSubCardCounter = new Regex(@"(.*)(#sc;)(\d+)(;)(\d+)(;)(\d+)(#)(.*)", RegexOptions.Compiled);
+        private static readonly Regex s_regexColorNormalizedValue = new Regex(@"(.*)(#cnv)(.*?)(;)(.+?)(#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexRepeat = new Regex(@"(.*)(#repeat;)(\d+)(;)(.+?)(#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexRandomNumber = new Regex(@"(.*)(#random;)(-?\d+)(;)(-?\d+)(#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexMath =
@@ -81,6 +82,8 @@ namespace CardMaker.Card.Translation
         private const char ARRAY_DELIMITER = ';';
         private static readonly string[] ArrayDelimiter_string = new string[] { ARRAY_DELIMITER.ToString() };
         private static readonly char[] ArrayDelimiter_char = new char[] { ARRAY_DELIMITER };
+
+        public const string CNV_BAD_COLOR_VALUE = "[cnv invalid color]";
 
         public InceptTranslator(
             Dictionary<string, string> dictionaryDefines,
@@ -141,6 +144,8 @@ namespace CardMaker.Card.Translation
 
             // Translate sub card counter/index
             sOutput = LoopTranslateRegex(s_regexSubCardCounter, sOutput, zTranslationContext, TranslateSubCardCounter);
+
+            sOutput = LoopTranslateRegex(s_regexColorNormalizedValue, sOutput, zTranslationContext, TranslateColorNormalizedValue);
 
             // Translate element fields
             sOutput = LoopTranslateRegex(s_regexElementFields, sOutput, zTranslationContext, TranslateElementFields);
@@ -325,6 +330,48 @@ namespace CardMaker.Card.Translation
                    (nStart + (nIndex * nChange)).ToString(CultureInfo.InvariantCulture).PadLeft(nLeftPad, '0') +
                    zMatch.Groups[9];
 
+        }
+
+        private string TranslateColorNormalizedValue(Match zMatch, TranslationContext zTranslationContext)
+        {
+            // Groups                 
+            //     1  2     3   4  5    6  7 
+            //(@"(.*)(#cnv)(.?)(;)(.+?)(#)(.*)");
+            var zColor = ProjectLayoutElement.TranslateColorString(zMatch.Groups[5].ToString(), 255, out var bSuccess);
+            var sResult = string.Empty;
+            if (bSuccess)
+            {
+                switch (zMatch.Groups[3].ToString())
+                {
+                    case "rgba":
+                    case "":
+                        sResult = $"{zColor.R / 255f};{zColor.G / 255f};{zColor.B / 255f};{zColor.A / 255f}";
+                        break;
+                    case "argb":
+                        sResult = $"{zColor.A / 255f};{zColor.R / 255f};{zColor.G / 255f};{zColor.B / 255f}";
+                        break;
+                    case "r":
+                        sResult = (zColor.R / 255f).ToString();
+                        break;
+                    case "g":
+                        sResult = (zColor.G / 255f).ToString();
+                        break;
+                    case "b":
+                        sResult = (zColor.B / 255f).ToString();
+                        break;
+                    case "a":
+                        sResult = (zColor.A / 255f).ToString();
+                        break;
+                }
+            }
+            else
+            {
+                sResult = CNV_BAD_COLOR_VALUE;
+            }
+
+            return zMatch.Groups[1]
+                   + sResult
+                   + zMatch.Groups[7];
         }
 
         private string TranslationRandomNumber(Match zMatch, TranslationContext zTranslationContext)
