@@ -199,7 +199,7 @@ namespace CardMaker.Card.Export.Pdf
                     else
                     {
                         var zGraphics = Graphics.FromImage(zBuffer);
-                        bRenderCard = CardRenderer.DrawPrintLineToGraphics(new GraphicsContext(zGraphics, zBuffer), -rectCrop.X, -rectCrop.Y, true);
+                        bRenderCard = CardRenderer.DrawExportLineToGraphics(new GraphicsContext(zGraphics, zBuffer), -rectCrop.X, -rectCrop.Y, true);
                         // if cropping the border needs to be drawn to the cropped size
                         if (bRenderCard && rectCrop != Rectangle.Empty)
                             CardRenderer.DrawBorder(Graphics.FromImage(zBuffer), 0, 0, zBuffer.Width, zBuffer.Height, CurrentDeck.CardLayout, true);

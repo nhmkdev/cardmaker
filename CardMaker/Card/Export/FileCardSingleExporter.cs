@@ -74,7 +74,7 @@ namespace CardMaker.Card.Export
 
             ProcessSubLayoutExports(m_sExportFolder);
 
-            CardRenderer.DrawPrintLineToGraphics(new GraphicsContext(zGraphics, m_zExportCardBuffer), 0, 0, !CurrentDeck.CardLayout.exportTransparentBackground);
+            CardRenderer.DrawExportLineToGraphics(new GraphicsContext(zGraphics, m_zExportCardBuffer), 0, 0, !CurrentDeck.CardLayout.exportTransparentBackground);
 
             ProgressReporter.ProgressStep(progressCardIdx);
 

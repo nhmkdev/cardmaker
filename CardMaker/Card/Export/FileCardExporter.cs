@@ -130,7 +130,7 @@ namespace CardMaker.Card.Export
                         var bitmapSingleCard = new Bitmap(CurrentDeck.CardLayout.width, CurrentDeck.CardLayout.height);
                         var zSingleCardGraphics = Graphics.FromImage(bitmapSingleCard);
                         ClearGraphics(zSingleCardGraphics);
-                        var bExportCard = CardRenderer.DrawPrintLineToGraphics(new GraphicsContext(zSingleCardGraphics, bitmapSingleCard), 0, 0, !CurrentDeck.CardLayout.exportTransparentBackground);
+                        var bExportCard = CardRenderer.DrawExportLineToGraphics(new GraphicsContext(zSingleCardGraphics, bitmapSingleCard), 0, 0, !CurrentDeck.CardLayout.exportTransparentBackground);
                         if (bExportCard)
                         {
                             ProcessRotateExport(bitmapSingleCard, CurrentDeck.CardLayout, false);

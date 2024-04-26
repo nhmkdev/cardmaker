@@ -82,13 +82,7 @@ namespace CardMaker.Card
         public Deck CurrentDeck { get; set; }
         public float ZoomLevel { get; set; }
 
-#warning rename -- printing is out!
-        public bool DrawPrintLineToGraphics(GraphicsContext zGraphicsContext)
-        {
-            return DrawCard(0, 0, zGraphicsContext, CurrentDeck.CurrentLine, true, true);
-        }
-
-        public bool DrawPrintLineToGraphics(GraphicsContext zGraphicsContext, int nX, int nY, bool bDrawBackground)
+        public bool DrawExportLineToGraphics(GraphicsContext zGraphicsContext, int nX, int nY, bool bDrawBackground)
         {
             return DrawCard(nX, nY, zGraphicsContext, CurrentDeck.CurrentLine, true, bDrawBackground);
         }

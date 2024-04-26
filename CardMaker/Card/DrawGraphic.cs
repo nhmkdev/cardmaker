@@ -114,7 +114,6 @@ namespace CardMaker.Card
                 || s_zBufferMaskBitmap.Width != nWidth
                 || s_zBufferMaskBitmap.Height != nHeight)
             {
-                Logger.AddLogLine("creating new buffer mask");
                 s_zBufferMaskBitmap?.Dispose();
                 s_zBufferMaskBitmap = new Bitmap(nWidth, nHeight);
             }
