@@ -115,18 +115,14 @@ namespace CardMaker.Card.Export
                 var arrayCardIndices = GetCardIndicesArray(CurrentDeck, ExportCardIndices);
                 for(var nCardArrayIdx = 0; nCardArrayIdx < arrayCardIndices.Length; nCardArrayIdx++)
                 {
-                    int nCardId;
                     var nX = 0;
                     var nY = 0;
                     var nCardsExportedInImage = 0;
                     ClearGraphics(zContainerGraphics);
                     do
                     {
-                        // NOTE: If this loops to create a multi-card image the cardId needs to be updated
-                        nCardId = arrayCardIndices[nCardArrayIdx];
                         CurrentDeck.ResetDeckCache();
-                        // HACK - the printcard index is 0 based but all other uses of nCardId are 1 based (so ++ it!)
-                        CurrentDeck.CardPrintIndex = nCardId++;
+                        CurrentDeck.CardIndex = arrayCardIndices[nCardArrayIdx];
 
                         ProcessSubLayoutExports(m_sExportFolder);
 
@@ -194,16 +190,16 @@ namespace CardMaker.Card.Export
                         if (!string.IsNullOrEmpty(m_sOverrideStringFormat))
                         {
                             // check for the super override
-                            sFileName = CurrentDeck.TranslateFileNameString(m_sOverrideStringFormat, nCardId, nCardCountPadSize);
+                            sFileName = CurrentDeck.TranslateFileNameString(m_sOverrideStringFormat, CurrentDeck.CardNumber, nCardCountPadSize);
                         }
                         else if (!string.IsNullOrEmpty(CurrentDeck.CardLayout.exportNameFormat))
                         {
                             // check for the per layout override
-                            sFileName = CurrentDeck.TranslateFileNameString(CurrentDeck.CardLayout.exportNameFormat, nCardId, nCardCountPadSize);
+                            sFileName = CurrentDeck.TranslateFileNameString(CurrentDeck.CardLayout.exportNameFormat, CurrentDeck.CardNumber, nCardCountPadSize);
                         }
                         else // default
                         {
-                            sFileName = CurrentDeck.CardLayout.Name + "_" + (nCardId).ToString(CultureInfo.InvariantCulture).PadLeft(nCardCountPadSize, '0');
+                            sFileName = CurrentDeck.CardLayout.Name + "_" + (CurrentDeck.CardNumber).ToString(CultureInfo.InvariantCulture).PadLeft(nCardCountPadSize, '0');
                         }
                         try
                         {

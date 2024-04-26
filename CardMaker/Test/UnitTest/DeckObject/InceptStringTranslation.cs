@@ -70,8 +70,8 @@ namespace UnitTest.DeckObject
         {
             const string expected = "sample string with nothing special.";
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
-            var result = _testDeck.TranslateString(expected, _testDeck.CurrentPrintLine, _testElement, false);
-            var secondResult = _testDeck.TranslateString(expected, _testDeck.CurrentPrintLine, _testElement, false);
+            var result = _testDeck.TranslateString(expected, _testDeck.CurrentLine, _testElement);
+            var secondResult = _testDeck.TranslateString(expected, _testDeck.CurrentLine, _testElement);
             // TODO: moq or something to validate the cache was actually hit
             Assert.AreEqual(result, secondResult);
         }
@@ -80,7 +80,7 @@ namespace UnitTest.DeckObject
         public string ValidateNonTranslate(string input)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
-            var result = _testDeck.TranslateString(input, _testDeck.CurrentPrintLine, _testElement, false);
+            var result = _testDeck.TranslateString(input, _testDeck.CurrentLine, _testElement);
             Assert.IsTrue(result.DrawElement);
             return result.String;
         }
@@ -108,9 +108,9 @@ namespace UnitTest.DeckObject
                 listLines,
                 listDefines,
                 null);
-            _testDeck.CardPrintIndex = 0;
+            _testDeck.CardIndex = 0;
 
-            return _testDeck.TranslateString(sInput, _testDeck.CurrentPrintLine, _testElement, false).String;
+            return _testDeck.TranslateString(sInput, _testDeck.CurrentLine, _testElement).String;
         }
 
         [TestCase("![cardcount]", ExpectedResult = "10")]
@@ -127,9 +127,8 @@ namespace UnitTest.DeckObject
                 new List<string>{"2", "bbb"},
                 new List<string>{"5", "ccc"},
             }, new List<List<string>>(), "test");
-            _testDeck.CardPrintIndex = 6;
-#warning: should do a test with the non print card index
-            var result = _testDeck.TranslateString(input, _testDeck.CurrentPrintLine, _testElement, true);
+            _testDeck.CardIndex = 6;
+            var result = _testDeck.TranslateString(input, _testDeck.CurrentLine, _testElement);
             return result.String;
         }
 
@@ -147,7 +146,7 @@ namespace UnitTest.DeckObject
         public string ValidateElementFields(string input)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
-            var result = _testDeck.TranslateString(input, _testDeck.CurrentPrintLine, _testElement, false);
+            var result = _testDeck.TranslateString(input, _testDeck.CurrentLine, _testElement);
             return result.String;
         }
 
@@ -158,7 +157,7 @@ namespace UnitTest.DeckObject
         public string ValidatePadding(string input)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
-            var result = _testDeck.TranslateString(input, _testDeck.CurrentPrintLine, _testElement, false);
+            var result = _testDeck.TranslateString(input, _testDeck.CurrentLine, _testElement);
             return result.String;
         }
 
@@ -188,7 +187,7 @@ namespace UnitTest.DeckObject
         public string ValidateLogic(string input)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
-            var result = _testDeck.TranslateString(input, _testDeck.CurrentPrintLine, _testElement, false);
+            var result = _testDeck.TranslateString(input, _testDeck.CurrentLine, _testElement);
             return result.String;
         }
 
@@ -205,7 +204,7 @@ namespace UnitTest.DeckObject
         public string ValidateGroupedIfStatements(string input)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
-            var result = _testDeck.TranslateString(input, _testDeck.CurrentPrintLine, _testElement, false);
+            var result = _testDeck.TranslateString(input, _testDeck.CurrentLine, _testElement);
             return result.String;
         }
 
@@ -222,7 +221,7 @@ namespace UnitTest.DeckObject
         public string ValidateGroupedSwitchStatements(string input)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
-            var result = _testDeck.TranslateString(input, _testDeck.CurrentPrintLine, _testElement, false);
+            var result = _testDeck.TranslateString(input, _testDeck.CurrentLine, _testElement);
             return result.String;
         }
 
@@ -240,7 +239,7 @@ namespace UnitTest.DeckObject
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
 
-            var result = _testDeck.TranslateString(input, _testDeck.CurrentPrintLine, _testElement, false);
+            var result = _testDeck.TranslateString(input, _testDeck.CurrentLine, _testElement);
             return result.String;
         }
 
@@ -262,7 +261,7 @@ namespace UnitTest.DeckObject
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
 
-            var result = _testDeck.TranslateString(input, _testDeck.CurrentPrintLine, _testElement, false);
+            var result = _testDeck.TranslateString(input, _testDeck.CurrentLine, _testElement);
             return result.String;
         }
 
@@ -273,7 +272,7 @@ namespace UnitTest.DeckObject
         public void ValidateRandom(int nMin, int nMax, bool bExpectError)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
-            var result = _testDeck.TranslateString(string.Format("#random;{0};{1}#", nMin, nMax), _testDeck.CurrentPrintLine, _testElement, false);
+            var result = _testDeck.TranslateString(string.Format("#random;{0};{1}#", nMin, nMax), _testDeck.CurrentLine, _testElement);
             if (bExpectError)
             {
                 Assert.AreEqual(result.String, "Invalid random specified. Min >= Max");
@@ -292,7 +291,7 @@ namespace UnitTest.DeckObject
         public void ValidateRandomTranslation(string sInput, string sExpectedStart, string sExpectedEnd)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
-            var sResult = _testDeck.TranslateString(sInput, _testDeck.CurrentPrintLine, _testElement, false).String;
+            var sResult = _testDeck.TranslateString(sInput, _testDeck.CurrentLine, _testElement).String;
             Console.WriteLine(sResult);
             Assert.True(sResult.StartsWith(sExpectedStart));
             Assert.True(sResult.EndsWith(sExpectedEnd));
@@ -318,7 +317,7 @@ namespace UnitTest.DeckObject
         public string ValidateNoDraw(string input, bool expectedDrawElement)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
-            var result = _testDeck.TranslateString(input, _testDeck.CurrentPrintLine, _testElement, false);
+            var result = _testDeck.TranslateString(input, _testDeck.CurrentLine, _testElement);
             Assert.AreEqual(expectedDrawElement, result.DrawElement);
             return result.String;
         }
@@ -337,7 +336,7 @@ namespace UnitTest.DeckObject
         public string ValidateColorNormalizedValue(string input)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
-            var result = _testDeck.TranslateString(input, _testDeck.CurrentPrintLine, _testElement, false);
+            var result = _testDeck.TranslateString(input, _testDeck.CurrentLine, _testElement);
             return result.String;
         }
 
@@ -381,18 +380,19 @@ namespace UnitTest.DeckObject
             {
                 new List<string>{"scale_factor", "1.5"}
             }, "test");
-            return _testDeck.TranslateString(input, _testDeck.CurrentPrintLine, _testElement, false).String;
+            return _testDeck.TranslateString(input, _testDeck.CurrentLine, _testElement).String;
         }
 
         // x + (current card index * y) with left padded 0's numbering z
         [TestCase("##0;0;0#", 0, ExpectedResult = "0")]
-        [TestCase("##0;0;0#", 10, ExpectedResult = "0")]
+        [TestCase("##0;0;0#", 9, ExpectedResult = "0")]
+        [TestCase("##0;1;0#", 9, ExpectedResult = "9")]
         [TestCase("##500;10;8#", 1, ExpectedResult = "00000510")]
         public string ValidateCounter(string input, int cardIndex)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
             _testDeck.SetCardIndex(cardIndex);
-            return _testDeck.TranslateString(input, _testDeck.CurrentPrintLine, _testElement, false).String;
+            return _testDeck.TranslateString(input, _testDeck.CurrentLine, _testElement).String;
         }
 
         [TestCase("a", "3", ExpectedResult = "3")]
@@ -410,7 +410,7 @@ namespace UnitTest.DeckObject
                 },
                 new List<List<string>>(),
                 null);
-            return _testDeck.TranslateString("@["+ keyName + "]", _testDeck.ValidLines[0], _testElement, false).String;
+            return _testDeck.TranslateString("@["+ keyName + "]", _testDeck.ValidLines[0], _testElement).String;
         }
 
         [TestCase("x", "x" , ExpectedResult = 1)]
@@ -477,7 +477,7 @@ namespace UnitTest.DeckObject
         public string ValidateSpecialCharacterTranslation(string input)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
-            var result = _testDeck.TranslateString(input, _testDeck.CurrentPrintLine, _testElement, false);
+            var result = _testDeck.TranslateString(input, _testDeck.CurrentLine, _testElement);
             return result.String;
         }
 
@@ -485,7 +485,7 @@ namespace UnitTest.DeckObject
         public void ValidateNewlineSpecialCharacterTranslation()
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
-            var result = _testDeck.TranslateString("\\n", _testDeck.CurrentPrintLine, _testElement, false);
+            var result = _testDeck.TranslateString("\\n", _testDeck.CurrentLine, _testElement);
             Assert.AreEqual(Environment.NewLine, result.String);
         }
 
@@ -495,7 +495,7 @@ namespace UnitTest.DeckObject
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
             _testElement.type = ElementType.FormattedText.ToString();
-            var result = _testDeck.TranslateString(input, _testDeck.CurrentPrintLine, _testElement, false);
+            var result = _testDeck.TranslateString(input, _testDeck.CurrentLine, _testElement);
             return result.String;
         }
 
@@ -552,7 +552,7 @@ namespace UnitTest.DeckObject
                 listLines,
                 listDefines,
                 null);
-            var result = _testDeck.TranslateString(line, _testDeck.CurrentPrintLine, _testElement, false);
+            var result = _testDeck.TranslateString(line, _testDeck.CurrentLine, _testElement);
             return result.String;
         }
 
@@ -575,7 +575,7 @@ namespace UnitTest.DeckObject
                 listLines,
                 listDefines,
                 null);
-            _testDeck.TranslateString(line, _testDeck.CurrentPrintLine, _testElement, false);
+            _testDeck.TranslateString(line, _testDeck.CurrentLine, _testElement);
         }
 
         [TestCase("@[action,aa,bb]", ExpectedResult = "aa::bb")]
@@ -609,7 +609,7 @@ namespace UnitTest.DeckObject
                 listDefines,
                 null);
             _testElement.type = ElementType.FormattedText.ToString();
-            var result = _testDeck.TranslateString(line, _testDeck.CurrentPrintLine, _testElement, false);
+            var result = _testDeck.TranslateString(line, _testDeck.CurrentLine, _testElement);
             return result.String;
         }
 
@@ -641,7 +641,7 @@ namespace UnitTest.DeckObject
                 listDefines,
                 null);
             _testElement.type = ElementType.FormattedText.ToString();
-            var result = _testDeck.TranslateString(line, _testDeck.CurrentPrintLine, _testElement, false);
+            var result = _testDeck.TranslateString(line, _testDeck.CurrentLine, _testElement);
             return result.String;
         }
 
@@ -717,7 +717,7 @@ namespace UnitTest.DeckObject
                 GetOverride("variable", VARIABLE) +
                 " " + 
                 SUFFIX
-                , _testDeck.CurrentPrintLine, _testElement, false);
+                , _testDeck.CurrentLine, _testElement);
             Assert.NotNull(zElementString.OverrideFieldToValueDictionary);
             _testDeck.GetVariableOverrideElement(_testElement, zElementString.OverrideFieldToValueDictionary);
 
@@ -773,7 +773,7 @@ namespace UnitTest.DeckObject
                 GetOverride("x", string.Empty) +
                 " " +
                 SUFFIX
-                , _testDeck.CurrentPrintLine, _testElement, false);
+                , _testDeck.CurrentLine, _testElement);
             Assert.True(0 == zElementString.OverrideFieldToValueDictionary.Count);
             _testDeck.GetVariableOverrideElement(_testElement, zElementString.OverrideFieldToValueDictionary);
 
@@ -812,7 +812,7 @@ namespace UnitTest.DeckObject
                 },
                 null);
             _testDeck.SetDisallowedCharReplacement('?', "bb");
-            _testDeck.CardPrintIndex = cardNumber;
+            _testDeck.CardIndex = cardNumber;
             return _testDeck.TranslateFileNameString(input, cardNumber, leftPad);
         }
 
@@ -849,7 +849,7 @@ namespace UnitTest.DeckObject
                 listDefines,
                 null);
 
-            return _testDeck.TranslateString(input, _testDeck.CurrentPrintLine, _testElement, false).String;
+            return _testDeck.TranslateString(input, _testDeck.CurrentLine, _testElement).String;
         }
 
         // graphic elements

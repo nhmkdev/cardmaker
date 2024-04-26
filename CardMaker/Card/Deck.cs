@@ -45,8 +45,7 @@ namespace CardMaker.Card
 
         private readonly ReferenceTranslationOverride m_zReferenceTranslationOverride = new ReferenceTranslationOverride();
 
-        protected int m_nCardIndex = -1;
-        protected int m_nCardPrintIndex;
+        protected int m_nCardIndex = 0;
 
         public ProjectLayout CardLayout { get; protected set; }
 
@@ -66,10 +65,7 @@ namespace CardMaker.Card
 
         public int CardIndex
         {
-            get
-            {
-                return m_nCardIndex;
-            }
+            get => m_nCardIndex;
             set
             {
                 if (value >= ValidLines.Count || value < 0)
@@ -81,35 +77,14 @@ namespace CardMaker.Card
             }
         }
 
-#warning TODO: investigate the complete removal of the CardPrintIndex (may no longer be required)
-        // NOTE - the CardPrintIndex is critical to printing as the value is allowed to equal ValidLines.Count unlike CardIndex (necessary for layout transition etc.)
-        public int CardPrintIndex
-        {
-            get
-            {
-                return m_nCardPrintIndex;
-            }
-            set
-            {
-                if (value > ValidLines.Count || value < 0)
-                {
-                    return;
-                }
-                ResetDeckCache();
-                m_nCardPrintIndex = value;
-            }
-        }
-
-        public DeckLine CurrentPrintLine => ValidLines[m_nCardPrintIndex];
+        /// <summary>
+        /// The 1-based card number (for use in file exports primarily)
+        /// </summary>
+        public int CardNumber => CardIndex + 1;
 
         public DeckLine CurrentLine => ValidLines[m_nCardIndex];
 
         public int CardCount => ValidLines.Count;
-
-        protected void ResetPrintCardIndex()
-        {
-            m_nCardPrintIndex = 0;
-        }
 
         public Deck()
         {
@@ -118,9 +93,9 @@ namespace CardMaker.Card
             TranslatorFactory = new TranslatorFactory();
         }
 
-        public ElementString TranslateString(string sRawString, DeckLine zDeckLine, ProjectLayoutElement zElement, bool bPrint, string sCacheSuffix = "", bool bSkipCache = false)
+        public ElementString TranslateString(string sRawString, DeckLine zDeckLine, ProjectLayoutElement zElement, string sCacheSuffix = "", bool bSkipCache = false)
         {
-            return Translator.TranslateString(this, sRawString, bPrint ? m_nCardPrintIndex : m_nCardIndex, zDeckLine, zElement, sCacheSuffix, bSkipCache);
+            return Translator.TranslateString(this, sRawString, m_nCardIndex, zDeckLine, zElement, sCacheSuffix, bSkipCache);
         }
 
         public ElementString GetStringFromTranslationCache(string sKey)
@@ -142,9 +117,9 @@ namespace CardMaker.Card
 
 #endregion
 
-        public ProjectLayoutElement GetOverrideElement(ProjectLayoutElement zElement, DeckLine zDeckLine, bool bExport)
+        public ProjectLayoutElement GetOverrideElement(ProjectLayoutElement zElement, DeckLine zDeckLine)
         {
-            return Translator.GetOverrideElement(this, zElement, bExport ? m_nCardPrintIndex : m_nCardIndex, zDeckLine.ElementToOverrideFieldsToValues, zDeckLine);
+            return Translator.GetOverrideElement(this, zElement, m_nCardIndex, zDeckLine.ElementToOverrideFieldsToValues, zDeckLine);
         }
 
         public ProjectLayoutElement GetVariableOverrideElement(ProjectLayoutElement zElement, Dictionary<string, string> dictionaryOverrideFieldToValue)
@@ -249,7 +224,7 @@ namespace CardMaker.Card
 
             CardLayout = zLayout;
 
-            ResetPrintCardIndex();
+            CardIndex = 0;
             ProjectLayoutReference[] zReferenceData = null;
 
             if (null != CardLayout.Reference)
@@ -327,7 +302,7 @@ namespace CardMaker.Card
                     zParentDeck.m_zReferenceTranslationOverride.ColumnsToValues,
                     m_zReferenceTranslationOverride.ColumnsToValues);
                 AppendDictionaryWithNewKeys(
-                    zParentDeck.CurrentPrintLine.ColumnsToValues,
+                    zParentDeck.CurrentLine.ColumnsToValues,
                     m_zReferenceTranslationOverride.ColumnsToValues);
             }
         }

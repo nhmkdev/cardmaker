@@ -82,14 +82,15 @@ namespace CardMaker.Card
         public Deck CurrentDeck { get; set; }
         public float ZoomLevel { get; set; }
 
+#warning rename -- printing is out!
         public bool DrawPrintLineToGraphics(GraphicsContext zGraphicsContext)
         {
-            return DrawCard(0, 0, zGraphicsContext, CurrentDeck.CurrentPrintLine, true, true);
+            return DrawCard(0, 0, zGraphicsContext, CurrentDeck.CurrentLine, true, true);
         }
 
         public bool DrawPrintLineToGraphics(GraphicsContext zGraphicsContext, int nX, int nY, bool bDrawBackground)
         {
-            return DrawCard(nX, nY, zGraphicsContext, CurrentDeck.CurrentPrintLine, true, bDrawBackground);
+            return DrawCard(nX, nY, zGraphicsContext, CurrentDeck.CurrentLine, true, bDrawBackground);
         }
 
         public bool DrawCard(int nX, int nY, GraphicsContext zGraphicsContext, DeckLine zDeckLine, bool bExport, bool bDrawBackground)
@@ -144,10 +145,10 @@ namespace CardMaker.Card
 
                         // get override Element (overrides based on data source) (this is a copy!)
                         // This takes place before translation to cover the odd case where the variable field is override in the data source
-                        var zDrawElement = CurrentDeck.GetOverrideElement(zElement, zDeckLine, bExport);
+                        var zDrawElement = CurrentDeck.GetOverrideElement(zElement, zDeckLine);
 
                         // translate any index values in the csv
-                        var zElementString = CurrentDeck.TranslateString(zDrawElement.variable, zDeckLine, zDrawElement, bExport);
+                        var zElementString = CurrentDeck.TranslateString(zDrawElement.variable, zDeckLine, zDrawElement);
                         if (!zElementString.DrawCard)
                         {
                             bContinueCardExportFromTranslation = false;

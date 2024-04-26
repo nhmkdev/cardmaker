@@ -69,7 +69,7 @@ namespace CardMaker.Card.Export
                 var zSettings = new SubLayoutExportSettings();
                 var dictionaryDefineOverrides = new Dictionary<string, string>();
                 // key point: skipping cache
-                var zElementString = zDeck.TranslateString(zElement.variable, zDeck.CurrentPrintLine, zElement, true, string.Empty, true);
+                var zElementString = zDeck.TranslateString(zElement.variable, zDeck.CurrentLine, zElement, string.Empty, true);
                 var arraySplit = zElementString.String.Split(new string[] { "::" }, StringSplitOptions.None);
                 var sLayoutName = string.Empty;
                 if (arraySplit.Length >= 1)

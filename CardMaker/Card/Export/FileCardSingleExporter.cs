@@ -66,12 +66,11 @@ namespace CardMaker.Card.Export
             UpdateBufferBitmap(CurrentDeck.CardLayout.width, CurrentDeck.CardLayout.height);
 
             var zGraphics = Graphics.FromImage(m_zExportCardBuffer);
-            var nCardIdx = m_nImageExportIndex;
             zGraphics.Clear(CurrentDeck.CardLayout.exportTransparentBackground ?
                 CardMakerConstants.NoColor :
                 Color.White);
             CurrentDeck.ResetDeckCache();
-            CurrentDeck.CardPrintIndex = nCardIdx++;
+            CurrentDeck.CardIndex = m_nImageExportIndex;
 
             ProcessSubLayoutExports(m_sExportFolder);
 
@@ -86,16 +85,16 @@ namespace CardMaker.Card.Export
             if (!string.IsNullOrEmpty(m_sOverrideStringFormat))
             {
                 // check for the super override
-                sFileName = CurrentDeck.TranslateFileNameString(m_sOverrideStringFormat, nCardIdx, nPadSize);
+                sFileName = CurrentDeck.TranslateFileNameString(m_sOverrideStringFormat, CurrentDeck.CardNumber, nPadSize);
             }
             else if (!string.IsNullOrEmpty(CurrentDeck.CardLayout.exportNameFormat))
             {
                 // check for the per layout override
-                sFileName = CurrentDeck.TranslateFileNameString(CurrentDeck.CardLayout.exportNameFormat, nCardIdx, nPadSize);
+                sFileName = CurrentDeck.TranslateFileNameString(CurrentDeck.CardLayout.exportNameFormat, CurrentDeck.CardNumber, nPadSize);
             }
             else // default
             {
-                sFileName = CurrentDeck.CardLayout.Name + "_" + (nCardIdx).ToString(CultureInfo.InvariantCulture).PadLeft(nPadSize, '0');
+                sFileName = CurrentDeck.CardLayout.Name + "_" + (CurrentDeck.CardNumber).ToString(CultureInfo.InvariantCulture).PadLeft(nPadSize, '0');
             }
             try
             {

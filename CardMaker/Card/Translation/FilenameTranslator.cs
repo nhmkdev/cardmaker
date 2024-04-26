@@ -81,7 +81,7 @@ namespace CardMaker.Card.Translation
                 string sNamedValue;
                 var sKey = zMatch.Groups[3].ToString().ToLower();
                 if (zDeck.TryGetDefineValue(sKey, dictionaryDefines, out sNamedValue)
-                    || zDeck.TryGetColumnValue(sKey, zDeck.CurrentPrintLine.ColumnsToValues, out sNamedValue))
+                    || zDeck.TryGetColumnValue(sKey, zDeck.CurrentLine.ColumnsToValues, out sNamedValue))
                 {
                     sOutput = zMatch.Groups[1] + sNamedValue.Trim() + zMatch.Groups[5];
                 }
@@ -93,7 +93,7 @@ namespace CardMaker.Card.Translation
             // replace ##, #L, Newlines
             sOutput = 
                 sOutput.Replace("##", nCardNumber.ToString(CultureInfo.InvariantCulture).PadLeft(nLeftPad, '0'))
-                .Replace("#SC", (zDeck.CurrentPrintLine.RowSubIndex + 1).ToString(CultureInfo.InvariantCulture).PadLeft(nLeftPad, '0'))
+                .Replace("#SC", (zDeck.CurrentLine.RowSubIndex + 1).ToString(CultureInfo.InvariantCulture).PadLeft(nLeftPad, '0'))
                 .Replace("#L", zLayout.Name)
                 .Replace(Environment.NewLine, string.Empty);
 

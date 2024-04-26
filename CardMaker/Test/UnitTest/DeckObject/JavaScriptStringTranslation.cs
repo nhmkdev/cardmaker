@@ -66,8 +66,8 @@ namespace UnitTest.DeckObject
         {
             const string expected = "sample string with nothing special.";
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
-            var result = _testDeck.TranslateString(expected, _testLine, _testElement, false);
-            var secondResult = _testDeck.TranslateString(expected, _testLine, _testElement, false);
+            var result = _testDeck.TranslateString(expected, _testLine, _testElement);
+            var secondResult = _testDeck.TranslateString(expected, _testLine, _testElement);
             // TODO: moq or something to validate the cache was actually hit
             Assert.AreEqual(result, secondResult);
         }
@@ -76,7 +76,7 @@ namespace UnitTest.DeckObject
         public string ValidateNonTranslate(string input)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
-            var result = _testDeck.TranslateString(input, _testLine, _testElement, false);
+            var result = _testDeck.TranslateString(input, _testLine, _testElement);
             Assert.IsTrue(result.DrawElement);
             return result.String;
         }
@@ -87,7 +87,7 @@ namespace UnitTest.DeckObject
         public string ValidateNoDraw(string input, bool expectedDrawElement)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
-            var result = _testDeck.TranslateString(input, _testLine, _testElement, false);
+            var result = _testDeck.TranslateString(input, _testLine, _testElement);
             Assert.AreEqual(expectedDrawElement, result.DrawElement);
             return result.String;
         }
@@ -99,7 +99,7 @@ namespace UnitTest.DeckObject
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
             _testDeck.SetCardIndex(cardIndex);
-            return _testDeck.TranslateString(input, _testLine, _testElement, false).String;
+            return _testDeck.TranslateString(input, _testLine, _testElement).String;
         }
 
         [TestCase("a", "3", ExpectedResult = "3")]
@@ -117,7 +117,7 @@ namespace UnitTest.DeckObject
                 },
                 new List<List<string>>(),
                 null);
-            return _testDeck.TranslateString(keyName, _testDeck.ValidLines[0], _testElement, false).String;
+            return _testDeck.TranslateString(keyName, _testDeck.ValidLines[0], _testElement).String;
         }
 
         [TestCase("x", "x" , ExpectedResult = 1)]
@@ -177,7 +177,7 @@ namespace UnitTest.DeckObject
         public string ValidateSpecialCharacterTranslation(string input)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
-            var result = _testDeck.TranslateString(input, _testLine, _testElement, false);
+            var result = _testDeck.TranslateString(input, _testLine, _testElement);
             return result.String;
         }
 
@@ -185,7 +185,7 @@ namespace UnitTest.DeckObject
         public void ValidateNewlineSpecialCharacterTranslation()
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
-            var result = _testDeck.TranslateString("'\\\\n'", _testLine, _testElement, false);
+            var result = _testDeck.TranslateString("'\\\\n'", _testLine, _testElement);
             Assert.AreEqual(Environment.NewLine, result.String);
         }
 
@@ -195,7 +195,7 @@ namespace UnitTest.DeckObject
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
             _testElement.type = ElementType.FormattedText.ToString();
-            var result = _testDeck.TranslateString(input, _testLine, _testElement, false);
+            var result = _testDeck.TranslateString(input, _testLine, _testElement);
             return result.String;
         }
 
@@ -205,7 +205,7 @@ namespace UnitTest.DeckObject
             const string slashN = "'\\n'";
             _testElement.type = ElementType.FormattedText.ToString();
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
-            var result = _testDeck.TranslateString(slashN, _testLine, _testElement, false);
+            var result = _testDeck.TranslateString(slashN, _testLine, _testElement);
             Assert.AreEqual("\n", result.String);
         }
 
@@ -251,7 +251,7 @@ namespace UnitTest.DeckObject
                 listLines,
                 listDefines,
                 null);
-            var result = _testDeck.TranslateString(line, _testLine, _testElement, false);
+            var result = _testDeck.TranslateString(line, _testLine, _testElement);
             return result.String;
         }
 
@@ -281,7 +281,7 @@ namespace UnitTest.DeckObject
                 listDefines,
                 null);
             _testElement.type = ElementType.FormattedText.ToString();
-            var result = _testDeck.TranslateString(line, _testLine, _testElement, false);
+            var result = _testDeck.TranslateString(line, _testLine, _testElement);
             return result.String;
         }
 
@@ -353,7 +353,7 @@ namespace UnitTest.DeckObject
                 GetOverride("name", NAME) +
                 GetOverride("variable", VARIABLE) +
                 $"'{RESULT}'"
-                , _testLine, _testElement, false);
+                , _testLine, _testElement);
             Assert.NotNull(zElementString.OverrideFieldToValueDictionary);
             _testDeck.GetVariableOverrideElement(_testElement, zElementString.OverrideFieldToValueDictionary);
 
@@ -406,7 +406,7 @@ namespace UnitTest.DeckObject
             var zElementString = _testDeck.TranslateString(
                 GetOverride("x", string.Empty) + 
                 $"'{RESULT}'"
-                , _testLine, _testElement, false);
+                , _testLine, _testElement);
             Assert.True(0 == zElementString.OverrideFieldToValueDictionary.Count);
             _testDeck.GetVariableOverrideElement(_testElement, zElementString.OverrideFieldToValueDictionary);
 

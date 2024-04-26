@@ -53,12 +53,11 @@ namespace CardMaker.Card.Export
             UpdateBufferBitmap(CurrentDeck.CardLayout.width, CurrentDeck.CardLayout.height);
 
             var zGraphics = Graphics.FromImage(m_zExportCardBuffer);
-            var nCardIdx = m_nImageExportIndex;
             zGraphics.Clear(CurrentDeck.CardLayout.exportTransparentBackground ?
                 CardMakerConstants.NoColor :
                 Color.White);
             CurrentDeck.ResetDeckCache();
-            CurrentDeck.CardPrintIndex = nCardIdx++;
+            CurrentDeck.CardIndex = m_nImageExportIndex;
 
             // special case for clipboard exports... need to write files somewhere (need to document this)
             ProcessSubLayoutExports(CardMakerInstance.StartupPath);

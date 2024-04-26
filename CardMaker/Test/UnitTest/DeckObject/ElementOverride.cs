@@ -57,7 +57,7 @@ namespace UnitTest.DeckObject
                 new List<List<string>>(),
                 null);
             Assert.AreEqual(1, _testDeck.ValidLines.Count);
-            return _testDeck.GetOverrideElement(_testElement, _testDeck.ValidLines[0], false);            
+            return _testDeck.GetOverrideElement(_testElement, _testDeck.ValidLines[0]);            
         }
 
         [TestCase("bordercolor", "0xFF33CCFF")]

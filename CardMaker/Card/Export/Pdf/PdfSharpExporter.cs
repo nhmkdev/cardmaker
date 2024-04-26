@@ -179,7 +179,7 @@ namespace CardMaker.Card.Export.Pdf
 #endif
                 foreach (var nCardIdx in GetExportIndices(ExportCardIndices))
                 {
-                    CurrentDeck.CardPrintIndex = nCardIdx;
+                    CurrentDeck.CardIndex = nCardIdx;
 
                     ProcessSubLayoutExports(Path.GetDirectoryName(m_sExportFile));
 #if MONO_BUILD

@@ -57,7 +57,7 @@ namespace CardMaker.Card.Export
                 for (var nCardIdx = 0; nCardIdx < CurrentDeck.CardCount; nCardIdx++)
                 {
                     IssueManager.Instance.FireChangeCardInfoEvent(nIdx, nCardIdx + 1);
-                    CurrentDeck.CardPrintIndex = nCardIdx;
+                    CurrentDeck.CardIndex = nCardIdx;
                     CardRenderer.DrawPrintLineToGraphics(new GraphicsContext(zGraphics, m_zExportCardBuffer));
                     ProgressReporter.ProgressStep(progressCardIdx);
                 }
