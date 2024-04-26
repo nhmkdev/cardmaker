@@ -142,6 +142,9 @@ namespace CardMaker.XML
         [XmlAttribute]
         public string colormatrix { get; set; }
 
+        [XmlAttribute]
+        public bool imagemasksurface { get; set; }
+
         #endregion
 
         private Color m_colorElement = Color.Black;
@@ -197,6 +200,7 @@ namespace CardMaker.XML
             gradient = string.Empty;
             colormatrix = string.Empty;
             colortype = (int)ElementColorType.Add;
+            imagemasksurface = false;
 
             InitializeTranslatedFields();
         }
@@ -304,6 +308,7 @@ namespace CardMaker.XML
             gradient = zElement.gradient;
             colortype = zElement.colortype;
             colormatrix = zElement.colormatrix;
+            imagemasksurface = zElement.imagemasksurface;
 
             if (bInitializeTranslatedFields)
             {

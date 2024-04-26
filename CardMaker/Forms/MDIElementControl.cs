@@ -29,20 +29,16 @@ using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Windows.Forms;
 using CardMaker.Card;
 using CardMaker.Card.Shapes;
 using CardMaker.Data;
-using CardMaker.Data.Serialization;
 using CardMaker.Events.Args;
 using CardMaker.Events.Managers;
 using CardMaker.Properties;
 using CardMaker.XML;
-using DocumentFormat.OpenXml.Vml.Spreadsheet;
 using Support.IO;
 using Support.UI;
-using Support.Util;
 
 namespace CardMaker.Forms
 {
@@ -939,6 +935,7 @@ namespace CardMaker.Forms
             m_dictionaryControlField.Add(numericElementOpacity, zType.GetProperty("opacity"));
             m_dictionaryControlField.Add(txtTileSize, zType.GetProperty("tilesize"));
             m_dictionaryControlField.Add(comboElementMirror, zType.GetProperty("mirrortype"));
+            m_dictionaryControlField.Add(checkMaskSurface, zType.GetProperty("imagemasksurface"));
 
             // HandleFontSettingChange related 
             m_dictionaryControlField.Add(numericLineSpace, zType.GetProperty("lineheight"));
@@ -1177,6 +1174,7 @@ namespace CardMaker.Forms
                 txtElementVariable.SelectionStart = zElement.variable.Length;
                 txtElementVariable.SelectionLength = 0;
                 comboElementMirror.SelectedIndex = zElement.mirrortype;
+                checkMaskSurface.Checked = zElement.imagemasksurface;
                 ElementType eType = EnumUtil.GetElementType(zElement.type);
                 switch (eType)
                 {

@@ -132,6 +132,7 @@ namespace CardMaker.Forms
             this.comboElementType = new System.Windows.Forms.ComboBox();
             this.contextMenuReferenceStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.contextMenuStripAssist = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.checkMaskSurface = new System.Windows.Forms.CheckBox();
             this.groupBoxElement.SuspendLayout();
             this.groupBackgroundColor.SuspendLayout();
             this.tabControl.SuspendLayout();
@@ -574,6 +575,7 @@ namespace CardMaker.Forms
             // 
             // tabPageGraphic
             // 
+            this.tabPageGraphic.Controls.Add(this.checkMaskSurface);
             this.tabPageGraphic.Controls.Add(this.btnColorMatrix);
             this.tabPageGraphic.Controls.Add(this.comboColorType);
             this.tabPageGraphic.Controls.Add(this.checkCenterOnOrigin);
@@ -618,9 +620,9 @@ namespace CardMaker.Forms
             // 
             // checkCenterOnOrigin
             // 
-            this.checkCenterOnOrigin.Location = new System.Drawing.Point(298, 4);
+            this.checkCenterOnOrigin.Location = new System.Drawing.Point(254, 3);
             this.checkCenterOnOrigin.Name = "checkCenterOnOrigin";
-            this.checkCenterOnOrigin.Size = new System.Drawing.Size(157, 24);
+            this.checkCenterOnOrigin.Size = new System.Drawing.Size(110, 24);
             this.checkCenterOnOrigin.TabIndex = 46;
             this.checkCenterOnOrigin.Text = "Center On Origin";
             this.checkCenterOnOrigin.UseVisualStyleBackColor = true;
@@ -662,9 +664,9 @@ namespace CardMaker.Forms
             // 
             // checkKeepOriginalSize
             // 
-            this.checkKeepOriginalSize.Location = new System.Drawing.Point(150, 3);
+            this.checkKeepOriginalSize.Location = new System.Drawing.Point(128, 3);
             this.checkKeepOriginalSize.Name = "checkKeepOriginalSize";
-            this.checkKeepOriginalSize.Size = new System.Drawing.Size(142, 24);
+            this.checkKeepOriginalSize.Size = new System.Drawing.Size(120, 24);
             this.checkKeepOriginalSize.TabIndex = 41;
             this.checkKeepOriginalSize.Text = "Keep Original Size";
             this.checkKeepOriginalSize.UseVisualStyleBackColor = true;
@@ -730,7 +732,7 @@ namespace CardMaker.Forms
             // 
             this.checkLockAspect.Location = new System.Drawing.Point(3, 3);
             this.checkLockAspect.Name = "checkLockAspect";
-            this.checkLockAspect.Size = new System.Drawing.Size(142, 24);
+            this.checkLockAspect.Size = new System.Drawing.Size(120, 24);
             this.checkLockAspect.TabIndex = 0;
             this.checkLockAspect.Text = "Lock Aspect Ratio";
             this.checkLockAspect.UseVisualStyleBackColor = true;
@@ -1101,6 +1103,16 @@ namespace CardMaker.Forms
             this.contextMenuStripAssist.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this.contextMenuStripAssist.Size = new System.Drawing.Size(61, 4);
             // 
+            // checkMaskSurface
+            // 
+            this.checkMaskSurface.Location = new System.Drawing.Point(370, 3);
+            this.checkMaskSurface.Name = "checkMaskSurface";
+            this.checkMaskSurface.Size = new System.Drawing.Size(110, 24);
+            this.checkMaskSurface.TabIndex = 49;
+            this.checkMaskSurface.Text = "Mask Surface";
+            this.checkMaskSurface.UseVisualStyleBackColor = true;
+            this.checkMaskSurface.CheckedChanged += new System.EventHandler(this.HandleElementValueChange);
+            // 
             // MDIElementControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1218,5 +1230,6 @@ namespace CardMaker.Forms
         private System.Windows.Forms.CheckBox checkCenterOnOrigin;
         private System.Windows.Forms.ComboBox comboColorType;
         private System.Windows.Forms.Button btnColorMatrix;
+        private System.Windows.Forms.CheckBox checkMaskSurface;
     }
 }

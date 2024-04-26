@@ -37,6 +37,7 @@ namespace CardMaker.Card
 {
     public class DrawGraphic : IDrawGraphic
     {
+        private static Bitmap m_zBufferMaskBitmap = null;
         //                                                          1    2  3
         private static readonly Regex regexImageTile = new Regex(@"(.+?)(x)(.+)", RegexOptions.Compiled);
 
@@ -57,13 +58,11 @@ namespace CardMaker.Card
                 return;
             }
 
-#if false // this is a temp hack to test masks
-            if (sPath.ToLower().Contains("mask"))
+            if (zElement.imagemasksurface)
             {
                 RenderAsMask(zGraphicsContext, zBmp, zElement);
                 return;
             }
-#endif
 
             if (zElement.centerimageonorigin)
             {
@@ -109,25 +108,41 @@ namespace CardMaker.Card
             zGraphics.DrawImage(zBmp, nX + nXGraphicOffset, nY + nYGraphicOffset, nWidth, nHeight);
         }
 
+        private static Bitmap GetMaskBufferBitmap(int nWidth, int nHeight)
+        {
+            if (m_zBufferMaskBitmap == null
+                || m_zBufferMaskBitmap.Width != nWidth
+                || m_zBufferMaskBitmap.Height != nHeight)
+            {
+                Logger.AddLogLine("creating new buffer mask");
+                m_zBufferMaskBitmap?.Dispose();
+                m_zBufferMaskBitmap = new Bitmap(nWidth, nHeight);
+            }
+
+            return m_zBufferMaskBitmap;
+        }
+
         private static void RenderAsMask(GraphicsContext zGraphicsContext, Bitmap zBitmapMask, ProjectLayoutElement zElement)
         {
             var zBitmapSurface = zGraphicsContext.Bitmap;
 
             try
             {
-#warning TODO: this full sized mask image should be cached (expand image cache to support creation/storage of this)
                 // create a full size mask to match the destination surface (simplifies logic around transforms)
-                var zBitmapFullMask = new Bitmap(zGraphicsContext.Bitmap.Width, zGraphicsContext.Bitmap.Height);
+                var zBitmapFullMask =
+                    GetMaskBufferBitmap(zGraphicsContext.Bitmap.Width, zGraphicsContext.Bitmap.Height);
+
                 var zMaskGraphics = Graphics.FromImage(zBitmapFullMask);
+                zMaskGraphics.Clear(Color.Transparent);
 
                 // mark everything outside the element region (mask) as a white pixel to indicate no masking
                 var zRegion = new Region();
-                zRegion.Transform(zGraphicsContext.Graphics.Transform);
-                zRegion.Union(new Rectangle(0, 0, zGraphicsContext.Bitmap.Width, zGraphicsContext.Bitmap.Height));
+                // NOTE: this is a bit strange as one might assume the region is empty to start with...
+                // exclude the element space and fill the rest with white (so only the element space is impacted)
                 zRegion.Exclude(new Rectangle(0, 0, zElement.width, zElement.height));
                 zMaskGraphics.Transform = zGraphicsContext.Graphics.Transform;
                 zMaskGraphics.FillRegion(Brushes.White, zRegion);
-                
+
                 // render the mask into the element region
                 zMaskGraphics.DrawImage(zBitmapMask, new Rectangle(0,0, zElement.width, zElement.height));
 
@@ -144,9 +159,19 @@ namespace CardMaker.Card
                 var arrayMask = new byte[arraySize];
                 Marshal.Copy(bitsSurface.Scan0, arraySurface, 0, arraySurface.Length);
                 Marshal.Copy(bitsMask.Scan0, arrayMask, 0, arrayMask.Length);
-#warning: optimization would be to jump into this at least where the mask starts and end after the mask ends
+                // cheap optimization -- just get byte offset of the the first and (after) last row
+                var nStartIdx = Math.Max(0, (int)((int)zMaskGraphics.Transform.OffsetY * bitsSurface.Stride));
+                var nEndIdx = Math.Min(
+                    arraySurface.Length, 
+                    nStartIdx + bitsSurface.Stride * (int)(zMaskGraphics.Transform.Elements[0] * zElement.height + 1));
+
+                // TODO: optimization (will have to be near approximations with scaling)
+                // 1) jump directly to the first pixel of the element region
+                // 2) end after the last pixel of the element region
+                // 3) jump into each row the at necessary offset (ties into #1 above)
+
                 // iterate over all color channel bytes and multiple them
-                for (var nIdx = 0; nIdx < arraySurface.Length; nIdx += 4)
+                for (var nIdx = nStartIdx; nIdx < nEndIdx; nIdx += 4)
                 {
                     for (var nComponent = 0; nComponent < 4; nComponent++)
                     {
@@ -160,7 +185,6 @@ namespace CardMaker.Card
                 Marshal.Copy(arraySurface, 0, bitsSurface.Scan0, arraySurface.Length);
                 zBitmapFullMask.UnlockBits(bitsMask);
                 zBitmapSurface.UnlockBits(bitsSurface);
-                zBitmapFullMask.Dispose();
             }
             catch (Exception ex)
             {
