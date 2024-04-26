@@ -206,7 +206,7 @@ namespace CardMaker.Forms
                     zProjectLayout.exportLayoutBorder = zQuery.GetBool(EXPORT_BORDER);
                     zProjectLayout.exportLayoutBorderCrossSize = (int)zQuery.GetDecimal(EXPORT_BORDER_CROSS_SIZE);
                 }
-                ProjectManager.Instance.FireProjectUpdated(true);
+                LayoutManager.Instance.FireLayoutUpdatedEvent(true);
             }
         }
 

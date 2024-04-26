@@ -37,7 +37,7 @@ namespace CardMaker.Card
 {
     public class DrawGraphic : IDrawGraphic
     {
-        private static Bitmap m_zBufferMaskBitmap = null;
+        private static Bitmap s_zBufferMaskBitmap = null;
         //                                                          1    2  3
         private static readonly Regex regexImageTile = new Regex(@"(.+?)(x)(.+)", RegexOptions.Compiled);
 
@@ -110,16 +110,16 @@ namespace CardMaker.Card
 
         private static Bitmap GetMaskBufferBitmap(int nWidth, int nHeight)
         {
-            if (m_zBufferMaskBitmap == null
-                || m_zBufferMaskBitmap.Width != nWidth
-                || m_zBufferMaskBitmap.Height != nHeight)
+            if (s_zBufferMaskBitmap == null
+                || s_zBufferMaskBitmap.Width != nWidth
+                || s_zBufferMaskBitmap.Height != nHeight)
             {
                 Logger.AddLogLine("creating new buffer mask");
-                m_zBufferMaskBitmap?.Dispose();
-                m_zBufferMaskBitmap = new Bitmap(nWidth, nHeight);
+                s_zBufferMaskBitmap?.Dispose();
+                s_zBufferMaskBitmap = new Bitmap(nWidth, nHeight);
             }
 
-            return m_zBufferMaskBitmap;
+            return s_zBufferMaskBitmap;
         }
 
         private static void RenderAsMask(GraphicsContext zGraphicsContext, Bitmap zBitmapMask, ProjectLayoutElement zElement)
