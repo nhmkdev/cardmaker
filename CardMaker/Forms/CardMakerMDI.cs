@@ -373,7 +373,7 @@ namespace CardMaker.Forms
         {
             var zQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog(
                 "CardMaker Settings",
-                450, 
+                600, 
                 250,
 #if !MONO_BUILD
                 true
@@ -391,6 +391,8 @@ namespace CardMaker.Forms
             zQuery.AddCheckBox("Log Incept Translation", CardMakerSettings.LogInceptTranslation,
                 IniSettings.LogInceptTranslation);
             zQuery.AddCheckBox("Show Canvas Mouse Location", CardMakerSettings.ShowCanvasXY, IniSettings.ShowCanvasXY);
+            zQuery.AddPullDownBox("String Measure Method (FormattedText)",
+                Enum.GetNames(typeof(StringMeasureMethod)), (int)CardMakerSettings.StringMeasureMethod, IniSettings.StringMeasureMethod);
 
 #if !MONO_BUILD
             zQuery.AddTab("WebP Export Settings");
@@ -438,6 +440,7 @@ namespace CardMaker.Forms
                 CardMakerSettings.DefaultTranslatorType = (TranslatorType)zQuery.GetIndex(IniSettings.DefaultTranslator);
                 CardMakerSettings.LogInceptTranslation = zQuery.GetBool(IniSettings.LogInceptTranslation);
                 CardMakerSettings.ShowCanvasXY = zQuery.GetBool(IniSettings.ShowCanvasXY);
+                CardMakerSettings.StringMeasureMethod = (StringMeasureMethod)zQuery.GetIndex(IniSettings.StringMeasureMethod);
                 CardMakerSettings.AutoSaveIntervalMinutes = (int)zQuery.GetDecimal(IniSettings.AutoSaveIntervalMinutes);
                 AutoSaveManager.Instance.EnableAutoSave(zQuery.GetBool(IniSettings.AutoSaveEnabled));
 
@@ -451,7 +454,7 @@ namespace CardMaker.Forms
                     GoogleReferenceCache.DeleteGoogleCache();
                 }
 
-                LayoutManager.Instance.FireLayoutRenderUpdatedEvent();
+                LayoutManager.Instance.RefreshActiveLayout();
             }
         }
 

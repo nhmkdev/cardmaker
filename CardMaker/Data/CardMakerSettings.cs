@@ -22,10 +22,12 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Drawing.Drawing2D;
 using System.Globalization;
 using CardMaker.Events.Managers;
 using Support.IO;
+using Support.UI;
 using Support.Util;
 
 namespace CardMaker.Data
@@ -235,6 +237,19 @@ namespace CardMaker.Data
         {
             get { return s_zIniManager.GetValue(IniSettings.PixelOffsetModeHighQuality, bool.FalseString).Equals(bool.TrueString); }
             set { s_zIniManager.SetValue(IniSettings.PixelOffsetModeHighQuality, value.ToString()); }
+        }
+
+        public static StringMeasureMethod StringMeasureMethod
+        {
+            get
+            {
+                if (int.TryParse(s_zIniManager.GetValue(IniSettings.StringMeasureMethod), out var nValue))
+                {
+                    return (StringMeasureMethod)nValue;
+                }
+                return StringMeasureMethod.MeasureStringGenericTypoGraphic;
+            }
+            set { s_zIniManager.SetValue(IniSettings.StringMeasureMethod, ((int)value).ToString()); }
         }
     }
 }

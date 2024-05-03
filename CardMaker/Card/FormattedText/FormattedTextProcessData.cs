@@ -27,9 +27,11 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
+using CardMaker.Card.FormattedText.Markup;
 using CardMaker.Data;
 using CardMaker.XML;
 using Support.IO;
+using Support.UI;
 
 namespace CardMaker.Card.FormattedText
 {
@@ -75,7 +77,7 @@ namespace CardMaker.Card.FormattedText
         public ElementColorType CurrentColorType { get; set; }
         public ColorMatrix CurrentColorMatrix { get; set; }
 
-        const string FontStringToTest = "]"; // TODO: is there a large box character with the bounds?
+        const string FontStringToTest = "0"; // TODO: is there a large box character with the bounds?
 
         public FormattedTextProcessData()
         {
@@ -90,31 +92,14 @@ namespace CardMaker.Card.FormattedText
             Font = zFont;
             FontHeight = zFont.GetHeight(zGraphics);
 
-            var rectWithSpace = MeasureDisplayStringWidth(zGraphics, " " + FontStringToTest, zFont);
-            var rectWithoutSpace = MeasureDisplayStringWidth(zGraphics, FontStringToTest, zFont);
+            var rectWithSpace = StringMeasure.MeasureString(zGraphics, $"{FontStringToTest} {FontStringToTest}", zFont, FontScaleX, FontScaleY,
+                CardMakerSettings.StringMeasureMethod);
+            var rectWithoutSpace = StringMeasure.MeasureString(zGraphics, $"{FontStringToTest}{FontStringToTest}", zFont, FontScaleX, FontScaleY,
+                CardMakerSettings.StringMeasureMethod);
 
             // NOTE the element word space is ignored! (is that a problem?)
             FontSpaceWidth = rectWithSpace.Width - rectWithoutSpace.Width;
             FontSpaceHeight = Math.Max((float)rectWithSpace.Height, FontHeight);
-        }
-
-        public static RectangleF MeasureDisplayStringWidth(Graphics zGraphics, string text, Font font)
-        {
-            // measurements should be performed at the reset transform
-            var matrixOriginalTransform = zGraphics.Transform;
-            zGraphics.ResetTransform();
-            var zFormat = new StringFormat
-            {
-                Alignment = StringAlignment.Near,
-                LineAlignment = StringAlignment.Near,
-            };
-            var rect = new RectangleF(0, 0, 65536, 65536);
-            CharacterRange[] ranges = { new CharacterRange(0, text.Length) };
-            zFormat.SetMeasurableCharacterRanges(ranges);
-            var regions = zGraphics.MeasureCharacterRanges(text, font, rect, zFormat);
-            rect = regions[0].GetBounds(zGraphics);
-            zGraphics.Transform = matrixOriginalTransform;
-            return rect;
         }
 
         public void AddFontStyle(FontStyle eStyle, Graphics zGraphics)

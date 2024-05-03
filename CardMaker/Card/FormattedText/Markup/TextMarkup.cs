@@ -83,7 +83,8 @@ namespace CardMaker.Card.FormattedText.Markup
                 }
             }
 
-            m_rectMeasuredRectangle = MeasureDisplayStringWidth(zGraphics, m_sVariable, m_zFont);
+            m_rectMeasuredRectangle = StringMeasure.MeasureString(
+                zGraphics, m_sVariable, m_zFont, m_fFontScaleX, m_fFontScaleY, CardMakerSettings.StringMeasureMethod);
 
             var fMeasuredWidth = m_rectMeasuredRectangle.Width;
 
@@ -106,35 +107,18 @@ namespace CardMaker.Card.FormattedText.Markup
             return true;
         }
 
-        public RectangleF MeasureDisplayStringWidth(Graphics zGraphics, string text, Font font)
-        {
-            // measurements should be performed at the reset transform
-            var matrixOriginalTransform = zGraphics.Transform;
-            zGraphics.ResetTransform();
-            zGraphics.ScaleTransform(m_fFontScaleX, m_fFontScaleY);
-            var zFormat = new StringFormat
-            {
-                Alignment = StringAlignment.Near,
-                LineAlignment = StringAlignment.Near,
-            };
-            var rect = new RectangleF(0, 0, 65536, 65536);
-            CharacterRange[] ranges = { new CharacterRange(0, text.Length) };
-            zFormat.SetMeasurableCharacterRanges(ranges);
-            var regions = zGraphics.MeasureCharacterRanges(text, font, rect, zFormat);
-            rect = regions[0].GetBounds(zGraphics);
-            rect.Width *= m_fFontScaleX;
-            rect.Height *= m_fFontScaleY;
-            zGraphics.Transform = matrixOriginalTransform;
-            return rect;
-        }
-
         public override bool Render(ProjectLayoutElement zElement, Graphics zGraphics)
         {
-            var zFormat = new StringFormat
+            var zFormat = StringFormat.GenericTypographic;
+            if(StringMeasureMethod.CharacterRanges == CardMakerSettings.StringMeasureMethod)
             {
-                Alignment = StringAlignment.Near,
-                LineAlignment = StringAlignment.Near,
-            };
+                zFormat = new StringFormat
+                {
+                    Alignment = StringAlignment.Near,
+                    LineAlignment = StringAlignment.Near,
+                };
+            }
+
             // indicate any text being cut off
             if (zElement.height < TargetRect.Y + TargetRect.Height)
             {
@@ -152,8 +136,11 @@ namespace CardMaker.Card.FormattedText.Markup
                 zGraphics.DrawRectangle(Pens.Green, targetX, targetY, TargetRect.Width, TargetRect.Height);
             }
 
-            // when a string is measured there is a bit of an offset to where it renders (into the target rect a few pixels right ---->)
-            targetX -= m_rectMeasuredRectangle.X * m_fFontScaleX;
+            // this measure approach may have an X offset (the other method does not)
+            if (StringMeasureMethod.CharacterRanges == CardMakerSettings.StringMeasureMethod)
+            {
+                targetX -= m_rectMeasuredRectangle.X * m_fFontScaleX;
+            }
 
             if (0 == zElement.outlinethickness)
             {

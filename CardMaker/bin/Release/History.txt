@@ -1,9 +1,12 @@
 Card Maker Version History
 --------------------------
 1.4.0.0
+- Added alternative approach to measure strings for FormattedText (Old/Default: CharacterRanges vs. New:MeasureStringGenericTypoGraphic)
+- Added in-memory caching when exporting sublayouts
 - Added cnv (color normalized value) macro for converting colors to normalized values
 - Added ability to specify graphic elements as masks
 - Added ability to toggle graphic settings
+- Added ability to specify color matrix
 - Added tracking of tree node collapse state to each project.
 - Added ability to control the card count via define values (and only define values)
 - Added ![exporting] ![exportformat] ![parentlayout] ![rootlayout] card values (see manual)

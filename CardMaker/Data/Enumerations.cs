@@ -106,7 +106,8 @@ namespace CardMaker.Data
         ExportSkipStitchIndex,
         DefineTranslatePrimitiveCharacters,
         LogInceptTranslation,
-        ShowCanvasXY
+        ShowCanvasXY,
+        StringMeasureMethod
     }
 
     public enum ExportType

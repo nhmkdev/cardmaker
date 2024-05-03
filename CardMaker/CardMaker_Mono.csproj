@@ -351,6 +351,7 @@
     <Compile Include="Support\UI\RGBColorSelectDialog.Designer.cs">
       <DependentUpon>RGBColorSelectDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Support\UI\StringMeasure.cs" />
     <Compile Include="Support\UI\UserAction.cs" />
     <Compile Include="Support\UI\WaitDialog.cs">
       <SubType>Form</SubType>
