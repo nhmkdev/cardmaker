@@ -27,7 +27,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
-using CardMaker.Card.FormattedText.Markup;
 using CardMaker.Data;
 using CardMaker.XML;
 using Support.IO;
@@ -64,8 +63,10 @@ namespace CardMaker.Card.FormattedText
         public float CurrentMarginLeft { get; set; }
         public float CurrentMarginRight { get; set; }
 
-        public float CurrentLineHeight { get; set; }
+        public float CurrentLineSpacing { get; set; } // current line spacing (contextual - autoscale)
+        public float CurrentLineHeight { get; set; } // actual line height when moving to next line
         public StringAlignment CurrentStringAlignment { get; set; }
+        public bool AutoScaleFont { get; set; }
 
         public bool InParagraph { get; set; }
         public int ParagraphCharacterLineIndent { get; set; }
@@ -100,6 +101,20 @@ namespace CardMaker.Card.FormattedText
             // NOTE the element word space is ignored! (is that a problem?)
             FontSpaceWidth = rectWithSpace.Width - rectWithoutSpace.Width;
             FontSpaceHeight = Math.Max((float)rectWithSpace.Height, FontHeight);
+            ConfigureLineHeight(CurrentLineSpacing);
+        }
+
+        public void ConfigureLineHeight(float fLineSpacing)
+        {
+            CurrentLineSpacing = fLineSpacing;
+            if (AutoScaleFont)
+            {
+                CurrentLineHeight = FontHeight + CurrentLineSpacing;
+            }
+            else
+            {
+                CurrentLineHeight = CurrentLineSpacing;
+            }
         }
 
         public void AddFontStyle(FontStyle eStyle, Graphics zGraphics)

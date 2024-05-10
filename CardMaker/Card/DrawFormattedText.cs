@@ -22,6 +22,8 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+//#define LOG_AUTOSCALE
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -79,67 +81,64 @@ namespace CardMaker.Card
         {
             var listRenderedMarkups = processMarkupDefinition(zGraphics, zElement, zElement.GetElementFont().Size, zFormattedTextData);
 
-            // the preprocessing above will get the font size close but not perfect, the slow code below further refines the size
-            // slow mode - but perfect precision (well arguably with the Graphics.MeasureString)
-
-            float fYOverflow;
-            float fXOverflow;
-
-            getOverflow(zElement, listRenderedMarkups, out fXOverflow, out fYOverflow);
+            getOverflow(zElement, listRenderedMarkups, out var fXOverflow, out var fYOverflow);
 
             if (fYOverflow == 0) return listRenderedMarkups;
 
+#if LOG_AUTOSCALE
             var zWatch = new System.Diagnostics.Stopwatch();
             zWatch.Start();
+#endif
 
-            /// Scale attempt (likely to be wrong, but a starting point)
-            var fScale = (float)zElement.height / (float)(zElement.height + fYOverflow);
-            var nFontSize = (int)Math.Floor((decimal)Math.Max(fScale * zElement.GetElementFont().Size, 1));
+            // the original size was already tested above
+            var fFontSize = zElement.GetElementFont().Size - 1;
 
-            if (nFontSize == 1)
+            if (fFontSize <= 1)
             {
                 Logger.AddLogLine("Unable to scale font properly. Result would be a font size smaller than 1. Giving up.");
                 return listRenderedMarkups;
             }
-#if true
             // Slow processing loop to seek the best font size
-            //////
-            var bUpscaled = false;
+            var dictionaryAutoScaleSuccess = new Dictionary<float, bool>
+            {
+                {zElement.GetElementFont().Size, false},
+            };
+
+            var fLowerBound = 1f;
+            var fUpperBound = fFontSize;
+            var fLargestFound = 1f;
+            // Binary search for the autoscale fontsize
             while (true)
             {
-                listRenderedMarkups = processMarkupDefinition(zGraphics, zElement, nFontSize, zFormattedTextData);
-                getOverflow(zElement, listRenderedMarkups, out fXOverflow, out fYOverflow);
-                // too large, scale down
-                if (fYOverflow == 0)
+                fFontSize = (float)(fLowerBound + Math.Ceiling((fUpperBound - fLowerBound) / 2));
+                if (dictionaryAutoScaleSuccess.ContainsKey(fFontSize))
                 {
-                    //Logger.AddLogLine($"{zElement.name} Auto-Scale FormattedText: {nFontSize}");
-                    break;
+                    // exit if we hit an already tested key
+#if LOG_AUTOSCALE
+                    zWatch.Stop();
+                    Logger.AddLogLine($"MS spent ${zWatch.ElapsedMilliseconds} Font Size: {fLargestFound}");
+#endif
+                    // process again with the largest size and exit (slight non-optimization...)
+                    return processMarkupDefinition(zGraphics, zElement, fLargestFound, zFormattedTextData);
                 }
+
+#if LOG_AUTOSCALE
+                Logger.AddLogLine($"Testing font size: {fFontSize} Lower/Upper:{fLowerBound}/{fUpperBound}");
+#endif
+                listRenderedMarkups = processMarkupDefinition(zGraphics, zElement, fFontSize, zFormattedTextData);
+                getOverflow(zElement, listRenderedMarkups, out fXOverflow, out fYOverflow);
                 if (fYOverflow > 0)
                 {
-                    if (nFontSize == 1)
-                    {
-                        //Logger.AddLogLine("Unable to scale font properly. Result would be a font size smaller than 1. Giving up.");
-                        return listRenderedMarkups;
-                    }
-                    if (bUpscaled)
-                    {
-                        //Logger.AddLogLine($"{zElement.name} Auto-Scale(U) FormattedText: {nFontSize}");
-                        break;
-                    }
-                    nFontSize--;
+                    dictionaryAutoScaleSuccess[fFontSize] = false;
+                    fUpperBound = fFontSize;
                 }
-                // possibly too small, scale up
                 else
                 {
-                    nFontSize++;
-                    bUpscaled = true;
+                    dictionaryAutoScaleSuccess[fFontSize] = true;
+                    fLowerBound = fFontSize;
+                    fLargestFound = Math.Max(fLargestFound, fFontSize);
                 }
             }
-#endif
-            zWatch.Stop();
-            //Logger.AddLogLine($"MS spent ${zWatch.ElapsedMilliseconds}");
-            return listRenderedMarkups;
         }
 
         /// <summary>
@@ -187,8 +186,9 @@ namespace CardMaker.Card
 
             var zProcessData = new FormattedTextProcessData
             {
+                AutoScaleFont = zElement.autoscalefont,
                 FontBrush = zBrush,
-                CurrentLineHeight = zElement.lineheight,
+                CurrentLineSpacing = zElement.lineheight,
                 CurrentStringAlignment = zElement.GetHorizontalAlignment(),
                 CurrentMarginLeft = 0,
                 CurrentMarginRight = zElement.width,

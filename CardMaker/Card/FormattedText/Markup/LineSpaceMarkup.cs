@@ -30,24 +30,23 @@ namespace CardMaker.Card.FormattedText.Markup
 {
     public class LineSpaceMarkup : MarkupValueBase
     {
-        private float m_fPreviousLineHeight;
+        private float m_fPreviousLineSpacing;
 
         public LineSpaceMarkup(string sVariable) : base(sVariable) { }
 
         protected override bool ProcessMarkupHandler(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
-            float fLineHeight;
-            if (ParseUtil.ParseFloat(m_sVariable, out fLineHeight))
+            if (ParseUtil.ParseFloat(m_sVariable, out var fLineHeight))
             {
-                m_fPreviousLineHeight = zProcessData.CurrentLineHeight;
-                zProcessData.CurrentLineHeight = fLineHeight;
+                m_fPreviousLineSpacing = zProcessData.CurrentLineSpacing;
+                zProcessData.ConfigureLineHeight(fLineHeight);
             }
             return false;
         }
 
         public override void CloseMarkup(FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
-            zProcessData.CurrentLineHeight = m_fPreviousLineHeight;
+            zProcessData.ConfigureLineHeight(m_fPreviousLineSpacing);
         }
     }
 }

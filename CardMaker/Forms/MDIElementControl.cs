@@ -535,10 +535,6 @@ namespace CardMaker.Forms
                     CardMakerInstance.ProcessingUserAction = true;
                     listActions.ForEach(action => action(bRedo));
                     CardMakerInstance.ProcessingUserAction = false;
-                    if (0 < numericLineSpace.Value)
-                    {
-                        checkFontAutoScale.Checked = false;
-                    }
                     LayoutManager.Instance.FireLayoutUpdatedEvent(true);
                 };
 

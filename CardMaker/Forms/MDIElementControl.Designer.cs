@@ -88,6 +88,7 @@ namespace CardMaker.Forms
             this.btnElementShapeColor = new System.Windows.Forms.Button();
             this.propertyGridShape = new System.Windows.Forms.PropertyGrid();
             this.tabPageGraphic = new System.Windows.Forms.TabPage();
+            this.checkMaskSurface = new System.Windows.Forms.CheckBox();
             this.btnColorMatrix = new System.Windows.Forms.Button();
             this.comboColorType = new System.Windows.Forms.ComboBox();
             this.checkCenterOnOrigin = new System.Windows.Forms.CheckBox();
@@ -132,7 +133,6 @@ namespace CardMaker.Forms
             this.comboElementType = new System.Windows.Forms.ComboBox();
             this.contextMenuReferenceStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.contextMenuStripAssist = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.checkMaskSurface = new System.Windows.Forms.CheckBox();
             this.groupBoxElement.SuspendLayout();
             this.groupBackgroundColor.SuspendLayout();
             this.tabControl.SuspendLayout();
@@ -360,6 +360,11 @@ namespace CardMaker.Forms
             0,
             0,
             0});
+            this.numericLineSpace.Minimum = new decimal(new int[] {
+            2000,
+            0,
+            0,
+            -2147483648});
             this.numericLineSpace.Name = "numericLineSpace";
             this.numericLineSpace.Size = new System.Drawing.Size(48, 20);
             this.numericLineSpace.TabIndex = 46;
@@ -596,6 +601,16 @@ namespace CardMaker.Forms
             this.tabPageGraphic.TabIndex = 2;
             this.tabPageGraphic.Text = "Graphic";
             this.tabPageGraphic.UseVisualStyleBackColor = true;
+            // 
+            // checkMaskSurface
+            // 
+            this.checkMaskSurface.Location = new System.Drawing.Point(370, 3);
+            this.checkMaskSurface.Name = "checkMaskSurface";
+            this.checkMaskSurface.Size = new System.Drawing.Size(110, 24);
+            this.checkMaskSurface.TabIndex = 49;
+            this.checkMaskSurface.Text = "Mask Surface";
+            this.checkMaskSurface.UseVisualStyleBackColor = true;
+            this.checkMaskSurface.CheckedChanged += new System.EventHandler(this.HandleElementValueChange);
             // 
             // btnColorMatrix
             // 
@@ -1102,16 +1117,6 @@ namespace CardMaker.Forms
             this.contextMenuStripAssist.Name = "contextMenuStripAssist";
             this.contextMenuStripAssist.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this.contextMenuStripAssist.Size = new System.Drawing.Size(61, 4);
-            // 
-            // checkMaskSurface
-            // 
-            this.checkMaskSurface.Location = new System.Drawing.Point(370, 3);
-            this.checkMaskSurface.Name = "checkMaskSurface";
-            this.checkMaskSurface.Size = new System.Drawing.Size(110, 24);
-            this.checkMaskSurface.TabIndex = 49;
-            this.checkMaskSurface.Text = "Mask Surface";
-            this.checkMaskSurface.UseVisualStyleBackColor = true;
-            this.checkMaskSurface.CheckedChanged += new System.EventHandler(this.HandleElementValueChange);
             // 
             // MDIElementControl
             // 

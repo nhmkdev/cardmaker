@@ -53,7 +53,8 @@ namespace Support.UI
             // measurements should be performed at the reset transform
             var matrixOriginalTransform = zGraphics.Transform;
             zGraphics.ResetTransform();
-            zGraphics.ScaleTransform(fFontScaleX, fFontScaleY);
+#warning scaling is broken and needs 0 protection for this call
+            zGraphics.ScaleTransform(fFontScaleX == 0f ? 0.01f : fFontScaleX, fFontScaleY == 0f ? 0.01f : fFontScaleY);
             var zSize = zGraphics.MeasureString(sText, zFont, int.MaxValue, StringFormat.GenericTypographic);
             zGraphics.Transform = matrixOriginalTransform;
             return new RectangleF(0, 0, zSize.Width, zSize.Height);
@@ -65,6 +66,7 @@ namespace Support.UI
             // measurements should be performed at the reset transform
             var matrixOriginalTransform = zGraphics.Transform;
             zGraphics.ResetTransform();
+#warning scaling is broken and needs 0 protection for this call
             zGraphics.ScaleTransform(fFontScaleX, fFontScaleY);
             var zFormat = new StringFormat
             {

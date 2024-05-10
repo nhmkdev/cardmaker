@@ -1,6 +1,7 @@
 Card Maker Version History
 --------------------------
 1.4.0.0
+- Changed FormattedText Auto-Scale functionality
 - Added alternative approach to measure strings for FormattedText (Old/Default: CharacterRanges vs. New:MeasureStringGenericTypoGraphic)
 - Added in-memory caching when exporting sublayouts
 - Added cnv (color normalized value) macro for converting colors to normalized values

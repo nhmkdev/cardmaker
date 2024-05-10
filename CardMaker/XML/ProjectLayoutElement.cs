@@ -95,7 +95,7 @@ namespace CardMaker.XML
         public int verticalalign { get; set; }
 
         [XmlAttribute]
-        public int lineheight { get; set; }
+        public int lineheight { get; set; } // aka line spacing (overloaded)
 
         [XmlAttribute]
         public int wordspace { get; set; }
