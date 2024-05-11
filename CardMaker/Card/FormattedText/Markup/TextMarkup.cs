@@ -147,8 +147,9 @@ namespace CardMaker.Card.FormattedText.Markup
                 try
                 {
                     var zOrigTransform = zGraphics.Transform;
+                    zGraphics.TranslateTransform(targetX, targetY);
                     zGraphics.ScaleTransform(m_fFontScaleX, m_fFontScaleY);
-                    zGraphics.DrawString(m_sVariable, m_zFont, m_zFontBrush, targetX, targetY, zFormat);
+                    zGraphics.DrawString(m_sVariable, m_zFont, m_zFontBrush, 0, 0, zFormat);
                     zGraphics.Transform = zOrigTransform;
                 }
                 catch (Exception)

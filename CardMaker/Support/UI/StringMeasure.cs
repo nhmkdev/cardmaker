@@ -53,11 +53,10 @@ namespace Support.UI
             // measurements should be performed at the reset transform
             var matrixOriginalTransform = zGraphics.Transform;
             zGraphics.ResetTransform();
-#warning scaling is broken and needs 0 protection for this call
-            zGraphics.ScaleTransform(fFontScaleX == 0f ? 0.01f : fFontScaleX, fFontScaleY == 0f ? 0.01f : fFontScaleY);
+            // NOTE: using a zGraphics.ScaleTransform here has NO impact on the measurement
             var zSize = zGraphics.MeasureString(sText, zFont, int.MaxValue, StringFormat.GenericTypographic);
             zGraphics.Transform = matrixOriginalTransform;
-            return new RectangleF(0, 0, zSize.Width, zSize.Height);
+            return new RectangleF(0, 0, zSize.Width * fFontScaleX, zSize.Height * fFontScaleY);
         }
 
         private static RectangleF MeasureStringWidthViaMeasureCharacterRanges(
@@ -66,8 +65,6 @@ namespace Support.UI
             // measurements should be performed at the reset transform
             var matrixOriginalTransform = zGraphics.Transform;
             zGraphics.ResetTransform();
-#warning scaling is broken and needs 0 protection for this call
-            zGraphics.ScaleTransform(fFontScaleX, fFontScaleY);
             var zFormat = new StringFormat
             {
                 Alignment = StringAlignment.Near,
@@ -78,7 +75,6 @@ namespace Support.UI
             zFormat.SetMeasurableCharacterRanges(ranges);
             var regions = zGraphics.MeasureCharacterRanges(sText, zFont, rect, zFormat);
             rect = regions[0].GetBounds(zGraphics);
-#warning Wasn't this already applied to the graphics above via transform? Is this needed in the other method?
             rect.Width *= fFontScaleX;
             rect.Height *= fFontScaleY;
             zGraphics.Transform = matrixOriginalTransform;

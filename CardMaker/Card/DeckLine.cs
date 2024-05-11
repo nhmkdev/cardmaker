@@ -26,7 +26,6 @@ using System.Collections.Generic;
 using CardMaker.Card.Import;
 using CardMaker.Data;
 using Support.Progress;
-using Support.UI;
 
 namespace CardMaker.Card
 {
