@@ -186,7 +186,6 @@
     <Compile Include="Card\MeasurementUtil.cs" />
     <Compile Include="Card\MirrorRender.cs" />
     <Compile Include="Card\Render\Gradient\GradientDefinition.cs" />
-    <Compile Include="Card\Render\Gradient\GradientProcessor.cs" />
     <Compile Include="Card\Render\InputElementRenderProcessor.cs" />
     <Compile Include="Card\Render\IElementRenderProcessor.cs" />
     <Compile Include="Card\Render\BackgroundColorElementRenderProcessor.cs" />
@@ -211,6 +210,7 @@
     <Compile Include="Data\Enumerations.cs" />
     <Compile Include="Data\LayoutTemplateManager.cs" />
     <Compile Include="Data\Serialization\ColorMatrixSerializer.cs" />
+    <Compile Include="Data\Serialization\GradientSerializer.cs" />
     <Compile Include="Events\Args\DeckChangeEventArgs.cs" />
     <Compile Include="Events\Args\ElementEventArgs.cs" />
     <Compile Include="Events\Args\ExportEventArgs.cs" />
@@ -329,6 +329,12 @@
     <Compile Include="Support\UI\AbstractDirtyForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Support\UI\GradientDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Support\UI\GradientDialog.Designer.cs">
+      <DependentUpon>GradientDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Support\UI\ColorMatrixDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -423,6 +429,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Support\Google\Sheets\GoogleSpreadsheetBrowser.resx">
       <DependentUpon>GoogleSpreadsheetBrowser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Support\UI\GradientDialog.resx">
+      <DependentUpon>GradientDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Support\UI\ColorMatrixDialog.resx">
       <DependentUpon>ColorMatrixDialog.cs</DependentUpon>

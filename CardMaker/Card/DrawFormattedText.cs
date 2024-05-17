@@ -30,7 +30,6 @@ using System.Drawing;
 using CardMaker.Card.FormattedText;
 using CardMaker.Card.FormattedText.Alignment;
 using CardMaker.Card.FormattedText.Markup;
-using CardMaker.Card.Render.Gradient;
 using CardMaker.Data;
 using CardMaker.Data.Serialization;
 using CardMaker.XML;
@@ -180,7 +179,7 @@ namespace CardMaker.Card
 
             if (!string.IsNullOrWhiteSpace(zElement.gradient))
             {
-                var zGradientDefinition = GradientProcessor.ProcessGradientStringToBrush(zElement);
+                var zGradientDefinition = GradientSerializer.ProcessGradientStringToBrush(zElement);
                 zBrush = zGradientDefinition == null ? zBrush : zGradientDefinition.Brush;
             }
 

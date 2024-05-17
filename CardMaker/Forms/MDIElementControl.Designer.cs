@@ -133,6 +133,7 @@ namespace CardMaker.Forms
             this.comboElementType = new System.Windows.Forms.ComboBox();
             this.contextMenuReferenceStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.contextMenuStripAssist = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.btnExtenedElementFunctions = new System.Windows.Forms.Button();
             this.groupBoxElement.SuspendLayout();
             this.groupBackgroundColor.SuspendLayout();
             this.tabControl.SuspendLayout();
@@ -156,13 +157,12 @@ namespace CardMaker.Forms
             // 
             // groupBoxElement
             // 
+            this.groupBoxElement.Controls.Add(this.btnExtenedElementFunctions);
             this.groupBoxElement.Controls.Add(this.comboElementMirror);
             this.groupBoxElement.Controls.Add(this.label17);
             this.groupBoxElement.Controls.Add(this.groupBackgroundColor);
             this.groupBoxElement.Controls.Add(this.btnAssist);
-            this.groupBoxElement.Controls.Add(this.tabControl);
             this.groupBoxElement.Controls.Add(this.groupBoxOutline);
-            this.groupBoxElement.Controls.Add(this.listViewElementColumns);
             this.groupBoxElement.Controls.Add(this.label8);
             this.groupBoxElement.Controls.Add(this.label14);
             this.groupBoxElement.Controls.Add(this.numericElementOpacity);
@@ -181,10 +181,12 @@ namespace CardMaker.Forms
             this.groupBoxElement.Controls.Add(this.btnElementBrowseImage);
             this.groupBoxElement.Controls.Add(this.txtElementVariable);
             this.groupBoxElement.Controls.Add(this.comboElementType);
+            this.groupBoxElement.Controls.Add(this.listViewElementColumns);
+            this.groupBoxElement.Controls.Add(this.tabControl);
             this.groupBoxElement.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBoxElement.Location = new System.Drawing.Point(0, 0);
             this.groupBoxElement.Name = "groupBoxElement";
-            this.groupBoxElement.Size = new System.Drawing.Size(748, 312);
+            this.groupBoxElement.Size = new System.Drawing.Size(748, 332);
             this.groupBoxElement.TabIndex = 11;
             this.groupBoxElement.TabStop = false;
             this.groupBoxElement.Text = "Element";
@@ -249,8 +251,8 @@ namespace CardMaker.Forms
             // 
             // btnAssist
             // 
-            this.btnAssist.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnAssist.Location = new System.Drawing.Point(717, 264);
+            this.btnAssist.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnAssist.Location = new System.Drawing.Point(717, 285);
             this.btnAssist.Name = "btnAssist";
             this.btnAssist.Size = new System.Drawing.Size(25, 20);
             this.btnAssist.TabIndex = 47;
@@ -828,7 +830,7 @@ namespace CardMaker.Forms
             | System.Windows.Forms.AnchorStyles.Left)));
             this.label8.Location = new System.Drawing.Point(6, 264);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(61, 41);
+            this.label8.Size = new System.Drawing.Size(61, 61);
             this.label8.TabIndex = 34;
             this.label8.Text = "Definition:";
             this.label8.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -1070,7 +1072,7 @@ namespace CardMaker.Forms
             // btnElementBrowseImage
             // 
             this.btnElementBrowseImage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnElementBrowseImage.Location = new System.Drawing.Point(717, 286);
+            this.btnElementBrowseImage.Location = new System.Drawing.Point(717, 306);
             this.btnElementBrowseImage.Name = "btnElementBrowseImage";
             this.btnElementBrowseImage.Size = new System.Drawing.Size(25, 20);
             this.btnElementBrowseImage.TabIndex = 12;
@@ -1090,7 +1092,7 @@ namespace CardMaker.Forms
             this.txtElementVariable.Multiline = true;
             this.txtElementVariable.Name = "txtElementVariable";
             this.txtElementVariable.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtElementVariable.Size = new System.Drawing.Size(638, 43);
+            this.txtElementVariable.Size = new System.Drawing.Size(638, 63);
             this.txtElementVariable.TabIndex = 1;
             this.txtElementVariable.WordWrap = false;
             this.txtElementVariable.TextChanged += new System.EventHandler(this.HandleElementValueChange);
@@ -1118,13 +1120,24 @@ namespace CardMaker.Forms
             this.contextMenuStripAssist.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this.contextMenuStripAssist.Size = new System.Drawing.Size(61, 4);
             // 
+            // btnExtenedElementFunctions
+            // 
+            this.btnExtenedElementFunctions.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnExtenedElementFunctions.Location = new System.Drawing.Point(717, 264);
+            this.btnExtenedElementFunctions.Name = "btnExtenedElementFunctions";
+            this.btnExtenedElementFunctions.Size = new System.Drawing.Size(25, 20);
+            this.btnExtenedElementFunctions.TabIndex = 53;
+            this.btnExtenedElementFunctions.Text = ">>";
+            this.btnExtenedElementFunctions.UseVisualStyleBackColor = true;
+            this.btnExtenedElementFunctions.Click += new System.EventHandler(this.btnExtenedElementFunctions_Click);
+            // 
             // MDIElementControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(748, 312);
+            this.ClientSize = new System.Drawing.Size(748, 332);
             this.Controls.Add(this.groupBoxElement);
-            this.MinimumSize = new System.Drawing.Size(756, 339);
+            this.MinimumSize = new System.Drawing.Size(756, 371);
             this.Name = "MDIElementControl";
             this.ShowIcon = false;
             this.Text = " Element Control";
@@ -1236,5 +1249,6 @@ namespace CardMaker.Forms
         private System.Windows.Forms.ComboBox comboColorType;
         private System.Windows.Forms.Button btnColorMatrix;
         private System.Windows.Forms.CheckBox checkMaskSurface;
+        private System.Windows.Forms.Button btnExtenedElementFunctions;
     }
 }

@@ -25,7 +25,7 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using CardMaker.Card.Render.Gradient;
+using CardMaker.Data.Serialization;
 using CardMaker.XML;
 using Support.IO;
 using Support.UI;
@@ -152,7 +152,7 @@ namespace CardMaker.Card
             if (!string.IsNullOrWhiteSpace(zElement.gradient))
             {
 
-                var zGradientDefinition = GradientProcessor.ProcessGradientStringToBrush(zElement);
+                var zGradientDefinition = GradientSerializer.ProcessGradientStringToBrush(zElement);
                 if (zGradientDefinition != null)
                 {
 #if false // temp for debugging 

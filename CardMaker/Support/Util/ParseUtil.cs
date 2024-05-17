@@ -69,6 +69,16 @@ namespace Support.Util
             return Double.TryParse(sValue.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out dValue);
         }
 
+        public static float ParseDefault(string sValue, float fDefault)
+        {
+            var fResult =
+                Single.TryParse(sValue.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture,
+                    out var fValue)
+                    ? fValue
+                    : fDefault;
+            return fResult;
+        }
+
         public static int ParseDefault(string sVal, int nDefault)
         {
             int nVal = Int32.TryParse(sVal, out nVal) ? nVal : nDefault;

@@ -82,6 +82,14 @@ namespace CardMaker.Data
         Centimeter
     }
 
+    public enum GradientStyle
+    {
+        lefttoright,
+        points,
+        pointsnormalized,
+        None,
+    }
+
     public enum IniSettings
     {
         PreviousProjects,

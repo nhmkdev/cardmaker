@@ -31,7 +31,7 @@ namespace CardMaker.Card.Render.Gradient
     {
         public LinearGradientBrush Brush { get; set; }
         // TODO: should this be an array of points? Need to learn more about types of gradients supported in .NET
-        public Point Start { get; set; }
-        public Point End { get; set; }
+        public PointF Start { get; set; }
+        public PointF End { get; set; }
     }
 }

@@ -185,7 +185,6 @@
     <Compile Include="Card\MeasurementUtil.cs" />
     <Compile Include="Card\MirrorRender.cs" />
     <Compile Include="Card\Render\Gradient\GradientDefinition.cs" />
-    <Compile Include="Card\Render\Gradient\GradientProcessor.cs" />
     <Compile Include="Card\Render\InputElementRenderProcessor.cs" />
     <Compile Include="Card\Render\IElementRenderProcessor.cs" />
     <Compile Include="Card\Render\BackgroundColorElementRenderProcessor.cs" />
@@ -210,6 +209,7 @@
     <Compile Include="Data\Enumerations.cs" />
     <Compile Include="Data\LayoutTemplateManager.cs" />
     <Compile Include="Data\Serialization\ColorMatrixSerializer.cs" />
+    <Compile Include="Data\Serialization\GradientSerializer.cs" />
     <Compile Include="Events\Args\DeckChangeEventArgs.cs" />
     <Compile Include="Events\Args\ElementEventArgs.cs" />
     <Compile Include="Events\Args\ExportEventArgs.cs" />
@@ -335,6 +335,12 @@
       <DependentUpon>ColorMatrixDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Support\UI\Extensions.cs" />
+    <Compile Include="Support\UI\GradientDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Support\UI\GradientDialog.Designer.cs">
+      <DependentUpon>GradientDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Support\UI\ListViewAssist.cs" />
     <Compile Include="Support\UI\ListViewDoubleBuffer.cs">
       <SubType>Component</SubType>
@@ -425,6 +431,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Support\UI\ColorMatrixDialog.resx">
       <DependentUpon>ColorMatrixDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Support\UI\GradientDialog.resx">
+      <DependentUpon>GradientDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Support\UI\RGBColorSelectDialog.resx">
       <DependentUpon>RGBColorSelectDialog.cs</DependentUpon>

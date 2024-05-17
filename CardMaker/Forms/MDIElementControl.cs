@@ -29,6 +29,7 @@ using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using CardMaker.Card;
 using CardMaker.Card.Shapes;
@@ -293,6 +294,10 @@ namespace CardMaker.Forms
             {
                 foreach (var zElement in listSelectedElements)
                 {
+                    if (null != LayoutManager.Instance.ActiveDeck)
+                    {
+                        LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElement.name);
+                    }
                     SetColorValue(btnClicked, color, zElement);
                 }
                 LayoutManager.Instance.FireLayoutUpdatedEvent(false);
@@ -305,6 +310,10 @@ namespace CardMaker.Forms
                 {
                     if (dictionaryElementUndoColors.TryGetValue(zElement, out var colorOriginal))
                     {
+                        if (null != LayoutManager.Instance.ActiveDeck)
+                        {
+                            LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElement.name);
+                        }
                         SetColorValue(btnClicked, colorOriginal, zElement);
                     }
                 }
@@ -801,6 +810,23 @@ namespace CardMaker.Forms
             contextMenuStripAssist.Show(btnAssist, new Point(btnAssist.Width, 0), ToolStripDropDownDirection.AboveLeft);
         }
 
+        private void btnExtenedElementFunctions_Click(object sender, EventArgs e)
+        {
+            contextMenuStripAssist.Items.Clear();
+            switch ((ElementType)comboElementType.SelectedIndex)
+            {
+                case ElementType.Text:
+                case ElementType.FormattedText:
+                    contextMenuStripAssist.Items.Add("Gradient...", null, (os, ea) => btnGradient_Click(os, ea));
+                    break;
+            }
+            if (0 == contextMenuStripAssist.Items.Count)
+            {
+                return;
+            }
+            contextMenuStripAssist.Show(btnExtenedElementFunctions, new Point(btnAssist.Width, 0), ToolStripDropDownDirection.AboveLeft);
+        }
+
 #endregion
 
         private void SetColorValue(Button btnClicked, Color color, ProjectLayoutElement zElement)
@@ -1291,6 +1317,101 @@ namespace CardMaker.Forms
             Array.Sort(arrayFontsCopy, (a, b) => a.Name.CompareTo(b.Name));
 #endif
             return arrayFontsCopy;
+        }
+
+        private void btnGradient_Click(object sender, EventArgs e)
+        {
+            var listSelectedElements = ElementManager.Instance.SelectedElements;
+            if (0 == listSelectedElements.Count)
+            {
+                return;
+            }
+
+            var zInitElement = listSelectedElements[0];
+            var zGradientDialog = new GradientDialog(zInitElement.GetElementColor(), zInitElement.gradient);
+            zGradientDialog.Icon = Resources.CardMakerIcon;
+            zGradientDialog.PreviewEvent += (obj, sGradientPreview, colorSourcePreview) =>
+            {
+                foreach (var zElement in ElementManager.Instance.SelectedElements)
+                {
+                    if (null != LayoutManager.Instance.ActiveDeck)
+                    {
+                        LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElement.name);
+                    }
+                    zElement.gradient = sGradientPreview;
+                    zElement.SetElementColor(colorSourcePreview);
+                    zElement.InitializeTranslatedFields();
+                }
+                LayoutManager.Instance.FireLayoutUpdatedEvent(false);
+            };
+
+            var dictionaryElementUndoColors = new Dictionary<ProjectLayoutElement, Tuple<Color, string>>(listSelectedElements.Count);
+            foreach (var zElement in listSelectedElements)
+            {
+                var zElementToChange = zElement;
+                var colorUndo = zElement.GetElementColor();
+                dictionaryElementUndoColors.Add(zElementToChange, new Tuple<Color, string>( colorUndo, zElement.gradient));
+            }
+
+            if (DialogResult.OK != zGradientDialog.ShowDialog(this))
+            {
+                // restore the original gradient related settings on the elements
+                foreach (var zElement in listSelectedElements)
+                {
+                    if (dictionaryElementUndoColors.TryGetValue(zElement, out var zTupleOriginal))
+                    {
+                        if (null != LayoutManager.Instance.ActiveDeck)
+                        {
+                            LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElement.name);
+                        }
+                        zElement.SetElementColor(zTupleOriginal.Item1);
+                        zElement.gradient = zTupleOriginal.Item2;
+                    }
+                }
+
+                LayoutManager.Instance.FireLayoutUpdatedEvent(false);
+                return;
+            }
+
+            var colorRedo = zGradientDialog.ElementColor;
+            var sGradientRedo = zGradientDialog.ElementGradient;
+
+            var listActions = UserAction.CreateActionList();
+
+            foreach (var zElement in listSelectedElements)
+            {
+                var zElementToChange = zElement;
+
+                listActions.Add(bRedo =>
+                {
+                    if (null != LayoutManager.Instance.ActiveDeck)
+                    {
+                        LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElementToChange.name);
+                    }
+
+                    var colorUndo = Color.White;
+                    var sGradientUndo = string.Empty;
+                    if (dictionaryElementUndoColors.TryGetValue(zElementToChange, out var zTupleOriginal))
+                    {
+                        colorUndo = zTupleOriginal.Item1;
+                        sGradientUndo = zTupleOriginal.Item2;
+                    }
+
+                    zElementToChange.SetElementColor(bRedo ? colorRedo : colorUndo);
+                    zElementToChange.gradient = bRedo ? sGradientRedo : sGradientUndo;
+                    UpdatePanelColors(zElementToChange);
+                });
+            }
+
+            Action<bool> actionChangeColor = bRedo =>
+            {
+                listActions.ForEach(action => action(bRedo));
+                LayoutManager.Instance.FireLayoutUpdatedEvent(true);
+            };
+            UserAction.PushAction(actionChangeColor);
+
+            // perform the action as a redo now
+            actionChangeColor(true);
         }
     }
 }
