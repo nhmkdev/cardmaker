@@ -37,6 +37,8 @@ namespace CardMaker.Events.Args
 
     public delegate void LayoutRenamed(object sender, LayoutRenamedEventArgs args);
 
+    public delegate void LayoutRemoved(object sender, LayoutRemovedEventArgs args);
+
     public delegate void LayoutConfigureRequested(object sender, ProjectLayoutEventArgs args);
 
     public class ProjectLayoutEventArgs
@@ -74,6 +76,15 @@ namespace CardMaker.Events.Args
         {
             Layout = zLayout;
             OldName = oldName;
+        }
+    }
+
+    public class LayoutRemovedEventArgs
+    {
+        public ProjectLayout Layout { get; private set; }
+        public LayoutRemovedEventArgs(ProjectLayout zLayout)
+        {
+            Layout = zLayout;
         }
     }
 }

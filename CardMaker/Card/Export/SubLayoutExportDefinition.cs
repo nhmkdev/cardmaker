@@ -57,11 +57,10 @@ namespace CardMaker.Card.Export
         public static List<SubLayoutExportDefinition> CreateSubLayoutExportDefinitions(Deck zDeck, IProgressReporter zProgressReporter)
         {
             var listSubLayoutExportDefinitions = new List<SubLayoutExportDefinition>();
-
-            var nIdx = 0;
-#warning optimize this by having it centralized and based on current project state
-            var dictionaryLayoutNameToLayout =
-                ProjectManager.Instance.LoadedProject.Layout.ToDictionary(layout => layout.Name.ToUpper(), layout => nIdx++);
+            if (null == zDeck.CardLayout.Element)
+            {
+                return listSubLayoutExportDefinitions;
+            }
             foreach (var zElement in zDeck.CardLayout.Element.Where(e => 
                          e.enabled
                          && e.type == ElementType.SubLayout.ToString()))
@@ -93,7 +92,9 @@ namespace CardMaker.Card.Export
                         dictionaryDefineOverrides[sKey] = sValue;
                     }
                 }
-                if (dictionaryLayoutNameToLayout.TryGetValue(sLayoutName.ToUpper(), out var nLayoutIdx))
+
+                var nLayoutIdx = ProjectManager.Instance.LookupLayoutIndexByName(sLayoutName.ToUpper());
+                if (-1 < nLayoutIdx)
                 {
                     listSubLayoutExportDefinitions.Add(new SubLayoutExportDefinition(
                         nLayoutIdx, 

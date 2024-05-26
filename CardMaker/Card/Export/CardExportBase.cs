@@ -22,9 +22,12 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using CardMaker.Data;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
@@ -97,7 +100,7 @@ namespace CardMaker.Card.Export
                 nHeight != m_zExportCardBuffer.Height)
             {
                 m_zExportCardBuffer?.Dispose();
-                m_zExportCardBuffer = new Bitmap(nWidth, nHeight);
+                m_zExportCardBuffer = new Bitmap(nWidth, nHeight, PixelFormat.Format32bppArgb);
             }
         }
 
@@ -197,6 +200,25 @@ namespace CardMaker.Card.Export
             else
             {
                 return Enumerable.Range(0, zDeck.CardCount).ToArray();
+            }
+        }
+
+        protected void ClearGraphics(Graphics zGraphics, Bitmap zSourceBitmap)
+        {
+            if (CurrentDeck.CardLayout.exportTransparentBackground)
+            {
+                // zGraphics.Clear does not work on alpha 0
+                var bitsSurface = zSourceBitmap.LockBits(
+                    new Rectangle(0, 0, zSourceBitmap.Width, zSourceBitmap.Height),
+                    ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+                var arraySize = zSourceBitmap.Width * zSourceBitmap.Height * 4;
+                var arraySurface = new byte[arraySize];
+                Marshal.Copy(arraySurface, 0, bitsSurface.Scan0, arraySurface.Length);
+                zSourceBitmap.UnlockBits(bitsSurface);
+            }
+            else
+            {
+                zGraphics.Clear(Color.White);
             }
         }
 

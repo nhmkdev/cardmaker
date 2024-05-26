@@ -820,10 +820,14 @@ namespace CardMaker.Forms
                 }
             }
             // add option for project path + project + layout (if single export)
-            listDefaultFileOptions.Add(Path.Combine(sProjectDirectory,
-                                       (bExportAllLayouts
-                                           ? sProjectName + ".pdf"
-                                           : sProjectName + "-" + LayoutManager.Instance.ActiveLayout.Name + ".pdf")));
+            if (null != sProjectDirectory && null != sProjectName)
+            {
+                listDefaultFileOptions.Add(Path.Combine(sProjectDirectory,
+                    (bExportAllLayouts
+                        ? sProjectName + ".pdf"
+                        : sProjectName + "-" + LayoutManager.Instance.ActiveLayout.Name + ".pdf")));
+            }
+
             if (!string.IsNullOrWhiteSpace(m_sPdfExportLastFile))
             {
                 // add option for last export exactly

@@ -391,6 +391,8 @@ namespace CardMaker.Forms
 
                     var zLayout = (ProjectLayout)treeView.SelectedNode.Tag;
 
+#warning TODO: revisit this, ProjectManager should probably contain this logic like AddLayout
+
                     // no need to null check, 1 layout must always exist
                     var zProject = ProjectManager.Instance.LoadedProject;
                     var listLayouts = new List<ProjectLayout>(zProject.Layout);
@@ -399,6 +401,7 @@ namespace CardMaker.Forms
 
                     treeView.SelectedNode.Parent.Nodes.Remove(treeView.SelectedNode);
 
+                    ProjectManager.Instance.FireLayoutRemoved(zLayout);
                     ProjectManager.Instance.FireProjectUpdated(true);
                 }
             }

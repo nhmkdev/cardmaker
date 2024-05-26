@@ -1192,11 +1192,18 @@ namespace Support.UI
 			{
 			    var ofn = new OpenFileDialog
 			    {
-                    InitialDirectory = Path.GetDirectoryName(zText.Text),
 				    Filter = sFilter,
 				    CheckFileExists = false,
-                    FileName = Path.GetFileName(zText.Text)
 			    };
+                try
+                {
+                    ofn.InitialDirectory = Path.GetDirectoryName(zText.Text);
+                    ofn.FileName = Path.GetFileName(zText.Text);
+                }
+                catch (Exception)
+                {
+                }
+
                 if(DialogResult.OK == ofn.ShowDialog())
 				{
 					zText.Text = ofn.FileName;

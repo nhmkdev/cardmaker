@@ -53,9 +53,7 @@ namespace CardMaker.Card.Export
             UpdateBufferBitmap(CurrentDeck.CardLayout.width, CurrentDeck.CardLayout.height);
 
             var zGraphics = Graphics.FromImage(m_zExportCardBuffer);
-            zGraphics.Clear(CurrentDeck.CardLayout.exportTransparentBackground ?
-                CardMakerConstants.NoColor :
-                Color.White);
+            ClearGraphics(zGraphics, m_zExportCardBuffer);
             CurrentDeck.ResetDeckCache();
             CurrentDeck.CardIndex = m_nImageExportIndex;
 

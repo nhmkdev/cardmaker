@@ -85,7 +85,7 @@ namespace Support.UI
         }
 
         /// <summary>
-        /// Pops the redo action and pushes it to the redo stack. The action is not executed.
+        /// Pops the redo action and pushes it to the undo stack. The action is not executed.
         /// </summary>
         /// <returns></returns>
         public static Action<bool> GetRedoAction()

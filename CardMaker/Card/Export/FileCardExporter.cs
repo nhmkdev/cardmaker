@@ -24,6 +24,7 @@
 
 using System;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -39,6 +40,13 @@ namespace CardMaker.Card.Export
         private readonly FileCardExporterFactory.CardMakerExportImageFormat m_eImageFormat;
         private readonly int m_nSkipStitchIndex;
         public int[] ExportCardIndices { get; set; }
+
+        private Bitmap m_zSingleCardBuffer;
+
+        ~FileCardExporter()
+        {
+            m_zSingleCardBuffer?.Dispose();
+        }
 
         public FileCardExporter(int nLayoutStartIndex, int nLayoutEndIdx, string sExportFolder, string sOverrideStringFormat, int nSkipStitchIndex, FileCardExporterFactory.CardMakerExportImageFormat eImageFormat) 
             : this(Enumerable.Range(nLayoutStartIndex, (nLayoutEndIdx - nLayoutStartIndex) + 1).ToArray(), sExportFolder, sOverrideStringFormat, nSkipStitchIndex, eImageFormat)
@@ -68,7 +76,7 @@ namespace CardMaker.Card.Export
             var progressLayoutIdx = ProgressReporter.GetProgressIndex(ProgressName.LAYOUT);
             var progressCardIdx = ProgressReporter.GetProgressIndex(ProgressName.CARD);
 
-#warning this other exporters will need this
+#warning this other exporters will need this (TODO: test the other exporters)
             CurrentDeck.SubLayoutExportContext = SubLayoutExportContext;
 
             // Exports may put multiple cards into a single exported image (referred to as a container below)
@@ -118,7 +126,7 @@ namespace CardMaker.Card.Export
                     var nX = 0;
                     var nY = 0;
                     var nCardsExportedInImage = 0;
-                    ClearGraphics(zContainerGraphics);
+                    ClearGraphics(zContainerGraphics, m_zExportCardBuffer);
                     do
                     {
                         CurrentDeck.ResetDeckCache();
@@ -126,10 +134,9 @@ namespace CardMaker.Card.Export
 
                         ProcessSubLayoutExports(m_sExportFolder);
 
-#warning TODO: optimize this by only creating the bitmap when necessary                        
-                        var bitmapSingleCard = new Bitmap(CurrentDeck.CardLayout.width, CurrentDeck.CardLayout.height);
+                        var bitmapSingleCard = CreateSingleCardBufferBitmap(CurrentDeck.CardLayout.width, CurrentDeck.CardLayout.height);
                         var zSingleCardGraphics = Graphics.FromImage(bitmapSingleCard);
-                        ClearGraphics(zSingleCardGraphics);
+                        ClearGraphics(zSingleCardGraphics, bitmapSingleCard);
                         var bExportCard = CardRenderer.DrawExportLineToGraphics(new GraphicsContext(zSingleCardGraphics, bitmapSingleCard), 0, 0, !CurrentDeck.CardLayout.exportTransparentBackground);
                         if (bExportCard)
                         {
@@ -184,9 +191,6 @@ namespace CardMaker.Card.Export
                     if (nCardsExportedInImage > 0)
                     {
                         string sFileName;
-
-                        // NOTE: nCardId at this point is 1 more than the actual index ... how convenient for export file names...
-
                         if (!string.IsNullOrEmpty(m_sOverrideStringFormat))
                         {
                             // check for the super override
@@ -225,23 +229,17 @@ namespace CardMaker.Card.Export
             ProgressReporter.Shutdown();
         }
 
-        /// <summary>
-        /// Updates the export buffer
-        /// </summary>
-        /// <param name="nWidth"></param>
-        /// <param name="nHeight"></param>
-        /// <param name="zGraphics"></param>
-        protected override void UpdateBufferBitmap(int nWidth, int nHeight)
+        protected virtual Bitmap CreateSingleCardBufferBitmap(int nWidth, int nHeight)
         {
-            m_zExportCardBuffer?.Dispose();
-            m_zExportCardBuffer = new Bitmap(nWidth, nHeight);
-        }
+            if (null == m_zSingleCardBuffer ||
+                nWidth != m_zSingleCardBuffer.Width ||
+                nHeight != m_zSingleCardBuffer.Height)
+            {
+                m_zSingleCardBuffer?.Dispose();
+                m_zSingleCardBuffer = new Bitmap(nWidth, nHeight, PixelFormat.Format32bppArgb);
+            }
 
-        protected void ClearGraphics(Graphics zGraphics)
-        {
-            zGraphics.Clear(CurrentDeck.CardLayout.exportTransparentBackground ?
-                CardMakerConstants.NoColor :
-                Color.White);
+            return m_zSingleCardBuffer;
         }
     }
 }
