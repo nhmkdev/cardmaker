@@ -424,6 +424,9 @@ namespace CardMaker.Forms
             zQuery.AddCheckBox("PixelOffsetMode: HighQuality", CardMakerSettings.PixelOffsetModeHighQuality, IniSettings.PixelOffsetModeHighQuality);
             zQuery.AddLabel("NOTE: These settings may affect element and layout rendering. Please review your layouts if you adjust them.", 50);
 
+            zQuery.AddTab("FormattedText");
+            zQuery.AddCheckBox("Merge Text Markups [Experimental]", CardMakerSettings.FormattedTextMergeTextMarkups, IniSettings.FormattedTextMergeTextMarkups);
+
             if (DialogResult.OK == zQuery.ShowDialog(this))
             {
                 CardMakerSettings.PrintPageMeasurementUnit = (MeasurementUnit)zQuery.GetIndex(IniSettings.PrintPageMeasurementUnit);
@@ -446,6 +449,8 @@ namespace CardMaker.Forms
 
                 CardMakerSettings.CompositingQualityGammaCorrected = zQuery.GetBool(IniSettings.CompositingQualityGammaCorrected);
                 CardMakerSettings.PixelOffsetModeHighQuality = zQuery.GetBool(IniSettings.PixelOffsetModeHighQuality);
+
+                CardMakerSettings.FormattedTextMergeTextMarkups = zQuery.GetBool(IniSettings.FormattedTextMergeTextMarkups);
 
                 var bWasGoogleCacheEnabled = CardMakerSettings.EnableGoogleCache;
                 CardMakerSettings.EnableGoogleCache = zQuery.GetBool(IniSettings.EnableGoogleCache);

@@ -24,7 +24,9 @@
 
 using System.Collections.Generic;
 using System.Drawing;
+using CardMaker.Events.Managers;
 using CardMaker.XML;
+using Support.IO;
 
 namespace CardMaker.Card.FormattedText.Markup
 {
@@ -34,19 +36,30 @@ namespace CardMaker.Card.FormattedText.Markup
         private float m_fYOffset;
 
         public bool Optional { get; }
+        public int Spaces { get; private set; }
 
         public override bool Aligns => true;
 
         public SpaceMarkup() : base("1")
         {
+            Spaces = 1;
         }
 
         public SpaceMarkup(string sVariable) : base(sVariable)
         {
+            int nSpaces;
+            if (!int.TryParse(sVariable, out nSpaces))
+            {
+                nSpaces = 1;
+                IssueManager.Instance.FireAddIssueEvent($"Invalid value supplied to space markup: {sVariable}");
+            }
+
+            Spaces = nSpaces;
         }
 
         public SpaceMarkup(bool bOptional) : base("1")
         {
+            Spaces = 1;
             Optional = bOptional;
         }
 
@@ -55,15 +68,7 @@ namespace CardMaker.Card.FormattedText.Markup
             m_fXOffset = zProcessData.CurrentXOffset;
             m_fYOffset = zProcessData.CurrentYOffset;
 
-            int nSpaces;
-            if (!int.TryParse(m_sVariable, out nSpaces))
-            {
-                return false;
-            }
-
-            LineNumber = zProcessData.CurrentLine;
-
-            float fWidth = (float)nSpaces * ((float)zProcessData.FontSpaceWidth + (float)zElement.wordspace);
+            var fWidth = (float)Spaces * ((float)zProcessData.FontSpaceWidth + (float)zElement.wordspace);
 
             if (0 == fWidth)
             {

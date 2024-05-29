@@ -21,7 +21,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
-#define STUPID
 
 using System;
 using System.Collections.Generic;
@@ -49,6 +48,8 @@ namespace CardMaker.Card.FormattedText.Markup
 
         public override bool Aligns => true;
 
+        public override bool Appendable => true;
+
         public TextMarkup(string sVariable)
             : base(sVariable)
         {
@@ -64,9 +65,6 @@ namespace CardMaker.Card.FormattedText.Markup
             m_fYOffset = zProcessData.CurrentYOffset;
             m_fFontScaleX = zProcessData.FontScaleX;
             m_fFontScaleY = zProcessData.FontScaleY;
-
-            LineNumber = zProcessData.CurrentLine;
-
             m_fFontOutlineSize = m_zFont.Size;
 
             // TODO: stop recalculating this, store it in the processData
@@ -174,6 +172,42 @@ namespace CardMaker.Card.FormattedText.Markup
                     Logger.AddLogLine("Unable to render text (font issue?)");
                 }
             }
+            return true;
+        }
+
+        public override bool TryAppendMarkup(ProjectLayoutElement zElement, FormattedTextData zData,
+            FormattedTextProcessData zProcessData, Graphics zGraphics, MarkupBase zMarkupToAppend)
+        {
+            var typeMarkupToappend = zMarkupToAppend.GetType();
+            var sToTry = string.Empty;
+            if (typeof(SpaceMarkup) == typeMarkupToappend)
+            {
+                sToTry = new string(' ', ((SpaceMarkup)zMarkupToAppend).Spaces);
+            }
+            else if (typeof(TextMarkup) == typeMarkupToappend)
+            {
+                sToTry = ((TextMarkup)zMarkupToAppend).Variable;
+            }
+
+            // whitespace is allowed (spaces!)
+            if (string.IsNullOrEmpty(sToTry))
+            {
+                return false;
+            }
+
+            var rectMeasuredRectangle = StringMeasure.MeasureString(zGraphics, m_sVariable + sToTry,
+                m_zFont, m_fFontScaleX, m_fFontScaleY, CardMakerSettings.StringMeasureMethod);
+            var fMeasuredWidth = rectMeasuredRectangle.Width;
+            var fAdditionalWidth = fMeasuredWidth - m_rectMeasuredRectangle.Width;
+            if (zProcessData.IsXPositionOutsideBounds(zProcessData.CurrentX + fAdditionalWidth))
+            {
+                return false;
+            }
+
+            m_sVariable += sToTry;
+            TargetRect = new RectangleF(TargetRect.X, TargetRect.Y, rectMeasuredRectangle.Width, TargetRect.Height);
+            m_rectMeasuredRectangle = rectMeasuredRectangle;
+            zProcessData.CurrentX += fAdditionalWidth;
             return true;
         }
     }

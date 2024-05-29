@@ -45,6 +45,8 @@ namespace CardMaker.Card.FormattedText.Markup
 
         public StringAlignment StringAlignment { get; private set; }
 
+        public virtual bool Appendable => false;
+
         public RectangleF TargetRect { get; set; }
 
         /// <summary>
@@ -62,6 +64,21 @@ namespace CardMaker.Card.FormattedText.Markup
                 StringAlignment = zProcessData.CurrentStringAlignment;
             }
             return ProcessMarkupHandler(zElement, zData, zProcessData, zGraphics);
+        }
+
+        /// <summary>
+        /// Attempts to append the markup to a prior markup.
+        /// </summary>
+        /// <param name="zElement"></param>
+        /// <param name="zData"></param>
+        /// <param name="zProcessData"></param>
+        /// <param name="zGraphics"></param>
+        /// <param name="zMarkupToAppend"></param>
+        /// <returns>True on success, false otherwise</returns>
+        public virtual bool TryAppendMarkup(ProjectLayoutElement zElement, FormattedTextData zData,
+            FormattedTextProcessData zProcessData, Graphics zGraphics, MarkupBase zMarkupToAppend)
+        {
+            return false;
         }
 
         /// <summary>

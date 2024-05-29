@@ -54,7 +54,9 @@ namespace Support.UI
             var matrixOriginalTransform = zGraphics.Transform;
             zGraphics.ResetTransform();
             // NOTE: using a zGraphics.ScaleTransform here has NO impact on the measurement
-            var zSize = zGraphics.MeasureString(sText, zFont, int.MaxValue, StringFormat.GenericTypographic);
+            var zStringFormat = StringFormat.GenericTypographic;
+            zStringFormat.FormatFlags |= StringFormatFlags.MeasureTrailingSpaces;
+            var zSize = zGraphics.MeasureString(sText, zFont, int.MaxValue, zStringFormat);
             zGraphics.Transform = matrixOriginalTransform;
             return new RectangleF(0, 0, zSize.Width * fFontScaleX, zSize.Height * fFontScaleY);
         }

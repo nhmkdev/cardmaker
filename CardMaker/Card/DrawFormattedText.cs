@@ -61,11 +61,11 @@ namespace CardMaker.Card
 
             if (zElement.autoscalefont)
             {
-                listRenderedMarkups = processAutoScale(zGraphics, zElement, zFormattedTextData);
+                listRenderedMarkups = ProcessAutoScale(zGraphics, zElement, zFormattedTextData);
             }
             else
             {
-                listRenderedMarkups = processMarkupDefinition(zGraphics, zElement, zElement.GetElementFont().Size, zFormattedTextData);
+                listRenderedMarkups = ProcessMarkupDefinition(zGraphics, zElement, zElement.GetElementFont().Size, zFormattedTextData);
             }
 
             // update the cache
@@ -76,11 +76,11 @@ namespace CardMaker.Card
             zDataFormattedCache.Render(zElement, zGraphics);
         }
 
-        protected List<MarkupBase> processAutoScale(Graphics zGraphics, ProjectLayoutElement zElement, FormattedTextData zFormattedTextData)
+        protected List<MarkupBase> ProcessAutoScale(Graphics zGraphics, ProjectLayoutElement zElement, FormattedTextData zFormattedTextData)
         {
-            var listRenderedMarkups = processMarkupDefinition(zGraphics, zElement, zElement.GetElementFont().Size, zFormattedTextData);
+            var listRenderedMarkups = ProcessMarkupDefinition(zGraphics, zElement, zElement.GetElementFont().Size, zFormattedTextData);
 
-            getOverflow(zElement, listRenderedMarkups, out var fXOverflow, out var fYOverflow);
+            GetOverflow(zElement, listRenderedMarkups, out var fXOverflow, out var fYOverflow);
 
             if (fYOverflow == 0) return listRenderedMarkups;
 
@@ -118,14 +118,14 @@ namespace CardMaker.Card
                     Logger.AddLogLine($"MS spent ${zWatch.ElapsedMilliseconds} Font Size: {fLargestFound}");
 #endif
                     // process again with the largest size and exit (slight non-optimization...)
-                    return processMarkupDefinition(zGraphics, zElement, fLargestFound, zFormattedTextData);
+                    return ProcessMarkupDefinition(zGraphics, zElement, fLargestFound, zFormattedTextData);
                 }
 
 #if LOG_AUTOSCALE
                 Logger.AddLogLine($"Testing font size: {fFontSize} Lower/Upper:{fLowerBound}/{fUpperBound}");
 #endif
-                listRenderedMarkups = processMarkupDefinition(zGraphics, zElement, fFontSize, zFormattedTextData);
-                getOverflow(zElement, listRenderedMarkups, out fXOverflow, out fYOverflow);
+                listRenderedMarkups = ProcessMarkupDefinition(zGraphics, zElement, fFontSize, zFormattedTextData);
+                GetOverflow(zElement, listRenderedMarkups, out fXOverflow, out fYOverflow);
                 if (fYOverflow > 0)
                 {
                     dictionaryAutoScaleSuccess[fFontSize] = false;
@@ -147,7 +147,7 @@ namespace CardMaker.Card
         /// <param name="listRenderedMarkups">The markups to look for overflow with</param>
         /// <param name="fXOverflow">The out horizontal overflow (not yet applicable)</param>
         /// <param name="fYOverflow">The out vertical overflow (not yet applicable)</param>
-        protected void getOverflow(ProjectLayoutElement zElement, List<MarkupBase> listRenderedMarkups, out float fXOverflow, out float fYOverflow)
+        protected void GetOverflow(ProjectLayoutElement zElement, List<MarkupBase> listRenderedMarkups, out float fXOverflow, out float fYOverflow)
         {
             fYOverflow = 0;
             fXOverflow = 0;
@@ -170,7 +170,7 @@ namespace CardMaker.Card
         /// <param name="fMainFontSize">The font size to use for the default font</param>
         /// <param name="zFormattedTextData">The processed formatted text data</param>
         /// <returns>List of markups to be rendered</returns>
-        protected List<MarkupBase> processMarkupDefinition(Graphics zGraphics, ProjectLayoutElement zElement, float fMainFontSize, FormattedTextData zFormattedTextData)
+        protected List<MarkupBase> ProcessMarkupDefinition(Graphics zGraphics, ProjectLayoutElement zElement, float fMainFontSize, FormattedTextData zFormattedTextData)
         {
             var colorFont = zElement.GetElementColor();
             Brush zBrush = 255 == zElement.opacity
@@ -221,9 +221,35 @@ namespace CardMaker.Card
             // - Generate markup rows (LineNumber is usable AFTER this process)
             int nIdx;
             MarkupBase zMarkup;
+            MarkupBase zMarkupToAppendTo = null;
             for (nIdx = 0; nIdx < zFormattedTextData.AllMarkups.Count; nIdx++)
             {
                 zMarkup = zFormattedTextData.AllMarkups[nIdx];
+                if (CardMakerSettings.FormattedTextMergeTextMarkups 
+                    && zElement.wordspace == 0)
+                {
+                    if (null != zMarkupToAppendTo)
+                    {
+                        if (zMarkupToAppendTo.TryAppendMarkup(zElement, zFormattedTextData, zProcessData, zGraphics,
+                                zMarkup))
+                        {
+                            continue;
+                        }
+
+                        // special case, trailing space markups are just removed
+                        if (typeof(SpaceMarkup) == zMarkup.GetType())
+                        {
+                            continue;
+                        }
+
+                        zMarkupToAppendTo = zMarkup.Appendable ? zMarkup : null;
+                    }
+                    else if (zMarkup.Appendable)
+                    {
+                        zMarkupToAppendTo = zMarkup;
+                    }
+                }
+
                 if (zMarkup.ProcessMarkup(zElement, zFormattedTextData, zProcessData, zGraphics))
                 {
                     zMarkup.LineNumber = zProcessData.CurrentLine;
@@ -263,7 +289,6 @@ namespace CardMaker.Card
 
             // Pass 3:
             // - Align lines (horizontal/vertical)
-
             // Reprocess for align (before backgroundcolor is configured)
             AlignmentController.UpdateAlignment(zElement, listPassMarkups);
 

@@ -115,6 +115,7 @@ namespace CardMaker.Data
         DefineTranslatePrimitiveCharacters,
         LogInceptTranslation,
         ShowCanvasXY,
+        FormattedTextMergeTextMarkups,
         StringMeasureMethod
     }
 

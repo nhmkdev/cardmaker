@@ -251,5 +251,11 @@ namespace CardMaker.Data
             }
             set { s_zIniManager.SetValue(IniSettings.StringMeasureMethod, ((int)value).ToString()); }
         }
+
+        public static bool FormattedTextMergeTextMarkups
+        {
+            get { return s_zIniManager.GetValue(IniSettings.FormattedTextMergeTextMarkups, bool.FalseString).Equals(bool.TrueString); }
+            set { s_zIniManager.SetValue(IniSettings.FormattedTextMergeTextMarkups, value.ToString()); }
+        }
     }
 }

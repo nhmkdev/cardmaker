@@ -22,6 +22,7 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Drawing;
 using CardMaker.XML;
 
@@ -45,9 +46,12 @@ namespace CardMaker.Card.FormattedText.Markup
             {
                 return false;
             }
-            if (nXMargin >= 0 && nXMargin < zElement.width && nYTop < nYBottom && nYTop >= 0 && nYBottom <= zElement.height)
+            if (nXMargin >= 0 && nYTop < nYBottom)
             {
-                zProcessData.AddHorizontalMargin(zElement, GetMarginType(), nXMargin, nYTop, nYBottom);
+                zProcessData.AddHorizontalMargin(zElement, GetMarginType(), 
+                    Math.Min(nXMargin, zElement.width - 1), 
+                    Math.Max(nYTop, 0), 
+                    Math.Min(nYBottom, zElement.height));
             }
             return false;
         }
