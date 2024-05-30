@@ -178,6 +178,17 @@ namespace CardMaker.Card.FormattedText.Markup
         public override bool TryAppendMarkup(ProjectLayoutElement zElement, FormattedTextData zData,
             FormattedTextProcessData zProcessData, Graphics zGraphics, MarkupBase zMarkupToAppend)
         {
+            // only append if the process data hasn't changed since this markup
+            if (!zProcessData.Font.Equals(m_zFont)
+                || zProcessData.FontBrush != m_zFontBrush
+                || zProcessData.FontScaleX != m_fFontScaleX
+                || zProcessData.FontScaleY != m_fFontScaleY
+                || zProcessData.CurrentXOffset != m_fXOffset
+                || zProcessData.CurrentYOffset != m_fYOffset)
+            {
+                return false;
+            }
+
             var typeMarkupToappend = zMarkupToAppend.GetType();
             var sToTry = string.Empty;
             if (typeof(SpaceMarkup) == typeMarkupToappend)
