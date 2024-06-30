@@ -302,6 +302,7 @@ namespace CardMaker.Events.Managers
                     zElement.rotation = kvp.Value.Rotation;
                 }
                 Instance.FireElementBoundsUpdateEvent();
+                LayoutManager.Instance.FireLayoutUpdatedEvent(true);
             };
         }
 

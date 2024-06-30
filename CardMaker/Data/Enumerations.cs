@@ -139,4 +139,12 @@ namespace CardMaker.Data
         Google = 1,
         Excel = 2
     }
+
+    public enum ElementInsertDestination
+    {
+        Above = 0,
+        Below,
+        Top,
+        Bottom
+    }
 }
