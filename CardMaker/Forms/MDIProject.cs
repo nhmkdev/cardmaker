@@ -401,7 +401,6 @@ namespace CardMaker.Forms
 
                     treeView.SelectedNode.Parent.Nodes.Remove(treeView.SelectedNode);
 
-                    ProjectManager.Instance.FireLayoutRemoved(zLayout);
                     ProjectManager.Instance.FireProjectUpdated(true);
                 }
             }

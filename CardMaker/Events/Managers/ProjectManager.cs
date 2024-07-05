@@ -72,11 +72,6 @@ namespace CardMaker.Events.Managers
         public event LayoutRenamed LayoutRenamed;
 
         /// <summary>
-        /// Fired when a layout is deleted
-        /// </summary>
-        public event LayoutRemoved LayoutRemoved;
-
-        /// <summary>
         /// Fired when an element is renamed
         /// </summary>
         public event ElementRenamed ElementRenamed;
@@ -93,17 +88,12 @@ namespace CardMaker.Events.Managers
 
         public static ProjectManager Instance => m_zInstance ?? (m_zInstance = new ProjectManager());
 
-        private Dictionary<string, ProjectLayoutCacheEntry> m_zProjectLayoutDictionary = new Dictionary<string, ProjectLayoutCacheEntry>();
-
         public ProjectManager()
         {
             ProjectUpdated += (sender, e) => UpdateSettings();
             LayoutRenamed += OnLayoutRenamed;
-            LayoutAdded += (sender, e) => InitializeLookups(false);
-            LayoutRemoved += (sender, e) => InitializeLookups(false);
             ElementRenamed += OnElementRenamed;
             ElementsRemoved += OnElementsRemoved;
-            ProjectOpened += (sender, e) => InitializeLookups(true);
         }
 
         #region Event Triggers
@@ -122,14 +112,6 @@ namespace CardMaker.Events.Managers
         public void FireLayoutRenamed(ProjectLayout zLayout, string sOldName)
         {
             LayoutRenamed?.Invoke(this, new LayoutRenamedEventArgs(zLayout, sOldName));
-        }
-
-        /// <summary>
-        /// Fires the FireLayoutRenamed event
-        /// </summary>
-        public void FireLayoutRemoved(ProjectLayout zLayout)
-        {
-            LayoutRemoved?.Invoke(this, new LayoutRemovedEventArgs(zLayout));
         }
 
         /// <summary>
@@ -162,8 +144,6 @@ namespace CardMaker.Events.Managers
 
         private void OnLayoutRenamed(object sender, LayoutRenamedEventArgs e)
         {
-            InitializeLookups(false);
-
             // update all nested reference elements to match the name
             if (LoadedProject == null) return;
             foreach (var zLayout in LoadedProject.Layout)
@@ -312,22 +292,7 @@ namespace CardMaker.Events.Managers
             }
             return -1;
         }
-
-        private void InitializeLookups(bool bInitializeElementLookup = true)
-        {
-            m_zProjectLayoutDictionary.Clear();
-            if(LoadedProject == null) return;
-            for(var nIdx = 0; nIdx < LoadedProject.Layout.Length; nIdx++)
-            {
-                var zLayout = LoadedProject.Layout[nIdx];
-                m_zProjectLayoutDictionary[zLayout.Name.ToUpper()] = new ProjectLayoutCacheEntry(zLayout, nIdx);
-                if (bInitializeElementLookup)
-                {
-                    zLayout.InitializeElementLookup();
-                }
-            }
-        }
-
+        
         private void UpdateSettings()
         {
             LoadedProjectTranslatorType = GetTranslatorTypeFromString(LoadedProject.translatorName);
@@ -350,17 +315,9 @@ namespace CardMaker.Events.Managers
         /// <returns>ProjectLayout on success or null otherwise</returns>
         public ProjectLayout LookupLayoutByName(string sLayoutName)
         {
-            if (string.IsNullOrWhiteSpace(sLayoutName))
-            {
-                return null;
-            }
-            var sKey = sLayoutName.ToUpper();
-            return m_zProjectLayoutDictionary.ContainsKey(sKey)
-                ? m_zProjectLayoutDictionary[sKey].Layout
-                : null;
+            var zLookupTuple = LookupLayout(sLayoutName);
+            return zLookupTuple?.Item2 ?? null;
         }
-
-#warning - maintaining the m_zProjectLayoutDictionary may not be worth it with all the places that need to trigger updates
 
         /// <summary>
         /// Lookup the layout index by name
@@ -369,14 +326,28 @@ namespace CardMaker.Events.Managers
         /// <returns>Index on success or -1 otherwise</returns>
         public int LookupLayoutIndexByName(string sLayoutName)
         {
+            var zLookupTuple = LookupLayout(sLayoutName);
+            return zLookupTuple?.Item1 ?? -1;
+        }
+
+        private Tuple<int, ProjectLayout> LookupLayout(string sLayoutName)
+        {
             if (string.IsNullOrWhiteSpace(sLayoutName))
             {
-                return -1;
+                return null;
             }
-            var sKey = sLayoutName.ToUpper();
-            return null != sLayoutName && m_zProjectLayoutDictionary.ContainsKey(sKey)
-                ? m_zProjectLayoutDictionary[sKey].Index
-                : -1;
+            if (null != LoadedProject?.Layout)
+            {
+                for (var nIdx = 0; nIdx < LoadedProject.Layout.Length; nIdx++)
+                {
+                    if (LoadedProject.Layout[nIdx].Name.Equals(sLayoutName, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return new Tuple<int, ProjectLayout>(nIdx, LoadedProject.Layout[nIdx]);
+                    }
+                }
+            }
+
+            return null;
         }
 
         public static TranslatorType GetTranslatorTypeFromString(string sInput)
@@ -431,18 +402,6 @@ namespace CardMaker.Events.Managers
                 };
             }
             return zProject;
-        }
-
-        class ProjectLayoutCacheEntry
-        {
-            public ProjectLayout Layout { get; set; }
-            public int Index { get; set; }
-
-            public ProjectLayoutCacheEntry(ProjectLayout zLayout, int nIndex)
-            {
-                Layout = zLayout;
-                Index = nIndex;
-            }
         }
     }
 }
