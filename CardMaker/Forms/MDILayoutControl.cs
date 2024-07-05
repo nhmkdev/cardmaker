@@ -304,6 +304,26 @@ namespace CardMaker.Forms
             }
         }
 
+        private void btnMove_Click(object sender, EventArgs e)
+        {
+            var zQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("Move Elements", 400, false));
+            const string X_ADJUST = "xadjust";
+            const string Y_ADJUST = "yadjust";
+            const int MAX_ADJUST = 1 << 24;
+            zQuery.AddNumericBox("X Adjust", 0, -MAX_ADJUST, MAX_ADJUST, X_ADJUST);
+            zQuery.AddNumericBox("Y Adjust", 0, -MAX_ADJUST, MAX_ADJUST, Y_ADJUST);
+            zQuery.AddLabel("Note:\nThe upper left corner is 0,0.\nThe lower right corner is the layout width,height.", 45);
+            if (DialogResult.OK == zQuery.ShowDialog(this))
+            {
+                var nXAdjust = (int)zQuery.GetDecimal(X_ADJUST);
+                var nYAdjust = (int)zQuery.GetDecimal(Y_ADJUST);
+                if (nXAdjust != 0 || nYAdjust != 0)
+                {
+                    ElementManager.Instance.ProcessSelectedElementsChange(nXAdjust, nYAdjust, 0, 0);
+                }
+            }
+        }
+
         private void btnElementChangeOrder_Click(object sender, EventArgs e)
         {
             int nChange = (sender == btnElementDown) ? 1 : -1;
@@ -711,9 +731,9 @@ namespace CardMaker.Forms
         {
             var listNewElements = new List<ProjectLayoutElement>();
 
-            foreach (string sName in collectionNames)
+            foreach (var sName in collectionNames)
             {
-                string sTrimmed = sName.Trim();
+                var sTrimmed = sName.Trim();
                 if (m_dictionaryItems.ContainsKey(sTrimmed)) // no duplicates!
                 {
                     Logger.AddLogLine("Unable to add duplicated element: {0}".FormatString(sTrimmed));
@@ -738,12 +758,12 @@ namespace CardMaker.Forms
             }
 
             // get the base element index (does not apply to creating element references)
-            var nDestination = LayoutManager.Instance.ActiveLayout?.Element.Length ?? 0;
+            var nDestination = LayoutManager.Instance.ActiveLayout?.Element?.Length ?? 0;
             if (nDestinationOverride > -1)
             {
                 nDestination = nDestinationOverride;
             }
-            else if (null != zBaseElement && null != LayoutManager.Instance.ActiveLayout.Element && null == sLayoutReferenceName)
+            else if (null != zBaseElement && null != LayoutManager.Instance.ActiveLayout?.Element && null == sLayoutReferenceName)
             {
                 nDestination = Array.IndexOf(LayoutManager.Instance.ActiveLayout.Element, zBaseElement);
             }
@@ -772,7 +792,7 @@ namespace CardMaker.Forms
             }
 
             var zLayout = LayoutManager.Instance.ActiveLayout;
-            if (null == zLayout.Element ||
+            if (null == zLayout?.Element ||
                 // it is possible nothing was added if all names were duplicates (skip in that case)
                 zLayout.Element.Length < listElements.Count)
             {

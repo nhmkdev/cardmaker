@@ -1,6 +1,9 @@
 Card Maker Version History
 --------------------------
 1.4.0.0
+- Added ability to create/duplicate elements into a specific position relative to the original(s). Will likely expand on this.
+- Added gradient element settings dialog (kind of hidden under a ">" button)
+- [Experimental] Added option to allow for the merging of alike text markups (allows for underlines/strike to work across words/spaces) - Can be enabled in the app settings.
 - Changed FormattedText Auto-Scale functionality
 - Added alternative approach to measure strings for FormattedText (Old/Default: CharacterRanges vs. New:MeasureStringGenericTypoGraphic)
 - Added in-memory caching when exporting sublayouts

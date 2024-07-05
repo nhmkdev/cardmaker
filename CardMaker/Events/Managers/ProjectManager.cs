@@ -360,6 +360,8 @@ namespace CardMaker.Events.Managers
                 : null;
         }
 
+#warning - maintaining the m_zProjectLayoutDictionary may not be worth it with all the places that need to trigger updates
+
         /// <summary>
         /// Lookup the layout index by name
         /// </summary>

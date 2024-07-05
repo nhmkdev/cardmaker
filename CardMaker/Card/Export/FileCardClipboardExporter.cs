@@ -39,6 +39,7 @@ namespace CardMaker.Card.Export
             : base(nLayoutStartIndex, nLayoutEndIdx)
         {
             m_nImageExportIndex = nImageExportIndex;
+            CurrentDeck.ExportContext = new ExportContext();
         }
 
         public override void ExportThread()

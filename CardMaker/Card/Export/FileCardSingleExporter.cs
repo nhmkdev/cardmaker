@@ -51,6 +51,7 @@ namespace CardMaker.Card.Export
 
             m_eImageFormat = eImageFormat;
             m_nImageExportIndex = nImageExportIndex;
+            CurrentDeck.ExportContext = new ExportContext(m_eImageFormat);
         }
 
         public override void ExportThread()

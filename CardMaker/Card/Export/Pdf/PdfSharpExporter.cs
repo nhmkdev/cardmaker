@@ -69,6 +69,7 @@ namespace CardMaker.Card.Export.Pdf
                 ProgressReporter.AddIssue(sPageOrientation + " is an unknown page orientation.");
             }
             m_zDocument = new PdfDocument();
+            CurrentDeck.ExportContext = new ExportContext();
         }
 
         public PdfSharpExporter(int[] arrayLayoutIndices, string sExportFile, PageOrientation ePageOrientation) : base(arrayLayoutIndices)
