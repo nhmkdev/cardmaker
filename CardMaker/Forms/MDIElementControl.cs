@@ -965,6 +965,8 @@ namespace CardMaker.Forms
             m_dictionaryControlField.Add(checkJustifiedText, zType.GetProperty("justifiedtext"));
         }
 
+#warning There are potential optimizations to w,h,x,y changes but they require knowing the string translation ahead of time and avoiding it for key cases
+
         private void SetupControlActions()
         {
             m_dictionaryControlActions.Add(txtElementVariable, zElement =>
@@ -975,13 +977,18 @@ namespace CardMaker.Forms
 
             m_dictionaryControlActions.Add(numericElementX, zElement =>
             {
-                LayoutManager.Instance.ActiveDeck.ResetTranslationCache(zElement);
-                LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElement.name);
+                if (CardMakerSettings.EnableTranslateOnDrag) {
+                    LayoutManager.Instance.ActiveDeck.ResetTranslationCache(zElement);
+                    LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElement.name);
+                }
             });
             m_dictionaryControlActions.Add(numericElementY, zElement =>
             {
-                LayoutManager.Instance.ActiveDeck.ResetTranslationCache(zElement);
-                LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElement.name);
+                if (CardMakerSettings.EnableTranslateOnDrag)
+                {
+                    LayoutManager.Instance.ActiveDeck.ResetTranslationCache(zElement);
+                    LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElement.name);
+                }
             });
             m_dictionaryControlActions.Add(numericElementW, zElement =>
             {

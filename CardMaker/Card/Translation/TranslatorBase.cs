@@ -259,17 +259,7 @@ namespace CardMaker.Card.Translation
             return null;
         }
 
-        public FormattedTextDataCache GetCachedMarkup(string sElementName)
-        {
-            FormattedTextDataCache zCached;
-            if (m_dictionaryMarkupCache.TryGetValue(sElementName, out zCached))
-            {
-                return zCached;
-            }
-            return null;
-        }
-
-#endregion
+        #endregion
 
 #region Markup Cache
 
@@ -285,12 +275,18 @@ namespace CardMaker.Card.Translation
 
         public void ResetMarkupCache(string sElementName)
         {
-            if (m_dictionaryMarkupCache.ContainsKey(sElementName))
-            {
-                m_dictionaryMarkupCache.Remove(sElementName);
-            }
+            m_dictionaryMarkupCache.Remove(sElementName);
         }
-#endregion
+
+        public FormattedTextDataCache GetCachedMarkup(string sElementName)
+        {
+            if (m_dictionaryMarkupCache.TryGetValue(sElementName, out var zCached))
+            {
+                return zCached;
+            }
+            return null;
+        }
+        #endregion
 
     }
 }

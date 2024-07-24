@@ -116,7 +116,8 @@ namespace CardMaker.Data
         LogInceptTranslation,
         ShowCanvasXY,
         FormattedTextMergeTextMarkups,
-        StringMeasureMethod
+        StringMeasureMethod,
+        EnableTranslateOnDrag,
     }
 
     public enum ExportType

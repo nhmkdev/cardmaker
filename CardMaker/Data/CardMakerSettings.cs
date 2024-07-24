@@ -257,5 +257,11 @@ namespace CardMaker.Data
             get { return s_zIniManager.GetValue(IniSettings.FormattedTextMergeTextMarkups, bool.FalseString).Equals(bool.TrueString); }
             set { s_zIniManager.SetValue(IniSettings.FormattedTextMergeTextMarkups, value.ToString()); }
         }
+
+        public static bool EnableTranslateOnDrag
+        {
+            get { return s_zIniManager.GetValue(IniSettings.EnableTranslateOnDrag, bool.FalseString).Equals(bool.TrueString); }
+            set { s_zIniManager.SetValue(IniSettings.EnableTranslateOnDrag, value.ToString()); }
+        }
     }
 }

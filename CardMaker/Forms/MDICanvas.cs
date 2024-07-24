@@ -616,6 +616,14 @@ namespace CardMaker.Forms
             if (null != m_listSelectedElements && m_bElementSelected)
             {
                ElementManager.ConfigureUserAction(m_dictionarySelectedUndo, ElementManager.Instance.GetUndoRedoPoints());
+                if (!CardMakerSettings.EnableTranslateOnDrag)
+                {
+                    m_listSelectedElements.ForEach(zElement => {
+                        LayoutManager.Instance.ActiveDeck.ResetTranslationCache(zElement);
+                        LayoutManager.Instance.ActiveDeck.ResetMarkupCache(zElement.name);
+                    });
+                    m_zCardCanvas.Invalidate();
+                }
             }
 
             m_dictionarySelectedUndo = null;

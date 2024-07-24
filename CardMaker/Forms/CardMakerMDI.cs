@@ -393,6 +393,7 @@ namespace CardMaker.Forms
             zQuery.AddCheckBox("Show Canvas Mouse Location", CardMakerSettings.ShowCanvasXY, IniSettings.ShowCanvasXY);
             zQuery.AddPullDownBox("String Measure Method (FormattedText)",
                 Enum.GetNames(typeof(StringMeasureMethod)), (int)CardMakerSettings.StringMeasureMethod, IniSettings.StringMeasureMethod);
+            zQuery.AddCheckBox("Translate Elements While Dragging", CardMakerSettings.EnableTranslateOnDrag, IniSettings.EnableTranslateOnDrag);
 
 #if !MONO_BUILD
             zQuery.AddTab("WebP Export Settings");
@@ -444,6 +445,7 @@ namespace CardMaker.Forms
                 CardMakerSettings.LogInceptTranslation = zQuery.GetBool(IniSettings.LogInceptTranslation);
                 CardMakerSettings.ShowCanvasXY = zQuery.GetBool(IniSettings.ShowCanvasXY);
                 CardMakerSettings.StringMeasureMethod = (StringMeasureMethod)zQuery.GetIndex(IniSettings.StringMeasureMethod);
+                CardMakerSettings.EnableTranslateOnDrag = zQuery.GetBool(IniSettings.EnableTranslateOnDrag);
                 CardMakerSettings.AutoSaveIntervalMinutes = (int)zQuery.GetDecimal(IniSettings.AutoSaveIntervalMinutes);
                 AutoSaveManager.Instance.EnableAutoSave(zQuery.GetBool(IniSettings.AutoSaveEnabled));
 
