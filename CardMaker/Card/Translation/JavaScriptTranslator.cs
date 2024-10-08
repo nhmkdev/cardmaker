@@ -49,7 +49,7 @@ namespace CardMaker.Card.Translation
             {
                 var hostFunctions = new JavascriptHostFunctions(zElement);
                 engine.AddHostObject("host", Microsoft.ClearScript.HostItemFlags.GlobalMembers, hostFunctions);
-                var sScript = GetJavaScript(nCardIndex, zDeckLine, sRawString);
+                var sScript = GetJavaScript(nCardIndex, zDeck, zDeckLine, zElement, sRawString);
                 try
                 {
                     var sValue = engine.Evaluate(sScript);
@@ -77,7 +77,7 @@ namespace CardMaker.Card.Translation
             };
         }
 
-        private string GetJavaScript(int nCardIndex, DeckLine zDeckLine, string sDefintion)
+        private string GetJavaScript(int nCardIndex, Deck zDeck, DeckLine zDeckLine, ProjectLayoutElement zElement, string sDefintion)
         {
             var zBuilder = new StringBuilder();
             if (string.IsNullOrWhiteSpace(sDefintion))
@@ -87,6 +87,19 @@ namespace CardMaker.Card.Translation
 
             AddNumericVar(zBuilder, "deckIndex", (nCardIndex + 1).ToString());
             AddNumericVar(zBuilder, "cardIndex", (zDeckLine.RowSubIndex + 1).ToString());
+            AddNumericVar(zBuilder, "cardCount", zDeck.CardCount.ToString());
+            AddVar(zBuilder, "elementName", zElement.name);
+            AddVar(zBuilder, "layoutName", zDeck.CardLayout.Name);
+            if (zDeckLine.Reference == null)
+            {
+                AddVar(zBuilder, "refName", "No reference info.");
+                AddVar(zBuilder, "refLine", "No reference info.");
+            }
+            else
+            {
+                AddVar(zBuilder, "refName", zDeckLine.Reference.Source.Replace(@"\", @"\\"));
+                AddVar(zBuilder, "refLine", zDeckLine.Reference.LineNumber.ToString());
+            }
 
             foreach (var sKey in DictionaryDefines.Keys)
             {
