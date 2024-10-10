@@ -56,7 +56,10 @@ namespace CardMaker.Card.Translation
         public string layoutName => m_zDeck.CardLayout.Name;
         public string refName => m_zDeckLine.ReferenceLine == null ? "No reference info." : m_zDeckLine.ReferenceLine.Source;
         public string refLine => m_zDeckLine.ReferenceLine == null ? "No reference info." : m_zDeckLine.ReferenceLine.LineNumber.ToString();
-        
+        public string parentLayout => m_zDeck.SubLayoutExportContext?.ParentLayoutName ?? string.Empty;
+        public string rootLayout => m_zDeck.SubLayoutExportContext?.RootLayoutName ?? string.Empty;
+        public bool exporting => m_zDeck.ExportContext != null;
+        public string exportFormat => m_zDeck.ExportContext?.GetExportImageFormatString() ?? string.Empty;
 #pragma warning restore IDE1006
 
         public JavascriptHost(ScriptEngine zEngine, ProjectLayoutElement zElement, int nCardIndex, Deck zDeck, DeckLine zDeckLine)
