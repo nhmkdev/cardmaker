@@ -39,7 +39,7 @@ namespace CardMaker.Forms.Dialogs
             const string TRANSLATOR = "translator";
             const string DEFAULT_DEFINE_REFERENCE_TYPE = "default_define_reference_type";
             const string OVERRIDE_DEFINE_REFRENCE_NAME = "override_define_reference_name";
-            const string JS_ESCAPE_SINGLE_QUOTES = "js_escape_single_quotes";
+            
             const string JS_TILDE_CODE = "js_tilde_code";
             const string JS_KEEP_FUNCTIONS = "js_keep_functions";
 
@@ -74,7 +74,6 @@ namespace CardMaker.Forms.Dialogs
                 OVERRIDE_DEFINE_REFRENCE_NAME);
 
             zQuery.ChangeToTab("Javascript");
-            zQuery.AddCheckBox("Escape Single Quotes", ProjectManager.Instance.LoadedProject.jsEscapeSingleQuotes, JS_ESCAPE_SINGLE_QUOTES);
             zQuery.AddCheckBox("~ Means Code", ProjectManager.Instance.LoadedProject.jsTildeMeansCode, JS_TILDE_CODE);
             zQuery.AddCheckBox("Keep Functions", ProjectManager.Instance.LoadedProject.jsKeepFunctions, JS_KEEP_FUNCTIONS);
 
@@ -84,7 +83,6 @@ namespace CardMaker.Forms.Dialogs
                 ProjectManager.Instance.LoadedProject.defaultDefineReferenceType = ((ReferenceType)zQuery.GetIndex(DEFAULT_DEFINE_REFERENCE_TYPE)).ToString();
                 ProjectManager.Instance.LoadedProject.overrideDefineReferenceName =
                     zQuery.GetString(OVERRIDE_DEFINE_REFRENCE_NAME).Trim();
-                ProjectManager.Instance.LoadedProject.jsEscapeSingleQuotes = zQuery.GetBool(JS_ESCAPE_SINGLE_QUOTES);
                 ProjectManager.Instance.LoadedProject.jsTildeMeansCode = zQuery.GetBool(JS_TILDE_CODE);
                 ProjectManager.Instance.LoadedProject.jsKeepFunctions = zQuery.GetBool(JS_KEEP_FUNCTIONS);
                 ProjectManager.Instance.FireProjectUpdated(true);
