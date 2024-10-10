@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Text;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
+using Microsoft.ClearScript;
 using Microsoft.ClearScript.V8;
 using Support.IO;
 
@@ -44,20 +45,17 @@ namespace CardMaker.Card.Translation
 
         protected override ElementString TranslateToElementString(Deck zDeck, string sRawString, int nCardIndex, DeckLine zDeckLine, ProjectLayoutElement zElement)
         {
-            using (var engine = new V8ScriptEngine())
+            using (var host = InitializeHost(nCardIndex, zDeck, zDeckLine, zElement))
             {
-                var hostFunctions = new JavascriptHostFunctions(zElement);
-                engine.AddHostObject("host", Microsoft.ClearScript.HostItemFlags.GlobalMembers, hostFunctions);
-                var sScript = GetJavaScript(nCardIndex, zDeck, zDeckLine, zElement, sRawString);
                 try
                 {
-                    var sValue = engine.Evaluate(sScript);
+                    var sValue = host.ScriptEngine.Evaluate(sRawString);
                     if (sValue is string || sValue is int || sValue is double)
                     {
                         return new ElementString()
                         {
                             String = sValue.ToString(),
-                            OverrideFieldToValueDictionary = hostFunctions.dictionaryOverrideFieldToValue
+                            OverrideFieldToValueDictionary = host.dictionaryOverrideFieldToValue
                         };
                     }
                     else
@@ -76,83 +74,22 @@ namespace CardMaker.Card.Translation
             };
         }
 
-        private string GetJavaScript(int nCardIndex, Deck zDeck, DeckLine zDeckLine, ProjectLayoutElement zElement, string sDefinition)
+        private JavascriptHost InitializeHost(int nCardIndex, Deck zDeck, DeckLine zDeckLine, ProjectLayoutElement zElement)
         {
-            var zBuilder = new StringBuilder();
-            if (string.IsNullOrWhiteSpace(sDefinition))
-            {
-                return "''";
-            }
-
-            AddNumericVar(zBuilder, "deckIndex", (nCardIndex + 1).ToString());
-            AddNumericVar(zBuilder, "cardIndex", (zDeckLine.RowSubIndex + 1).ToString());
-            AddNumericVar(zBuilder, "cardCount", zDeck.CardCount.ToString());
-            AddVar(zBuilder, "elementName", zElement.name);
-            AddVar(zBuilder, "layoutName", zDeck.CardLayout.Name);
-            if (zDeckLine.ReferenceLine == null)
-            {
-                AddVar(zBuilder, "refName", "No reference info.");
-                AddVar(zBuilder, "refLine", "No reference info.");
-            }
-            else
-            {
-                AddVar(zBuilder, "refName", zDeckLine.ReferenceLine.Source.Replace(@"\", @"\\"));
-                AddVar(zBuilder, "refLine", zDeckLine.ReferenceLine.LineNumber.ToString());
-            }
+            var engine = new V8ScriptEngine();
+            var hostFunctions = new JavascriptHost(engine, zElement, nCardIndex, zDeck, zDeckLine);
+            engine.AddHostObject("host", Microsoft.ClearScript.HostItemFlags.GlobalMembers, hostFunctions);
 
             foreach (var kvp in DictionaryDefines)
             {
-                AddVar(zBuilder, kvp.Key, kvp.Value);
+                engine.Global.SetProperty(kvp.Key, kvp.Value);
             }
-
             foreach (var kvp in zDeckLine.ColumnsToValues)
             {
-                AddVar(zBuilder, kvp.Key, kvp.Value);
+                engine.Global.SetProperty(kvp.Key, kvp.Value);
             }
-            zBuilder.Append(sDefinition);
-            return zBuilder.ToString();
-        }
 
-        private void AddNumericVar(StringBuilder zBuilder, string sVar, string sValue)
-        {
-            zBuilder.Append("this.");
-            zBuilder.Append(sVar.Replace(' ', '_'));
-            zBuilder.Append("=");
-            zBuilder.Append(sValue);
-            zBuilder.AppendLine(";");
-        }
-
-        private void AddVar(StringBuilder zBuilder, string sVar, string sValue)
-        {
-            zBuilder.Append("this.");
-            zBuilder.Append(sVar.Replace(' ', '_'));
-            zBuilder.Append("=");
-            // functions or single quoted items are left as-is
-            // note this does not tolerate (whitespace)'
-            if (sValue.StartsWith(FUNCTION_PREFIX) && ProjectManager.Instance.LoadedProject.jsKeepFunctions)
-            {
-                zBuilder.AppendLine(sValue);
-            }
-            else if (sValue.StartsWith("'") && !ProjectManager.Instance.LoadedProject.jsEscapeSingleQuotes)
-            {
-                zBuilder.Append(sValue);
-                zBuilder.AppendLine(";");
-            }
-            else if (sValue.StartsWith("~") && ProjectManager.Instance.LoadedProject.jsTildeMeansCode)
-            {
-                zBuilder.Append(sValue.Substring(1));
-                zBuilder.AppendLine(";");
-            }
-            else
-            {
-                if (ProjectManager.Instance.LoadedProject.jsEscapeSingleQuotes)
-                {
-                    sValue = sValue.Replace("'", @"\'");
-                }
-                zBuilder.Append("'");
-                zBuilder.Append(sValue);
-                zBuilder.AppendLine("';");
-            }
+            return hostFunctions;
         }
     }
 }

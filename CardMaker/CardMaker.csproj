@@ -198,7 +198,7 @@
     <Compile Include="Card\Shapes\ShapeInfo.cs" />
     <Compile Include="Card\Translation\FilenameTranslator.cs" />
     <Compile Include="Card\Translation\InceptTranslator.cs" />
-    <Compile Include="Card\Translation\JavascriptHostFunctions.cs" />
+    <Compile Include="Card\Translation\JavascriptHost.cs" />
     <Compile Include="Card\Translation\JavaScriptTranslator.cs" />
     <Compile Include="Card\Translation\TranslatorBase.cs" />
     <Compile Include="Card\Translation\TranslatorFactory.cs" />
