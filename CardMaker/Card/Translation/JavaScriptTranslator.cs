@@ -76,10 +76,10 @@ namespace CardMaker.Card.Translation
             };
         }
 
-        private string GetJavaScript(int nCardIndex, Deck zDeck, DeckLine zDeckLine, ProjectLayoutElement zElement, string sDefintion)
+        private string GetJavaScript(int nCardIndex, Deck zDeck, DeckLine zDeckLine, ProjectLayoutElement zElement, string sDefinition)
         {
             var zBuilder = new StringBuilder();
-            if (string.IsNullOrWhiteSpace(sDefintion))
+            if (string.IsNullOrWhiteSpace(sDefinition))
             {
                 return "''";
             }
@@ -89,15 +89,15 @@ namespace CardMaker.Card.Translation
             AddNumericVar(zBuilder, "cardCount", zDeck.CardCount.ToString());
             AddVar(zBuilder, "elementName", zElement.name);
             AddVar(zBuilder, "layoutName", zDeck.CardLayout.Name);
-            if (zDeckLine.Reference == null)
+            if (zDeckLine.ReferenceLine == null)
             {
                 AddVar(zBuilder, "refName", "No reference info.");
                 AddVar(zBuilder, "refLine", "No reference info.");
             }
             else
             {
-                AddVar(zBuilder, "refName", zDeckLine.Reference.Source.Replace(@"\", @"\\"));
-                AddVar(zBuilder, "refLine", zDeckLine.Reference.LineNumber.ToString());
+                AddVar(zBuilder, "refName", zDeckLine.ReferenceLine.Source.Replace(@"\", @"\\"));
+                AddVar(zBuilder, "refLine", zDeckLine.ReferenceLine.LineNumber.ToString());
             }
 
             foreach (var kvp in DictionaryDefines)
@@ -109,7 +109,7 @@ namespace CardMaker.Card.Translation
             {
                 AddVar(zBuilder, kvp.Key, kvp.Value);
             }
-            zBuilder.Append(sDefintion);
+            zBuilder.Append(sDefinition);
             return zBuilder.ToString();
         }
 

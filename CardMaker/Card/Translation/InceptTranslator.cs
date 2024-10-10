@@ -62,6 +62,7 @@ namespace CardMaker.Card.Translation
         private static readonly Regex s_regexCardCounter = new Regex(@"(.*)(##)(\d+)(;)(\d+)(;)(\d+)(#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexSubCardCounter = new Regex(@"(.*)(#sc;)(\d+)(;)(\d+)(;)(\d+)(#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexColorNormalizedValue = new Regex(@"(.*)(#cnv)(.*?)(;)(.+?)(#)(.*)", RegexOptions.Compiled);
+        private static readonly Regex s_regexStringWidth = new Regex(@"(.*)(#strw)(\[)(.+?)(\])(.+?)(#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexRepeat = new Regex(@"(.*)(#repeat;)(\d+)(;)(.+?)(#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexRandomNumber = new Regex(@"(.*)(#random;)(-?\d+)(;)(-?\d+)(#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexMath =
@@ -145,10 +146,14 @@ namespace CardMaker.Card.Translation
             // Translate sub card counter/index
             sOutput = LoopTranslateRegex(s_regexSubCardCounter, sOutput, zTranslationContext, TranslateSubCardCounter);
 
+            // Translate color normalized values
             sOutput = LoopTranslateRegex(s_regexColorNormalizedValue, sOutput, zTranslationContext, TranslateColorNormalizedValue);
 
             // Translate element fields
             sOutput = LoopTranslateRegex(s_regexElementFields, sOutput, zTranslationContext, TranslateElementFields);
+
+            // Translate string width
+            sOutput = LoopTranslateRegex(s_regexStringWidth, sOutput, zTranslationContext, TranslateStringWidth);
 
             // Translate random number
             sOutput = LoopTranslateRegex(s_regexRandomNumber, sOutput, zTranslationContext, TranslationRandomNumber);
@@ -372,6 +377,24 @@ namespace CardMaker.Card.Translation
             return zMatch.Groups[1]
                    + sResult
                    + zMatch.Groups[7];
+        }
+
+        private string TranslateStringWidth(Match zMatch, TranslationContext zTranslationContext)
+        {
+            // Groups                 
+            //  1  2      3  4    5   6   7  8
+            //(.*)(#strw)(;)(.+?)(;)(.+?)(#)(.*)
+            var zFont = ProjectLayoutElement.TranslateFontString(zMatch.Groups[4].ToString());
+            if (zFont == null)
+            {
+                IssueManager.Instance.FireAddIssueEvent("Invalid font string specified. Defaulting.");
+                zFont = FontLoader.DefaultFont;
+            }
+            var nWidth = MeasureDisplayStringWidth(zFont, zMatch.Groups[6].ToString());
+
+            return zMatch.Groups[1]
+                   + nWidth.ToString()
+                   + zMatch.Groups[8];
         }
 
         private string TranslationRandomNumber(Match zMatch, TranslationContext zTranslationContext)

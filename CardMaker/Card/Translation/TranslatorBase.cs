@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.Reflection;
 using CardMaker.Card.FormattedText;
@@ -227,7 +228,27 @@ namespace CardMaker.Card.Translation
             }
         }
 
-#region Translation Cache
+        public static int MeasureDisplayStringWidth(Font zFont, string sText)
+        {
+            var zGraphics = CardMakerInstance.ApplicationForm.CreateGraphics();
+            // measurements should be performed at the reset transform
+            var matrixOriginalTransform = zGraphics.Transform;
+            zGraphics.ResetTransform();
+            var zFormat = new StringFormat
+            {
+                Alignment = StringAlignment.Near,
+                LineAlignment = StringAlignment.Near,
+            };
+            var rect = new RectangleF(0, 0, float.MaxValue, float.MaxValue);
+            CharacterRange[] ranges = { new CharacterRange(0, sText.Length) };
+            zFormat.SetMeasurableCharacterRanges(ranges);
+            var regions = zGraphics.MeasureCharacterRanges(sText, zFont, rect, zFormat);
+            rect = regions[0].GetBounds(zGraphics);
+            zGraphics.Transform = matrixOriginalTransform;
+            return (int)rect.Width;
+        }
+
+        #region Translation Cache
 
         public void ResetTranslationCache(ProjectLayoutElement zElement)
         {

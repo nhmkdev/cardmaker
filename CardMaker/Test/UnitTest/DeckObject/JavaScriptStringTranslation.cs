@@ -95,7 +95,20 @@ namespace UnitTest.DeckObject
         // x + (current card index * y) with left padded 0's numbering z
         [TestCase("cardIndex", 0, ExpectedResult = "1")]
         [TestCase("cardIndex - 1", 0, ExpectedResult = "0")]
+
         public string ValidateCounter(string input, int cardIndex)
+        {
+            _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
+            _testDeck.SetCardIndex(cardIndex);
+            return _testDeck.TranslateString(input, _testLine, _testElement).String;
+        }
+
+        [TestCase("cardCount", 0, ExpectedResult = "10")]
+        [TestCase("elementName", 0, ExpectedResult = "testElement")]
+        [TestCase("layoutName", 0, ExpectedResult = "testLayout")]
+        [TestCase("refName", 0, ExpectedResult = "CardMaker Generated")]
+        [TestCase("refLine", 0, ExpectedResult = "1")]
+        public string ValidateTranslatorFields(string input, int cardIndex)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
             _testDeck.SetCardIndex(cardIndex);
