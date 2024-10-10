@@ -89,6 +89,8 @@ namespace CardMaker.Card.Translation
                 engine.Global.SetProperty(kvp.Key, kvp.Value);
             }
 
+            engine.AddHostObject("Element", zElement);
+
             return hostFunctions;
         }
     }

@@ -33,9 +33,11 @@ using CardMaker.Data;
 using Support.IO;
 using Support.Util;
 using CardMaker.Data.Serialization;
+using Microsoft.ClearScript;
 
 namespace CardMaker.XML
 {
+    [DefaultScriptUsage(ScriptAccess.ReadOnly)]
     public class ProjectLayoutElement
     {
         private const string COLOR_HEX_STR = "0x";
@@ -274,6 +276,7 @@ namespace CardMaker.XML
         /// </summary>
         /// <param name="zElement">The source element to copy from</param>
         /// <param name="bInitializeTranslatedFields">flag indicating whether to reinitialize the translated fields</param>
+        [NoScriptAccess]
         public void DeepCopy(ProjectLayoutElement zElement, bool bInitializeTranslatedFields)
         {
             verticalalign = zElement.verticalalign;
@@ -446,6 +449,7 @@ namespace CardMaker.XML
         /// Sets the border color and color string
         /// </summary>
         /// <param name="zColor">The color to pull the values from</param>
+        [NoScriptAccess]
         public void SetElementBorderColor(Color zColor)
         {
             bordercolor = GetElementColorString(zColor);
@@ -456,12 +460,14 @@ namespace CardMaker.XML
         /// Sets the element color and color string
         /// </summary>
         /// <param name="zColor">The color to pull the values from</param>
+        [NoScriptAccess]
         public void SetElementColor(Color zColor)
         {
             elementcolor = GetElementColorString(zColor);
             m_colorElement = zColor;
         }
 
+        [NoScriptAccess]
         public void SetElementColorMatrix(ColorMatrix zColorMatrix)
         {
             if (zColorMatrix == null)
@@ -480,6 +486,7 @@ namespace CardMaker.XML
         /// Sets the outline color and color string
         /// </summary>
         /// <param name="zColor">The color to pull the values from</param>
+        [NoScriptAccess]
         public void SetElementOutlineColor(Color zColor)
         {
             outlinecolor = GetElementColorString(zColor);
@@ -490,6 +497,7 @@ namespace CardMaker.XML
         /// Sets the outline color and color string
         /// </summary>
         /// <param name="zColor">The color to pull the values from</param>
+        [NoScriptAccess]
         public void SetElementBackgroundColor(Color zColor)
         {
             backgroundcolor = GetElementColorString(zColor);
@@ -500,6 +508,7 @@ namespace CardMaker.XML
         /// Sets the font and font string
         /// </summary>
         /// <param name="zFont">The font to pull the settings from</param>
+        [NoScriptAccess]
         public void SetElementFont(Font zFont)
         {
             if (zFont == null)
