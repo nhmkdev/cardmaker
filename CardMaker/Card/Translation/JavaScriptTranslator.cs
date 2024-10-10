@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
 using Microsoft.ClearScript;
@@ -82,16 +83,50 @@ namespace CardMaker.Card.Translation
 
             foreach (var kvp in DictionaryDefines)
             {
-                engine.Global.SetProperty(kvp.Key, kvp.Value);
+                AddGlobal(engine, kvp.Key, kvp.Value);
             }
             foreach (var kvp in zDeckLine.ColumnsToValues)
             {
-                engine.Global.SetProperty(kvp.Key, kvp.Value);
+                AddGlobal(engine, kvp.Key, kvp.Value);
             }
 
             engine.AddHostObject("Element", zElement);
 
             return hostFunctions;
+        }
+
+        private void AddGlobal(ScriptEngine zEngine, string sName, string sValue)
+        {
+            //ProjectManager.Instance.LoadedProject.jsEscapeSingleQuotes;
+            if (ProjectManager.Instance.LoadedProject.jsKeepFunctions && sValue.StartsWith(FUNCTION_PREFIX))
+            {
+                AddCode(zEngine, sName, sValue);
+                return;
+            }
+
+            if (ProjectManager.Instance.LoadedProject.jsTildeMeansCode)
+            {
+                if (sValue.StartsWith("\\\\~") || sValue.StartsWith("\\~"))
+                {
+                    sValue = sValue.Remove(0, 1);
+                }
+                else if (sValue.StartsWith("~"))
+                {
+                    AddCode(zEngine, sName, sValue.Remove(0, 1));
+                    return;
+                }
+            }
+
+            zEngine.Global.SetProperty(sName, sValue);
+            if (sName.Contains(" "))
+            {
+                zEngine.Global.SetProperty(sName.Replace(" ", "_"), sValue);
+            }
+        }
+
+        private void AddCode(ScriptEngine zEngine, string sName, string sValue)
+        {
+            zEngine.Execute($"{sName.Replace(" ","_")} = {sValue}");
         }
     }
 }
