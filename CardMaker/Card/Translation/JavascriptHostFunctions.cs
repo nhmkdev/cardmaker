@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using CardMaker.Events.Managers;
 using CardMaker.XML;
 using Support.IO;
 using Support.UI;
@@ -38,6 +39,17 @@ namespace CardMaker.Card.Translation
         public JavascriptHostFunctions(ProjectLayoutElement zElement)
         {
             m_zElement = zElement;
+        }
+
+        public int MeasureStringWidth(string sFont, string sText)
+        {
+            var zFont = ProjectLayoutElement.TranslateFontString(sFont);
+            if (zFont == null)
+            {
+                IssueManager.Instance.FireAddIssueEvent("Invalid font string specified. Defaulting.");
+                zFont = FontLoader.DefaultFont;
+            }
+            return TranslatorBase.MeasureDisplayStringWidth(zFont, sText);
         }
 
         public void AddOverrideField(string sField, string sValue)

@@ -243,9 +243,8 @@ namespace CardMaker.Card.Translation
             CharacterRange[] ranges = { new CharacterRange(0, sText.Length) };
             zFormat.SetMeasurableCharacterRanges(ranges);
             var regions = zGraphics.MeasureCharacterRanges(sText, zFont, rect, zFormat);
-            rect = regions[0].GetBounds(zGraphics);
             zGraphics.Transform = matrixOriginalTransform;
-            return (int)rect.Width;
+            return regions.Length > 0 ? (int)regions[0].GetBounds(zGraphics).Width : 0;
         }
 
         #region Translation Cache
