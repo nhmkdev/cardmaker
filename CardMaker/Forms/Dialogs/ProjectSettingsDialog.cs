@@ -42,6 +42,7 @@ namespace CardMaker.Forms.Dialogs
             
             const string JS_TILDE_CODE = "js_tilde_code";
             const string JS_KEEP_FUNCTIONS = "js_keep_functions";
+            const string JS_SINGLE_QUOTE_CODE = "js_squote_code";
 
             var zQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("Project Settings", 550, 300, true));
 
@@ -76,6 +77,8 @@ namespace CardMaker.Forms.Dialogs
             zQuery.ChangeToTab("Javascript");
             zQuery.AddCheckBox("~ Means Code", ProjectManager.Instance.LoadedProject.jsTildeMeansCode, JS_TILDE_CODE);
             zQuery.AddCheckBox("Keep Functions", ProjectManager.Instance.LoadedProject.jsKeepFunctions, JS_KEEP_FUNCTIONS);
+            zQuery.AddCheckBox("Single Quotes Start Code", ProjectManager.Instance.LoadedProject.jsSingleQuoteStartsCode, JS_SINGLE_QUOTE_CODE);
+
 
             if (DialogResult.OK == zQuery.ShowDialog(parentForm))
             {
@@ -85,6 +88,7 @@ namespace CardMaker.Forms.Dialogs
                     zQuery.GetString(OVERRIDE_DEFINE_REFRENCE_NAME).Trim();
                 ProjectManager.Instance.LoadedProject.jsTildeMeansCode = zQuery.GetBool(JS_TILDE_CODE);
                 ProjectManager.Instance.LoadedProject.jsKeepFunctions = zQuery.GetBool(JS_KEEP_FUNCTIONS);
+                ProjectManager.Instance.LoadedProject.jsSingleQuoteStartsCode = zQuery.GetBool(JS_SINGLE_QUOTE_CODE);
                 ProjectManager.Instance.FireProjectUpdated(true);
                 LayoutManager.Instance.InitializeActiveLayout();
             }

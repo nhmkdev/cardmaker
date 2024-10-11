@@ -278,6 +278,8 @@ namespace UnitTest.DeckObject
         [TestCase("m + k + j", ExpectedResult = "bbbba")]
         [TestCase("n", ExpectedResult = "bbb")]
         [TestCase("n + ' at the ' + j + ' end test ' + n", ExpectedResult = "bbb at the a end test bbb")]
+        [TestCase("o", ExpectedResult = "cb")]
+        [TestCase("p", ExpectedResult = "c + k")]
         public string ValidateNestedDefines(string line)
         {
             // TODO: Nested defines with JavaScript is not possible at this time!
@@ -287,10 +289,12 @@ namespace UnitTest.DeckObject
             {
                 new List<string>() { "define", "value" },
                 new List<string>() { "j", "a" },//1
-                new List<string>() { "k", "~'b'" },//2
+                new List<string>() { "k", "'b'" },//2
                 new List<string>() { "l", "~k" },//3
                 new List<string>() { "m", "~l + k + l" },//4
-                new List<string>() { "n", "~this['m']" }//5
+                new List<string>() { "n", "~this['m']" },//5
+                new List<string>() { "o", "'c' + k" },
+                new List<string>() { "p", "c + k" }
             };
             _testDeck.ProcessLinesPublic(
                 listLines,
@@ -313,7 +317,7 @@ namespace UnitTest.DeckObject
             {
                 new List<string>() { "define", "value" },
                 new List<string>() { "L1", "a" },
-                new List<string>() { "L2", "b" },
+                new List<string>() { "L2", "'b'" },
                 new List<string>() { "L3", "~l2" },
                 new List<string>() { "L4", "~l3 + l2 + l3" },
                 new List<string>() { "action", "function(x, y) { return x + '::' + y; }" },
@@ -475,7 +479,7 @@ namespace UnitTest.DeckObject
             {
                 new List<string>() { "define", "value" },
                 new List<string>() { "L1", "a" },
-                new List<string>() { "L2", "b" },
+                new List<string>() { "L2", "'b'" },
                 new List<string>() { "L3", "~l2" },
                 new List<string>() { "L4", "~l3 + l2 + l3" },
                 new List<string>() { "action", "function(x, y) { return x + '::' + y; }" },
@@ -507,7 +511,35 @@ namespace UnitTest.DeckObject
             {
                 new List<string>() { "define", "value" },
                 new List<string>() { "L1", "a" },
-                new List<string>() { "L2", "b" },
+                new List<string>() { "L2", "'b'" },
+                new List<string>() { "L3", "~l2" },
+                new List<string>() { "L4", "~l3 + l2 + l3" },
+                new List<string>() { "action", "function(x, y) { return x + '::' + y; }" },
+                new List<string>() { "actionCaller", "function(x) { return action(x, 'zork'); }" },
+                new List<string>() { "smallImgTag", "function(x) { return '<img=' + x + ';.90;0;3>'; }" },
+                new List<string>() { "theCoin", @"\images\coin.png" }
+            };
+            _testDeck.ProcessLinesPublic(
+                listLines,
+                listDefines,
+                null);
+            _testElement.type = ElementType.FormattedText.ToString();
+            var result = _testDeck.TranslateString(line, _testLine, _testElement);
+            return result.String;
+        }
+
+        [TestCase("l2", ExpectedResult = "'b'")]
+        [TestCase("l4", ExpectedResult = "'b''b''b'")]
+        public string ValidateSingleQuoteNotCode(string line)
+        {
+            ProjectManager.Instance.LoadedProject.jsSingleQuoteStartsCode = false;
+
+            var listLines = new List<List<string>>();
+            var listDefines = new List<List<string>>()
+            {
+                new List<string>() { "define", "value" },
+                new List<string>() { "L1", "a" },
+                new List<string>() { "L2", "'b'" },
                 new List<string>() { "L3", "~l2" },
                 new List<string>() { "L4", "~l3 + l2 + l3" },
                 new List<string>() { "action", "function(x, y) { return x + '::' + y; }" },

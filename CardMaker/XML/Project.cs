@@ -48,6 +48,8 @@ namespace CardMaker.XML
 
         public bool jsKeepFunctions { get; set; } = true;
 
+        public bool jsSingleQuoteStartsCode { get; set; } = true;
+
         public string collapsedNodes { get; set; }
 
         #endregion

@@ -98,24 +98,45 @@ namespace CardMaker.Card.Translation
         private void AddGlobal(ScriptEngine zEngine, string sName, string sValue)
         {
             //ProjectManager.Instance.LoadedProject.jsEscapeSingleQuotes;
-            if (ProjectManager.Instance.LoadedProject.jsKeepFunctions && sValue.StartsWith(FUNCTION_PREFIX))
+            if (ProjectManager.Instance.LoadedProject.jsKeepFunctions)
+            {
+                if (sValue.StartsWith(FUNCTION_PREFIX))
+                {
+                    AddCode(zEngine, sName, sValue);
+                    return;
+                }
+                if (sValue.StartsWith("\\" + FUNCTION_PREFIX))
+                {
+                    sValue = sValue.Substring(1);
+                }
+            }
+
+            if (sValue[0] == '~' && ProjectManager.Instance.LoadedProject.jsTildeMeansCode)
+            {
+                AddCode(zEngine, sName, sValue.Substring(1));
+                return;
+            }
+            else if (sValue[0] == '\'' && ProjectManager.Instance.LoadedProject.jsSingleQuoteStartsCode)
             {
                 AddCode(zEngine, sName, sValue);
                 return;
             }
-
-            if (ProjectManager.Instance.LoadedProject.jsTildeMeansCode)
+            else if (sValue[0] == '\\')
             {
-                if (sValue.StartsWith("\\\\~") || sValue.StartsWith("\\~"))
+                if (sValue[1] == '\\')
                 {
-                    sValue = sValue.Remove(0, 1);
+                    sValue = sValue.Substring(1);
                 }
-                else if (sValue.StartsWith("~"))
+                else if (sValue[1] == '\'' && ProjectManager.Instance.LoadedProject.jsSingleQuoteStartsCode)
                 {
-                    AddCode(zEngine, sName, sValue.Remove(0, 1));
-                    return;
+                    sValue = sValue.Substring(1);
+                }
+                else if (sValue[1] == '~' && ProjectManager.Instance.LoadedProject.jsTildeMeansCode)
+                {
+                    sValue = sValue.Substring(1);
                 }
             }
+
 
             zEngine.Global.SetProperty(sName, sValue);
             if (sName.Contains(" "))
@@ -126,7 +147,7 @@ namespace CardMaker.Card.Translation
 
         private void AddCode(ScriptEngine zEngine, string sName, string sValue)
         {
-            zEngine.Execute($"{sName.Replace(" ","_")} = {sValue}");
+            zEngine.Execute($"{sName.Replace(" ", "_")} = {sValue}");
         }
     }
 }
