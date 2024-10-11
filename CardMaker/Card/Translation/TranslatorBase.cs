@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Reflection;
+using System.Windows.Forms;
 using CardMaker.Card.FormattedText;
 using CardMaker.Data;
 using CardMaker.Events.Managers;
@@ -230,7 +231,7 @@ namespace CardMaker.Card.Translation
 
         public static int MeasureDisplayStringWidth(Font zFont, string sText)
         {
-            var zGraphics = CardMakerInstance.ApplicationForm.CreateGraphics();
+            var zGraphics = CardMakerInstance.ApplicationForm?.CreateGraphics() ?? new Form().CreateGraphics();
             // measurements should be performed at the reset transform
             var matrixOriginalTransform = zGraphics.Transform;
             zGraphics.ResetTransform();
