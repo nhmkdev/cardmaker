@@ -538,11 +538,15 @@
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
-    <PostBuildEvent>IF $(ConfigurationName) == Release (
-    DEL "$(SolutionDir)$(OutDir)*.zip"
-    "C:\Program Files\7-Zip\7z" a "$(TargetDir)CardMaker_X.X.X.X.zip" "$(TargetDir)CardMaker.ex*" "$(TargetDir)CardMaker_Mono.ex*" "$(TargetDir)*.dll"  "$(TargetDir)*.so" "$(TargetDir)Card_Maker.pdf"     "$(TargetDir)Card_Maker_Basic_Project.pdf"  "$(TargetDir)Card_Maker_JavaScript.pdf" "$(TargetDir)Sample" "$(TargetDir)Readme.txt" "$(TargetDir)History.txt" "$(TargetDir)Licenses"     "$(TargetDir)images" "$(TargetDir)templates" "$(TargetDir)x64" -tzip -mx5
-) ELSE (
-  echo "Debug Build. Nothing to do!"
-)</PostBuildEvent>
+    <PostBuildEvent>SET ZIP_TOOL=C:\Program Files\7-Zip\7z.exe
+IF $(ConfigurationName) == Release IF EXIST "%25ZIP_TOOL%25" (
+    IF EXIST "$(SolutionDir)$(OutDir)*.zip" DEL "$(SolutionDir)$(OutDir)*.zip"
+    "%25ZIP_TOOL%25" a "$(TargetDir)CardMaker_X.X.X.X.zip" "$(TargetDir)CardMaker.ex*" "$(TargetDir)CardMaker_Mono.ex*" "$(TargetDir)*.dll"  "$(TargetDir)*.so" "$(TargetDir)Card_Maker.pdf"     "$(TargetDir)Card_Maker_Basic_Project.pdf"  "$(TargetDir)Card_Maker_JavaScript.pdf" "$(TargetDir)Sample" "$(TargetDir)Readme.txt" "$(TargetDir)History.txt" "$(TargetDir)Licenses"     "$(TargetDir)images" "$(TargetDir)templates" "$(TargetDir)x64" -tzip -mx5
+)
+
+IF NOT EXIST "%25ZIP_TOOL%25" (
+    ECHO WARNING "%25ZIP_TOOL%25" is missing. Unable to generate release zip.
+)
+</PostBuildEvent>
   </PropertyGroup>
 </Project>

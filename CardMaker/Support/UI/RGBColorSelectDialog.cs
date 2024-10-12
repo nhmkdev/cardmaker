@@ -31,7 +31,6 @@ using System.Threading;
 using System.Windows.Forms;
 using Support.IO;
 using CardMaker.XML;
-using Support.IO;
 
 namespace Support.UI
 {
