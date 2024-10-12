@@ -44,11 +44,11 @@ namespace CardMaker.XML
 
         public string overrideDefineReferenceName { get; set; }
 
-        public bool jsEscapeSingleQuotes { get; set; }
-
         public bool jsTildeMeansCode { get; set; } = true;
 
         public bool jsKeepFunctions { get; set; } = true;
+
+        public bool jsSingleQuoteStartsCode { get; set; } = true;
 
         public string collapsedNodes { get; set; }
 

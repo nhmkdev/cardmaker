@@ -198,7 +198,7 @@
     <Compile Include="Card\Shapes\ShapeInfo.cs" />
     <Compile Include="Card\Translation\FilenameTranslator.cs" />
     <Compile Include="Card\Translation\InceptTranslator.cs" />
-    <Compile Include="Card\Translation\JavascriptHostFunctions.cs" />
+    <Compile Include="Card\Translation\JavascriptHost.cs" />
     <Compile Include="Card\Translation\JavaScriptTranslator.cs" />
     <Compile Include="Card\Translation\TranslatorBase.cs" />
     <Compile Include="Card\Translation\TranslatorFactory.cs" />
@@ -543,7 +543,6 @@
     "C:\Program Files\7-Zip\7z" a "$(TargetDir)CardMaker_X.X.X.X.zip" "$(TargetDir)CardMaker.ex*" "$(TargetDir)CardMaker_Mono.ex*" "$(TargetDir)*.dll"  "$(TargetDir)*.so" "$(TargetDir)Card_Maker.pdf"     "$(TargetDir)Card_Maker_Basic_Project.pdf"  "$(TargetDir)Card_Maker_JavaScript.pdf" "$(TargetDir)Sample" "$(TargetDir)Readme.txt" "$(TargetDir)History.txt" "$(TargetDir)Licenses"     "$(TargetDir)images" "$(TargetDir)templates" "$(TargetDir)x64" -tzip -mx5
 ) ELSE (
   echo "Debug Build. Nothing to do!"
-)
-</PostBuildEvent>
+)</PostBuildEvent>
   </PropertyGroup>
 </Project>

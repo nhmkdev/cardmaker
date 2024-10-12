@@ -116,7 +116,7 @@ namespace UnitTest.DeckObject
         }
 
         [TestCase("a", "3", ExpectedResult = "3")]
-        [TestCase("3", "a", ExpectedResult = "")] // error case in js
+        [TestCase("3", "a", ExpectedResult = "3")] // js will be just the numeral 3
         [TestCase("", "a", ExpectedResult = "")] // error case in js
         [TestCase("-", "a", ExpectedResult = "")] // error case in js
         [TestCase(" ", "a", ExpectedResult = "")] // TODO: this is not a valid key and should throw an error in processing
@@ -133,7 +133,39 @@ namespace UnitTest.DeckObject
             return _testDeck.TranslateString(keyName, _testDeck.ValidLines[0], _testElement).String;
         }
 
-        [TestCase("x", "x" , ExpectedResult = 1)]
+        [TestCase("a", "3", ExpectedResult = "3")]
+        [TestCase("3", "a", ExpectedResult = "a")]
+        [TestCase("", "a", ExpectedResult = "a")]
+        [TestCase("-", "a", ExpectedResult = "a")]
+        [TestCase("s p", "a", ExpectedResult = "a")]
+        public string ValidateThisColumnReference(string keyName, string keyValue)
+        {
+            _testDeck.ProcessLinesPublic(
+                new List<List<string>>()
+                {
+                    new List<string>(){"count", keyName},
+                    new List<string>() {"1", keyValue}
+                },
+                new List<List<string>>(),
+                null);
+            return _testDeck.TranslateString($"this['{keyName}']", _testDeck.ValidLines[0], _testElement).String;
+        }
+
+        [TestCase("s p", "a", ExpectedResult = "a")]
+        public string ValidateSpaceNameReplacement(string keyName, string keyValue)
+        {
+            _testDeck.ProcessLinesPublic(
+                new List<List<string>>()
+                {
+                    new List<string>(){"count", keyName},
+                    new List<string>() {"1", keyValue}
+                },
+                new List<List<string>>(),
+                null);
+            return _testDeck.TranslateString(keyName.Replace(" ", "_"), _testDeck.ValidLines[0], _testElement).String;
+        }
+
+        [TestCase("x", "x", ExpectedResult = 1)]
         [TestCase("X", "x", ExpectedResult = 1)]
         public int ValidateAllowedLayout(string layoutName, string allowedLayout)
         {
@@ -222,15 +254,15 @@ namespace UnitTest.DeckObject
             Assert.AreEqual("\n", result.String);
         }
 
-        [TestCase("a","1","b","2","c","3")]
+        [TestCase("a", "1", "b", "2", "c", "3")]
         public void ValidateDefines(params string[] args)
         {
             var listLines = new List<List<string>>();
-            var listDefines = new List<List<string>>() {new List<string>(){"define", "value"}};
-            Assert.AreEqual(0, args.Length%2);
-            for(var i = 0; i < args.Length; i+=2)
+            var listDefines = new List<List<string>>() { new List<string>() { "define", "value" } };
+            Assert.AreEqual(0, args.Length % 2);
+            for (var i = 0; i < args.Length; i += 2)
             {
-                listDefines.Add(new List<string>(){args[i], args[i+1]});
+                listDefines.Add(new List<string>() { args[i], args[i + 1] });
             }
             _testDeck.ProcessLinesPublic(
                 listLines,
@@ -246,6 +278,8 @@ namespace UnitTest.DeckObject
         [TestCase("m + k + j", ExpectedResult = "bbbba")]
         [TestCase("n", ExpectedResult = "bbb")]
         [TestCase("n + ' at the ' + j + ' end test ' + n", ExpectedResult = "bbb at the a end test bbb")]
+        [TestCase("o", ExpectedResult = "cb")]
+        [TestCase("p", ExpectedResult = "c + k")]
         public string ValidateNestedDefines(string line)
         {
             // TODO: Nested defines with JavaScript is not possible at this time!
@@ -254,11 +288,13 @@ namespace UnitTest.DeckObject
             var listDefines = new List<List<string>>()
             {
                 new List<string>() { "define", "value" },
-                new List<string>() { "j", "'a'" },//1
+                new List<string>() { "j", "a" },//1
                 new List<string>() { "k", "'b'" },//2
                 new List<string>() { "l", "~k" },//3
                 new List<string>() { "m", "~l + k + l" },//4
-                new List<string>() { "n", "~this['m']" }//5
+                new List<string>() { "n", "~this['m']" },//5
+                new List<string>() { "o", "'c' + k" },
+                new List<string>() { "p", "c + k" }
             };
             _testDeck.ProcessLinesPublic(
                 listLines,
@@ -281,13 +317,13 @@ namespace UnitTest.DeckObject
             {
                 new List<string>() { "define", "value" },
                 new List<string>() { "L1", "a" },
-                new List<string>() { "L2", "b" },
+                new List<string>() { "L2", "'b'" },
                 new List<string>() { "L3", "~l2" },
                 new List<string>() { "L4", "~l3 + l2 + l3" },
                 new List<string>() { "action", "function(x, y) { return x + '::' + y; }" },
                 new List<string>() { "actionCaller", "function(x) { return action(x, 'zork'); }" },
                 new List<string>() { "smallImgTag", "function(x) { return '<img=' + x + ';.90;0;3>'; }" },
-                new List<string>() { "theCoin", @"'\\images\\coin.png'" }
+                new List<string>() { "theCoin", @"\images\coin.png" }
             };
             _testDeck.ProcessLinesPublic(
                 listLines,
@@ -417,7 +453,7 @@ namespace UnitTest.DeckObject
             _testElement.variable = BASE_VARIABLE;
 
             var zElementString = _testDeck.TranslateString(
-                GetOverride("x", string.Empty) + 
+                GetOverride("x", string.Empty) +
                 $"'{RESULT}'"
                 , _testLine, _testElement);
             Assert.True(0 == zElementString.OverrideFieldToValueDictionary.Count);
@@ -430,6 +466,96 @@ namespace UnitTest.DeckObject
         {
             return $"AddOverrideField('{sOverrideField}', '{zOverrideValue}');{Environment.NewLine}";
         }
+
+        [TestCase("action('aa', 'bb')", ExpectedResult = "aa::bb")]
+        [TestCase("action(l4, 'bb')", ExpectedResult = "~l3 + l2 + l3::bb")]
+        [TestCase("action('','')", ExpectedResult = @"::")]
+        public string ValidateTildeNotCode(string line)
+        {
+            ProjectManager.Instance.LoadedProject.jsTildeMeansCode = false;
+
+            var listLines = new List<List<string>>();
+            var listDefines = new List<List<string>>()
+            {
+                new List<string>() { "define", "value" },
+                new List<string>() { "L1", "a" },
+                new List<string>() { "L2", "'b'" },
+                new List<string>() { "L3", "~l2" },
+                new List<string>() { "L4", "~l3 + l2 + l3" },
+                new List<string>() { "action", "function(x, y) { return x + '::' + y; }" },
+                new List<string>() { "actionCaller", "function(x) { return action(x, 'zork'); }" },
+                new List<string>() { "smallImgTag", "function(x) { return '<img=' + x + ';.90;0;3>'; }" },
+                new List<string>() { "theCoin", @"\images\coin.png" }
+            };
+            _testDeck.ProcessLinesPublic(
+                listLines,
+                listDefines,
+                null);
+            _testElement.type = ElementType.FormattedText.ToString();
+            var result = _testDeck.TranslateString(line, _testLine, _testElement);
+            return result.String;
+        }
+
+        [TestCase("action('','')", ExpectedResult = "")] //error
+        [TestCase("actioncaller(l1)", ExpectedResult = "")] //error
+        [TestCase("smallimgtag(thecoin)", ExpectedResult = "")] //error
+        [TestCase("l1", ExpectedResult = "a")]
+        [TestCase("l4", ExpectedResult = "bbb")]
+        [TestCase("action", ExpectedResult = "function(x, y) { return x + '::' + y; }")]
+        public string ValidateDontKeepFunctions(string line)
+        {
+            ProjectManager.Instance.LoadedProject.jsKeepFunctions = false;
+
+            var listLines = new List<List<string>>();
+            var listDefines = new List<List<string>>()
+            {
+                new List<string>() { "define", "value" },
+                new List<string>() { "L1", "a" },
+                new List<string>() { "L2", "'b'" },
+                new List<string>() { "L3", "~l2" },
+                new List<string>() { "L4", "~l3 + l2 + l3" },
+                new List<string>() { "action", "function(x, y) { return x + '::' + y; }" },
+                new List<string>() { "actionCaller", "function(x) { return action(x, 'zork'); }" },
+                new List<string>() { "smallImgTag", "function(x) { return '<img=' + x + ';.90;0;3>'; }" },
+                new List<string>() { "theCoin", @"\images\coin.png" }
+            };
+            _testDeck.ProcessLinesPublic(
+                listLines,
+                listDefines,
+                null);
+            _testElement.type = ElementType.FormattedText.ToString();
+            var result = _testDeck.TranslateString(line, _testLine, _testElement);
+            return result.String;
+        }
+
+        [TestCase("l2", ExpectedResult = "'b'")]
+        [TestCase("l4", ExpectedResult = "'b''b''b'")]
+        public string ValidateSingleQuoteNotCode(string line)
+        {
+            ProjectManager.Instance.LoadedProject.jsSingleQuoteStartsCode = false;
+
+            var listLines = new List<List<string>>();
+            var listDefines = new List<List<string>>()
+            {
+                new List<string>() { "define", "value" },
+                new List<string>() { "L1", "a" },
+                new List<string>() { "L2", "'b'" },
+                new List<string>() { "L3", "~l2" },
+                new List<string>() { "L4", "~l3 + l2 + l3" },
+                new List<string>() { "action", "function(x, y) { return x + '::' + y; }" },
+                new List<string>() { "actionCaller", "function(x) { return action(x, 'zork'); }" },
+                new List<string>() { "smallImgTag", "function(x) { return '<img=' + x + ';.90;0;3>'; }" },
+                new List<string>() { "theCoin", @"\images\coin.png" }
+            };
+            _testDeck.ProcessLinesPublic(
+                listLines,
+                listDefines,
+                null);
+            _testElement.type = ElementType.FormattedText.ToString();
+            var result = _testDeck.TranslateString(line, _testLine, _testElement);
+            return result.String;
+        }
+
         // graphic elements
     }
 }
