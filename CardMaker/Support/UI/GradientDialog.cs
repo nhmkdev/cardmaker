@@ -27,6 +27,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using CardMaker.Data;
 using CardMaker.Data.Serialization;
+#warning Ideally none of the support classes use CardMaker namespaces(!)
 
 namespace Support.UI
 {
@@ -211,7 +212,7 @@ namespace Support.UI
 
         private void ShowColorSelectionDialog(Panel zPanel)
         {
-            var zRGBDialog = new RGBColorSelectDialog();
+            var zRGBDialog = new RGBColorSelectDialog(CardMakerSettings.IniManager);
             zRGBDialog.PreviewEvent += (obj, colorPreview) =>
             {
                 zPanel.BackColor = colorPreview;

@@ -314,6 +314,7 @@
     <Compile Include="Support\Google\Sheets\GoogleSpreadsheetBrowser.Designer.cs">
       <DependentUpon>GoogleSpreadsheetBrowser.cs</DependentUpon>
     </Compile>
+    <Compile Include="Support\IO\ColorSerialization.cs" />
     <Compile Include="Support\IO\CSVFile.cs" />
     <Compile Include="Support\IO\INIManager.cs" />
     <Compile Include="Support\IO\IOUtils.cs" />

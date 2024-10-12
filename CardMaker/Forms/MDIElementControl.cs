@@ -260,7 +260,7 @@ namespace CardMaker.Forms
                 return;
             }
 
-            var zRGB = new RGBColorSelectDialog();
+            var zRGB = new RGBColorSelectDialog(CardMakerSettings.IniManager);
             var btnClicked = (Button)sender;
             var zPanel = (Panel)btnClicked.Tag;
             zRGB.UpdateColorBox(zPanel.BackColor);

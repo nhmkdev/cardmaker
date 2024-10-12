@@ -1,7 +1,8 @@
 Card Maker Version History
 --------------------------
 1.4.0.0
-- Added option to toggle translation on element translation (99% of use cases do not need this enabled)
+- Added ini setting that tracks the color picker values across app executions.
+- Added option to toggle translation cache (string) on element translation (x/y move) (99% of use cases do not need this enabled)
 - Added ability to create/duplicate elements into a specific position relative to the original(s). Will likely expand on this.
 - Added gradient element settings dialog (kind of hidden under a ">" button)
 - [Experimental] Added option to allow for the merging of alike text markups (allows for underlines/strike to work across words/spaces) - Can be enabled in the app settings.

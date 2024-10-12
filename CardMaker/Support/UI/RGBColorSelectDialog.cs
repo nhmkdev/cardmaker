@@ -26,14 +26,20 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
+using Support.IO;
 using CardMaker.XML;
+using Support.IO;
 
 namespace Support.UI
 {
     public partial class RGBColorSelectDialog : Form
     {
+        private const string INI_SETTING_COLOR_HISTORY = "RGBColorSelect.History";
+        private const char INIT_SETTING_COLOR_HISTORY_DELIMITER = ';';
+
         private int m_nPreviousColorIndex = -1;
         bool m_bEventsEnabled = true;
         private Color m_lastColor = Color.Black;
@@ -54,9 +60,12 @@ namespace Support.UI
 
         private readonly PictureBoxSelectable[] m_arrayPictureBoxes;
 
-        public RGBColorSelectDialog()
+        private readonly IniManager m_zIniManager;
+
+        public RGBColorSelectDialog(IniManager zIniManager = null)
         {
             InitializeComponent();
+            m_zIniManager = zIniManager;
             m_BitmapHue = new Bitmap(pictureColorHue.ClientSize.Width, pictureColorHue.ClientSize.Height);
             pictureColorHue.Image = m_BitmapHue;
             pictureColorHue.SelectionIndicator = PictureBoxSelectable.IndicatorType.Both;
@@ -105,7 +114,7 @@ namespace Support.UI
                 pictureYellowToRed };
 
             // populate the previous colors
-
+            LoadColorHistory();
             if (0 < s_listPreviousColors.Count)
             {
                 var zBmp = new Bitmap(panelPreviousColors.ClientRectangle.Width, panelPreviousColors.ClientRectangle.Height);
@@ -343,6 +352,8 @@ namespace Support.UI
 
                 s_listPreviousColors.Insert(0, colorSelected);
             }
+
+            SaveColorHistory();
             Close();
         }
 
@@ -444,6 +455,36 @@ namespace Support.UI
 
             btnOK.Enabled = btnCancel.Enabled = !m_bScreenPixelSelectionMode;
             btnSelectFromScreen.Text = m_bScreenPixelSelectionMode ? "Assign with Spacebar" : "Select from Screen";
+        }
+
+        private void LoadColorHistory()
+        {
+            // only load the history once
+            if (s_listPreviousColors.Count > 0 || null == m_zIniManager)
+            {
+                return;
+            }
+            var sColorHistory = m_zIniManager.GetValue(INI_SETTING_COLOR_HISTORY);
+            if (string.IsNullOrWhiteSpace(sColorHistory))
+            {
+                return;
+            }
+
+            var arrayColors = sColorHistory.Split(new char[] { INIT_SETTING_COLOR_HISTORY_DELIMITER }, StringSplitOptions.RemoveEmptyEntries);
+            s_listPreviousColors.AddRange(arrayColors.Select(sColor =>
+                ColorSerialization.TranslateColorString(sColor, 255, out var bSucceeded)).ToList());
+        }
+
+        public void SaveColorHistory()
+        {
+            if (null == m_zIniManager)
+            {
+                return;
+            }
+            var sIniValue = string.Join(
+                INIT_SETTING_COLOR_HISTORY_DELIMITER.ToString(),
+                s_listPreviousColors.Select(color => ColorSerialization.GetElementColorString(color)));
+            m_zIniManager.SetValue(INI_SETTING_COLOR_HISTORY, sIniValue);
         }
     }
 

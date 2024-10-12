@@ -467,7 +467,7 @@ namespace CardMaker.Forms
 
         private void colorPickerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            new RGBColorSelectDialog().ShowDialog(this);
+            new RGBColorSelectDialog(CardMakerSettings.IniManager).ShowDialog(this);
         }
 
         private void importLayoutsToolStripMenuItem_Click(object sender, EventArgs e)
