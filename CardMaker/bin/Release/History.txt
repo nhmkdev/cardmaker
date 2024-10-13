@@ -1,6 +1,7 @@
 Card Maker Version History
 --------------------------
 1.4.0.0
+- Overhaul UI for adding/pasting/duplicating elements to allow for specifying basic positioning.
 - Added functionality to measure the width of a string based on the font specified (strw)
 - Added ini setting that tracks the color picker values across app executions.
 - Added option to toggle translation cache (string) on element translation (x/y move) (99% of use cases do not need this enabled)

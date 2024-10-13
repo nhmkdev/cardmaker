@@ -62,7 +62,7 @@ namespace CardMaker.Forms
             var progressReporter = CardMakerInstance.ProgressReporterFactory.CreateReporter(
                 "Compile",
                 new string[] { ProgressName.LAYOUT, ProgressName.REFERENCE_DATA, ProgressName.CARD },
-                compilerExporter.ExportThread);
+                compilerExporter.ExportThreadExec);
             compilerExporter.ProgressReporter = progressReporter;
             progressReporter.StartProcessing(ParentForm);
 

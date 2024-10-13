@@ -122,36 +122,29 @@ namespace CardMaker.XML
             drawBorder = true;
         }
 
-        public void InitializeElementLookup()
-        {
-            m_dictionaryElements.Clear();
-            if (null != Element)
-            {
-                foreach (var zElement in Element)
-                {
-                    m_dictionaryElements[zElement.name] = zElement;
-                }
-            }
-        }
-
-        public void ReInitializeElementLookup(ProjectLayoutElement zElement, string sOldName)
-        {
-            m_dictionaryElements.Remove(sOldName);
-            m_dictionaryElements[zElement.name] = zElement;
-        }
-
         public ProjectLayoutElement LookupElement(string sElementName)
         {
-            return sElementName != null && m_dictionaryElements.ContainsKey(sElementName)
+            if (string.IsNullOrWhiteSpace(sElementName))
+            {
+                return null;
+            }
+
+            // Maintaining this cache via events and otherwise is extremely tedious and error-prone. 
+            // Force a refresh on any misses (which should be generally rare, with a few exceptions).
+            if (!m_dictionaryElements.ContainsKey(sElementName))
+            {
+                InitializeElementLookup();
+            }
+            return m_dictionaryElements.ContainsKey(sElementName) 
                 ? m_dictionaryElements[sElementName]
                 : null;
         }
 
         /// <summary>
-        /// Performs a partial deepy copy based on the input element, the name field is left unchanged
+        /// Performs a partial deep copy based on the input element, the name field is left unchanged
         /// </summary>
         /// <param name="zLayout">The layout to copy from</param>
-        /// <param name="bCopyRefs">Flag indicating whether to copy the refereces</param>
+        /// <param name="bCopyRefs">Flag indicating whether to copy the references</param>
         public void DeepCopy(ProjectLayout zLayout, bool bCopyRefs = true)
         {
             width = zLayout.width;
@@ -196,6 +189,18 @@ namespace CardMaker.XML
             }
 
             InitializeElementLookup();
+        }
+
+        public void InitializeElementLookup()
+        {
+            m_dictionaryElements.Clear();
+            if (null != Element)
+            {
+                foreach (var zElement in Element)
+                {
+                    m_dictionaryElements[zElement.name] = zElement;
+                }
+            }
         }
 
     }

@@ -54,11 +54,16 @@ namespace CardMaker.Forms
         {
             this.components = new System.ComponentModel.Container();
             this.groupBoxCardSet = new System.Windows.Forms.GroupBox();
+            this.btnMove = new System.Windows.Forms.Button();
             this.btnConfigureExport = new System.Windows.Forms.Button();
             this.btnConfigureSize = new System.Windows.Forms.Button();
             this.checkLoadAllReferences = new System.Windows.Forms.CheckBox();
             this.btnScale = new System.Windows.Forms.Button();
             this.resizeBtn = new System.Windows.Forms.Button();
+            this.listViewElements = new Support.UI.ListViewDoubleBuffered();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.contextMenuElements = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -87,11 +92,7 @@ namespace CardMaker.Forms
             this.label2 = new System.Windows.Forms.Label();
             this.numericRowIndex = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
-            this.btnMove = new System.Windows.Forms.Button();
-            this.listViewElements = new Support.UI.ListViewDoubleBuffered();
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.duplicateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBoxCardSet.SuspendLayout();
             this.contextMenuElements.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericCardSetDPI)).BeginInit();
@@ -135,6 +136,17 @@ namespace CardMaker.Forms
             this.groupBoxCardSet.TabIndex = 12;
             this.groupBoxCardSet.TabStop = false;
             this.groupBoxCardSet.Text = "Card Layout";
+            // 
+            // btnMove
+            // 
+            this.btnMove.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnMove.Location = new System.Drawing.Point(209, 279);
+            this.btnMove.Name = "btnMove";
+            this.btnMove.Size = new System.Drawing.Size(60, 20);
+            this.btnMove.TabIndex = 36;
+            this.btnMove.Text = "Move";
+            this.btnMove.UseVisualStyleBackColor = true;
+            this.btnMove.Click += new System.EventHandler(this.btnMove_Click);
             // 
             // btnConfigureExport
             // 
@@ -191,6 +203,48 @@ namespace CardMaker.Forms
             this.resizeBtn.UseVisualStyleBackColor = true;
             this.resizeBtn.Click += new System.EventHandler(this.resize_Click);
             // 
+            // listViewElements
+            // 
+            this.listViewElements.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.listViewElements.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.listViewElements.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2,
+            this.columnHeader3});
+            this.listViewElements.ContextMenuStrip = this.contextMenuElements;
+            this.listViewElements.FullRowSelect = true;
+            this.listViewElements.GridLines = true;
+            this.listViewElements.HideSelection = false;
+            this.listViewElements.Location = new System.Drawing.Point(6, 89);
+            this.listViewElements.Name = "listViewElements";
+            this.listViewElements.ShowItemToolTips = true;
+            this.listViewElements.Size = new System.Drawing.Size(327, 184);
+            this.listViewElements.TabIndex = 30;
+            this.listViewElements.UseCompatibleStateImageBehavior = false;
+            this.listViewElements.View = System.Windows.Forms.View.Details;
+            this.listViewElements.SelectedIndexChanged += new System.EventHandler(this.listViewElements_SelectedIndexChanged);
+            this.listViewElements.DoubleClick += new System.EventHandler(this.listViewElements_DoubleClick);
+            this.listViewElements.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listViewElements_KeyDown);
+            this.listViewElements.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.listViewElements_KeyPress);
+            this.listViewElements.Resize += new System.EventHandler(this.listViewElements_Resize);
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "Enabled";
+            this.columnHeader1.Width = 55;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "Element";
+            this.columnHeader2.Width = 161;
+            // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Text = "Type";
+            this.columnHeader3.Width = 92;
+            // 
             // contextMenuElements
             // 
             this.contextMenuElements.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -198,44 +252,45 @@ namespace CardMaker.Forms
             this.pasteToolStripMenuItem,
             this.pasteReferenceToolStripMenuItem,
             this.detachReferenceToolStripMenuItem,
-            this.pasteSettingsToolStripMenuItem});
+            this.pasteSettingsToolStripMenuItem,
+            this.duplicateToolStripMenuItem});
             this.contextMenuElements.Name = "contextMenuElements";
             this.contextMenuElements.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.contextMenuElements.Size = new System.Drawing.Size(180, 114);
+            this.contextMenuElements.Size = new System.Drawing.Size(181, 158);
             this.contextMenuElements.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuElements_Opening);
             // 
             // copyToolStripMenuItem
             // 
             this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-            this.copyToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.copyToolStripMenuItem.Text = "Copy";
             this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
             // 
             // pasteToolStripMenuItem
             // 
             this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
-            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.pasteToolStripMenuItem.Text = "Paste";
             this.pasteToolStripMenuItem.Click += new System.EventHandler(this.pasteToolStripMenuItem_Click);
             // 
             // pasteReferenceToolStripMenuItem
             // 
             this.pasteReferenceToolStripMenuItem.Name = "pasteReferenceToolStripMenuItem";
-            this.pasteReferenceToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.pasteReferenceToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.pasteReferenceToolStripMenuItem.Text = "Paste Reference(s)";
             this.pasteReferenceToolStripMenuItem.Click += new System.EventHandler(this.pasteReferenceToolStripMenuItem_Click);
             // 
             // detachReferenceToolStripMenuItem
             // 
             this.detachReferenceToolStripMenuItem.Name = "detachReferenceToolStripMenuItem";
-            this.detachReferenceToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.detachReferenceToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.detachReferenceToolStripMenuItem.Text = "Detach Reference(s)";
             this.detachReferenceToolStripMenuItem.Click += new System.EventHandler(this.detachReferenceToolStripMenuItem_Click);
             // 
             // pasteSettingsToolStripMenuItem
             // 
             this.pasteSettingsToolStripMenuItem.Name = "pasteSettingsToolStripMenuItem";
-            this.pasteSettingsToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.pasteSettingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.pasteSettingsToolStripMenuItem.Text = "Paste Settings...";
             this.pasteSettingsToolStripMenuItem.Click += new System.EventHandler(this.pasteSettingsToolStripMenuItem_Click);
             // 
@@ -518,58 +573,12 @@ namespace CardMaker.Forms
             this.label1.Text = "Card:";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // btnMove
+            // duplicateToolStripMenuItem
             // 
-            this.btnMove.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnMove.Location = new System.Drawing.Point(209, 279);
-            this.btnMove.Name = "btnMove";
-            this.btnMove.Size = new System.Drawing.Size(60, 20);
-            this.btnMove.TabIndex = 36;
-            this.btnMove.Text = "Move";
-            this.btnMove.UseVisualStyleBackColor = true;
-            this.btnMove.Click += new System.EventHandler(this.btnMove_Click);
-            // 
-            // listViewElements
-            // 
-            this.listViewElements.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.listViewElements.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.listViewElements.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader1,
-            this.columnHeader2,
-            this.columnHeader3});
-            this.listViewElements.ContextMenuStrip = this.contextMenuElements;
-            this.listViewElements.FullRowSelect = true;
-            this.listViewElements.GridLines = true;
-            this.listViewElements.HideSelection = false;
-            this.listViewElements.Location = new System.Drawing.Point(6, 89);
-            this.listViewElements.Name = "listViewElements";
-            this.listViewElements.ShowItemToolTips = true;
-            this.listViewElements.Size = new System.Drawing.Size(327, 184);
-            this.listViewElements.TabIndex = 30;
-            this.listViewElements.UseCompatibleStateImageBehavior = false;
-            this.listViewElements.View = System.Windows.Forms.View.Details;
-            this.listViewElements.SelectedIndexChanged += new System.EventHandler(this.listViewElements_SelectedIndexChanged);
-            this.listViewElements.DoubleClick += new System.EventHandler(this.listViewElements_DoubleClick);
-            this.listViewElements.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listViewElements_KeyDown);
-            this.listViewElements.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.listViewElements_KeyPress);
-            this.listViewElements.Resize += new System.EventHandler(this.listViewElements_Resize);
-            // 
-            // columnHeader1
-            // 
-            this.columnHeader1.Text = "Enabled";
-            this.columnHeader1.Width = 55;
-            // 
-            // columnHeader2
-            // 
-            this.columnHeader2.Text = "Element";
-            this.columnHeader2.Width = 161;
-            // 
-            // columnHeader3
-            // 
-            this.columnHeader3.Text = "Type";
-            this.columnHeader3.Width = 92;
+            this.duplicateToolStripMenuItem.Name = "duplicateToolStripMenuItem";
+            this.duplicateToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.duplicateToolStripMenuItem.Text = "Duplicate...";
+            this.duplicateToolStripMenuItem.Click += new System.EventHandler(this.btnDuplicate_Click);
             // 
             // MDILayoutControl
             // 
@@ -637,5 +646,6 @@ namespace CardMaker.Forms
         private System.Windows.Forms.ToolStripMenuItem detachReferenceToolStripMenuItem;
         private System.Windows.Forms.Button btnConfigureExport;
         private System.Windows.Forms.Button btnMove;
+        private System.Windows.Forms.ToolStripMenuItem duplicateToolStripMenuItem;
     }
 }

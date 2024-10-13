@@ -74,17 +74,12 @@ namespace CardMaker.Events.Managers
         /// <summary>
         /// Fired when an element is renamed
         /// </summary>
-        public event ElementRenamed ElementRenamed;
-
-        /// <summary>
-        /// Fired when an element is added
-        /// </summary>
-        public event ElementsAdded ElementsAdded;
+        private event ElementRenamed ElementRenamed;
 
         /// <summary>
         /// Fired when an element is removed
         /// </summary>
-        public event ElementsRemoved ElementsRemoved;
+        private event ElementsRemoved ElementsRemoved;
 
         public static ProjectManager Instance => m_zInstance ?? (m_zInstance = new ProjectManager());
 
@@ -117,28 +112,20 @@ namespace CardMaker.Events.Managers
         /// <summary>
         /// Fires the ElementRenamed event
         /// </summary>
-        public void FireElementRenamed(ProjectLayoutElement zElement, string sOldName)
+        public void FireElementRenamed(ProjectLayout zLayout, ProjectLayoutElement zElement, string sOldName)
         {
-            ElementRenamed?.Invoke(this, new ElementRenamedEventArgs(zElement, sOldName));
-        }
-
-        /// <summary>
-        /// Fires the ElementsAdded event
-        /// </summary>
-        public void FireElementsAdded(List<ProjectLayoutElement> listAddedElements)
-        {
-            ElementsAdded?.Invoke(this, new ElementEventArgs(listAddedElements));
+            ElementRenamed?.Invoke(this, new ElementRenamedEventArgs(zLayout, zElement, sOldName));
         }
 
         /// <summary>
         /// Fires the ElementsRemoved event
         /// </summary>
-        public void FireElementsRemoved(List<ProjectLayoutElement> listRemovedElements)
+        public void FireElementsRemoved(ProjectLayout zLayout, List<ProjectLayoutElement> listRemovedElements)
         {
-            ElementsRemoved?.Invoke(this, new ElementEventArgs(listRemovedElements));
+            ElementsRemoved?.Invoke(this, new ElementsRemovedEventArgs(zLayout, listRemovedElements));
         }
 
-        #endregion
+#endregion
 
         #region Events
 
@@ -163,12 +150,15 @@ namespace CardMaker.Events.Managers
         {
             // update all nested reference elements to match the name
             if (LoadedProject == null) return;
+            e.Layout.InitializeElementLookup();
             foreach (var zLayout in LoadedProject.Layout)
             {
-                if(zLayout.Element == null) continue;
+                // references won't exist in the same layout as the base element
+                if (zLayout.Element == null || string.Equals(zLayout.Name, e.Layout.Name)) continue;
                 foreach (var zElement in zLayout.Element)
                 {
-                    if (string.Equals(zElement.elementreference, e.OldName))
+                    if (string.Equals(zElement.layoutreference, e.Layout.Name)
+                        && string.Equals(zElement.elementreference, e.OldName))
                     {
                         zElement.elementreference = e.Element.name;
                         zElement.name = e.Element.name;
@@ -177,11 +167,11 @@ namespace CardMaker.Events.Managers
             }
         }
 
-        private void OnElementsRemoved(object sender, ElementEventArgs e)
+        private void OnElementsRemoved(object sender, ElementsRemovedEventArgs e)
         {
             // update all nested reference elements to detach (deep copy)
             if (LoadedProject == null) return;
-            var sLayoutName = LayoutManager.Instance.ActiveDeck.CardLayout.Name;
+            e.Layout.InitializeElementLookup();
             foreach (var zLayout in LoadedProject.Layout)
             {
                 if (zLayout.Element == null) continue;
@@ -189,11 +179,11 @@ namespace CardMaker.Events.Managers
                 {
                     foreach (var zRemovedElement in e.Elements)
                     {
-                        if (string.Equals(zElement.layoutreference, sLayoutName)
+                        if (string.Equals(zElement.layoutreference, e.Layout.Name)
                             && string.Equals(zElement.elementreference, zRemovedElement.name))
                         {
                             zElement.DeepCopy(zRemovedElement, true);
-                            Logger.AddLogLine("Detached reference: {0}:{1}".FormatString(sLayoutName, zRemovedElement.name));
+                            Logger.AddLogLine("Detached reference: {0}:{1}".FormatString(e.Layout.Name, zRemovedElement.name));
                         }
                     }
                 }

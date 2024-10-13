@@ -50,7 +50,7 @@ namespace CardMaker.Card.CommandLine
             zFileCardExporter.ProgressReporter = CardMakerInstance.ProgressReporterFactory.CreateReporter(
                 Description,
                 new string[] { ProgressName.LAYOUT, ProgressName.REFERENCE_DATA, ProgressName.CARD },
-                zFileCardExporter.ExportThread);
+                zFileCardExporter.ExportThreadExec);
             try
             {
                 zFileCardExporter.ProgressReporter.StartProcessing(null);

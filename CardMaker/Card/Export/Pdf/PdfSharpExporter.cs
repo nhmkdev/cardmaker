@@ -79,7 +79,7 @@ namespace CardMaker.Card.Export.Pdf
             m_zDocument = new PdfDocument();
         }
 
-        public override void ExportThread()
+        public override void ExportThreadImpl()
         {
             if (File.Exists(m_sExportFile))
             {

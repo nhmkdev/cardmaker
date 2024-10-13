@@ -84,8 +84,6 @@ namespace CardMaker.Forms
 
             ProjectManager.Instance.ProjectOpened += Project_Opened;
             ProjectManager.Instance.ProjectUpdated += Project_Updated;
-            ProjectManager.Instance.ElementRenamed += LayoutManager.Instance.HandleLayoutElementNameChange;
-            ProjectManager.Instance.ElementsAdded += (o, args) => LayoutManager.Instance.ActiveLayout.InitializeElementLookup();
 
             LayoutManager.Instance.LayoutUpdated += Layout_Updated;
             LayoutManager.Instance.LayoutLoaded += Layout_Loaded;
@@ -891,7 +889,7 @@ namespace CardMaker.Forms
             var zWait = CardMakerInstance.ProgressReporterFactory.CreateReporter(
                 "Export",
                 new string[] { ProgressName.LAYOUT, ProgressName.REFERENCE_DATA, ProgressName.CARD },
-                zFileCardExporter.ExportThread);
+                zFileCardExporter.ExportThreadExec);
             ReferenceCache.Enabled = true;
 #if true
             zFileCardExporter.ProgressReporter = zWait;
@@ -920,7 +918,7 @@ namespace CardMaker.Forms
             var zWait = CardMakerInstance.ProgressReporterFactory.CreateReporter(
                 "Export",
                 new string[] { ProgressName.LAYOUT, ProgressName.REFERENCE_DATA, ProgressName.CARD },
-                zFileCardExporter.ExportThread);
+                zFileCardExporter.ExportThreadExec);
             zFileCardExporter.ProgressReporter = zWait;
             zWait.StartProcessing(this);
 #else // non threaded

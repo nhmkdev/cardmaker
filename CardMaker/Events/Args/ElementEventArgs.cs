@@ -35,7 +35,7 @@ namespace CardMaker.Events.Args
 
     public delegate void ElementsAdded(object sender, ElementEventArgs args);
 
-    public delegate void ElementsRemoved(object sender, ElementEventArgs args);
+    public delegate void ElementsRemoved(object sender, ElementsRemovedEventArgs args);
 
     public class ElementEventArgs
     {
@@ -54,13 +54,27 @@ namespace CardMaker.Events.Args
 
     public class ElementRenamedEventArgs
     {
+        public ProjectLayout Layout { get; private set; }
         public ProjectLayoutElement Element { get; private set; }
         public string OldName { get; private set; }
 
-        public ElementRenamedEventArgs(ProjectLayoutElement zElement, string oldName)
+        public ElementRenamedEventArgs(ProjectLayout zLayout, ProjectLayoutElement zElement, string oldName)
         {
+            Layout = zLayout;
             Element = zElement;
             OldName = oldName;
+        }
+    }
+
+    public class ElementsRemovedEventArgs
+    {
+        public ProjectLayout Layout { get; private set; }
+        public List<ProjectLayoutElement> Elements { get; private set; }
+
+        public ElementsRemovedEventArgs(ProjectLayout zLayout, List<ProjectLayoutElement> listElements)
+        {
+            Layout = zLayout;
+            Elements = listElements;
         }
     }
 }

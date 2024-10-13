@@ -38,7 +38,7 @@ namespace CardMaker.Card.Export
         {
         }
 
-        public override void ExportThread()
+        public override void ExportThreadImpl()
         {
             var progressLayoutIdx = ProgressReporter.GetProgressIndex(ProgressName.LAYOUT);
             var progressCardIdx = ProgressReporter.GetProgressIndex(ProgressName.CARD);

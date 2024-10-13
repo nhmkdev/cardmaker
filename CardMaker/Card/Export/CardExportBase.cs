@@ -129,7 +129,14 @@ namespace CardMaker.Card.Export
         /// <summary>
         /// The primary entry point for the export processing
         /// </summary>
-        public abstract void ExportThread();
+        public abstract void ExportThreadImpl();
+
+        public void ExportThreadExec()
+        {
+#warning look for other things that should happen always
+            CurrentDeck.SubLayoutExportContext = SubLayoutExportContext;
+            ExportThreadImpl();
+        }
 
         public void Save(Bitmap zBmp, string sPath, FileCardExporterFactory.CardMakerExportImageFormat eImageFormat, int nTargetDPI)
         {
@@ -240,10 +247,12 @@ namespace CardMaker.Card.Export
                     SubLayoutExportContext = zNewSubLayoutExportContext,
                     ExportCardIndices = zSubLayoutExportDefinition.Settings.ExportIndices,
                 };
+
+#warning could assign zSubLayoutExporter.CurrentDeck.SubLayoutExportContext here??
                 zSubLayoutExporter.CurrentDeck.ApplySubLayoutDefinesOverrides(zSubLayoutExportDefinition.DefineOverrides);
                 zSubLayoutExporter.CurrentDeck.ApplySubLayoutOverrides(CurrentDeck, zSubLayoutExportDefinition.Settings);
                 zSubLayoutExporter.ProgressReporter = new LogOnlyProgressReporter();
-                zSubLayoutExporter.ExportThread();
+                zSubLayoutExporter.ExportThreadExec();
             }
         }
 

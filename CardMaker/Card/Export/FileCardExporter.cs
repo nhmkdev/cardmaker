@@ -71,13 +71,10 @@ namespace CardMaker.Card.Export
             CurrentDeck.ExportContext = new ExportContext(m_eImageFormat);
         }
 
-        public override void ExportThread()
+        public override void ExportThreadImpl()
         {
             var progressLayoutIdx = ProgressReporter.GetProgressIndex(ProgressName.LAYOUT);
             var progressCardIdx = ProgressReporter.GetProgressIndex(ProgressName.CARD);
-
-#warning this other exporters will need this (TODO: test the other exporters)
-            CurrentDeck.SubLayoutExportContext = SubLayoutExportContext;
 
             // Exports may put multiple cards into a single exported image (referred to as a container below)
 

@@ -54,7 +54,7 @@ namespace CardMaker.Card.Export
             CurrentDeck.ExportContext = new ExportContext(m_eImageFormat);
         }
 
-        public override void ExportThread()
+        public override void ExportThreadImpl()
         {
             var progressLayoutIdx = ProgressReporter.GetProgressIndex(ProgressName.LAYOUT);
             var progressCardIdx = ProgressReporter.GetProgressIndex(ProgressName.CARD);

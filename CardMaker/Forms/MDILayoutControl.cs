@@ -141,11 +141,12 @@ namespace CardMaker.Forms
             {
                 var arrayNames = zQuery.GetString(ELEMNAME).Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
                 var eElementInsertDestination = (ElementInsertDestination)zQuery.GetIndex(DESTINATIONNAME);
-                // TODO: this could select the first/last in the list in the case of multiple selected...
+                // On add the top element selected element is assumed as the focal point
                 var nDestinationIndex = listViewElements.SelectedIndices.Count >= 1 ? listViewElements.SelectedIndices[0] : -1;
                 if (0 < arrayNames.Length)
                 {
-                    AddElements(arrayNames, null, null, eElementInsertDestination, nDestinationIndex);
+                    var sFocalElementName = nDestinationIndex == -1 ? string.Empty : ((ProjectLayoutElement)listViewElements.Items[nDestinationIndex].Tag).name;
+                    AddElements(CreateElementsByTemplate(arrayNames), eElementInsertDestination, sFocalElementName);
                     ChangeSelectedElement(arrayNames[0]);
                 }
             }
@@ -188,25 +189,21 @@ namespace CardMaker.Forms
                 var arrayNames = zQuery.GetString(ELEMNAME)
                     .Split(new [] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
                 var eElementInsertDestination = (ElementInsertDestination)zQuery.GetIndex(DESTINATIONNAME);
-                if (1 == listViewElements.SelectedItems.Count)
+                var listIndices = new List<int>();
+                foreach (int nIdx in listViewElements.SelectedIndices)
                 {
-                    AddElements(arrayNames, (ProjectLayoutElement) listViewElements.SelectedItems[0].Tag, null, eElementInsertDestination);
+                    listIndices.Add(nIdx);
                 }
-                else if (arrayNames.Length == listViewElements.SelectedIndices.Count)
-                {
-                    var listIndicies = new List<int>();
-                    foreach (int nIdx in listViewElements.SelectedIndices)
-                    {
-                        listIndicies.Add(nIdx);
-                    }
-                    // sorting is for maintaining the order no matter the selected order (might have been bottom to top etc.)
-                    listIndicies.Sort();
-                    var listElementsToDuplicate = listIndicies.Select(i => (ProjectLayoutElement)listViewElements.Items[i].Tag).ToArray();
-                    for (var nIdx = 0; nIdx < arrayNames.Length; nIdx++)
-                    {
-                        AddElements(new [] { arrayNames[nIdx] }, listElementsToDuplicate[nIdx], null, eElementInsertDestination);
-                    }
-                }
+                // sorting is for maintaining the order no matter the selected order (might have been bottom to top etc.)
+                listIndices.Sort();
+                var listElementsToDuplicate = listIndices.Select(i => (ProjectLayoutElement)listViewElements.Items[i].Tag).ToList();
+                var sFocalElement = eElementInsertDestination == ElementInsertDestination.Below 
+                    ? listElementsToDuplicate.Last().name
+                    : listElementsToDuplicate.First().name;
+                AddElements(
+                    CreateElementsByTemplates(arrayNames.ToList(), listElementsToDuplicate), 
+                    eElementInsertDestination,
+                    sFocalElement); 
             }
         }
 
@@ -250,7 +247,9 @@ namespace CardMaker.Forms
                     listViewElements.Items.Remove(zLvi);
                 }
 #endif
-                ProjectManager.Instance.FireElementsRemoved(listToDelete.Select((x) => (ProjectLayoutElement)x.Tag).ToList());
+                ProjectManager.Instance.FireElementsRemoved(
+                    LayoutManager.Instance.ActiveLayout, 
+                    listToDelete.Select((x) => (ProjectLayoutElement)x.Tag).ToList());
                 SetupLayoutUndo(listToKeep);
 
                 LayoutManager.Instance.ActiveLayout.Element = listToKeep.ToArray();
@@ -451,60 +450,45 @@ namespace CardMaker.Forms
 
         private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // TODO: pasting could allow for setting the desired destination
-
             if (0 < m_listClipboardElements.Count)
             {
-                Dictionary<string, ProjectLayoutElement> dictionaryExistingElements = null;
-                if (null != LayoutManager.Instance.ActiveLayout.Element)
-                {
-                    dictionaryExistingElements = LayoutManager.Instance.ActiveLayout.Element.ToDictionary(x => x.name);
-                }
+                const string ELEMENT_NAMES = "ELEMENT_NAMES";
+                const string DESTINATIONNAME = "DESTINATION_NAME";
 
-                if (dictionaryExistingElements != null)
-                {
-                    if (m_listClipboardElements.Exists(
-                        zElement => dictionaryExistingElements.ContainsKey(zElement.name)))
+                var dictionaryExistingElements = LayoutManager.Instance.ActiveLayout.Element?.ToDictionary(x => x.name) ?? new Dictionary<string, ProjectLayoutElement>();
+                var zQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("Duplicate Elements Rename", 400, false));
+                zQuery.AddLabel("Each line has the name of an element to be pasted.", 24);
+                zQuery.AddLabel("Duplicated element names are marked with *", 24);
+                zQuery.AddMultiLineTextBox("Element Name(s)",
+                    string.Join(Environment.NewLine, m_listClipboardElements.Select(zElement =>
                     {
-                        const string ELEMENT_NAMES = "ELEMENT_NAMES";
-                        var zQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("Duplicate Elements Rename", 400, false));
-                        zQuery.AddLabel("Each line has the name of an element to be pasted.", 24);
-                        zQuery.AddLabel("Duplicated element names are marked with *", 24);
-                        zQuery.AddMultiLineTextBox("Element Name(s)",
-                            string.Join(Environment.NewLine, m_listClipboardElements.Select(zElement =>
-                            {
-                                return zElement.name + (dictionaryExistingElements.ContainsKey(zElement.name) ? "*" : "");
-                            }).ToList()),
-                            200,
-                            ELEMENT_NAMES);
+                        return zElement.name + (dictionaryExistingElements.ContainsKey(zElement.name) ? "*" : "");
+                    }).ToList()),
+                    200,
+                    ELEMENT_NAMES);
+                zQuery.AddPullDownBox("Paste Destination", Enum.GetNames(typeof(ElementInsertDestination)), (int)ElementInsertDestination.Above, DESTINATIONNAME);
 
-                        if (DialogResult.OK == zQuery.ShowDialog(this))
-                        {
-                            var arrayNames = zQuery.GetString(ELEMENT_NAMES)
-                                .Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-                            if (arrayNames.Length != m_listClipboardElements.Count)
-                            {
-                                MessageBox.Show(zQuery.Form,
-                                    "The number of elements names does not match the clipboard. Cancelling paste.", "", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                                return;
-                            }
-
-                            for (var nIdx = 0; nIdx < m_listClipboardElements.Count; nIdx++)
-                            {
-                                AddElements(new string[] { arrayNames[nIdx] }, m_listClipboardElements[nIdx]);
-                            }
-                        }
+                if (DialogResult.OK == zQuery.ShowDialog(this))
+                {
+                    var arrayNames = zQuery.GetString(ELEMENT_NAMES)
+                        .Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+                    var eElementInsertDestination = (ElementInsertDestination)zQuery.GetIndex(DESTINATIONNAME);
+                    if (arrayNames.Length != m_listClipboardElements.Count)
+                    {
+                        MessageBox.Show(zQuery.Form,
+                            "The number of elements names does not match the clipboard. Cancelling paste.", "", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         return;
                     }
+                    var nDestinationIndex = listViewElements.SelectedIndices.Count >= 1 ? listViewElements.SelectedIndices[0] : -1;
+                    var sFocalElementName = nDestinationIndex == -1 ? string.Empty : ((ProjectLayoutElement)listViewElements.Items[nDestinationIndex].Tag).name;
+
+                    AddElements(CreateElementsByTemplates(arrayNames.ToList(), m_listClipboardElements), eElementInsertDestination, sFocalElementName);
                 }
-                m_listClipboardElements.ForEach(x => AddElements(new string[] { x.name }, x));
             }
         }
 
         private void pasteReferenceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // TODO: pasting could allow for setting the desired destination
-
             if (0 < m_listClipboardElements.Count)
             {
                 Dictionary<string, ProjectLayoutElement> dictionaryExistingElements = null;
@@ -527,7 +511,22 @@ namespace CardMaker.Forms
                     }
 
                 }
-                m_listClipboardElements.ForEach(x => AddElements(new string[] { x.name }, x, m_sClipboardLayoutName));
+
+                const string DESTINATIONNAME = "DESTINATIONNAME";
+                var zQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("Paste Reference Element(s)", 400, false));
+                zQuery.AddLabel("Element Names are broken up by a line.", 24);
+                zQuery.AddPullDownBox("Element Destination", Enum.GetNames(typeof(ElementInsertDestination)), (int)ElementInsertDestination.Above, DESTINATIONNAME);
+
+                if (DialogResult.OK == zQuery.ShowDialog(this))
+                {
+                    var nDestinationIndex = listViewElements.SelectedIndices.Count >= 1 ? listViewElements.SelectedIndices[0] : -1;
+                    var sFocalElementName = nDestinationIndex == -1 ? string.Empty : ((ProjectLayoutElement)listViewElements.Items[nDestinationIndex].Tag).name;
+                    var eElementInsertDestination = (ElementInsertDestination)zQuery.GetIndex(DESTINATIONNAME);
+                    AddElements(
+                        CreateElementsByTemplates(m_listClipboardElements.Select(x => x.name).ToList(), m_listClipboardElements, m_sClipboardLayoutName), 
+                        eElementInsertDestination, 
+                        sFocalElementName);
+                }
             }
         }
 
@@ -620,7 +619,8 @@ namespace CardMaker.Forms
             pasteToolStripMenuItem.Enabled = 0 < m_listClipboardElements.Count;
             pasteReferenceToolStripMenuItem.Enabled = 0 < m_listClipboardElements.Count;
             detachReferenceToolStripMenuItem.Enabled = 0 != listViewElements.SelectedItems.Count;
-            pasteSettingsToolStripMenuItem.Enabled = 1 == m_listClipboardElements.Count;
+            pasteSettingsToolStripMenuItem.Enabled = 1 == m_listClipboardElements.Count && 0 < listViewElements.SelectedItems.Count;
+            duplicateToolStripMenuItem.Enabled = 0 < listViewElements.SelectedItems.Count;
         }
 
         private void resize_Click(object sender, EventArgs e)
@@ -658,7 +658,7 @@ namespace CardMaker.Forms
             LayoutManager.ShowAdjustLayoutSettingsDialog(false, LayoutManager.Instance.ActiveLayout, this);
         }
 
-        #endregion
+#endregion
         
         private ListViewItem CreateListViewItem(ProjectLayoutElement zElement)
         {
@@ -715,23 +715,14 @@ namespace CardMaker.Forms
             }
         }
 
-#warning this method is used for too many things (like pasting references from other layouts)
-        /// <summary>
-        /// Adds the specified elements based on the base element (and optionally as a reference)
-        /// </summary>
-        /// <param name="collectionNames">The names of the elements to generate</param>
-        /// <param name="zBaseElement">The base element to copy from</param>
-        /// <param name="sLayoutReferenceName">The reference layout to apply</param>
-        private void AddElements(
-            IEnumerable<string> collectionNames, 
-            ProjectLayoutElement zBaseElement, 
-            string sLayoutReferenceName = null,
-            ElementInsertDestination eDestination = ElementInsertDestination.Bottom,
-            int nDestinationOverride = -1)
+        private List<ProjectLayoutElement> CreateElementsByTemplate(
+            IEnumerable<string> enumerableNames,
+            ProjectLayoutElement zBaseElement = null,
+            string sLayoutReferenceName = null)
         {
             var listNewElements = new List<ProjectLayoutElement>();
 
-            foreach (var sName in collectionNames)
+            foreach (var sName in enumerableNames)
             {
                 var sTrimmed = sName.Trim();
                 if (m_dictionaryItems.ContainsKey(sTrimmed)) // no duplicates!
@@ -753,46 +744,89 @@ namespace CardMaker.Forms
                     zCardElement.SetElementColor(Color.Black);
                     zCardElement.SetElementFont(FontLoader.DefaultFont);
                 }
-                
+
                 listNewElements.Add(zCardElement);
+            }
+            return listNewElements;
+        }
+
+        private List<ProjectLayoutElement> CreateElementsByTemplates(
+            List<string> enumerableNames,
+            List<ProjectLayoutElement> enumerableElements,
+            string sLayoutReferenceName = null)
+        {
+            var listNewElements = new List<ProjectLayoutElement>();
+
+            if(enumerableNames.Count != enumerableElements.Count)
+            {
+                Logger.AddLogLine("Unexpected element count when creating duplicates");
+                return listNewElements;
+            }
+
+            for(var nIdx = 0; nIdx < enumerableNames.Count; nIdx++)
+            {
+                var sTrimmed = enumerableNames[nIdx].Trim();
+                var zBaseElement = enumerableElements[nIdx];
+                if (m_dictionaryItems.ContainsKey(sTrimmed)) // no duplicates!
+                {
+                    Logger.AddLogLine("Unable to add duplicated element: {0}".FormatString(sTrimmed));
+                    continue;
+                }
+                var zNewElement = new ProjectLayoutElement(sTrimmed);
+
+                zNewElement.DeepCopy(zBaseElement, true);
+                zNewElement.layoutreference = sLayoutReferenceName;
+                zNewElement.elementreference = sLayoutReferenceName == null ? null : zBaseElement.name;
+
+                listNewElements.Add(zNewElement);
+            }
+            return listNewElements;
+        }
+
+        private void AddElements(
+            IEnumerable<ProjectLayoutElement> listElementsToAdd,
+            ElementInsertDestination eDestination = ElementInsertDestination.Bottom,
+            string sFocalElementName = "")
+        {
+            var zLayout = LayoutManager.Instance.ActiveLayout;
+            if (null == zLayout)
+            {
+                Logger.AddLogLine("Unable to add elements without active layout.");
+                return;
             }
 
             // get the base element index (does not apply to creating element references)
-            var nDestination = LayoutManager.Instance.ActiveLayout?.Element?.Length ?? 0;
-            if (nDestinationOverride > -1)
+            var nDestination = zLayout.Element?.Length ?? 0;
+            if (null != zLayout.Element && !string.IsNullOrWhiteSpace(sFocalElementName))
             {
-                nDestination = nDestinationOverride;
+                nDestination = zLayout.Element.ToList().FindIndex(e => e.name == sFocalElementName);
             }
-            else if (null != zBaseElement && null != LayoutManager.Instance.ActiveLayout?.Element && null == sLayoutReferenceName)
-            {
-                nDestination = Array.IndexOf(LayoutManager.Instance.ActiveLayout.Element, zBaseElement);
-            }
+            // make sure it's not -1
             nDestination = Math.Max(nDestination, 0);
-            
+
             // construct a new list of elements
             var listElements = new List<ProjectLayoutElement>();
             switch (eDestination)
             {
                 case ElementInsertDestination.Above:
-                    listElements.AddRange(LayoutManager.Instance.ActiveLayout.Element ?? new ProjectLayoutElement[] { });
-                    listElements.InsertRange(nDestination, listNewElements);
+                    listElements.AddRange(zLayout.Element ?? new ProjectLayoutElement[] { });
+                    listElements.InsertRange(nDestination, listElementsToAdd);
                     break;
                 case ElementInsertDestination.Below:
-                    listElements.AddRange(LayoutManager.Instance.ActiveLayout.Element ?? new ProjectLayoutElement[] { });
-                    listElements.InsertRange(Math.Min(nDestination + 1, listElements.Count), listNewElements);
+                    listElements.AddRange(zLayout.Element ?? new ProjectLayoutElement[] { });
+                    listElements.InsertRange(Math.Min(nDestination + 1, listElements.Count), listElementsToAdd);
                     break;
                 case ElementInsertDestination.Top:
-                    listElements.AddRange(listNewElements);
-                    listElements.AddRange(LayoutManager.Instance.ActiveLayout.Element ?? new ProjectLayoutElement[] { });
+                    listElements.AddRange(listElementsToAdd);
+                    listElements.AddRange(zLayout.Element ?? new ProjectLayoutElement[] { });
                     break;
                 case ElementInsertDestination.Bottom:
-                    listElements.AddRange(LayoutManager.Instance.ActiveLayout.Element ?? new ProjectLayoutElement[] { });
-                    listElements.AddRange(listNewElements);
+                    listElements.AddRange(zLayout.Element ?? new ProjectLayoutElement[] { });
+                    listElements.AddRange(listElementsToAdd);
                     break;
             }
 
-            var zLayout = LayoutManager.Instance.ActiveLayout;
-            if (null == zLayout?.Element ||
+            if (null == zLayout.Element ||
                 // it is possible nothing was added if all names were duplicates (skip in that case)
                 zLayout.Element.Length < listElements.Count)
             {
@@ -800,6 +834,7 @@ namespace CardMaker.Forms
                 SetupLayoutUndo(listElements, true);
             }
         }
+
 
         private void HandleCardSetValueChange(object sender, EventArgs e)
         {
@@ -868,7 +903,7 @@ namespace CardMaker.Forms
         {
             zElement.name = sNewName;
             lvItem.SubItems[(int)ElementFieldIndex.ElementName].Text = GenerateListViewItemElementText(zElement);
-            ProjectManager.Instance.FireElementRenamed(zElement, sOldName);
+            ProjectManager.Instance.FireElementRenamed(LayoutManager.Instance.ActiveLayout, zElement, sOldName);
             // update dictionary
             m_dictionaryItems.Remove(sOldName);
             m_dictionaryItems.Add(zElement.name, listViewElements.SelectedItems[0]);
@@ -1046,7 +1081,6 @@ namespace CardMaker.Forms
 
                     CardMakerInstance.ProcessingUserAction = false;
 
-                    ProjectManager.Instance.FireElementsAdded(arrayChange?.ToList());
                     listViewElements_SelectedIndexChanged(null, null);
                     LayoutManager.Instance.FireLayoutUpdatedEvent(true);
                 }, bRunRedoAction);
