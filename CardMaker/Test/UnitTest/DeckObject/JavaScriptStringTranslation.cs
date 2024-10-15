@@ -117,6 +117,7 @@ namespace UnitTest.DeckObject
 
         [TestCase("a", "3", ExpectedResult = "3")]
         [TestCase("3", "a", ExpectedResult = "3")] // js will be just the numeral 3
+        [TestCase("a", "", ExpectedResult = "")]
         [TestCase("", "a", ExpectedResult = "")] // error case in js
         [TestCase("-", "a", ExpectedResult = "")] // error case in js
         [TestCase(" ", "a", ExpectedResult = "")] // TODO: this is not a valid key and should throw an error in processing
