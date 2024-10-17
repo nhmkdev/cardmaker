@@ -148,7 +148,14 @@ namespace CardMaker.Card.Translation
 
         private void AddCode(ScriptEngine zEngine, string sName, string sValue)
         {
-            zEngine.Execute($"{sName.Replace(" ", "_")} = {sValue}");
+            try
+            {
+                zEngine.Execute($"{sName.Replace(" ", "_")} = {sValue}");
+            }
+            catch (ScriptEngineException e)
+            {
+                Logger.AddLogLine(e.ErrorDetails);
+            }
         }
     }
 }
