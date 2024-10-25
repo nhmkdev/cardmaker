@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq.Expressions;
 using CardMaker.Data;
 using CardMaker.Data.Serialization;
 using CardMaker.Events.Managers;
@@ -264,7 +265,7 @@ namespace CardMaker.Card
                 try
                 {
                     sFile = GetExistingFilePath(sFile);
-                    if (File.GetLastWriteTimeUtc(sFile) == zCacheEntry.LastWriteTimestamp)
+                    if (null != sFile && File.GetLastWriteTimeUtc(sFile) == zCacheEntry.LastWriteTimestamp)
                     {
                         return true;
                     }
@@ -325,35 +326,48 @@ namespace CardMaker.Card
             return zCacheEntry;
         }
 
+        /// <summary>
+        /// Gets the path of the file based on path, project path, and local reference path
+        /// </summary>
+        /// <param name="sFile"></param>
+        /// <returns>The file path if valid, null otherwise</returns>
         private static string GetExistingFilePath(string sFile)
         {
-            if (!File.Exists(sFile))
+            try
             {
-                sFile = Path.Combine(ProjectManager.Instance.ProjectPath,sFile);
-                if (!File.Exists(sFile))
+                if (File.Exists(sFile))
                 {
-                    if (sFile.Length > 1)
+                    return sFile;
+                }
+
+                sFile = Path.Combine(ProjectManager.Instance.ProjectPath, sFile);
+                if (File.Exists(sFile))
+                {
+                    return sFile;
+                }
+
+                if (sFile.Length > 1)
+                {
+                    switch (sFile[0])
                     {
-                        switch (sFile[0])
-                        {
-                            case '/':
-                            case '\\':
-                                // last ditch effort (support for files like this: "/file.png"
-                                sFile = Path.Combine(ProjectManager.Instance.ProjectPath, sFile.Substring(1));
-                                if (File.Exists(sFile))
-                                {
-                                    return sFile;
-                                }
-                                break;
-                            default:
-                                return null;
-                        }
+                        case '/':
+                        case '\\':
+                            // last ditch effort (support for files like this: "/file.png"
+                            sFile = Path.Combine(ProjectManager.Instance.ProjectPath, sFile.Substring(1));
+                            if (File.Exists(sFile))
+                            {
+                                return sFile;
+                            }
+                            break;
                     }
-                    return null;
                 }
             }
+            catch (Exception e)
+            {
+                Logger.AddLogLine($"Invalid File Path: {sFile} -- {e.Message}");
+            }
 
-            return sFile;
+            return null;
         }
 
         private static void RemoveCacheEntry(IDictionary<string, BitmapCacheEntry> dictionaryImages,
