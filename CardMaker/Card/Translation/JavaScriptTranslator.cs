@@ -111,7 +111,8 @@ namespace CardMaker.Card.Translation
                 }
             }
 
-            if (sValue[0] == '~' && ProjectManager.Instance.LoadedProject.jsTildeMeansCode)
+            if (sValue.Length < 1) { /*empty string, nothing to process*/ }
+            else if (sValue[0] == '~' && ProjectManager.Instance.LoadedProject.jsTildeMeansCode)
             {
                 AddCode(zEngine, sName, sValue.Substring(1));
                 return;
@@ -121,7 +122,7 @@ namespace CardMaker.Card.Translation
                 AddCode(zEngine, sName, sValue);
                 return;
             }
-            else if (sValue[0] == '\\')
+            else if (sValue[0] == '\\' && sValue.Length > 1)
             {
                 if (sValue[1] == '\\')
                 {
@@ -147,7 +148,14 @@ namespace CardMaker.Card.Translation
 
         private void AddCode(ScriptEngine zEngine, string sName, string sValue)
         {
-            zEngine.Execute($"{sName.Replace(" ", "_")} = {sValue}");
+            try
+            {
+                zEngine.Execute($"{sName.Replace(" ", "_")} = {sValue}");
+            }
+            catch (ScriptEngineException e)
+            {
+                Logger.AddLogLine(e.ErrorDetails);
+            }
         }
     }
 }
