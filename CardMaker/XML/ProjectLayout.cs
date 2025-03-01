@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Xml.Serialization;
+using Support.IO;
 
 namespace CardMaker.XML
 {
@@ -48,6 +49,8 @@ namespace CardMaker.XML
         public int exportRotation { get; set; }
 
         public bool exportTransparentBackground { get; set; }
+
+        public string exportBackgroundColor { get; set; }
 
         public bool exportPDFAsPageBack { get; set; }
 
@@ -88,6 +91,12 @@ namespace CardMaker.XML
         public bool drawBorder { get; set; }
 
         #endregion
+
+        public Color GetExportBackgroundColor()
+        {
+            var zColor = ColorSerialization.TranslateColorString(exportBackgroundColor, 255, out var bSucceeded);
+            return bSucceeded ? zColor : Color.White;
+        }
 
         public Rectangle getExportCropDefinition()
         {

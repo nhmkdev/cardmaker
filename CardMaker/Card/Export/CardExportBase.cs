@@ -22,7 +22,6 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -225,7 +224,7 @@ namespace CardMaker.Card.Export
             }
             else
             {
-                zGraphics.Clear(Color.White);
+                zGraphics.Clear(CurrentDeck.CardLayout.GetExportBackgroundColor());
             }
         }
 

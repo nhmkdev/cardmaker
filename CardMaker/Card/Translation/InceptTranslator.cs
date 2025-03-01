@@ -62,8 +62,11 @@ namespace CardMaker.Card.Translation
         private static readonly Regex s_regexCardCounter = new Regex(@"(.*)(##)(\d+)(;)(\d+)(;)(\d+)(#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexSubCardCounter = new Regex(@"(.*)(#sc;)(\d+)(;)(\d+)(;)(\d+)(#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexColorNormalizedValue = new Regex(@"(.*)(#cnv)(.*?)(;)(.+?)(#)(.*)", RegexOptions.Compiled);
+        private static readonly Regex s_regexStringLength = new Regex(@"(.*)(#\(strlen)(;)(.*?)(\)#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexStringWidth = new Regex(@"(.*)(#strw)(\[)(.+?)(\])(.+?)(#)(.*)", RegexOptions.Compiled);
+        private static readonly Regex s_regexStringWidthEx = new Regex(@"(.*)(#\(strw)(\[)(.*?)(\])(.*?)(\)#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexRepeat = new Regex(@"(.*)(#repeat;)(\d+)(;)(.+?)(#)(.*)", RegexOptions.Compiled);
+        private static readonly Regex s_regexRepeatEx = new Regex(@"(.*)(#\(repeat;)(\d+)(;)(.*?)(\)#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexRandomNumber = new Regex(@"(.*)(#random;)(-?\d+)(;)(-?\d+)(#)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexMath =
             new Regex(@"(.*)(#math;)([+-]?[0-9]*[.]?[0-9]+)([+\-*/%])([+-]?[0-9]*[.]?[0-9]+)[;]?(.*?)(#)(.*)",
@@ -152,8 +155,12 @@ namespace CardMaker.Card.Translation
             // Translate element fields
             sOutput = LoopTranslateRegex(s_regexElementFields, sOutput, zTranslationContext, TranslateElementFields);
 
+            // Translate string length
+            sOutput = LoopTranslateRegex(s_regexStringLength, sOutput, zTranslationContext, TranslateStringLength);
+
             // Translate string width
             sOutput = LoopTranslateRegex(s_regexStringWidth, sOutput, zTranslationContext, TranslateStringWidth);
+            sOutput = LoopTranslateRegex(s_regexStringWidthEx, sOutput, zTranslationContext, TranslateStringWidth);
 
             // Translate random number
             sOutput = LoopTranslateRegex(s_regexRandomNumber, sOutput, zTranslationContext, TranslationRandomNumber);
@@ -163,6 +170,7 @@ namespace CardMaker.Card.Translation
 
             // Translate repeat
             sOutput = LoopTranslateRegex(s_regexRepeat, sOutput, zTranslationContext, TranslateRepeat);
+            sOutput = LoopTranslateRegex(s_regexRepeatEx, sOutput, zTranslationContext, TranslateRepeat);
 
             // Translate padding
             sOutput = LoopTranslateRegex(s_regexPadStatement, sOutput, zTranslationContext, TranslatePadding);
@@ -379,6 +387,17 @@ namespace CardMaker.Card.Translation
                    + zMatch.Groups[7];
         }
 
+        private string TranslateStringLength(Match zMatch, TranslationContext zTranslationContext)
+        {
+            // Groups                 
+            //  1     2       3  4    5    6 
+            //(.*)(#\(strlen)(;)(.*?)(\)#)(.*)
+            var nLength = zMatch.Groups[4].ToString().Length;
+
+            return zMatch.Groups[1]
+                   + nLength.ToString()
+                   + zMatch.Groups[6];
+        }
         private string TranslateStringWidth(Match zMatch, TranslationContext zTranslationContext)
         {
             // Groups                 
@@ -476,13 +495,14 @@ namespace CardMaker.Card.Translation
             // Groups                 
             //    1  2         3    4  5    6  7
             //@"(.*)(#repeat;)(\d+)(;)(.+?)(#)(.*)"
-            int nRepeatCount;
+            var sCount = zMatch.Groups[3].ToString();
+            var sRepeat = zMatch.Groups[5].ToString();
             var zBuilder = new StringBuilder();
-            if (int.TryParse(zMatch.Groups[3].ToString(), out nRepeatCount))
+            if (int.TryParse(sCount, out var nRepeatCount))
             {
                 for (var nIdx = 0; nIdx < nRepeatCount; nIdx++)
                 {
-                    zBuilder.Append(zMatch.Groups[5]);
+                    zBuilder.Append(sRepeat);
                 }
             }
             else

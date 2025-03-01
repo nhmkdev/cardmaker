@@ -109,15 +109,19 @@ namespace CardMaker.Card.Export.Pdf
 
             ProgressReporter.ProgressReset(progressLayoutIdx, 0, ExportLayoutIndices.Length, 0);
 
-            // always add a new page initially (necessary for ConfigurePointSizes)
-            AddInitialPage();
-
             Type zLastExporterType = null;
 
             for(var nExportCounter = 0; nExportCounter < ExportLayoutIndices.Length; nExportCounter++)
             {
                 var nIdx = ExportLayoutIndices[nExportCounter];
                 ChangeExportLayoutIndex(nIdx);
+
+                if (nExportCounter == 0)
+                {
+                    // always add a new page initially (necessary for ConfigurePointSizes)
+                    AddInitialPage();
+                }
+
                 m_zExportData.Deck = CurrentDeck;
                 if (CurrentDeck.EmptyReference)
                 {
@@ -157,7 +161,7 @@ namespace CardMaker.Card.Export.Pdf
                     // if the exporter type changes start a new page
                     if (CardMakerSettings.PrintLayoutsOnNewPage || zLastExporterType != zRowExporter.GetType())
                     {
-                        AddPage(zRowExporter, nNextExportIndex);
+                        AddSubsequentPage(zRowExporter, nNextExportIndex);
                     }
                     else if (zRowExporter.IsLayoutForcedToNewRow() || zRowExporter.IsRowFull())
                     {
@@ -349,7 +353,7 @@ namespace CardMaker.Card.Export.Pdf
             // if the draw will extend beyond the bottom margin start a new page
             if (m_zExportData.DrawY + m_zExportData.LayoutPointHeight > m_zExportData.PageMarginEndY)
             {
-                AddPage(zRowExporter, nNextExportIndex);
+                AddSubsequentPage(zRowExporter, nNextExportIndex);
             }
         }
 
@@ -368,19 +372,29 @@ namespace CardMaker.Card.Export.Pdf
             m_zExportData.NextRowYAdjust = m_zExportData.LayoutPointHeight + m_zExportData.BufferY;
         }
 
-        /// <summary>
-        /// Adds a new page to the PDF based on the current configuration
-        /// </summary>
-        private void AddInitialPage()
+        private void SetupNewPage(bool bUpdateMargins)
         {
             m_zCurrentPage = m_zDocument.AddPage();
 
             UpdatePageSize();
             m_zCurrentPage.Orientation = m_ePageOrientation;
-            UpdatePageMargins();
+            if (bUpdateMargins)
+            {
+                UpdatePageMargins();
+            }
 
             m_zPageGfx = XGraphics.FromPdfPage(m_zCurrentPage);
+            var zBackgroundBrush = new XSolidBrush(XColor.FromArgb(CurrentDeck.CardLayout.GetExportBackgroundColor()));
+            m_zPageGfx.DrawRectangle(zBackgroundBrush, new XRect(0, 0, m_zCurrentPage.Width, m_zCurrentPage.Height));
             m_zExportData.DrawY = m_zExportData.PageMarginY;
+        }
+
+        /// <summary>
+        /// Adds a new page to the PDF based on the current configuration
+        /// </summary>
+        private void AddInitialPage()
+        {
+            SetupNewPage(true);
         }
 
         /// <summary>
@@ -388,15 +402,9 @@ namespace CardMaker.Card.Export.Pdf
         /// </summary>
         /// <param name="zRowExporter">The row exporter to setup the x position with</param>
         /// <param name="nNextExportIndex">Will be used to setup the x position</param>
-        private void AddPage(PdfRowExporter zRowExporter, int nNextExportIndex)
+        private void AddSubsequentPage(PdfRowExporter zRowExporter, int nNextExportIndex)
         {
-            m_zCurrentPage = m_zDocument.AddPage();
-
-            UpdatePageSize();
-            m_zCurrentPage.Orientation = m_ePageOrientation;
-
-            m_zPageGfx = XGraphics.FromPdfPage(m_zCurrentPage);
-            m_zExportData.DrawY = m_zExportData.PageMarginY;
+            SetupNewPage(false);
 
             zRowExporter.SetupNewRowXPosition(nNextExportIndex);
             m_zExportData.NextRowYAdjust = m_zExportData.LayoutPointHeight + m_zExportData.BufferY;

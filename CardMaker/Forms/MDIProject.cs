@@ -114,6 +114,7 @@ namespace CardMaker.Forms
             const string EXPORT_HEIGHT = "EXPORT_HEIGHT";
             const string EXPORT_CROP = "EXPORT_CROP";
             const string EXPORT_TRANSPARENT = "EXPORT_TRANSPARENT";
+            const string EXPORT_BACKGROUND_COLOR = "EXPORT_BACKGROUND_COLOR";
             const string EXPORT_PDF_AS_PAGE_BACK = "EXPORT_PDF_AS_PAGE_BACK";
             const string EXPORT_BORDER = "EXPORT_BORDER";
             const string EXPORT_BORDER_CROSS_SIZE = "EXPORT_BORDER_CROSS_SIZE";
@@ -144,14 +145,22 @@ namespace CardMaker.Forms
 
                 if (zProjectLayout.exportWidth > 0)
                 {
-                    var nWidth = zProjectLayout.width + zProjectLayout.buffer;
-                    nColumns = zProjectLayout.exportWidth / nWidth;
+                    var nWidth = zProjectLayout.width;
+                    do
+                    {
+                        nColumns++;
+                        nWidth += zProjectLayout.width + zProjectLayout.buffer;
+                    } while (nWidth <= zProjectLayout.exportWidth);
                 }
 
                 if (zProjectLayout.exportHeight > 0)
                 {
-                    var nHeight = zProjectLayout.height + zProjectLayout.buffer;
-                    nRows = zProjectLayout.exportHeight / nHeight;
+                    var nHeight = zProjectLayout.height;
+                    do
+                    {
+                        nRows++;
+                        nHeight += zProjectLayout.height + zProjectLayout.buffer;
+                    } while (nHeight <= zProjectLayout.exportHeight);
                 }
 
                 var numericColumns = zQuery.AddNumericBox("Stitched Columns (changes export width)", nColumns, 0, 100, "COLUMNS");
@@ -167,6 +176,8 @@ namespace CardMaker.Forms
 
                 zQuery.AddCheckBox("Export Transparent Background", zProjectLayout.exportTransparentBackground,
                     EXPORT_TRANSPARENT);
+
+                zQuery.AddColorSelect("Export Background Color", zProjectLayout.exportBackgroundColor, EXPORT_BACKGROUND_COLOR, CardMakerSettings.IniManager);
 
                 zQuery.AddCheckBox("Export Layout Border (Draw Border required)", zProjectLayout.exportLayoutBorder, EXPORT_BORDER);
                 zQuery.AddNumericBox("Export Layout Border Cross Size", zProjectLayout.exportLayoutBorderCrossSize, 0, int.MaxValue, 1, 0, EXPORT_BORDER_CROSS_SIZE);
@@ -202,6 +213,7 @@ namespace CardMaker.Forms
                     zProjectLayout.exportHeight = int.Parse(zQuery.GetString(EXPORT_HEIGHT));
                     zProjectLayout.exportCropDefinition = zQuery.GetString(EXPORT_CROP);
                     zProjectLayout.exportTransparentBackground = zQuery.GetBool(EXPORT_TRANSPARENT);
+                    zProjectLayout.exportBackgroundColor = zQuery.GetString(EXPORT_BACKGROUND_COLOR);
                     zProjectLayout.exportPDFAsPageBack = zQuery.GetBool(EXPORT_PDF_AS_PAGE_BACK);
                     zProjectLayout.exportLayoutBorder = zQuery.GetBool(EXPORT_BORDER);
                     zProjectLayout.exportLayoutBorderCrossSize = (int)zQuery.GetDecimal(EXPORT_BORDER_CROSS_SIZE);

@@ -161,6 +161,20 @@ namespace UnitTest.DeckObject
             return result.String;
         }
 
+        [TestCase("#(if 2 == #(strlen;33)# then Y else N)#", ExpectedResult = "Y")]
+        [TestCase("#(if 2 == #(strlen;3)# then Y else N)#", ExpectedResult = "N")]
+        [TestCase("#(if 0 == #(strlen;)# then Y)#", ExpectedResult = "Y")]
+        [TestCase("#(strlen;)#", ExpectedResult = "0")]
+        [TestCase("#(strlen;3)#", ExpectedResult = "1")]
+        [TestCase("#(strlen;33)#", ExpectedResult = "2")]
+        [TestCase("#(strlen; 33 )#", ExpectedResult = "4")]
+        public string ValidateLength(string input)
+        {
+            _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
+            var result = _testDeck.TranslateString(input, _testDeck.CurrentLine, _testElement);
+            return result.String;
+        }
+
         // todo if/switch tests with bggraphic and shape
 
         [TestCase("#(if a == a then word else word2)#", ExpectedResult = "word")]
@@ -827,6 +841,41 @@ namespace UnitTest.DeckObject
         [TestCase("#repeat;%[@[loot],1,2];<img=icons\\@[cointypeimage%[@[loot],0,1]];.80>#", ExpectedResult = "<img=icons\\gold.png;.80><img=icons\\gold.png;.80>")]
         [TestCase("#repeat;%[@[loot],1,2];<img=icons\\@[cointypeimage%[@[loot],0,1]];.80>#", ExpectedResult = "<img=icons\\gold.png;.80><img=icons\\gold.png;.80>")]
         public string ValidateRepeatTranslator(string input)
+        {
+            var listLines = new List<List<string>>()
+            {
+                new List<string>() {"count", "loot"},
+                new List<string>() {"1", "102"}
+            };
+            var listDefines = new List<List<string>>()
+            {
+                new List<string>() { "define", "value" },
+                new List<string>() { "1", "a" },
+                new List<string>() { "2", "b" },
+                new List<string>() { "3", "@[2]" },
+                new List<string>() { "4", "@[3]@[2]@[3]" },
+                new List<string>() { "4ex", "4" },
+                new List<string>() { "5", "@[@[4ex]]" },
+                new List<string>() { "cointypeimage1", "gold.png"}
+            };
+            _testDeck.ProcessLinesPublic(
+                listLines,
+                listDefines,
+                null);
+
+            return _testDeck.TranslateString(input, _testDeck.CurrentLine, _testElement).String;
+        }
+
+        [TestCase("A#(repeat;-1;a)#B", ExpectedResult = "A#(repeat;-1;a)#B")]
+        [TestCase("A#(repeat;0;a)#B", ExpectedResult = "AB")]
+        [TestCase("A#(repeat;1;#)#B", ExpectedResult = "A#B")]
+        [TestCase("A#(repeat;1;#)#B3#", ExpectedResult = "A#B3#")]
+        [TestCase("A#(repeat;3;#)#B3#", ExpectedResult = "A###B3#")]
+        [TestCase("A#(repeat;2;@[1])#B", ExpectedResult = "AaaB")]
+        [TestCase("A#(repeat;2;@[4])#B", ExpectedResult = "AbbbbbbB")]
+        [TestCase("A#(repeat;2;@[4])##(repeat;3;xyz)#B", ExpectedResult = "AbbbbbbxyzxyzxyzB")]
+        [TestCase("#(repeat;%[@[loot],1,2];<img=icons\\@[cointypeimage%[@[loot],0,1]];.80>)#", ExpectedResult = "<img=icons\\gold.png;.80><img=icons\\gold.png;.80>")]
+        public string ValidateRepeatExTranslator(string input)
         {
             var listLines = new List<List<string>>()
             {

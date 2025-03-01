@@ -29,6 +29,8 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
+using CardMaker.Data;
+using Support.IO;
 
 namespace Support.UI
 {
@@ -67,6 +69,7 @@ namespace Support.UI
             Button,
             ListBox,
             DateTimePicker,
+            ColorPanel,
 			None
 		}
 		
@@ -733,6 +736,42 @@ namespace Support.UI
 	        return zText;
 	    }
 
+        public Panel AddColorSelect(string sLabel, string sDefault, object zQueryKey, IniManager zIniManager = null)
+        {
+            var zLabel = CreateLabel(sLabel);
+            var zPanelLocation = new Point(GetLabelWidth(zLabel) + (X_CONTROL_BUFFER), GetYPosition());
+
+            var zColor = ColorSerialization.TranslateColorString(sDefault, 500, out var bColorConverted);
+            var zButton = new Button()
+            {
+                Text = "...",
+                Size = new Size(X_BUTTON_WIDTH, Y_CONTROL_HEIGHT),
+                Anchor = AnchorStyles.Right | AnchorStyles.Top,
+            };
+            zButton.Location = new Point(m_zCurrentLayoutControl.ClientSize.Width - (zButton.Size.Width + X_CONTROL_BUFFER), GetYPosition());
+
+            var zPanel = new Panel()
+            {
+                Location = zPanelLocation,
+                Size = new Size(m_zCurrentLayoutControl.ClientSize.Width - zLabel.Width - zButton.Width - (X_CONTROL_BUFFER * 4), Y_CONTROL_HEIGHT),
+                BackColor = bColorConverted ? zColor : Color.White,
+                BorderStyle = BorderStyle.FixedSingle
+            };
+
+            zButton.Click += (sender, args) =>
+            {
+                var zRGBSelect = new RGBColorSelectDialog(zIniManager);
+                zRGBSelect.ShowDialog();
+                zPanel.BackColor = zRGBSelect.Color;
+            };
+            AddPendingControl(zLabel);
+            AddPendingControl(zButton);
+            AddPendingControl(zPanel);
+            var qItem = new QueryItem(ControlType.ColorPanel, zPanel, zButton, ref m_nTabIndex); // the tag of the QueryItem is the button (used when disabling the QueryItem)
+            m_dictionaryItems.Add(zQueryKey, qItem);
+            return zPanel;
+        }
+
         /// <summary>
         /// Created a label based on the current y position
         /// </summary>
@@ -952,6 +991,8 @@ namespace Support.UI
                         return (string)((ListBox)zItem.QueryControl).SelectedItem;
                     case ControlType.NumBox:
                         return ((NumericUpDown)zItem.QueryControl).Value.ToString(CultureInfo.CurrentCulture);
+                    case ControlType.ColorPanel:
+                        return ColorSerialization.GetElementColorString(((Panel)zItem.QueryControl).BackColor);
 				}
 				ThrowWrongTypeException();
 			}
@@ -1165,6 +1206,7 @@ namespace Support.UI
                     switch (zItem.m_eControlType)
                     {
                         case ControlType.BrowseBox:
+                        case ControlType.ColorPanel:
                         case ControlType.NumBoxSlider:
                             ((Control)zItem.Tag).Enabled = bEnabled;
                             break;
