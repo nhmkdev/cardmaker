@@ -28,6 +28,10 @@ Card Maker Version History
 - Added ability to access element fields with &[fieldname]
 - Added FormattedText paragraph tag (see manual)
 - Added new graphic element type option to draw the graphic at the element origin
+- Added export background color setting for layouts (applies to PDF and graphic files)
+- Added strlen for determining string length (in characters)
+- Added alternative commands for Incept: Repeat - #(repeat;x;y)# Width - #(strw[[font format string]][string to measure])#
+- Fixed issue with calculation of columns/rows when opening the Layout Export Settings dialog
 
 1.3.0.0
 - Overhaul to Google sheet selection due to security policy changes

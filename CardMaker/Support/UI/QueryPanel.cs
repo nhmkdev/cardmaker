@@ -761,8 +761,10 @@ namespace Support.UI
             zButton.Click += (sender, args) =>
             {
                 var zRGBSelect = new RGBColorSelectDialog(zIniManager);
-                zRGBSelect.ShowDialog();
-                zPanel.BackColor = zRGBSelect.Color;
+                if (zRGBSelect.ShowDialog() == DialogResult.OK)
+                {
+                    zPanel.BackColor = zRGBSelect.Color;
+                }
             };
             AddPendingControl(zLabel);
             AddPendingControl(zButton);
