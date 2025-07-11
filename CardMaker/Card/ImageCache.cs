@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq.Expressions;
 using CardMaker.Data;
 using CardMaker.Data.Serialization;
 using CardMaker.Events.Managers;
@@ -46,6 +45,8 @@ namespace CardMaker.Card
 {
     public static class ImageCache
     {
+        private const string APPLICATION_FOLDER_MARKER = "{appfolder}";
+
         public enum ImageCacheEntryType
         {
             File,
@@ -335,6 +336,12 @@ namespace CardMaker.Card
         {
             try
             {
+                if (sFile.StartsWith(APPLICATION_FOLDER_MARKER))
+                {
+                    sFile = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location),
+                        sFile.Replace(APPLICATION_FOLDER_MARKER, string.Empty));
+                }
+
                 if (File.Exists(sFile))
                 {
                     return sFile;

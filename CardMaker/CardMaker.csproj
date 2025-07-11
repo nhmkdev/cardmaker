@@ -79,7 +79,6 @@
     <Compile Include="Card\CardCanvas.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Card\CardPathUtil.cs" />
     <Compile Include="Card\CardRenderer.cs" />
     <Compile Include="Card\CommandLine\CommandLineEnumerations.cs" />
     <Compile Include="Card\CommandLine\CommandLineExporterBase.cs" />
