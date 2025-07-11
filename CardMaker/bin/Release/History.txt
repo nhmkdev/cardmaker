@@ -1,5 +1,8 @@
 Card Maker Version History
 --------------------------
+1.5.0.0
+- Fix {appfolder} translation (this is used by templates mostly)
+
 1.4.0.0
 - Overhaul UI for adding/pasting/duplicating elements to allow for specifying basic positioning.
 - Added functionality to measure the width of a string based on the font specified (strw)
