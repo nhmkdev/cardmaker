@@ -769,6 +769,7 @@ namespace Support.UI
             AddPendingControl(zLabel);
             AddPendingControl(zButton);
             AddPendingControl(zPanel);
+            AddToYPosition(zPanel.Size.Height + Y_CONTROL_BUFFER);
             var qItem = new QueryItem(ControlType.ColorPanel, zPanel, zButton, ref m_nTabIndex); // the tag of the QueryItem is the button (used when disabling the QueryItem)
             m_dictionaryItems.Add(zQueryKey, qItem);
             return zPanel;
