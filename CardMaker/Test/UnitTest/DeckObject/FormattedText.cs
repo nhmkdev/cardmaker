@@ -59,6 +59,9 @@ namespace UnitTest.DeckObject
         [TestCase("<fs=15></fs>", new Type[] { typeof(FontSizeMarkup), typeof(CloseTagMarkup) })]
         [TestCase("<yo=15></yo>", new Type[] { typeof(YDrawOffsetMarkup), typeof(CloseTagMarkup) })]
         [TestCase("<xo=15></xo>", new Type[] { typeof(XDrawOffsetMarkup), typeof(CloseTagMarkup) })]
+        [TestCase("<caps></caps>", new Type[] { typeof(AllCapsMarkup), typeof(CloseTagMarkup) })]
+        [TestCase("<nocaps></nocaps>", new Type[] { typeof(NoCapsMarkup), typeof(CloseTagMarkup) })]
+        [TestCase("<titlecase></titlecase>", new Type[] { typeof(TitleCaseMarkup), typeof(CloseTagMarkup) })]
         // Invalid test case thrown in for fun (the close tag is discarded as it is invalid
         [TestCase("<b></i>", new Type[] { typeof(FontStyleBoldMarkup) })]
         public void ValidateMarkupTranslation(string input, Type[] expectedTypes)

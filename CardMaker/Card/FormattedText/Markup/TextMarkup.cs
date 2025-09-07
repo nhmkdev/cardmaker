@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using CardMaker.Card.FormattedText.Util;
 using CardMaker.Data;
 using CardMaker.XML;
 using Support.IO;
@@ -57,7 +58,9 @@ namespace CardMaker.Card.FormattedText.Markup
 
         protected override bool ProcessMarkupHandler(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
-            m_sVariable = zProcessData.ForceTextCaps ? m_sVariable.ToUpper() : m_sVariable;
+            m_sVariable = zProcessData.ForceTextUppercase ? m_sVariable.ToUpper() : m_sVariable;
+            m_sVariable = zProcessData.ForceTextLowercase ? m_sVariable.ToLower() : m_sVariable;
+            m_sVariable = zProcessData.ForceTextTitleCase ? StringUtil.ConvertToTitleCase(m_sVariable) : m_sVariable;
             m_zFontBrush = zProcessData.FontBrush;
             m_zFont = zProcessData.Font;
             m_fFontHeight = zProcessData.FontHeight;

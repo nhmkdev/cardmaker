@@ -135,9 +135,12 @@
     <Compile Include="Card\FormattedText\Markup\MirrorHorizontalMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\MirrorMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\MirrorVerticalMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\NoCapsMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\ParagraphMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\PixelMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\MarginLeftMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\TitleCaseMarkup.cs" />
+    <Compile Include="Card\FormattedText\Util\StringUtil.cs" />
     <Compile Include="Card\IDrawFormattedText.cs" />
     <Compile Include="Card\IDrawGraphic.cs" />
     <Compile Include="Card\IDrawText.cs" />

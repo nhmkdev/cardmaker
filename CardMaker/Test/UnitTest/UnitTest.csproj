@@ -126,6 +126,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Card\FormattedText\Util\StringUtilTests.cs" />
     <Compile Include="CommandLine\CommandLineTest.cs" />
     <Compile Include="DeckObject\ElementOverride.cs" />
     <Compile Include="DeckObject\FormattedText.cs" />

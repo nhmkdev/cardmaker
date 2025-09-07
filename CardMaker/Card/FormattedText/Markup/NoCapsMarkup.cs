@@ -27,17 +27,17 @@ using CardMaker.XML;
 
 namespace CardMaker.Card.FormattedText.Markup
 {
-    public class AllCapsMarkup : MarkupBase
+    public class NoCapsMarkup : MarkupBase
     {
         protected override bool ProcessMarkupHandler(ProjectLayoutElement zElement, FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
-            zProcessData.ForceTextUppercase = true;
+            zProcessData.ForceTextLowercase = true;
             return false;
         }
 
         public override void CloseMarkup(FormattedTextData zData, FormattedTextProcessData zProcessData, Graphics zGraphics)
         {
-            zProcessData.ForceTextUppercase = false;
+            zProcessData.ForceTextLowercase = false;
         }
     }
 }

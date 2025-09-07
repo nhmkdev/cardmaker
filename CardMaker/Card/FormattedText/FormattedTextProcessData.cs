@@ -50,7 +50,10 @@ namespace CardMaker.Card.FormattedText
         public float FontScaleX { get; set; }
         public float FontScaleY { get; set; }
 
-        public bool ForceTextCaps { get; set; }
+        public bool ForceTextUppercase { get; set; }
+        public bool ForceTextLowercase { get; set; }
+        public bool ForceTextTitleCase { get; set; }
+
         public Color ImageColor { get; set; }
 
         public float CurrentX { get; set; }

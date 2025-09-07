@@ -54,6 +54,8 @@ namespace CardMaker.Card.FormattedText.Markup
             {"img", typeof (ImageMarkup)},
             {"ls", typeof(LineSpaceMarkup) },
             {"caps", typeof(AllCapsMarkup)},
+            {"nocaps", typeof(NoCapsMarkup)},
+            {"titlecase", typeof(TitleCaseMarkup)},
             {"ac", typeof(AlignCenterMarkup) },
             {"ar", typeof(AlignRightMarkup) },
             {"al", typeof(AlignLeftMarkup) },
