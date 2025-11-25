@@ -28,6 +28,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using CardMaker.Card.FormattedText.Util;
 using CardMaker.Data;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
@@ -78,6 +79,9 @@ namespace CardMaker.Card.Translation
         private static readonly Regex s_regexIfSet = new Regex(@"(\[)(.*?)(\])", RegexOptions.Compiled);
         private static readonly Regex s_regexSwitchStatement = new Regex(@"(switch)(;)(.*?)(;)(.*)", RegexOptions.Compiled);
         private static readonly Regex s_regexPadStatement = new Regex(@"(.*)(#pad)([l|r])(;)(\d+)(;)(\d+)(;)(.*?)(#)(.*)", RegexOptions.Compiled);
+        private static readonly Regex s_regexCaps = new Regex(@"(.*)(#\(caps)(;)(.*?)(\)#)(.*)", RegexOptions.Compiled);
+        private static readonly Regex s_regexNoCaps = new Regex(@"(.*)(#\(nocaps)(;)(.*?)(\)#)(.*)", RegexOptions.Compiled);
+        private static readonly Regex s_regexTitleCase = new Regex(@"(.*)(#\(titlecase)(;)(.*?)(\)#)(.*)", RegexOptions.Compiled);
 
         private const string SWITCH = "switch";
         
@@ -154,6 +158,11 @@ namespace CardMaker.Card.Translation
 
             // Translate element fields
             sOutput = LoopTranslateRegex(s_regexElementFields, sOutput, zTranslationContext, TranslateElementFields);
+
+            // Translate capitalization 
+            sOutput = LoopTranslateRegex(s_regexCaps, sOutput, zTranslationContext, TranslateCaps);
+            sOutput = LoopTranslateRegex(s_regexNoCaps, sOutput, zTranslationContext, TranslateNoCaps);
+            sOutput = LoopTranslateRegex(s_regexTitleCase, sOutput, zTranslationContext, TranslateTitleCase);
 
             // Translate string length
             sOutput = LoopTranslateRegex(s_regexStringLength, sOutput, zTranslationContext, TranslateStringLength);
@@ -584,6 +593,42 @@ namespace CardMaker.Card.Translation
             }
 
             return zMatch.Groups[1].Value + sTranslated + zMatch.Groups[5].Value;
+        }
+
+        private string TranslateCaps(Match zMatch, TranslationContext zTranslationContext)
+        {
+            // Override evaluation:
+            // Translate element fields
+            // Groups
+            //    1   2        3  4    5    6
+            // @"(.*)(#\(caps)(;)(.*?)(\)#)(.*)"
+            var sTranslated = zMatch.Groups[4].ToString().ToUpper(CultureInfo.CurrentCulture);
+
+            return zMatch.Groups[1].Value + sTranslated + zMatch.Groups[6].Value;
+        }
+
+        private string TranslateNoCaps(Match zMatch, TranslationContext zTranslationContext)
+        {
+            // Override evaluation:
+            // Translate element fields
+            // Groups
+            //    1   2          3  4    5    6
+            // @"(.*)(#\(nocaps)(;)(.*?)(\)#)(.*)"
+            var sTranslated = zMatch.Groups[4].ToString().ToLower(CultureInfo.CurrentCulture);
+
+            return zMatch.Groups[1].Value + sTranslated + zMatch.Groups[6].Value;
+        }
+
+        private string TranslateTitleCase(Match zMatch, TranslationContext zTranslationContext)
+        {
+            // Override evaluation:
+            // Translate element fields
+            // Groups
+            //    1   2             3  4    5    6
+            // @"(.*)(#\(titlecase)(;)(.*?)(\)#)(.*)"
+            var sTranslated = StringUtil.ConvertToTitleCase(zMatch.Groups[4].ToString());
+
+            return zMatch.Groups[1].Value + sTranslated + zMatch.Groups[6].Value;
         }
 
         private string TranslateOverrides(Match zMatch, TranslationContext zTranslationContext)

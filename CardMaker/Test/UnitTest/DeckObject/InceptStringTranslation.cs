@@ -26,6 +26,7 @@ using CardMaker.XML;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using CardMaker.Data;
 using Moq;
@@ -144,6 +145,54 @@ namespace UnitTest.DeckObject
         [TestCase("aa&[unknown]bb", ExpectedResult = "aaINVALID_FIELD_READbb")]
         [TestCase("aa&[variable]bb", ExpectedResult = "aaFIELD_READ_DISALLOWEDbb")]
         public string ValidateElementFields(string input)
+        {
+            _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
+            var result = _testDeck.TranslateString(input, _testDeck.CurrentLine, _testElement);
+            return result.String;
+        }
+
+        [TestCase("#(caps;)#", ExpectedResult = "")]
+        [TestCase("#(caps;A)#", ExpectedResult = "A")]
+        [TestCase("#(caps;a)#", ExpectedResult = "A")]
+        [TestCase("#(caps;abc)#", ExpectedResult = "ABC")]
+        [TestCase("#(caps;ABC)#", ExpectedResult = "ABC")]
+        [TestCase("xy#(caps;abc)#zy", ExpectedResult = "xyABCzy")]
+        [TestCase("xy#(caps;ABC)#zy", ExpectedResult = "xyABCzy")]
+        public string ValidateCaps(string input)
+        {
+            _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
+            var result = _testDeck.TranslateString(input, _testDeck.CurrentLine, _testElement);
+            return result.String;
+        }
+
+        [TestCase("#(nocaps;)#", ExpectedResult = "")]
+        [TestCase("#(nocaps;A)#", ExpectedResult = "a")]
+        [TestCase("#(nocaps;a)#", ExpectedResult = "a")]
+        [TestCase("#(nocaps;abc)#", ExpectedResult = "abc")]
+        [TestCase("#(nocaps;ABC)#", ExpectedResult = "abc")]
+        [TestCase("xy#(nocaps;abc)#zy", ExpectedResult = "xyabczy")]
+        [TestCase("xy#(nocaps;ABC)#zy", ExpectedResult = "xyabczy")]
+        public string ValidateNoCaps(string input)
+        {
+            _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
+            var result = _testDeck.TranslateString(input, _testDeck.CurrentLine, _testElement);
+            return result.String;
+        }
+
+
+        [TestCase("#(titlecase;)#", ExpectedResult = "")]
+        [TestCase("#(titlecase;\t)#", ExpectedResult = "\t")]
+        [TestCase("#(titlecase;\ta)#", ExpectedResult = "\tA")]
+        [TestCase("#(titlecase;\ta\tb)#", ExpectedResult = "\tA\tB")]
+        [TestCase("#(titlecase;a\tb)#", ExpectedResult = "A\tB")]
+        [TestCase("#(titlecase;alpha beta gamma)#", ExpectedResult = "Alpha Beta Gamma")]
+        [TestCase("#(titlecase;1alpha 2beta 3gamma)#", ExpectedResult = "1alpha 2beta 3gamma")]
+        [TestCase("#(titlecase;-alpha =beta !gamma)#", ExpectedResult = "-alpha =beta !gamma")]
+        [TestCase("#(titlecase;alpha,beta, gamma)#", ExpectedResult = "Alpha,beta, Gamma")]
+        [TestCase("#(titlecase;Alpha Beta Gamma)#", ExpectedResult = "Alpha Beta Gamma")]
+        [TestCase("00#(titlecase;Alpha Beta Gamma\t  )#11", ExpectedResult = "00Alpha Beta Gamma\t  11")]
+        [TestCase(" 00 #(titlecase;ALPHA BETA gAmma\t  )#11 ", ExpectedResult = " 00 Alpha Beta Gamma\t  11 ")]
+        public string ValidateTitleCase(string input)
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>(), "test");
             var result = _testDeck.TranslateString(input, _testDeck.CurrentLine, _testElement);
