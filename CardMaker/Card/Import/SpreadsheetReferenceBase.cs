@@ -22,6 +22,8 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+using CardMaker.Data;
+
 namespace CardMaker.Card.Import
 {
     public abstract class SpreadsheetReferenceBase
@@ -35,6 +37,10 @@ namespace CardMaker.Card.Import
         /// The relative path of the file (locally) - may be full path. This is only set if IsLocalFile is true.
         /// </summary>
         public abstract string RelativePath { get; set; }
+
+        public abstract ReferenceType ReferenceType { get; }
+
+        public abstract string DisplayName { get; }
 
         /// <summary>
         /// Converts the reference to the standard reference string for this type

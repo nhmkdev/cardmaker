@@ -191,12 +191,12 @@ namespace CardMaker.Card.Import
                 return new List<ReferenceLine>();
             }
 
-            return GetData(GetDefinesReference(), 1);
+            return GetData(GetDefinesReference(), 0);
         }
 
         public override List<ReferenceLine> GetDefineData()
         {
-            return GetData(m_zSpreadsheetReference, 1, Deck.DEFINES_DATA_SUFFIX);
+            return GetData(m_zSpreadsheetReference, 0, Deck.DEFINES_DATA_SUFFIX);
         }
 
         public override List<ReferenceLine> GetReferenceData()
@@ -206,6 +206,7 @@ namespace CardMaker.Card.Import
 
         private static GoogleSpreadsheetReference GetDefinesReference()
         {
+            // On project wide defines the sheet name is not included in the reference
             var zGoogleSpreadSheetReference = GoogleSpreadsheetReference.ParseSpreadsheetOnlyReference(
                 (string.IsNullOrEmpty(ProjectManager.Instance.LoadedProject.overrideDefineReferenceName)
                     ? Path.GetFileNameWithoutExtension(ProjectManager.Instance.ProjectFilePath)

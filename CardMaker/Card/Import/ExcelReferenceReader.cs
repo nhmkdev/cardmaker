@@ -135,7 +135,7 @@ namespace CardMaker.Card.Import
                 + Path.GetFileNameWithoutExtension(ProjectManager.Instance.ProjectFilePath)
                 + "_defines.xlsx";
 
-            return GetData(sReferencePath, false, DEFAULT_DEFINES_SHEET_NAME, 1);
+            return GetData(sReferencePath, false, DEFAULT_DEFINES_SHEET_NAME, 0);
         }
 
         public override List<ReferenceLine> GetDefineData()
@@ -144,8 +144,9 @@ namespace CardMaker.Card.Import
                 ReferenceUtil.ConvertRelativeProjectPathToFullPath(m_zSpreadsheetReference.RelativePath),
                 false,
                 m_zSpreadsheetReference.SheetName,
-                1, 
+                0, 
                 Deck.DEFINES_DATA_SUFFIX);
+#warning todo other defines
         }
 
         public override List<ReferenceLine> GetReferenceData()

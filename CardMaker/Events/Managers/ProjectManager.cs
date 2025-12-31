@@ -47,8 +47,14 @@ namespace CardMaker.Events.Managers
 
         public ReferenceType LoadedProjectDefaultDefineReferenceType { get; private set; }
 
+        /// <summary>
+        /// Full path to the project file
+        /// </summary>
         public string ProjectFilePath { get; private set; }
 
+        /// <summary>
+        /// Full path of the project file (folder-only)
+        /// </summary>
         public string ProjectPath { get; private set; }
 
         /// <summary>
@@ -342,8 +348,7 @@ namespace CardMaker.Events.Managers
 
         public static TranslatorType GetTranslatorTypeFromString(string sInput)
         {
-            TranslatorType eTranslatorType;
-            if (!Enum.TryParse(sInput, true, out eTranslatorType))
+            if (!Enum.TryParse(sInput, true, out TranslatorType eTranslatorType))
             {
                 return TranslatorType.Incept;
             }
@@ -352,8 +357,7 @@ namespace CardMaker.Events.Managers
 
         public static ReferenceType GetReferenceTypeFromString(string sInput)
         {
-            ReferenceType eTranslatorType;
-            if (!Enum.TryParse(sInput, true, out eTranslatorType))
+            if (!Enum.TryParse(sInput, true, out ReferenceType eTranslatorType))
             {
                 return ReferenceType.CSV;
             }

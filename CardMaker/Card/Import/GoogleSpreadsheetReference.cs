@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using CardMaker.Data;
 using Support.Google.Sheets;
 using Support.IO;
 using Support.UI;
@@ -58,6 +59,8 @@ namespace CardMaker.Card.Import
             set => throw new NotImplementedException();
         }
         public override bool IsLocalFile => false;
+        public override ReferenceType ReferenceType => ReferenceType.Google;
+        public override string DisplayName => $"{SpreadsheetName} - {SheetName}";
 
         public GoogleSpreadsheetReference() { }
 
@@ -67,6 +70,11 @@ namespace CardMaker.Card.Import
             SpreadsheetId = zSheetInfo.Id;
         }
 
+        /// <summary>
+        /// Parses the minified reference description (no sub sheet name). This is used for the project wide default defines.
+        /// </summary>
+        /// <param name="sInput"></param>
+        /// <returns></returns>
         public static GoogleSpreadsheetReference ParseSpreadsheetOnlyReference(string sInput)
         {
             if (string.IsNullOrWhiteSpace(sInput))

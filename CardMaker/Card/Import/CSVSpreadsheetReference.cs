@@ -22,6 +22,9 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+using System.IO;
+using CardMaker.Data;
+
 namespace CardMaker.Card.Import
 {
     public class CSVSpreadsheetReference : SpreadsheetReferenceBase
@@ -29,6 +32,10 @@ namespace CardMaker.Card.Import
         public override string RelativePath { get; set; }
 
         public override bool IsLocalFile => true;
+
+        public override ReferenceType ReferenceType => ReferenceType.CSV;
+
+        public override string DisplayName => Path.GetFileNameWithoutExtension(RelativePath);
 
         public static CSVSpreadsheetReference Parse(string sInput)
         {

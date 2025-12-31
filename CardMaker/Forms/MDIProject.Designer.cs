@@ -91,6 +91,7 @@ namespace CardMaker.Forms
             this.contextMenuStripReference = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.setAsDefaultReferenceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeReferenceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.defineReferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStripProject.SuspendLayout();
             this.contextMenuStripLayout.SuspendLayout();
             this.contextMenuStripReference.SuspendLayout();
@@ -127,6 +128,7 @@ namespace CardMaker.Forms
             this.toolStripMenuItemSetProjectNameFormat,
             this.toolStripMenuItem5,
             this.projectSettingsToolStripMenuItem,
+            this.defineReferencesToolStripMenuItem,
             this.toolStripMenuItem6,
             this.expandAllNodesToolStripMenuItem,
             this.collapseAllNodesToolStripMenuItem,
@@ -134,7 +136,7 @@ namespace CardMaker.Forms
             this.windowsExplorerToolStripMenuItem});
             this.contextMenuStripProject.Name = "contextMenuStripTreeView";
             this.contextMenuStripProject.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.contextMenuStripProject.Size = new System.Drawing.Size(255, 182);
+            this.contextMenuStripProject.Size = new System.Drawing.Size(255, 226);
             this.contextMenuStripProject.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStripTreeView_Opening);
             // 
             // addCardLayoutToolStripMenuItem
@@ -342,6 +344,13 @@ namespace CardMaker.Forms
             this.removeReferenceToolStripMenuItem.Text = "Remove Reference";
             this.removeReferenceToolStripMenuItem.Click += new System.EventHandler(this.removeReferenceToolStripMenuItem_Click);
             // 
+            // defineReferencesToolStripMenuItem
+            // 
+            this.defineReferencesToolStripMenuItem.Name = "defineReferencesToolStripMenuItem";
+            this.defineReferencesToolStripMenuItem.Size = new System.Drawing.Size(254, 22);
+            this.defineReferencesToolStripMenuItem.Text = "Define References...";
+            this.defineReferencesToolStripMenuItem.Click += new System.EventHandler(this.defineReferencesToolStripMenuItem_Click);
+            // 
             // MDIProject
             // 
             this.ClientSize = new System.Drawing.Size(192, 335);
@@ -389,5 +398,6 @@ namespace CardMaker.Forms
         private ToolStripMenuItem expandAllNodesToolStripMenuItem;
         private ToolStripMenuItem collapseAllNodesToolStripMenuItem;
         private ToolStripSeparator toolStripMenuItem3;
+        private ToolStripMenuItem defineReferencesToolStripMenuItem;
     }
 }

@@ -1,6 +1,8 @@
 Card Maker Version History
 --------------------------
 1.5.0.0
+- Add ability to provide additional columns for a define (creating an object with fields)
+- Add ability to specify multiple define files for the project
 - Fix {appfolder} translation (this is used by templates mostly)
 - Added nocaps and titlecase FormattedText tags
 - Added nocaps and titlecase to Incept translator

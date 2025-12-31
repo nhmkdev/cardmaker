@@ -31,6 +31,7 @@ using CardMaker.Card.Import;
 using CardMaker.Data;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
+using Support.IO;
 using Support.Progress;
 using Support.UI;
 
@@ -42,11 +43,16 @@ namespace CardMaker.Card
 {
     public class DeckReader
     {
+        private const string IGNORED_DEFINE_COLUMN_PREFIX = "!!";
+        private const string DEFINE_JAVASCRIPT_SEPARATOR = "__";
+        private const string DEFINE_INCEPT_SEPARATOR = ".";
         private static readonly Regex s_regexColumnVariable = new Regex(@"(.*)(@\[)(.+?)(\])(.*)", RegexOptions.Compiled);
 
         protected ProgressReporterProxy m_zReporterProxy;
         private readonly Deck m_zDeck;
         private ReferenceReader m_zErrorReferenceReader;
+
+        private static object s_zLoadLock = new object();
 
         public DeckReader(Deck deck, ProgressReporterProxy reporterProxy)
         {
@@ -81,9 +87,12 @@ namespace CardMaker.Card
             {
                 // (special case) if no data is loaded for a reference try loading up the project definitions
                 listAllProjectDefineLines = ReadDefaultProjectDefinitions();
+                listAllReferenceDefineLines.AddRange(ReadDefineReferences());
             }
             else
             {
+                listAllReferenceDefineLines.AddRange(ReadDefineReferences());
+
                 // 2 per reference + 1 for the project wide defines
                 m_zReporterProxy.ProgressReset(0, zReferenceData.Length * 2 + 1, 0);
 
@@ -92,24 +101,11 @@ namespace CardMaker.Card
                 {
                     var listRefLines = new List<ReferenceLine>();
                     var listRefDefineLines = new List<ReferenceLine>();
-                    var zRefReader = ReferenceReaderFactory.GetReader(zReference, m_zReporterProxy.ProgressReporter);
-
+                    var zRefReader = GetReferenceReader(zReference, () => listAllReferenceLines.Clear());
                     if (zRefReader == null)
                     {
-                        // TODO revisit these collections to make sure they are correct...
-                        listAllReferenceLines.Clear();
-                        m_zReporterProxy.AddIssue($"Failed to load reference: {zReference.RelativePath}");
                         break;
                     }
-
-                    if (!zRefReader.IsValid())
-                    {
-                        m_zErrorReferenceReader = zRefReader;
-                        listAllReferenceLines.Clear();
-                        m_zReporterProxy.AddIssue($"Reference reader for reference is in an invalid state: {zReference.RelativePath}");
-                        break;
-                    }
-
                     var listReferenceActions = new List<Task>();
                     if (!bAddedProjectDefinesTask)
                     {
@@ -119,7 +115,7 @@ namespace CardMaker.Card
                             {
                                 if (!string.IsNullOrEmpty(ProjectManager.Instance.ProjectFilePath))
                                 {
-                                    // the the default project wide ref reader (may differ from the references themselves)
+                                    // the default project wide ref reader (may differ from the references themselves)
                                     var zProjectDefineReader = ReferenceReaderFactory.GetProjectDefineReader(
                                         ProjectManager.Instance.LoadedProjectDefaultDefineReferenceType, m_zReporterProxy.ProgressReporter);
                                     listAllProjectDefineLines = zProjectDefineReader.GetProjectDefineData() ?? new List<ReferenceLine>();
@@ -190,6 +186,7 @@ namespace CardMaker.Card
             List<ReferenceLine> listDefineLines, bool bHasReferences)
         {
 #warning this method is horribly long
+            var sDefineSeparator = GetDefineSeparator();
 
             var nDefaultCount = m_zDeck.CardLayout.defaultCount;
             var listColumnNames = new List<string>();
@@ -281,33 +278,67 @@ namespace CardMaker.Card
             // Define Processing
             if (listDefineLines.Count > 0)
             {
-                // Note: the removal of the first row happens in the reader(s) for defines
+                var dictionaryCurrentDefineColumns = new Dictionary<int, string>();
+                var sCurrentReferenceSource = string.Empty;
+                // first row is critical as it is an indicator of a new define reference (as there may be multiple with unique column names)
                 foreach (var zReferenceDefineLine in listDefineLines)
                 {
-                    var listRowEntries = zReferenceDefineLine.Entries;
-                    if (listRowEntries.Count >= 1)
+                    if (zReferenceDefineLine.LineNumber == 0 && sCurrentReferenceSource != zReferenceDefineLine.Source)
                     {
-                        string sKey = listRowEntries[0];
-                        int nIdx;
-                        string sVal;
-                        if (dictionaryDefines.TryGetValue(sKey.ToLower(), out sVal))
+                        sCurrentReferenceSource = zReferenceDefineLine.Source;
+                        dictionaryCurrentDefineColumns = zReferenceDefineLine.Entries
+                            .Where(x => x != null && !x.StartsWith(IGNORED_DEFINE_COLUMN_PREFIX))
+                            .Select((x, idx) => new KeyValuePair<int, string>(idx, x))
+                            .ToDictionary(x => x.Key, x => x.Value);
+                        continue;
+                    }
+
+                    var listRowEntries = zReferenceDefineLine.Entries;
+                    if (listRowEntries.Count == 0)
+                    {
+                        continue;
+                    }
+                    
+                    var sKey = listRowEntries[0];
+                    int nIdx;
+                    if (string.IsNullOrWhiteSpace(sKey))
+                    {
+                        // empties are not supported
+                        continue;
+                    }
+                    if (dictionaryDefines.ContainsKey(sKey.ToLower()))
+                    {
+                        var sMsg = "Duplicate define found: " + sKey;
+                        IssueManager.Instance.FireAddIssueEvent(sMsg);
+                        m_zReporterProxy.AddIssue(sMsg);
+                    }
+                    else if (dictionaryColumnNames.TryGetValue(sKey.ToLower(), out nIdx))
+                    {
+                        var sMsg = "Overlapping column name and define found in: " + zReferenceDefineLine.Source + "::" + "Column [" + nIdx + "]: " + sKey;
+                        IssueManager.Instance.FireAddIssueEvent(sMsg);
+                        m_zReporterProxy.AddIssue(sMsg);
+                    }
+                    else
+                    {
+                        // add the define value or empty string
+                        dictionaryDefines.Add(sKey.ToLower(),
+                            listRowEntries.Count == 1 ? string.Empty : listRowEntries[1]
+                        );
+                        // add all the define column values (if column included)
+                        foreach (var kvp in dictionaryCurrentDefineColumns)
                         {
-                            var sMsg = "Duplicate define found: " + sKey;
-                            IssueManager.Instance.FireAddIssueEvent(sMsg);
-                            m_zReporterProxy.AddIssue(sMsg);
-                        }
-                        else if (dictionaryColumnNames.TryGetValue(sKey.ToLower(), out nIdx))
-                        {
-                            var sMsg = "Overlapping column name and define found in: " + zReferenceDefineLine.Source + "::" + "Column [" + nIdx + "]: " + sKey;
-                            IssueManager.Instance.FireAddIssueEvent(sMsg);
-                            m_zReporterProxy.AddIssue(sMsg);
-                        }
-                        else
-                        {
-                            // add the define value or empty string
-                            dictionaryDefines.Add(sKey.ToLower(),
-                                listRowEntries.Count == 1 ? string.Empty : listRowEntries[1]
-                            );
+                            var sCompositeKey = $"{sKey}{sDefineSeparator}{kvp.Value}".ToLower();
+                            if (dictionaryColumnNames.TryGetValue(sCompositeKey, out nIdx))
+                            {
+                                var sMsg = $"Overlapping composite column name {sCompositeKey} and define found in: " +
+                                           zReferenceDefineLine.Source + "::" + "Column [" + nIdx + "]: " +
+                                           sKey;
+                                IssueManager.Instance.FireAddIssueEvent(sMsg);
+                                m_zReporterProxy.AddIssue(sMsg);
+                                continue;
+                            }
+                            dictionaryDefines.Add(sCompositeKey, 
+                                listRowEntries.Count <= kvp.Key ? string.Empty : listRowEntries[kvp.Key]);
                         }
                     }
                 }
@@ -370,6 +401,28 @@ namespace CardMaker.Card
             m_zReporterProxy.Shutdown();
         }
 
+        private ReferenceReader GetReferenceReader(ProjectLayoutReference zReference, Action actionFail = null)
+        {
+            var zRefReader = ReferenceReaderFactory.GetReader(zReference, m_zReporterProxy.ProgressReporter);
+
+            if (zRefReader == null)
+            {
+                actionFail?.Invoke();
+                m_zReporterProxy.AddIssue($"Failed to load reference: {zReference.RelativePath}");
+                return null;
+            }
+
+            if (!zRefReader.IsValid())
+            {
+                m_zErrorReferenceReader = zRefReader;
+                actionFail?.Invoke();
+                m_zReporterProxy.AddIssue($"Reference reader for reference is in an invalid state: {zReference.RelativePath}");
+                return null;
+            }
+
+            return zRefReader;
+        }
+
         /// <summary>
         /// Populates the project defines based on the default reference type. Always attempt the local CSV on zero data.
         /// </summary>
@@ -389,6 +442,43 @@ namespace CardMaker.Card
             }
             m_zReporterProxy.ProgressStep();
             return listDefineLines;
+        }
+
+        private List<ReferenceLine> ReadDefineReferences()
+        {
+            var listAllReferenceDefineLines = new List<ReferenceLine>();
+            // load the define references (if project saved)
+            if (!string.IsNullOrEmpty(ProjectManager.Instance.ProjectFilePath) &&
+                (ProjectManager.Instance.LoadedProject.DefineReferences?.Length ?? 0) > 0)
+            {
+                m_zReporterProxy.ProgressReset(0, ProjectManager.Instance.LoadedProject.DefineReferences.Length, 0);
+                var listDefineReferenceActions = new List<Task>();
+                foreach (var zReference in ProjectManager.Instance.LoadedProject.DefineReferences)
+                {
+                    listDefineReferenceActions.Add(Task.Factory.StartNew(
+                        () =>
+                        {
+                            var zRefReader = GetReferenceReader(zReference);
+                            if (zRefReader != null)
+                            {
+                                var listReferenceLines = zRefReader.GetReferenceData();
+                                lock (s_zLoadLock)
+                                {
+                                    listAllReferenceDefineLines.AddRange(listReferenceLines);
+                                }
+                            }
+                            m_zReporterProxy.ProgressStep();
+                        }));
+                }
+                Task.WaitAll(listDefineReferenceActions.ToArray());
+            }
+            else
+            {
+                m_zReporterProxy.AddIssue(
+                    "No define references loaded for project -- project not yet saved.");
+            }
+
+            return listAllReferenceDefineLines;
         }
 
         public void InitiateReferenceRead(ProjectLayoutReference[] arrayProjectLayoutReferences, bool bExporting)
@@ -450,6 +540,18 @@ namespace CardMaker.Card
             }
 
             return nCount;
+        }
+
+        private string GetDefineSeparator()
+        {
+            var eTranslatorType = ProjectManager.Instance.LoadedProjectTranslatorType;
+            switch (eTranslatorType)
+            {
+                case TranslatorType.JavaScript:
+                    return DEFINE_JAVASCRIPT_SEPARATOR;
+                default:
+                    return DEFINE_INCEPT_SEPARATOR;
+            }
         }
     }
 }

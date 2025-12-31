@@ -26,7 +26,6 @@ using CardMaker.XML;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using CardMaker.Data;
 using Moq;
@@ -441,6 +440,7 @@ namespace UnitTest.DeckObject
         {
             _testDeck.ProcessLinesPublic(new List<List<string>>(), new List<List<string>>()
             {
+                new List<string>{"define", "value"},
                 new List<string>{"scale_factor", "1.5"}
             }, "test");
             return _testDeck.TranslateString(input, _testDeck.CurrentLine, _testElement).String;
@@ -592,6 +592,36 @@ namespace UnitTest.DeckObject
             {
                 Assert.AreEqual(_testDeck.GetDefine(args[i]), args[i + 1]);
             }
+        }
+
+        [TestCase("@[@[@[defaultCharacterReference].name].name]", ExpectedResult = "Alex")]
+        [TestCase("@[@[defaultCharacter].name]", ExpectedResult = "Alex")]
+        [TestCase("@[alex.name]", ExpectedResult = "Alex")]
+        [TestCase("@[roxy.name]", ExpectedResult = "Roxy")]
+        [TestCase("@[roxy.move]", ExpectedResult = "")]
+        [TestCase("@[ryan.!!ignored]", ExpectedResult = "[BAD NAME: ryan.!!ignored]")]
+        [TestCase("@[alex.move]", ExpectedResult = "3")]
+        [TestCase("@[alex.energy]", ExpectedResult = "10")]
+        [TestCase("@[ryan.move]", ExpectedResult = "4")]
+        [TestCase("@[ryan.energy]", ExpectedResult = "11")]
+        public string ValidateObjectAccessDefines(string line)
+        {
+            var listLines = new List<List<string>>();
+            var listDefines = new List<List<string>>()
+            {
+                new List<string>() { "define", "name", "move", "energy", "!!ignored" },
+                new List<string>() { "alex", "Alex", "3", "10", "extra data" },
+                new List<string>() { "ryan", "Ryan", "4", "11", "more data" },
+                new List<string>() { "roxy", "Roxy"}, // does not have move or energy
+                new List<string>() { "defaultCharacter", "alex"}, // a mapping define
+                new List<string>() { "defaultCharacterReference", "defaultCharacter"}, // ref to a ref
+            };
+            _testDeck.ProcessLinesPublic(
+                listLines,
+                listDefines,
+                null);
+            var result = _testDeck.TranslateString(line, _testDeck.CurrentLine, _testElement);
+            return result.String;
         }
 
         [TestCase("@[1]@[2]", ExpectedResult = "ab")]

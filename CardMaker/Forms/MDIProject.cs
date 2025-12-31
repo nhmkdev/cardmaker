@@ -582,6 +582,11 @@ namespace CardMaker.Forms
             ProjectSettingsDialog.ShowProjectSettings(this);
         }
 
+        private void defineReferencesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DefineReferencesDialog.ShowDefineReferences(this);
+        }
+
         private void treeView_ItemDrag(object sender, ItemDragEventArgs e)
         {
             var tnSource = e.Item as TreeNode;

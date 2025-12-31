@@ -23,6 +23,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.IO;
+using CardMaker.Data;
 
 namespace CardMaker.Card.Import
 {
@@ -41,6 +43,10 @@ namespace CardMaker.Card.Import
 
         public override string RelativePath { get; set; }
         public override bool IsLocalFile => true;
+
+        public override ReferenceType ReferenceType => ReferenceType.Excel;
+
+        public override string DisplayName => $"{Path.GetFileNameWithoutExtension(RelativePath)} - {SheetName}";
 
         public ExcelSpreadsheetReference(string sFilename, string sSheet)
         {

@@ -91,24 +91,24 @@ namespace CardMaker.Card.Import
         }
 
 #warning TODO: create a mapping from reference prefix -> SpreadsheetReferenceBase implementations (call constructor)
-        private static SpreadsheetReferenceBase GetSpreadsheetReference(ProjectLayoutReference zReference)
+        public static SpreadsheetReferenceBase GetSpreadsheetReference(ProjectLayoutReference zReference)
         {
             if (zReference == null)
             {
                 return null;
             }
-            SpreadsheetReferenceBase zReferenceReader = null;
+            SpreadsheetReferenceBase zSpreadsheetReference = null;
             if (zReference.RelativePath.StartsWith(GoogleSpreadsheetReference.GOOGLE_REFERENCE +
                                                    GoogleSpreadsheetReference.GOOGLE_REFERENCE_SPLIT_CHAR))
             {
-                zReferenceReader = GoogleSpreadsheetReference.Parse(zReference.RelativePath);
+                zSpreadsheetReference = GoogleSpreadsheetReference.Parse(zReference.RelativePath);
             }
             if (zReference.RelativePath.StartsWith(ExcelSpreadsheetReference.EXCEL_REFERENCE +
                                                    ExcelSpreadsheetReference.EXCEL_REFERENCE_SPLIT_CHAR))
             {
-                zReferenceReader = ExcelSpreadsheetReference.Parse(zReference.RelativePath);
+                zSpreadsheetReference = ExcelSpreadsheetReference.Parse(zReference.RelativePath);
             }
-            return zReferenceReader ?? CSVSpreadsheetReference.Parse(zReference.RelativePath);
+            return zSpreadsheetReference ?? CSVSpreadsheetReference.Parse(zReference.RelativePath);
         }
     }
 }

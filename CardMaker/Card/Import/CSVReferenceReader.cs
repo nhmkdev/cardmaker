@@ -110,7 +110,7 @@ namespace CardMaker.Card.Import
                 + Path.GetFileNameWithoutExtension(ProjectManager.Instance.ProjectFilePath)
                 + ".csv";
 
-            return GetData(sReferencePath, false, 1, Deck.DEFINES_DATA_SUFFIX);
+            return GetData(sReferencePath, false, 0, Deck.DEFINES_DATA_SUFFIX);
         }
 
         public override List<ReferenceLine> GetDefineData()
@@ -118,7 +118,7 @@ namespace CardMaker.Card.Import
             return GetData(
                 ReferenceUtil.ConvertRelativeProjectPathToFullPath(m_zSpreadsheetReference.RelativePath), 
                 false, 
-                1, 
+                0, 
                 Deck.DEFINES_DATA_SUFFIX);
         }
 
