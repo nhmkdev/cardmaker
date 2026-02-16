@@ -38,7 +38,9 @@
             this.listViewReferences = new System.Windows.Forms.ListView();
             this.headerName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.headerType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.headerPrefix = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.headerDefinition = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.btnChangePrefix = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnAddCSV
@@ -55,7 +57,7 @@
             // btnDelete
             // 
             this.btnDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnDelete.Location = new System.Drawing.Point(255, 415);
+            this.btnDelete.Location = new System.Drawing.Point(372, 415);
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(75, 23);
             this.btnDelete.TabIndex = 3;
@@ -116,6 +118,7 @@
             this.listViewReferences.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.headerName,
             this.headerType,
+            this.headerPrefix,
             this.headerDefinition});
             this.listViewReferences.FullRowSelect = true;
             this.listViewReferences.GridLines = true;
@@ -138,10 +141,26 @@
             this.headerType.Text = "Type";
             this.headerType.Width = 88;
             // 
+            // headerPrefix
+            // 
+            this.headerPrefix.Text = "Prefix";
+            this.headerPrefix.Width = 120;
+            // 
             // headerDefinition
             // 
             this.headerDefinition.Text = "Definition";
             this.headerDefinition.Width = 446;
+            // 
+            // btnChangePrefix
+            // 
+            this.btnChangePrefix.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnChangePrefix.Location = new System.Drawing.Point(255, 415);
+            this.btnChangePrefix.Name = "btnChangePrefix";
+            this.btnChangePrefix.Size = new System.Drawing.Size(111, 23);
+            this.btnChangePrefix.TabIndex = 8;
+            this.btnChangePrefix.Text = "Change Prefix";
+            this.btnChangePrefix.UseVisualStyleBackColor = true;
+            this.btnChangePrefix.Click += new System.EventHandler(this.btnChangePrefix_Click);
             // 
             // DefineReferencesDialog
             // 
@@ -150,6 +169,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.btnChangePrefix);
             this.Controls.Add(this.listViewReferences);
             this.Controls.Add(this.btnAddExcel);
             this.Controls.Add(this.btnAddGoogle);
@@ -177,5 +197,7 @@
         private System.Windows.Forms.ColumnHeader headerName;
         private System.Windows.Forms.ColumnHeader headerType;
         private System.Windows.Forms.ColumnHeader headerDefinition;
+        private System.Windows.Forms.ColumnHeader headerPrefix;
+        private System.Windows.Forms.Button btnChangePrefix;
     }
 }

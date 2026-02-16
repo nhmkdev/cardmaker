@@ -209,8 +209,8 @@ namespace CardMaker.Card
                     else
                     {
                         // report an issue with the source
-                        IssueManager.Instance.FireAddIssueEvent("Duplicate column found in: " + listLines[0].Source + "::" + "Column [" + nIdx + "]: " + sKey);
-                        m_zReporterProxy.AddIssue("Duplicate column found in: " + listLines[0].Source + "::" + "Column [" + nIdx + "]: " + sKey);
+                        IssueManager.Instance.FireAddIssueEvent("Duplicate column found in: " + listLines[0].ReferenceInfo.Source + "::" + "Column [" + nIdx + "]: " + sKey);
+                        m_zReporterProxy.AddIssue("Duplicate column found in: " + listLines[0].ReferenceInfo.Source + "::" + "Column [" + nIdx + "]: " + sKey);
                     }
                 }
 
@@ -283,12 +283,13 @@ namespace CardMaker.Card
                 // first row is critical as it is an indicator of a new define reference (as there may be multiple with unique column names)
                 foreach (var zReferenceDefineLine in listDefineLines)
                 {
-                    if (zReferenceDefineLine.LineNumber == 0 && sCurrentReferenceSource != zReferenceDefineLine.Source)
+                    if (zReferenceDefineLine.LineNumber == 0 && sCurrentReferenceSource != zReferenceDefineLine.ReferenceInfo.Source)
                     {
-                        sCurrentReferenceSource = zReferenceDefineLine.Source;
+                        sCurrentReferenceSource = zReferenceDefineLine.ReferenceInfo.Source;
                         dictionaryCurrentDefineColumns = zReferenceDefineLine.Entries
+                            .Skip(1) // skip the first column as it is the define name column itself (note the idx+1 below!)
                             .Where(x => x != null && !x.StartsWith(IGNORED_DEFINE_COLUMN_PREFIX))
-                            .Select((x, idx) => new KeyValuePair<int, string>(idx, x))
+                            .Select((x, idx) => new KeyValuePair<int, string>(idx+1, x))
                             .ToDictionary(x => x.Key, x => x.Value);
                         continue;
                     }
@@ -298,8 +299,11 @@ namespace CardMaker.Card
                     {
                         continue;
                     }
-                    
-                    var sKey = listRowEntries[0];
+
+                    var sKeyPrefix = string.IsNullOrWhiteSpace(zReferenceDefineLine.ReferenceInfo.ReferencePrefix)
+                        ? string.Empty
+                        : $"{zReferenceDefineLine.ReferenceInfo.ReferencePrefix}{sDefineSeparator}";
+                    var sKey = $"{sKeyPrefix}{listRowEntries[0]}";
                     int nIdx;
                     if (string.IsNullOrWhiteSpace(sKey))
                     {
@@ -314,7 +318,7 @@ namespace CardMaker.Card
                     }
                     else if (dictionaryColumnNames.TryGetValue(sKey.ToLower(), out nIdx))
                     {
-                        var sMsg = "Overlapping column name and define found in: " + zReferenceDefineLine.Source + "::" + "Column [" + nIdx + "]: " + sKey;
+                        var sMsg = "Overlapping column name and define found in: " + zReferenceDefineLine.ReferenceInfo.Source + "::" + "Column [" + nIdx + "]: " + sKey;
                         IssueManager.Instance.FireAddIssueEvent(sMsg);
                         m_zReporterProxy.AddIssue(sMsg);
                     }
@@ -331,7 +335,7 @@ namespace CardMaker.Card
                             if (dictionaryColumnNames.TryGetValue(sCompositeKey, out nIdx))
                             {
                                 var sMsg = $"Overlapping composite column name {sCompositeKey} and define found in: " +
-                                           zReferenceDefineLine.Source + "::" + "Column [" + nIdx + "]: " +
+                                           zReferenceDefineLine.ReferenceInfo.Source + "::" + "Column [" + nIdx + "]: " +
                                            sKey;
                                 IssueManager.Instance.FireAddIssueEvent(sMsg);
                                 m_zReporterProxy.AddIssue(sMsg);
@@ -461,7 +465,7 @@ namespace CardMaker.Card
                             var zRefReader = GetReferenceReader(zReference);
                             if (zRefReader != null)
                             {
-                                var listReferenceLines = zRefReader.GetReferenceData();
+                                var listReferenceLines = zRefReader.GetReferenceData(zReference.DefineReferencePrefix);
                                 lock (s_zLoadLock)
                                 {
                                     listAllReferenceDefineLines.AddRange(listReferenceLines);

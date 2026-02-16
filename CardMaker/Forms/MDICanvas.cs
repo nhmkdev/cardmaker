@@ -1161,7 +1161,7 @@ namespace CardMaker.Forms
             var zReferenceLine = m_zCardCanvas.CardRenderer?.CurrentDeck?.CurrentLine?.ReferenceLine;
             if (zReferenceLine != null)
             {
-                zBuilder.Append(" [Reference Line: {1} / {0}]".FormatString(zReferenceLine.Source, zReferenceLine.LineNumber));
+                zBuilder.Append(" [Reference Line: {1} / {0}]".FormatString(zReferenceLine.ReferenceInfo.Source, zReferenceLine.LineNumber));
             }
 
             Text = zBuilder.ToString();

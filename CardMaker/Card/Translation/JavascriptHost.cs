@@ -54,7 +54,7 @@ namespace CardMaker.Card.Translation
         public int cardCount => m_zDeck.CardCount;
         public string elementName => m_zElement.name;
         public string layoutName => m_zDeck.CardLayout.Name;
-        public string refName => m_zDeckLine.ReferenceLine == null ? "No reference info." : m_zDeckLine.ReferenceLine.Source;
+        public string refName => m_zDeckLine.ReferenceLine == null ? "No reference info." : m_zDeckLine.ReferenceLine.ReferenceInfo.Source;
         public string refLine => m_zDeckLine.ReferenceLine == null ? "No reference info." : m_zDeckLine.ReferenceLine.LineNumber.ToString();
         public string parentLayout => m_zDeck.SubLayoutExportContext?.ParentLayoutName ?? string.Empty;
         public string rootLayout => m_zDeck.SubLayoutExportContext?.RootLayoutName ?? string.Empty;

@@ -33,6 +33,7 @@ using Support.UI;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Google.Apis.Sheets.v4.Data;
 
 namespace CardMaker.Card.Import
 {
@@ -108,11 +109,14 @@ namespace CardMaker.Card.Import
                    GoogleReferenceCache.IsEntryInCache(GetCacheKey(m_sCacheKeyBase, Deck.DEFINES_DATA_SUFFIX));
         }
 
-        private List<ReferenceLine> GetData(GoogleSpreadsheetReference zReference, int nStartRow, string sNameAppend = "")
+        private List<ReferenceLine> GetData(GoogleSpreadsheetReference zReference, int nStartRow, string sNameAppend = "", string defineReferencePrefix = null)
         {
             var sCacheKey = GetCacheKey(zReference.GenerateFullReference(), sNameAppend);
             var listReferenceLines = new List<ReferenceLine>();
             List<List<string>> listCacheData;
+
+            var zReferenceInfo = new ReferenceInfo(zReference.SpreadsheetName, defineReferencePrefix);
+
             if (CardMakerSettings.EnableGoogleCache 
                 && !CardMakerInstance.ForceDataCacheRefresh 
                 && GoogleReferenceCache.GetCacheEntry(sCacheKey, out listCacheData))
@@ -121,7 +125,7 @@ namespace CardMaker.Card.Import
                 // The cache contains all rows
                 for (var nRow = nStartRow; nRow < listCacheData.Count; nRow++)
                 {
-                    listReferenceLines.Add(new ReferenceLine(listCacheData[nRow], zReference.SpreadsheetName, nRow));
+                    listReferenceLines.Add(new ReferenceLine(listCacheData[nRow], zReferenceInfo, nRow));
                 }
                 return listReferenceLines;
             }
@@ -177,7 +181,7 @@ namespace CardMaker.Card.Import
 
                 for (var nRow = nStartRow; nRow < listGoogleData.Count; nRow++)
                 {
-                    listReferenceLines.Add(new ReferenceLine(listGoogleData[nRow], zReference.SpreadsheetName, nRow));
+                    listReferenceLines.Add(new ReferenceLine(listGoogleData[nRow], zReferenceInfo, nRow));
                 }
             }
 
@@ -199,9 +203,9 @@ namespace CardMaker.Card.Import
             return GetData(m_zSpreadsheetReference, 0, Deck.DEFINES_DATA_SUFFIX);
         }
 
-        public override List<ReferenceLine> GetReferenceData()
+        public override List<ReferenceLine> GetReferenceData(string defineReferencePrefix)
         {
-            return GetData(m_zSpreadsheetReference, 0);
+            return GetData(m_zSpreadsheetReference, 0, defineReferencePrefix: defineReferencePrefix);
         }
 
         private static GoogleSpreadsheetReference GetDefinesReference()

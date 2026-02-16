@@ -15,6 +15,14 @@ namespace CardMaker.Forms.Dialogs
 {
     public partial class DefineReferencesDialog : Form
     {
+        private enum DefineColumns : int
+        {
+            Path,
+            Type,
+            Prefix,
+            FullReference
+        }
+
         public List<ProjectLayoutReference> Result { get; private set; }
         private string m_sProjectPath = string.Empty;
 
@@ -51,14 +59,13 @@ namespace CardMaker.Forms.Dialogs
             {
                 zSpreadsheetReference.DisplayName,
                 zSpreadsheetReference.ReferenceType.ToString(),
+                zReference.DefineReferencePrefix ?? string.Empty,
                 zReference.RelativePath // full definition
             }) { Tag = zReference });
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            // TODO: support xlsx, csv and google (use the existing reference add dialog flow if available)
-
             var sFile = FormUtils.FileOpenHandler("CSV files (*.csv)|*.csv|All files (*.*)|*.*", null, true);
             if (null != sFile)
             {
@@ -167,6 +174,27 @@ namespace CardMaker.Forms.Dialogs
         private void listViewReferences_Resize(object sender, EventArgs e)
         {
             ListViewAssist.ResizeColumnHeaders(listViewReferences);
+        }
+
+        private void btnChangePrefix_Click(object sender, EventArgs e)
+        {
+            if (listViewReferences.SelectedItems.Count != 1)
+            {
+                MessageBox.Show(this, "Please select 1 entry.", "Invalid Selection", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            const string prefixKey = nameof(prefixKey);
+            var listViewItem = listViewReferences.SelectedItems[0];
+
+            var zQuery = FormUtils.InitializeQueryPanelDialog(new QueryPanelDialog("Change Prefix", 250, false));
+            zQuery.AddTextBox("Prefix", listViewItem.SubItems[(int)DefineColumns.Prefix].Text, false, prefixKey);
+            if (DialogResult.OK == zQuery.ShowDialog(this))
+            {
+                var prefix = zQuery.GetString(prefixKey);
+                listViewItem.SubItems[(int)DefineColumns.Prefix].Text = prefix;
+                ((ProjectLayoutReference)listViewItem.Tag).DefineReferencePrefix = prefix;
+            }
         }
     }
 }

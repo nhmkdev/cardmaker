@@ -75,7 +75,7 @@ namespace UnitTest.DeckObject
         private List<ReferenceLine> ConvertToReferenceLines(List<List<string>> listLines, string sRefName)
         {
             // line number is index + 1 (not quite accurate but not critical for test)
-            return listLines.Select((list, i) => new ReferenceLine(list, sRefName, i)).ToList();
+            return listLines.Select((list, i) => new ReferenceLine(list, new ReferenceInfo(sRefName), i)).ToList();
         }
 
         /// <summary>

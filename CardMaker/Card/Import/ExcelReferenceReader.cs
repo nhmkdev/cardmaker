@@ -47,10 +47,11 @@ namespace CardMaker.Card.Import
             m_zSpreadsheetReference = ExcelSpreadsheetReference.Parse(zReference.RelativePath);
         }
 
-        public List<ReferenceLine> GetData(string sPath, bool bLogNotFound, string sSheetName, int nStartRow, string sNameAppend = "")
+        public List<ReferenceLine> GetData(string sPath, bool bLogNotFound, string sSheetName, int nStartRow, string sNameAppend = "", string defineReferencePrefix = null)
         {
             sSheetName += sNameAppend;
             var listReferenceLines = new List<ReferenceLine>();
+            var zReferenceInfo = new ReferenceInfo(sPath, defineReferencePrefix);
 
             var sCacheKey = sPath + "::" + sSheetName;
             if (ReferenceCache.TryGetCachedReference(sCacheKey, out var listCachedReferenceLines))
@@ -110,7 +111,7 @@ namespace CardMaker.Card.Import
                             rowData.Add(cell.Value.ToString());
                         }
 
-                        listReferenceLines.Add(new ReferenceLine(rowData, sPath, nRow));
+                        listReferenceLines.Add(new ReferenceLine(rowData, zReferenceInfo, nRow));
                     }
                 }
             }
@@ -149,13 +150,14 @@ namespace CardMaker.Card.Import
 #warning todo other defines
         }
 
-        public override List<ReferenceLine> GetReferenceData()
+        public override List<ReferenceLine> GetReferenceData(string defineReferencePrefix)
         {
             return GetData(
                 ReferenceUtil.ConvertRelativeProjectPathToFullPath(m_zSpreadsheetReference.RelativePath),
                 true,
                 m_zSpreadsheetReference.SheetName,
-                0);
+                0,
+                defineReferencePrefix: defineReferencePrefix);
         }
     }
 }

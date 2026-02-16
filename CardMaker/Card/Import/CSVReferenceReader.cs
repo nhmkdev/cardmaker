@@ -46,7 +46,7 @@ namespace CardMaker.Card.Import
             m_zSpreadsheetReference = CSVSpreadsheetReference.Parse(zReference.RelativePath);
         }
 
-        private List<ReferenceLine> GetData(string sPath, bool bLogNotFound, int nStartRow, string nameAppend = "")
+        private List<ReferenceLine> GetData(string sPath, bool bLogNotFound, int nStartRow, string nameAppend = "", string defineReferencePrefix = null)
         {
             CSVFile zCSVParser = null;
             var listReferenceLines = new List<ReferenceLine>();
@@ -54,6 +54,8 @@ namespace CardMaker.Card.Import
             // TODO: should this be using ReferenceUtil.ConvertRelativeProjectPathToFullPath
             var sCombinedPath =
                 Path.GetDirectoryName(sPath) + Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(sPath) + nameAppend + Path.GetExtension(sPath);
+
+            var zReferenceInfo = new ReferenceInfo(sPath, defineReferencePrefix);
 
             if (ReferenceCache.TryGetCachedReference(sCombinedPath, out var listCachedReferenceLines))
             {
@@ -90,7 +92,7 @@ namespace CardMaker.Card.Import
 
             for (var nRow = nStartRow; nRow < zCSVParser.Rows; nRow++)
             {
-                listReferenceLines.Add(new ReferenceLine(zCSVParser.GetRow(nRow), sPath, nRow));
+                listReferenceLines.Add(new ReferenceLine(zCSVParser.GetRow(nRow), zReferenceInfo, nRow));
             }
 
             ReferenceCache.CacheReference(sCombinedPath, listReferenceLines);
@@ -122,12 +124,13 @@ namespace CardMaker.Card.Import
                 Deck.DEFINES_DATA_SUFFIX);
         }
 
-        public override List<ReferenceLine> GetReferenceData()
+        public override List<ReferenceLine> GetReferenceData(string defineReferencePrefix)
         {
             return GetData(
                 ReferenceUtil.ConvertRelativeProjectPathToFullPath(m_zSpreadsheetReference.RelativePath),
                 true,
-                0);
+                0, 
+                defineReferencePrefix: defineReferencePrefix);
         }
     }
 }

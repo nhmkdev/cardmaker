@@ -29,19 +29,19 @@ namespace CardMaker.Card.Import
     public class ReferenceLine
     {
         public List<string> Entries { get; private set; }
-        public string Source { get; private set; }
+        public ReferenceInfo ReferenceInfo { get; private set; }
         public int LineNumber { get; private set; }
 
-        public ReferenceLine(List<string> listEntries, string sSource, int nLineNumber)
+        public ReferenceLine(List<string> listEntries, ReferenceInfo zReferenceInfo, int nLineNumber)
         {
             Entries = listEntries;
-            Source = sSource;
+            ReferenceInfo = zReferenceInfo;
             LineNumber = nLineNumber;
         }
 
         public static ReferenceLine CreateDefaultInternalReferenceLine(List<string> listEntries)
         {
-            return new ReferenceLine(listEntries, "CardMaker Generated", 1);
+            return new ReferenceLine(listEntries, new ReferenceInfo("CardMaker Generated"), 1);
         }
     }
 }

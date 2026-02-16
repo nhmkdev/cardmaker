@@ -42,7 +42,7 @@ namespace CardMaker.Card.Import
         /// </summary>
         /// <param name="zReference">The reference meta data</param>
         /// <param name="listReferenceData">The list to append</param>
-        public abstract List<ReferenceLine> GetReferenceData();
+        public abstract List<ReferenceLine> GetReferenceData(string defineReferencePrefix = null);
         /// <summary>
         /// Reads the project define data into the specified list
         /// </summary>

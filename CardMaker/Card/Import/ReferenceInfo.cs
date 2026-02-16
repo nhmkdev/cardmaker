@@ -22,44 +22,17 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Xml.Serialization;
-
-namespace CardMaker.XML
+namespace CardMaker.Card.Import
 {
-    public class ProjectLayoutReference
+    public class ReferenceInfo
     {
-        #region Properties
+        public string Source { get; private set; }
+        public string ReferencePrefix { get; private set; }
 
-        /// <summary>
-        /// RelativePath is an overloaded string that can represent the file path or a serialized version of a
-        /// more complex reference type (excel, Google sheet)
-        /// </summary>
-        [XmlAttribute]
-        public string RelativePath { get; set; }
-
-        [XmlAttribute]
-        public bool Default { get; set; }
-
-        /// <summary>
-        /// (optional) The prefix to use for all define references associated with this source.
-        ///
-        /// This is a define reference specific field.
-        /// </summary>
-        [XmlAttribute]
-        public string DefineReferencePrefix { get; set; }
-
-        #endregion
-
-        public ProjectLayoutReference()
+        public ReferenceInfo(string source, string referencePrefix = null)
         {
-            
-        }
-
-        public void DeepCopy(ProjectLayoutReference zReference)
-        {
-            Default = zReference.Default;
-            RelativePath = zReference.RelativePath;
-            DefineReferencePrefix = zReference.DefineReferencePrefix;
+            Source = source;
+            ReferencePrefix = referencePrefix;
         }
     }
 }

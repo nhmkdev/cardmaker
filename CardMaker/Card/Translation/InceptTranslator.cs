@@ -206,7 +206,7 @@ namespace CardMaker.Card.Translation
                 {"elementname", (zTranslationContext) => zTranslationContext.Element.name },
                 {"refname", (zTranslationContext) => zTranslationContext.DeckLine.ReferenceLine == null
                     ? "No reference info."
-                    : zTranslationContext.DeckLine.ReferenceLine.Source },
+                    : zTranslationContext.DeckLine.ReferenceLine.ReferenceInfo.Source },
                 {"refline", (zTranslationContext) => zTranslationContext.DeckLine.ReferenceLine == null
                     ? "No reference info."
                     : zTranslationContext.DeckLine.ReferenceLine.LineNumber.ToString() },
