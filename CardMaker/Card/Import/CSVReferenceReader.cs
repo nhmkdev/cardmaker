@@ -46,7 +46,7 @@ namespace CardMaker.Card.Import
             m_zSpreadsheetReference = CSVSpreadsheetReference.Parse(zReference.RelativePath);
         }
 
-        private List<ReferenceLine> GetData(string sPath, bool bLogNotFound, int nStartRow, string nameAppend = "", string defineReferencePrefix = null)
+        private List<ReferenceLine> GetData(string sPath, bool bLogNotFound, int nStartRow, string nameAppend = "", string sDefinePrefix = null)
         {
             CSVFile zCSVParser = null;
             var listReferenceLines = new List<ReferenceLine>();
@@ -55,7 +55,7 @@ namespace CardMaker.Card.Import
             var sCombinedPath =
                 Path.GetDirectoryName(sPath) + Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(sPath) + nameAppend + Path.GetExtension(sPath);
 
-            var zReferenceInfo = new ReferenceInfo(sPath, defineReferencePrefix);
+            var zReferenceInfo = new ReferenceInfo(sPath, sDefinePrefix);
 
             if (ReferenceCache.TryGetCachedReference(sCombinedPath, out var listCachedReferenceLines))
             {
@@ -124,13 +124,13 @@ namespace CardMaker.Card.Import
                 Deck.DEFINES_DATA_SUFFIX);
         }
 
-        public override List<ReferenceLine> GetReferenceData(string defineReferencePrefix)
+        public override List<ReferenceLine> GetReferenceData(string sDefinePrefix)
         {
             return GetData(
                 ReferenceUtil.ConvertRelativeProjectPathToFullPath(m_zSpreadsheetReference.RelativePath),
                 true,
                 0, 
-                defineReferencePrefix: defineReferencePrefix);
+                sDefinePrefix: sDefinePrefix);
         }
     }
 }

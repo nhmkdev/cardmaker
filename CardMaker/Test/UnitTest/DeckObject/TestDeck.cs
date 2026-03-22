@@ -68,7 +68,7 @@ namespace UnitTest.DeckObject
         {
             new DeckReader(this, m_zReporterProxy).ProcessLines(
                 ConvertToReferenceLines(listLines, "TEST REFERENCE"), 
-                ConvertToReferenceLines(listDefineLines,"TEST DEFINE REFERENCE"),
+                ConvertToReferenceLines(listDefineLines,"TEST DEFINE LINES"),
                 false);
         }
 

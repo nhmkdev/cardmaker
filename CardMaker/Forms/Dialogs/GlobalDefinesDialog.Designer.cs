@@ -1,6 +1,6 @@
 ﻿namespace CardMaker.Forms.Dialogs
 {
-    partial class DefineReferencesDialog
+    partial class GlobalDefinesDialog
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DefineReferencesDialog));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GlobalDefinesDialog));
             this.btnAddCSV = new System.Windows.Forms.Button();
             this.btnDelete = new System.Windows.Forms.Button();
             this.btnOk = new System.Windows.Forms.Button();
@@ -162,7 +162,7 @@
             this.btnChangePrefix.UseVisualStyleBackColor = true;
             this.btnChangePrefix.Click += new System.EventHandler(this.btnChangePrefix_Click);
             // 
-            // DefineReferencesDialog
+            // GlobalDefinesDialog
             // 
             this.AcceptButton = this.btnOk;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -178,10 +178,10 @@
             this.Controls.Add(this.btnDelete);
             this.Controls.Add(this.btnAddCSV);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "DefineReferencesDialog";
+            this.Name = "GlobalDefinesDialog";
             this.ShowInTaskbar = false;
-            this.Text = "Define References";
-            this.Load += new System.EventHandler(this.DefineReferencesDialog_Load);
+            this.Text = "Global Defines";
+            this.Load += new System.EventHandler(this.GlobalDefinesDialog_Load);
             this.ResumeLayout(false);
 
         }

@@ -41,12 +41,12 @@ namespace CardMaker.XML
         public bool Default { get; set; }
 
         /// <summary>
-        /// (optional) The prefix to use for all define references associated with this source.
+        /// (optional) The prefix to use for all defines associated with this source.
         ///
-        /// This is a define reference specific field.
+        /// This is a global define specific field (at this time)
         /// </summary>
         [XmlAttribute]
-        public string DefineReferencePrefix { get; set; }
+        public string DefinePrefix { get; set; }
 
         #endregion
 
@@ -59,7 +59,7 @@ namespace CardMaker.XML
         {
             Default = zReference.Default;
             RelativePath = zReference.RelativePath;
-            DefineReferencePrefix = zReference.DefineReferencePrefix;
+            DefinePrefix = zReference.DefinePrefix;
         }
     }
 }

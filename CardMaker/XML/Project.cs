@@ -52,7 +52,7 @@ namespace CardMaker.XML
 
         public string collapsedNodes { get; set; }
 
-        [XmlArray("DefineReferences")] public ProjectLayoutReference[] DefineReferences;
+        [XmlArray("GlobalDefines")] public ProjectLayoutReference[] GlobalDefines;
         #endregion
 
         /// <summary>

@@ -109,13 +109,13 @@ namespace CardMaker.Card.Import
                    GoogleReferenceCache.IsEntryInCache(GetCacheKey(m_sCacheKeyBase, Deck.DEFINES_DATA_SUFFIX));
         }
 
-        private List<ReferenceLine> GetData(GoogleSpreadsheetReference zReference, int nStartRow, string sNameAppend = "", string defineReferencePrefix = null)
+        private List<ReferenceLine> GetData(GoogleSpreadsheetReference zReference, int nStartRow, string sNameAppend = "", string sDefinePrefix = null)
         {
             var sCacheKey = GetCacheKey(zReference.GenerateFullReference(), sNameAppend);
             var listReferenceLines = new List<ReferenceLine>();
             List<List<string>> listCacheData;
 
-            var zReferenceInfo = new ReferenceInfo(zReference.SpreadsheetName, defineReferencePrefix);
+            var zReferenceInfo = new ReferenceInfo(zReference.SpreadsheetName, sDefinePrefix);
 
             if (CardMakerSettings.EnableGoogleCache 
                 && !CardMakerInstance.ForceDataCacheRefresh 
@@ -203,9 +203,9 @@ namespace CardMaker.Card.Import
             return GetData(m_zSpreadsheetReference, 0, Deck.DEFINES_DATA_SUFFIX);
         }
 
-        public override List<ReferenceLine> GetReferenceData(string defineReferencePrefix)
+        public override List<ReferenceLine> GetReferenceData(string sDefinePrefix)
         {
-            return GetData(m_zSpreadsheetReference, 0, defineReferencePrefix: defineReferencePrefix);
+            return GetData(m_zSpreadsheetReference, 0, sDefinePrefix: sDefinePrefix);
         }
 
         private static GoogleSpreadsheetReference GetDefinesReference()

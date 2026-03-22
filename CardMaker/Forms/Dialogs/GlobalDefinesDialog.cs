@@ -13,7 +13,7 @@ using Support.UI;
 
 namespace CardMaker.Forms.Dialogs
 {
-    public partial class DefineReferencesDialog : Form
+    public partial class GlobalDefinesDialog : Form
     {
         private enum DefineColumns : int
         {
@@ -26,27 +26,27 @@ namespace CardMaker.Forms.Dialogs
         public List<ProjectLayoutReference> Result { get; private set; }
         private string m_sProjectPath = string.Empty;
 
-        public static void ShowDefineReferences(IWin32Window zParentForm)
+        public static void ShowGlobalDefines(IWin32Window zParentForm)
         {
-            var zDefineReferencesDialog = new DefineReferencesDialog(
-                ProjectManager.Instance.LoadedProject.DefineReferences?.ToList()
+            var zGlobalDefinesDialog = new GlobalDefinesDialog(
+                ProjectManager.Instance.LoadedProject.GlobalDefines?.ToList()
                 ?? new List<ProjectLayoutReference>(), ProjectManager.Instance.ProjectPath);
-            if (DialogResult.OK == zDefineReferencesDialog.ShowDialog(zParentForm))
+            if (DialogResult.OK == zGlobalDefinesDialog.ShowDialog(zParentForm))
             {
-                ProjectManager.Instance.LoadedProject.DefineReferences = zDefineReferencesDialog.Result.ToArray();
+                ProjectManager.Instance.LoadedProject.GlobalDefines = zGlobalDefinesDialog.Result.ToArray();
                 LayoutManager.Instance.RefreshActiveLayout();
                 ProjectManager.Instance.FireProjectUpdated(true);
             }
         }
 
-        public DefineReferencesDialog(List<ProjectLayoutReference> listReferences, string projectPath)
+        public GlobalDefinesDialog(List<ProjectLayoutReference> listReferences, string projectPath)
         {
             InitializeComponent();
             Result = listReferences;
             m_sProjectPath = projectPath;
         }
 
-        private void DefineReferencesDialog_Load(object sender, EventArgs e)
+        private void GlobalDefinesDialog_Load(object sender, EventArgs e)
         {
             Result.ForEach(AddReference);
             listViewReferences_Resize(sender, e);
@@ -59,7 +59,7 @@ namespace CardMaker.Forms.Dialogs
             {
                 zSpreadsheetReference.DisplayName,
                 zSpreadsheetReference.ReferenceType.ToString(),
-                zReference.DefineReferencePrefix ?? string.Empty,
+                zReference.DefinePrefix ?? string.Empty,
                 zReference.RelativePath // full definition
             }) { Tag = zReference });
         }
@@ -193,7 +193,7 @@ namespace CardMaker.Forms.Dialogs
             {
                 var prefix = zQuery.GetString(prefixKey);
                 listViewItem.SubItems[(int)DefineColumns.Prefix].Text = prefix;
-                ((ProjectLayoutReference)listViewItem.Tag).DefineReferencePrefix = prefix;
+                ((ProjectLayoutReference)listViewItem.Tag).DefinePrefix = prefix;
             }
         }
     }

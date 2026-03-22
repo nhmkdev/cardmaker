@@ -235,11 +235,11 @@
     <Compile Include="Forms\CardMakerMDI.Designer.cs">
       <DependentUpon>CardMakerMDI.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\Dialogs\DefineReferencesDialog.cs">
+    <Compile Include="Forms\Dialogs\GlobalDefinesDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Dialogs\DefineReferencesDialog.Designer.cs">
-      <DependentUpon>DefineReferencesDialog.cs</DependentUpon>
+    <Compile Include="Forms\Dialogs\GlobalDefinesDialog.Designer.cs">
+      <DependentUpon>GlobalDefinesDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\Dialogs\ProjectSettingsDialog.cs" />
     <Compile Include="Forms\FormUtils.cs" />
@@ -390,8 +390,8 @@
       <SubType>Designer</SubType>
       <DependentUpon>CardMakerMDI.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Dialogs\DefineReferencesDialog.resx">
-      <DependentUpon>DefineReferencesDialog.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\Dialogs\GlobalDefinesDialog.resx">
+      <DependentUpon>GlobalDefinesDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\GoogleCredentialsDialog.resx">
       <DependentUpon>GoogleCredentialsDialog.cs</DependentUpon>

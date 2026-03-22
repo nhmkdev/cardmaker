@@ -523,9 +523,9 @@ namespace CardMaker.Forms
         {
             ProjectSettingsDialog.ShowProjectSettings(this);
         }
-        private void defineReferencesToolStripMenuItem_Click(object sender, EventArgs e)
+        private void globalDefinesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DefineReferencesDialog.ShowDefineReferences(this);
+            GlobalDefinesDialog.ShowGlobalDefines(this);
 
         }
         private void updateIssuesToolStripMenuItem_Click(object sender, EventArgs e)
