@@ -452,8 +452,7 @@ namespace CardMaker.Card
         {
             var listAllReferenceDefineLines = new List<ReferenceLine>();
             // load the define references (if project saved)
-            if (!string.IsNullOrEmpty(ProjectManager.Instance.ProjectFilePath) &&
-                (ProjectManager.Instance.LoadedProject.DefineReferences?.Length ?? 0) > 0)
+            if ((ProjectManager.Instance.LoadedProject.DefineReferences?.Length ?? 0) > 0)
             {
                 m_zReporterProxy.ProgressReset(0, ProjectManager.Instance.LoadedProject.DefineReferences.Length, 0);
                 var listDefineReferenceActions = new List<Task>();
@@ -475,11 +474,6 @@ namespace CardMaker.Card
                         }));
                 }
                 Task.WaitAll(listDefineReferenceActions.ToArray());
-            }
-            else
-            {
-                m_zReporterProxy.AddIssue(
-                    "No define references loaded for project -- project not yet saved.");
             }
 
             return listAllReferenceDefineLines;
