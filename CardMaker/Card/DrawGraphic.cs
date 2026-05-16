@@ -28,6 +28,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using CardMaker.Card.ImageLoad;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
 using Support.IO;

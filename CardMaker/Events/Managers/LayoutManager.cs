@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using CardMaker.Card;
+using CardMaker.Card.ImageLoad;
 using CardMaker.Data;
 using CardMaker.Events.Args;
 using CardMaker.Forms;

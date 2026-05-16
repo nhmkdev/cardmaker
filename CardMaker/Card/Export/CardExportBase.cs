@@ -27,6 +27,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using CardMaker.Card.ImageLoad;
 using CardMaker.Data;
 using CardMaker.Events.Managers;
 using CardMaker.XML;
@@ -133,8 +134,16 @@ namespace CardMaker.Card.Export
         public void ExportThreadExec()
         {
 #warning look for other things that should happen always
+            ImageCache.ExportMode = true;
             CurrentDeck.SubLayoutExportContext = SubLayoutExportContext;
-            ExportThreadImpl();
+            try
+            {
+                ExportThreadImpl();
+            }
+            finally
+            {
+                ImageCache.ExportMode = false;
+            }
         }
 
         public void Save(Bitmap zBmp, string sPath, FileCardExporterFactory.CardMakerExportImageFormat eImageFormat, int nTargetDPI)
@@ -144,7 +153,7 @@ namespace CardMaker.Card.Export
                 var zMemoryBitmap = new Bitmap(zBmp.Width, zBmp.Height);
                 Graphics.FromImage(zMemoryBitmap).DrawImageUnscaled(zBmp, Point.Empty);
                 zMemoryBitmap.SetResolution(nTargetDPI, nTargetDPI);
-                ImageCache.AddInMemoryImageToCache(sPath, zMemoryBitmap);
+                ImageCache.CacheInMemoryImage(sPath, zMemoryBitmap);
             }
 
             if (!(SubLayoutExportContext?.Settings.WriteFile ?? true))

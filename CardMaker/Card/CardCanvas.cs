@@ -25,6 +25,7 @@
 using CardMaker.Data;
 using System.Drawing;
 using System.Windows.Forms;
+using CardMaker.Card.ImageLoad;
 
 namespace CardMaker.Card
 {

@@ -22,41 +22,19 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Collections.Generic;
+using System;
 using System.Drawing;
-using System.Drawing.Imaging;
-using CardMaker.Card.ImageLoad;
-using CardMaker.Data;
-using CardMaker.XML;
 
-namespace CardMaker.Card.FormattedText.Markup
+namespace CardMaker.Card.ImageLoad
 {
-    public abstract class BaseImageMarkup : MarkupValueBase
+    internal interface IImageLoader
     {
-        protected string m_sImageFile;
-        protected Color m_colorImage = Color.Black;
-        protected ElementColorType m_eColorType = ElementColorType.Add;
-        protected ColorMatrix m_zColorMatrix = null;
-        protected MirrorType m_eMirrorType = MirrorType.None;
-
-        protected BaseImageMarkup(string sVariable) : base(sVariable) { }
-
-        public override bool PostProcessMarkupRectangle(ProjectLayoutElement zElement, List<MarkupBase> listAllMarkups, int nMarkup)
-        {
-            return true;
-        }
-
-        protected Bitmap LoadImage(ProjectLayoutElement zElement)
-        {
-            return ImageCache.LoadCustomImageFromCache(
-                m_sImageFile, 
-                zElement, 
-                m_colorImage,
-                m_zColorMatrix,
-                m_eColorType,
-                -1, 
-                -1, 
-                m_eMirrorType);
-        }
+        bool UseMemoryCopy { get; }
+        bool UseBackgroundThread { get; }
+        ImageCacheEntryType CacheEntryType { get; }
+        DateTime GetLastWriteTime(string sFile);
+        bool ShouldCacheFile(string sFile);
+        bool CanAttemptLoad(string sFile);
+        Bitmap LoadBitmap(string sFile);
     }
 }

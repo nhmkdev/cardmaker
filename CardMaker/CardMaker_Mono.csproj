@@ -67,6 +67,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Net" />
     <Reference Include="System.Windows.Forms" />
@@ -121,11 +122,14 @@
     <Compile Include="Card\FormattedText\Markup\AlignCenterMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\AlignLeftMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\AlignRightMarkup.cs" />
-    <Compile Include="Card\FormattedText\Markup\AllCapsMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\TitleCaseMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\NoCapsMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\BaseAlignMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\AllCapsMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\ColorMatrixMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\ColorTypeMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\FontScaleMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\ParagraphMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\ImageColorMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\BaseImageMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\LineSpaceMarkup.cs" />
@@ -133,13 +137,10 @@
     <Compile Include="Card\FormattedText\Markup\MarginRightMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\MarkupUtil.cs" />
     <Compile Include="Card\FormattedText\Markup\MirrorHorizontalMarkup.cs" />
-    <Compile Include="Card\FormattedText\Markup\MirrorMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\MirrorVerticalMarkup.cs" />
-    <Compile Include="Card\FormattedText\Markup\NoCapsMarkup.cs" />
-    <Compile Include="Card\FormattedText\Markup\ParagraphMarkup.cs" />
+    <Compile Include="Card\FormattedText\Markup\MirrorMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\PixelMarkup.cs" />
     <Compile Include="Card\FormattedText\Markup\MarginLeftMarkup.cs" />
-    <Compile Include="Card\FormattedText\Markup\TitleCaseMarkup.cs" />
     <Compile Include="Card\FormattedText\Util\StringUtil.cs" />
     <Compile Include="Card\IDrawFormattedText.cs" />
     <Compile Include="Card\IDrawGraphic.cs" />
@@ -169,7 +170,13 @@
     <Compile Include="Card\Export\CompilerCardExporter.cs" />
     <Compile Include="Card\Export\FileCardExporter.cs" />
     <Compile Include="Card\IInlineBackgroundElementProcessor.cs" />
-    <Compile Include="Card\ImageCache.cs" />
+    <Compile Include="Card\ImageLoad\BitmapCacheEntry.cs" />
+    <Compile Include="Card\ImageLoad\IImageLoader.cs" />
+    <Compile Include="Card\ImageLoad\ImageCache.cs" />
+    <Compile Include="Card\ImageLoad\ImageFileLoader.cs" />
+    <Compile Include="Card\ImageLoad\ImagePathUtil.cs" />
+    <Compile Include="Card\ImageLoad\ImageUrlLoader.cs" />
+    <Compile Include="Card\Import\ReferenceCache.cs" />
     <Compile Include="Card\Import\CSVReferenceReader.cs" />
     <Compile Include="Card\Import\CSVSpreadsheetReference.cs" />
     <Compile Include="Card\Import\ExcelReferenceReader.cs" />
@@ -177,13 +184,12 @@
     <Compile Include="Card\Import\GoogleReferenceCache.cs" />
     <Compile Include="Card\Import\GoogleReferenceReader.cs" />
     <Compile Include="Card\Import\GoogleSpreadsheetReference.cs" />
-    <Compile Include="Card\Import\ReferenceCache.cs" />
     <Compile Include="Card\Import\ReferenceInfo.cs" />
-    <Compile Include="Card\Import\SpreadsheetReferenceBase.cs" />
     <Compile Include="Card\Import\ReferenceLine.cs" />
     <Compile Include="Card\Import\ReferenceReader.cs" />
     <Compile Include="Card\Import\ReferenceReaderFactory.cs" />
     <Compile Include="Card\Import\ReferenceUtil.cs" />
+    <Compile Include="Card\Import\SpreadsheetReferenceBase.cs" />
     <Compile Include="Card\InlineBackgroundElementProcessor.cs" />
     <Compile Include="Card\MeasurementUtil.cs" />
     <Compile Include="Card\MirrorRender.cs" />
@@ -222,8 +228,8 @@
     <Compile Include="Events\Args\IssueMessageEventArgs.cs" />
     <Compile Include="Events\Args\IssueRefreshEventArgs.cs" />
     <Compile Include="Events\Args\LayoutElementNumericAdjustEventArgs.cs" />
-    <Compile Include="Events\Args\ProjectEventArgs.cs" />
     <Compile Include="Events\Args\ProjectLayoutEventArgs.cs" />
+    <Compile Include="Events\Args\ProjectEventArgs.cs" />
     <Compile Include="Events\Managers\AutoSaveManager.cs" />
     <Compile Include="Events\Managers\ExportManager.cs" />
     <Compile Include="Events\Managers\GoogleAuthManager.cs" />
@@ -338,6 +344,12 @@
     <Compile Include="Support\UI\AbstractDirtyForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Support\UI\GradientDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Support\UI\GradientDialog.Designer.cs">
+      <DependentUpon>GradientDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Support\UI\ColorMatrixDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -345,12 +357,6 @@
       <DependentUpon>ColorMatrixDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Support\UI\Extensions.cs" />
-    <Compile Include="Support\UI\GradientDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Support\UI\GradientDialog.Designer.cs">
-      <DependentUpon>GradientDialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="Support\UI\ListViewAssist.cs" />
     <Compile Include="Support\UI\ListViewDoubleBuffer.cs">
       <SubType>Component</SubType>
@@ -442,11 +448,11 @@
     <EmbeddedResource Include="Support\Google\Sheets\GoogleSpreadsheetBrowser.resx">
       <DependentUpon>GoogleSpreadsheetBrowser.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Support\UI\ColorMatrixDialog.resx">
-      <DependentUpon>ColorMatrixDialog.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Support\UI\GradientDialog.resx">
       <DependentUpon>GradientDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Support\UI\ColorMatrixDialog.resx">
+      <DependentUpon>ColorMatrixDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Support\UI\RGBColorSelectDialog.resx">
       <DependentUpon>RGBColorSelectDialog.cs</DependentUpon>

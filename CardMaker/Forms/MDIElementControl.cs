@@ -32,6 +32,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using CardMaker.Card;
+using CardMaker.Card.ImageLoad;
 using CardMaker.Card.Shapes;
 using CardMaker.Data;
 using CardMaker.Events.Args;

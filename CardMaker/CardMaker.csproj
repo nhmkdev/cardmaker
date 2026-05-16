@@ -170,7 +170,12 @@
     <Compile Include="Card\Export\CompilerCardExporter.cs" />
     <Compile Include="Card\Export\FileCardExporter.cs" />
     <Compile Include="Card\IInlineBackgroundElementProcessor.cs" />
-    <Compile Include="Card\ImageCache.cs" />
+    <Compile Include="Card\ImageLoad\BitmapCacheEntry.cs" />
+    <Compile Include="Card\ImageLoad\IImageLoader.cs" />
+    <Compile Include="Card\ImageLoad\ImageCache.cs" />
+    <Compile Include="Card\ImageLoad\ImageFileLoader.cs" />
+    <Compile Include="Card\ImageLoad\ImagePathUtil.cs" />
+    <Compile Include="Card\ImageLoad\ImageUrlLoader.cs" />
     <Compile Include="Card\Import\ReferenceCache.cs" />
     <Compile Include="Card\Import\CSVReferenceReader.cs" />
     <Compile Include="Card\Import\CSVSpreadsheetReference.cs" />
