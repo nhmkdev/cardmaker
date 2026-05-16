@@ -96,6 +96,10 @@ CardMaker played some role in the development of these games (prototyping or oth
 
 "CardMaker" and "Card Maker" are both references to the same application. I just never standardized the name.
 
+## AI use in development
+
+None directly.
+
 ## Special Thanks
 
 * Eric Raué
