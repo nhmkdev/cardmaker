@@ -69,6 +69,7 @@ CardMaker played some role in the development of these games (prototyping or oth
 
 | Game Link(s) |
 | --- |
+| [Black Hats](https://www.diceordeath.com/about-black-hats) & [Black Hats at BoardGameGeek](https://boardgamegeek.com/boardgame/335650/black-hats) |
 | [Cardpocalypse](http://cardpocalyp.se/) & [Cardpocalypse Steam Link](https://store.steampowered.com/app/904400/Cardpocalypse/) |
 | [Cave Paintings](http://rnrgames.com/cave-paintings) |
 | [COBRA](https://www.thegamecrafter.com/games/cobra1) |
