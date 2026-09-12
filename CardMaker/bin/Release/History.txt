@@ -1,6 +1,7 @@
 Card Maker Version History
 --------------------------
 1.6.0.0
+- Add support for nested markups in FormattedText (stacked fonts for example)
 - Add ability to use graphic files from a public url (streamed/cached in memory)
 
 1.5.0.0

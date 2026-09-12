@@ -36,6 +36,8 @@ namespace CardMaker.Card.FormattedText.Markup
             TargetRect = RectangleF.Empty;
         }
 
+        public bool Closed { get; set; }
+
         public int LineNumber { get; set; }
 
         /// <summary>

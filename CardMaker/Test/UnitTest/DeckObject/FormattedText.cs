@@ -73,6 +73,19 @@ namespace UnitTest.DeckObject
                 Assert.AreEqual(expectedTypes[i], markups[i].GetType());
             }
         }
+
+        [TestCase("<f=Arial><f=Arial></f>", new [] { false, true, false })]
+        [TestCase("<f=Arial><f=Arial></f></f>", new [] { true, true, false, false })]
+        public void ValidateMarkupCloseStackTranslation(string input, bool[] expectedClosed)
+        {
+            var markups = FormattedTextParser.GetMarkups(input);
+            Assert.AreEqual(expectedClosed.Length, markups.Count);
+            for (var i = 0; i < expectedClosed.Length; i++)
+            {
+                Assert.AreEqual(expectedClosed[i], markups[i].Closed);
+            }
+        }
+
         // TODO: more tests specific to parsing each markup
     }
 }

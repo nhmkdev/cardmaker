@@ -115,12 +115,13 @@ namespace CardMaker.Card.FormattedText
                             var zMarkupTypeToSeek = MarkupUtil.GetMarkupType(sTagName);
                             if (null != zMarkupTypeToSeek)
                             {
-                                // NOTE: There is no support for nested stacked markups like <b>asdas<b></b></b> (if this matters...)
+                                // simple nested tags by closing the most recent
                                 for (int nMarkup = listMarkups.Count - 1; nMarkup > -1; nMarkup--)
                                 {
-                                    if (listMarkups[nMarkup].GetType() == zMarkupTypeToSeek)
+                                    if (listMarkups[nMarkup].GetType() == zMarkupTypeToSeek && !listMarkups[nMarkup].Closed)
                                     {
                                         sTagName = string.Empty;
+                                        listMarkups[nMarkup].Closed = true;
                                         listMarkups.Add(new CloseTagMarkup(listMarkups[nMarkup]));
                                         break;
                                     }
