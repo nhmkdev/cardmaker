@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Windows.Forms;
 
 namespace CardMaker.Events.Args
 {
@@ -31,13 +32,15 @@ namespace CardMaker.Events.Args
 
     public class GoogleAuthEventArgs
     {
+        public Form ParentForm { get; private set; }
         public Action SuccessAction { get; private set; }
         public Action CancelAction { get; private set; }
 
-        public GoogleAuthEventArgs(Action zActionSuccess, Action zActionCancel)
+        public GoogleAuthEventArgs(Form zParentForm, Action zActionSuccess, Action zActionCancel)
         {
             SuccessAction = zActionSuccess;
             CancelAction = zActionCancel;
+            ParentForm = zParentForm;
         }
     }
 }

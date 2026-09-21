@@ -22,17 +22,18 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Text.RegularExpressions;
-using System.Windows.Forms;
 using CardMaker.Card.CommandLine;
 using CardMaker.Card.Shapes;
 using CardMaker.Data;
 using CardMaker.Events.Managers;
 using CardMaker.Forms;
+using CardMaker.Properties;
 using Support.Progress;
 using Support.UI;
 using Support.Util;
+using System;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
 
 namespace CardMaker
 {
@@ -53,7 +54,6 @@ namespace CardMaker
         public static void Main(string[] args)
         {
             Regex.CacheSize += 100;
-
             MainEntry(new ConsoleProgressReporterFactory(), args);
         }
 

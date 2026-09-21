@@ -44,9 +44,6 @@ namespace CardMaker.Data
         public const string GRADIENT_PARAM_SEPARATOR = ";";
         public const string OVERRIDE_COLUMN = "override:";
 
-        // Google connectivity constants
-        public const string GOOGLE_CLIENT_ID = "455195524701-cmdvv6fl5ru9uftin99kjmhojt36mnm9.apps.googleusercontent.com";
-
         public static readonly string[] GOOGLE_SCOPES = new string[]
             {SheetsService.Scope.SpreadsheetsReadonly};
 

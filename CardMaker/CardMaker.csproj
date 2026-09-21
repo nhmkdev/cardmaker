@@ -248,12 +248,6 @@
     </Compile>
     <Compile Include="Forms\Dialogs\ProjectSettingsDialog.cs" />
     <Compile Include="Forms\FormUtils.cs" />
-    <Compile Include="Forms\GoogleCredentialsDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\GoogleCredentialsDialog.Designer.cs">
-      <DependentUpon>GoogleCredentialsDialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="Events\Managers\IssueManager.cs" />
     <Compile Include="Forms\MDIDefines.cs">
       <SubType>Form</SubType>
@@ -304,6 +298,11 @@
       <DependentUpon>ProjectManagerUI.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Support\3rdParty\PhotoshopFile\AlphaChannels.cs" />
     <Compile Include="Support\3rdParty\PhotoshopFile\BinaryReverseReader.cs" />
     <Compile Include="Support\3rdParty\PhotoshopFile\ImageDecoderBitmaps.cs" />
@@ -313,7 +312,6 @@
     <Compile Include="Support\3rdParty\PhotoshopFile\ResolutionInfo.cs" />
     <Compile Include="Support\3rdParty\PhotoshopFile\Thumbnail.cs" />
     <Compile Include="Support\Google\GoogleApi.cs" />
-    <Compile Include="Support\Google\GoogleInitializerFactory.cs" />
     <Compile Include="Support\Google\Sheets\GoogleSheetInfo.cs" />
     <Compile Include="Support\Google\Sheets\GoogleSpreadsheet.cs" />
     <Compile Include="Support\Google\Sheets\GoogleSpreadsheetSelector.cs">
@@ -321,12 +319,6 @@
     </Compile>
     <Compile Include="Support\Google\Sheets\GoogleSpreadsheetSelector.Designer.cs">
       <DependentUpon>GoogleSpreadsheetSelector.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Support\Google\Sheets\GoogleSpreadsheetBrowser.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Support\Google\Sheets\GoogleSpreadsheetBrowser.Designer.cs">
-      <DependentUpon>GoogleSpreadsheetBrowser.cs</DependentUpon>
     </Compile>
     <Compile Include="Support\IO\ColorSerialization.cs" />
     <Compile Include="Support\IO\CSVFile.cs" />
@@ -398,9 +390,6 @@
     <EmbeddedResource Include="Forms\Dialogs\GlobalDefinesDialog.resx">
       <DependentUpon>GlobalDefinesDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\GoogleCredentialsDialog.resx">
-      <DependentUpon>GoogleCredentialsDialog.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\MDIDefines.resx">
       <DependentUpon>MDIDefines.cs</DependentUpon>
     </EmbeddedResource>
@@ -433,20 +422,12 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
+      <SubType>Designer</SubType>
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <EmbeddedResource Include="Support\Google\Sheets\GoogleSpreadsheetSelector.resx">
       <DependentUpon>GoogleSpreadsheetSelector.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Support\Google\Sheets\GoogleSpreadsheetBrowser.resx">
-      <DependentUpon>GoogleSpreadsheetBrowser.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Support\UI\GradientDialog.resx">
       <DependentUpon>GradientDialog.cs</DependentUpon>
@@ -553,9 +534,9 @@
   </Target>
   -->
   <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
-    <PostBuildEvent>SET ZIP_TOOL=C:\Program Files\7-Zip\7z.exe
+    <PreBuildEvent>IF EXIST "$(ProjectDir)client_secret.json" COPY /Y $(ProjectDir)client_secret.json $(ProjectDir)not_a_secret.json</PreBuildEvent>
+    <PostBuildEvent>ECHO {} &gt; $(ProjectDir)\not_a_secret.json
+SET ZIP_TOOL=C:\Program Files\7-Zip\7z.exe
 IF $(ConfigurationName) == Release IF EXIST "%25ZIP_TOOL%25" (
     IF EXIST "$(SolutionDir)$(OutDir)*.zip" DEL "$(SolutionDir)$(OutDir)*.zip"
     "%25ZIP_TOOL%25" a "$(TargetDir)CardMaker_X.X.X.X.zip" "$(TargetDir)CardMaker.ex*" "$(TargetDir)CardMaker_Mono.ex*" "$(TargetDir)*.dll"  "$(TargetDir)*.so" "$(TargetDir)Card_Maker.pdf"     "$(TargetDir)Card_Maker_Basic_Project.pdf"  "$(TargetDir)Card_Maker_JavaScript.pdf" "$(TargetDir)Sample" "$(TargetDir)Readme.txt" "$(TargetDir)History.txt" "$(TargetDir)Licenses"     "$(TargetDir)images" "$(TargetDir)templates" "$(TargetDir)x64" -tzip -mx5
@@ -563,7 +544,6 @@ IF $(ConfigurationName) == Release IF EXIST "%25ZIP_TOOL%25" (
 
 IF NOT EXIST "%25ZIP_TOOL%25" (
     ECHO WARNING "%25ZIP_TOOL%25" is missing. Unable to generate release zip.
-)
-</PostBuildEvent>
+)</PostBuildEvent>
   </PropertyGroup>
 </Project>

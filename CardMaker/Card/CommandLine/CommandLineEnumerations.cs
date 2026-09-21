@@ -29,7 +29,7 @@ namespace CardMaker.Card.CommandLine
         CardIndices,
         ExportFormat,
         ExportPath,
-        GoogleCredential,
+        GoogleAuth,
         LayoutNames,
         LayoutIndices,
         PageOrientation,

@@ -55,3 +55,4 @@ CardMaker/bin/Release/arm64/libSkiaSharp.dll
 CardMaker/bin/Release/x64/libSkiaSharp.dll
 CardMaker/bin/Release/x86/libSkiaSharp.dll
 CardMaker/bin/Release/libSkiaSharp.dylib
+CardMaker/client_secret.json

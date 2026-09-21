@@ -22,37 +22,19 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System.Collections.Generic;
-using System.Linq;
-using Google.Apis.Drive.v3;
+using CardMaker.Data;
+using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
-using Support.IO;
-using Support.UI;
+using System.Collections.Generic;
+using System.Linq;
+using CardMaker.Events.Managers;
 
 namespace Support.Google.Sheets
 {
-    public class GoogleSpreadsheet
+    public static class GoogleSpreadsheet
     {
-        private const string SPREADSHEET_MIMETYPE_QUERY = "mimeType='application/vnd.google-apps.spreadsheet'";
-
-        private GoogleInitializerFactory zInitializerFactory;
-
-        public GoogleSpreadsheet(GoogleInitializerFactory zInitializerFactory)
-        {
-            this.zInitializerFactory = zInitializerFactory;
-        }
-
-        public List<List<string>> GetSheetContentsBySpreadsheetName(string sSpreadsheetName, string sSheetName,
-            bool bAutoFillBlanks = true)
-        {
-            var sSpreadsheetId = GetSpreadsheetId(sSpreadsheetName);
-            return sSpreadsheetId == null 
-                ? null
-                : GetSheetContentsBySpreadsheetId(sSpreadsheetId, sSheetName, bAutoFillBlanks);
-        }
-
-        public Spreadsheet GetSpreadsheet(string sSpreadsheetId)
+        public static Spreadsheet GetSpreadsheet(string sSpreadsheetId)
         {
             var zSheetsService = CreateSheetsService();
             // https://developers.google.com/sheets/api/guides/concepts (specifying the sheet name results in all the data)
@@ -60,7 +42,7 @@ namespace Support.Google.Sheets
             return zResult;
         }
 
-        public bool DoesChildSheetExist(string sSpreadsheetId, string sSheetName)
+        public static bool DoesChildSheetExist(string sSpreadsheetId, string sSheetName)
         {
             var zSpreadsheetInfo = GetSpreadsheet(sSpreadsheetId);
             var zSheetInfo = zSpreadsheetInfo.Sheets.FirstOrDefault(zSheet => sSheetName == zSheet.Properties.Title);
@@ -74,7 +56,7 @@ namespace Support.Google.Sheets
         /// <param name="sSheetName"></param>
         /// <param name="bAutoFillBlanks"></param>
         /// <returns></returns>
-        public List<List<string>> GetSheetContentsBySpreadsheetId(string sSpreadsheetId, string sSheetName, bool bAutoFillBlanks = true)
+        public static List<List<string>> GetSheetContentsBySpreadsheetId(string sSpreadsheetId, string sSheetName, bool bAutoFillBlanks = true)
         {
             var zSheetsService = CreateSheetsService();
             // https://developers.google.com/sheets/api/guides/concepts (specifying the sheet name results in all the data)
@@ -111,11 +93,11 @@ namespace Support.Google.Sheets
                 }
             }
 
-            processNewLines(listAllRows);
+            ProcessNewLines(listAllRows);
             return listAllRows;
         }
 
-        public List<string> GetSheetNames(string sSpreadsheetId)
+        public static List<string> GetSheetNames(string sSpreadsheetId)
         {
             var zSheetsService = CreateSheetsService();
             // TODO: this can likely be optimized to not return everything (contents won't be included)
@@ -123,114 +105,41 @@ namespace Support.Google.Sheets
             return GetSheetNames(zSpreadsheet);
         }
 
-        public List<string> GetSheetNames(Spreadsheet zSheet)
+        public static List<string> GetSheetNames(Spreadsheet zSheet)
         {
             var zSheetsService = CreateSheetsService();
             // TODO: this can likely be optimized to not return everything (contents won't be included)
             return zSheet.Sheets.Select(sheet => sheet.Properties.Title).ToList();
         }
 
-        public string GetSpreadsheetName(Spreadsheet zSheet)
+        public static string GetSpreadsheetName(Spreadsheet zSheet)
         {
             return zSheet.Properties.Title;
         }
 
         /// <summary>
-        /// Retrieves all the spreadsheets available in the drive with a mapping to the id
+        /// This method is used to verify connectivity and will throw an exception
         /// </summary>
-        /// <returns></returns>
-        public string GetSpreadsheetId(string sSpreadsheetName)
+        public static void MakeSimpleSpreadsheetRequest()
         {
-            var zDriveService = CreateDriveService();
+#warning TODO: this is a hack to just make any valid call and prove auth is okay
+            CreateSheetsService().Spreadsheets.Get(string.Empty).Execute();
+        }
 
-            var zListRequest = zDriveService.Files.List();
-            // lookup only spreadsheets
-            zListRequest.Q = "name = '{0}' AND {1}".FormatString(sSpreadsheetName, SPREADSHEET_MIMETYPE_QUERY);
-            zListRequest.Fields = "files(id)";
-
-            // references -- 
-            // https://www.daimto.com/search-files-on-google-drive-with-c/
-            // https://developers.google.com/drive/api/v3/search-parameters
-            var zResultFileList = zListRequest.Execute();
-            if (zResultFileList.Files.Count > 0)
+        private static SheetsService CreateSheetsService()
+        {
+            return new SheetsService(new BaseClientService.Initializer()
             {
-                if(zResultFileList.Files.Count > 1)
-                    Logger.AddLogLine("WARNING: There are {0} Spreadsheets with the name {1}. Only the first found will be used. Please re-add the reference to correct this issue.".FormatString(zResultFileList.Files.Count, sSpreadsheetName));
-                return zResultFileList.Files[0].Id;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Retrieves all the spreadsheets available in the drive with a mapping to the id
-        /// </summary>
-        /// <returns></returns>
-        public List<GoogleSheetInfo> GetSpreadsheetList()
-        {
-            var listSheetInfos = new List<GoogleSheetInfo>();
-            var zDriveService = CreateDriveService();
-
-            var zListRequest = zDriveService.Files.List();
-            // lookup only spreadsheets
-            zListRequest.Q = SPREADSHEET_MIMETYPE_QUERY;
-            zListRequest.PageSize = 100;
-            zListRequest.Fields = "nextPageToken, files(name, id)";
-
-            // references -- 
-            // https://www.daimto.com/search-files-on-google-drive-with-c/
-            // https://developers.google.com/drive/api/v3/search-parameters
-            do
-            {
-                var zResultFileList = zListRequest.Execute();
-                foreach (var zFile in zResultFileList.Files)
-                {
-                    listSheetInfos.Add(new GoogleSheetInfo()
-                    {
-                        Name = zFile.Name,
-                        Id = zFile.Id
-                    });
-                }
-                zListRequest.PageToken = zResultFileList.NextPageToken;
-            } while (zListRequest.PageToken != null);
-
-            return listSheetInfos;
-        }
-
-        /// <summary>
-        /// This method is used like an auth check
-        /// </summary>
-        public void MakeSimpleSpreadsheetRequest()
-        {
-#warning need a new way to check this, drive access is dead anyway
-            var zDriveService = CreateDriveService();
-
-            var zListRequest = zDriveService.Files.List();
-            // lookup only spreadsheets
-            zListRequest.Q = SPREADSHEET_MIMETYPE_QUERY;
-            zListRequest.PageSize = 1;
-            zListRequest.Fields = "files(name, id)";
-
-            zListRequest.Execute();
-        }
-
-        private SheetsService CreateSheetsService()
-        {
-            return new SheetsService(zInitializerFactory.CreateInitializer());
-        }
-
-        private DriveService CreateDriveService()
-        {
-            return new DriveService(zInitializerFactory.CreateInitializer());
+                HttpClientInitializer = GoogleAuthManager.Instance.UserCredential,
+                ApplicationName = CardMakerConstants.APPLICATION_NAME
+            });
         }
 
         /// <summary>
         /// Converts newline characters to newline escape characters
         /// </summary>
         /// <param name="listLines">The list of data representing the sheet of strings</param>
-        private static void processNewLines(List<List<string>> listLines)
+        private static void ProcessNewLines(List<List<string>> listLines)
         {
             foreach (var listLine in listLines)
             {
