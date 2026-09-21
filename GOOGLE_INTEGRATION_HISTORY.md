@@ -36,5 +36,21 @@ recorded.
 list sheet names only.
 * My frustration with the effort required just to have read-only access to things is immense.
 
+## Round 4: OAUTH2 - "never ever submit client_secret.json to source control but go ahead and embed it in the public accessible binary"
+
+**Description:** For decades (centuries?) I have read repeatedly to never ever ever ever submit `client_secret.json` to source control. After digging into
+documentation that is intended for Google Auth and Desktop Apps I found that the `client_secret` is in fact required for desktop applications to
+authorize and get a token. The docs indicate the `client_secret` is optional (incorrect). Google very much needs to explicitly document and explain
+to developers how and what the `client_secret` is for desktop applications and assure them that embedding it into a distributed binary is okay. 
+
+So embedding is how CardMaker will do this (as of [v.1.6.0.0-unstable.v.a3](https://github.com/nhmkdev/cardmaker/releases/tag/v.1.6.0.0-unstable.v.a3)). 
+If everything breaks I'll just kill the new client and continue to use the old mode.
+
+Also `GoogleWebAuthorizationBroker` is magic and just does a bunch of work for me. 👍
+
+**Notes**
+* Uhhh better flow but embedding a client secret in a binary without explicit instructions is awful.
+
+
 ## Future Rounds
 I am quite certain desktop application support (which is already something they barely support) will be cut.
