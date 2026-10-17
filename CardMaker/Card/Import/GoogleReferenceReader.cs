@@ -33,7 +33,6 @@ using Support.UI;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Google.Apis.Sheets.v4.Data;
 
 namespace CardMaker.Card.Import
 {
@@ -65,11 +64,10 @@ namespace CardMaker.Card.Import
         {
             if (!IsAllDataCached() || CardMakerInstance.ForceDataCacheRefresh)
             {
-                var zSpreadsheet =
-                    new GoogleSpreadsheet(CardMakerInstance.GoogleInitializerFactory);
                 try
                 {
-                    zSpreadsheet.MakeSimpleSpreadsheetRequest();
+                    // hack: this is a wasteful call to make but serves its purpose
+                    GoogleSpreadsheet.MakeSimpleSpreadsheetRequest();
                 }
                 catch (GoogleApiException e)
                 {
@@ -96,8 +94,9 @@ namespace CardMaker.Card.Import
         {
             if (CardMakerInstance.GoogleCredentialsInvalid)
             {
+                // intentionally reset this here
                 CardMakerInstance.GoogleCredentialsInvalid = false;
-                GoogleAuthManager.Instance.FireGoogleAuthCredentialsErrorEvent(
+                GoogleAuthManager.Instance.FireGoogleAuthUpdateRequestedEvent(null, 
                     () => LayoutManager.Instance.InitializeActiveLayout());
             }
         }
@@ -113,13 +112,11 @@ namespace CardMaker.Card.Import
         {
             var sCacheKey = GetCacheKey(zReference.GenerateFullReference(), sNameAppend);
             var listReferenceLines = new List<ReferenceLine>();
-            List<List<string>> listCacheData;
-
             var zReferenceInfo = new ReferenceInfo(zReference.SpreadsheetName, sDefinePrefix);
 
             if (CardMakerSettings.EnableGoogleCache 
                 && !CardMakerInstance.ForceDataCacheRefresh 
-                && GoogleReferenceCache.GetCacheEntry(sCacheKey, out listCacheData))
+                && GoogleReferenceCache.GetCacheEntry(sCacheKey, out var listCacheData))
             {
                 ProgressReporter.AddIssue("Loaded {0} from local cache".FormatString(sCacheKey));
                 // The cache contains all rows
@@ -139,16 +136,14 @@ namespace CardMaker.Card.Import
             List<List<string>> listGoogleData = null;
             try
             {
-                var zGoogleSpreadsheet = new GoogleSpreadsheet(CardMakerInstance.GoogleInitializerFactory);
                 if (string.IsNullOrWhiteSpace(zReference.SpreadsheetId))
                 {
                     ProgressReporter.AddIssue("WARNING: The reference {0}.{1} is missing the Spreadsheet ID. Please reconfigure this reference."
                         .FormatString(zReference.SpreadsheetName, zReference.SheetName));
-                    listGoogleData = zGoogleSpreadsheet.GetSheetContentsBySpreadsheetName(sSpreadsheetName, sSheetName);
                 }
                 else
                 {
-                    listGoogleData = zGoogleSpreadsheet.GetSheetContentsBySpreadsheetId(zReference.SpreadsheetId, sSheetName);
+                    listGoogleData = GoogleSpreadsheet.GetSheetContentsBySpreadsheetId(zReference.SpreadsheetId, sSheetName);
                 }
 
                 // blank data just means an empty or non-existent sheet (generally okay)

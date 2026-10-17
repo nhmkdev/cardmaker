@@ -23,7 +23,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using CardMaker.Card.Export;
 using CardMaker.Data;
 using CardMaker.Events.Managers;
@@ -119,11 +121,33 @@ namespace CardMaker.Card.CommandLine
         /// </summary>
         public void ConfigureGoogleCredential()
         {
-            var sGoogleCredential = CommandLineParser.GetStringArg(CommandLineArg.GoogleCredential);
-            if (null != sGoogleCredential)
+            var bGoogleEnabledFlag = CommandLineParser.GetFlagArg(CommandLineArg.GoogleAuth);
+            if (!bGoogleEnabledFlag)
             {
-                CardMakerInstance.GoogleAccessToken = sGoogleCredential;
-                CardMakerInstance.GoogleCredentialsInvalid = false;
+                // nothing to do
+                return;
+            }
+            var zTokenSource = new CancellationTokenSource();
+            var bGoogleAuthFlowComplete = false;
+            System.Threading.Tasks.Task.Run(() =>
+                GoogleAuthManager.Instance.UpdateGoogleAuth(zTokenSource.Token, () =>
+                {
+                    bGoogleAuthFlowComplete = true;
+                }), zTokenSource.Token);
+            var zStopwatch = new Stopwatch();
+            zStopwatch.Start();
+            while (!Console.KeyAvailable && !bGoogleAuthFlowComplete)
+            {
+                // non-blocking wait for cancel or credential complete
+                Console.Write($"\rWaiting on Google credentials... {zStopwatch.Elapsed.TotalSeconds}s <press any key to cancel>");
+                Thread.Sleep(500);
+            }
+
+            if (Console.KeyAvailable && !bGoogleAuthFlowComplete)
+            {
+                zTokenSource.Cancel();
+                Console.WriteLine($"{Environment.NewLine}Credentials wait cancelled. Exiting.");
+                Environment.Exit(1);
             }
         }
 

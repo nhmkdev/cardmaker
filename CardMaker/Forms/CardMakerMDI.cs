@@ -22,15 +22,6 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 using CardMaker.Card.Export;
 using CardMaker.Card.Export.Pdf;
 using CardMaker.Card.Import;
@@ -39,11 +30,22 @@ using CardMaker.Data;
 using CardMaker.Events.Args;
 using CardMaker.Events.Managers;
 using CardMaker.Forms.Dialogs;
+using CardMaker.Properties;
 using CardMaker.XML;
 using PdfSharp;
 using Support.IO;
 using Support.UI;
 using Support.Util;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Security.Policy;
+using System.Text;
+using System.Windows.Forms;
 
 namespace CardMaker.Forms
 {
@@ -94,7 +96,6 @@ namespace CardMaker.Forms
 
             // Same handler for both events
             GoogleAuthManager.Instance.GoogleAuthUpdateRequested += GoogleAuthUpdate_Requested;
-            GoogleAuthManager.Instance.GoogleAuthCredentialsError += GoogleAuthUpdate_Requested;
 
             // Setup all the child dialogs
             m_zMDICanvas = SetupMDIForm(new MDICanvas(), true);
@@ -547,11 +548,12 @@ namespace CardMaker.Forms
 #if MONO_BUILD
                 " [Mono Build]" +
 #endif
+                Environment.NewLine + 
+                $"Valid Google Client: {!Resources.NotASecret.StartsWith("{}")}" +
  Environment.NewLine + Environment.NewLine +
                 "Written by Tim Stair" +
                 Environment.NewLine + Environment.NewLine +
-                "Enjoy!"
-                , "About", MessageBoxButtons.OK,
+                "Enjoy!", "About", MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
         }
 
@@ -662,7 +664,7 @@ namespace CardMaker.Forms
 
         private void updateGoogleCredentialsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            GoogleAuthManager.UpdateGoogleAuth(this);
+            GoogleAuthManager.Instance.FireGoogleAuthUpdateRequestedEvent(this);
         }
 
         private void clearGoogleCacheToolStripMenuItem_Click(object sender, EventArgs e)
@@ -698,7 +700,7 @@ namespace CardMaker.Forms
 
         private void GoogleAuthUpdate_Requested(object sender, GoogleAuthEventArgs args)
         {
-            GoogleAuthManager.UpdateGoogleAuth(this, args.SuccessAction, args.CancelAction);
+            GoogleAuthManager.Instance.UpdateGoogleAuth(args.ParentForm, args.SuccessAction, args.CancelAction);
         }
 
 
@@ -759,13 +761,15 @@ namespace CardMaker.Forms
             {
                 UpdateProjectsList(sFileName);
 
-                bool bHasExternalReference = ProjectManager.Instance.LoadedProject.HasExternalReference();
+                var bHasExternalReference = ProjectManager.Instance.LoadedProject.HasExternalReference();
 
                 if (bHasExternalReference)
                 {
-                    GoogleAuthManager.UpdateGoogleAuth(this, null, () =>
+                    GoogleAuthManager.Instance.FireGoogleAuthUpdateRequestedEvent(this, null, () =>
                     {
-                        MessageBox.Show(this, "You will be unable to view the layouts for any references that are Google Spreadsheets.", "Reference Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show(this,
+                            "You will be unable to view the layouts for any references that are Google Spreadsheets.",
+                            "Reference Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     });
                 }
 

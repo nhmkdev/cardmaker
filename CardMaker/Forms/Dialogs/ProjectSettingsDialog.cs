@@ -61,9 +61,9 @@ namespace CardMaker.Forms.Dialogs
                 ProjectManager.Instance.LoadedProject.overrideDefineReferenceName,
                 () =>
                 {
-                    if (GoogleAuthManager.CheckGoogleCredentials(parentForm))
+                    if (GoogleAuthManager.Instance.CheckGoogleAuth(parentForm))
                     {
-                        return new GoogleSpreadsheetSelector(new GoogleSpreadsheet(CardMakerInstance.GoogleInitializerFactory), false);
+                        return new GoogleSpreadsheetSelector(false);
                     }
                     return null;
                 },

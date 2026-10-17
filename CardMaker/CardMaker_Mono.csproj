@@ -248,12 +248,6 @@
     </Compile>
     <Compile Include="Forms\Dialogs\ProjectSettingsDialog.cs" />
     <Compile Include="Forms\FormUtils.cs" />
-    <Compile Include="Forms\GoogleCredentialsDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\GoogleCredentialsDialog.Designer.cs">
-      <DependentUpon>GoogleCredentialsDialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="Events\Managers\IssueManager.cs" />
     <Compile Include="Forms\MDIDefines.cs">
       <SubType>Form</SubType>
@@ -313,7 +307,6 @@
     <Compile Include="Support\3rdParty\PhotoshopFile\ResolutionInfo.cs" />
     <Compile Include="Support\3rdParty\PhotoshopFile\Thumbnail.cs" />
     <Compile Include="Support\Google\GoogleApi.cs" />
-    <Compile Include="Support\Google\GoogleInitializerFactory.cs" />
     <Compile Include="Support\Google\Sheets\GoogleSheetInfo.cs" />
     <Compile Include="Support\Google\Sheets\GoogleSpreadsheet.cs" />
     <Compile Include="Support\Google\Sheets\GoogleSpreadsheetSelector.cs">
@@ -321,12 +314,6 @@
     </Compile>
     <Compile Include="Support\Google\Sheets\GoogleSpreadsheetSelector.Designer.cs">
       <DependentUpon>GoogleSpreadsheetSelector.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Support\Google\Sheets\GoogleSpreadsheetBrowser.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Support\Google\Sheets\GoogleSpreadsheetBrowser.Designer.cs">
-      <DependentUpon>GoogleSpreadsheetBrowser.cs</DependentUpon>
     </Compile>
     <Compile Include="Support\IO\ColorSerialization.cs" />
     <Compile Include="Support\IO\CSVFile.cs" />
@@ -398,9 +385,6 @@
     <EmbeddedResource Include="Forms\Dialogs\GlobalDefinesDialog.resx">
       <DependentUpon>GlobalDefinesDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\GoogleCredentialsDialog.resx">
-      <DependentUpon>GoogleCredentialsDialog.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\MDIDefines.resx">
       <DependentUpon>MDIDefines.cs</DependentUpon>
     </EmbeddedResource>
@@ -444,9 +428,6 @@
     </Compile>
     <EmbeddedResource Include="Support\Google\Sheets\GoogleSpreadsheetSelector.resx">
       <DependentUpon>GoogleSpreadsheetSelector.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Support\Google\Sheets\GoogleSpreadsheetBrowser.resx">
-      <DependentUpon>GoogleSpreadsheetBrowser.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Support\UI\GradientDialog.resx">
       <DependentUpon>GradientDialog.cs</DependentUpon>
@@ -547,8 +528,8 @@
   </Target>
   -->
   <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
-    <PostBuildEvent>copy /Y "%25USERPROFILE%25\.nuget\packages\microsoft.clearscript.v8.native.linux-x64\7.3.2\runtimes\linux-x64\native\*.*" .</PostBuildEvent>
+    <PreBuildEvent>IF EXIST "$(ProjectDir)client_secret.json" COPY /Y $(ProjectDir)client_secret.json $(ProjectDir)not_a_secret.json</PreBuildEvent>
+    <PostBuildEvent>ECHO {} &gt; $(ProjectDir)\not_a_secret.json
+copy /Y "%25USERPROFILE%25\.nuget\packages\microsoft.clearscript.v8.native.linux-x64\7.3.2\runtimes\linux-x64\native\*.*" .</PostBuildEvent>
   </PropertyGroup>
 </Project>

@@ -121,12 +121,12 @@ namespace CardMaker.Forms.Dialogs
         private void btnAddGoogle_Click(object sender, EventArgs e)
         {
 #warning TODO: this code is duplicated, can easily be shared
-            if (!GoogleAuthManager.CheckGoogleCredentials(this))
+            if (!GoogleAuthManager.Instance.CheckGoogleAuth(this))
             {
                 return;
             }
             var zDialog =
-                new GoogleSpreadsheetSelector(new GoogleSpreadsheet(CardMakerInstance.GoogleInitializerFactory), true);
+                new GoogleSpreadsheetSelector(true);
             if (DialogResult.OK == zDialog.ShowDialog(this))
             {
                 var zGoogleSpreadsheetReference = new GoogleSpreadsheetReference(zDialog.SelectedSpreadsheet)

@@ -35,14 +35,11 @@ namespace Support.Google.Sheets
     public partial class GoogleSpreadsheetSelector : Form
     {
         private readonly bool m_bRequireSheetSelect;
-
-        private GoogleSpreadsheet m_zGoogleSpreadsheet;
         public GoogleSheetInfo SelectedSpreadsheet { get; private set;}
         public string SelectedSheet => listViewSheets.SelectedItems.Count == 0 ? null : (string)listViewSheets.SelectedItems[0].Tag;
 
-        public GoogleSpreadsheetSelector(GoogleSpreadsheet zGoogleSpreadsheet, bool bRequireSheetSelect)
+        public GoogleSpreadsheetSelector(bool bRequireSheetSelect)
         {
-            m_zGoogleSpreadsheet = zGoogleSpreadsheet;
             m_bRequireSheetSelect = bRequireSheetSelect;
             InitializeComponent();
             listViewSheets.Visible = m_bRequireSheetSelect;
@@ -84,13 +81,13 @@ namespace Support.Google.Sheets
             new Thread(() =>
             {
                 var zSpreadsheet = PerformSpreadsheetRetrieve(
-                    () => m_zGoogleSpreadsheet.GetSpreadsheet(sId),
+                    () => GoogleSpreadsheet.GetSpreadsheet(sId),
                     () => listViewSheets.InvokeAction(() => listViewSheets.Items.Clear()));
 
                 List<string> listSheets = null;
                 if (zSpreadsheet != null)
                 {
-                    listSheets = m_zGoogleSpreadsheet.GetSheetNames(zSpreadsheet);
+                    listSheets = GoogleSpreadsheet.GetSheetNames(zSpreadsheet);
                 }
 
                 if (null == listSheets)
@@ -122,7 +119,7 @@ namespace Support.Google.Sheets
                 SelectedSpreadsheet = new GoogleSheetInfo()
                 {
                     Id = sId,
-                    Name = m_zGoogleSpreadsheet.GetSpreadsheetName(zSpreadsheet)
+                    Name = GoogleSpreadsheet.GetSpreadsheetName(zSpreadsheet)
                 };
 
 
