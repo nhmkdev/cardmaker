@@ -27,13 +27,17 @@ using CardMaker.Events.Args;
 using CardMaker.Properties;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Util.Store;
-using System;
-using System.IO;
-using System.Text;
-using System.Threading;
-using System.Windows.Forms;
 using Support.IO;
 using Support.UI;
+using System;
+using System.IO;
+using System.Net;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using Google.Apis.Auth.OAuth2.Requests;
+using Google.Apis.Auth.OAuth2.Responses;
 
 namespace CardMaker.Events.Managers
 {
@@ -109,7 +113,7 @@ namespace CardMaker.Events.Managers
 
             var tokenSource = new CancellationTokenSource();
             // to avoid issues with the user canceling the "which app" prompt or otherwise a wait dialog with a cancel is displayed
-            var zWait = new WaitDialog(1, CredentialUiFlowThread, tokenSource.Token, "Google Auth", new string[]{"Waiting..."}, 200);
+            var zWait = new WaitDialog(1, CredentialUiFlowThread, tokenSource.Token, "Google Auth", new string[]{"Waiting..."}, 500);
             zWait.ShowDialog(zParentForm);
             if (zWait.Canceled)
             {
@@ -133,6 +137,12 @@ namespace CardMaker.Events.Managers
             CredentialFlow(new CredentialFlowParameters()
             {
                 CancellationToken = cancellationToken,
+#if MONO_BUILD
+                AuthUrlGenerated = (sAuthUrl) =>
+                {
+                    Logger.AddLogLines(new string[] {"Google auth requested. Open a browser to this url and authorize the app.", sAuthUrl});
+                },
+#endif
                 Success = zSuccessAction
             });
             if (UserCredential != null)
@@ -146,6 +156,15 @@ namespace CardMaker.Events.Managers
             CredentialFlow(new CredentialFlowParameters()
             {
                 CancellationToken = (CancellationToken)zParamObject,
+#if MONO_BUILD
+                AuthUrlGenerated = (sAuthUrl) =>
+                {
+                    CardMakerInstance.ApplicationForm.InvokeAction(() => Clipboard.SetText(sAuthUrl));
+                    WaitDialog.Instance.InvokeAction(() =>
+                        WaitDialog.Instance.SetStatusText(
+                            "Google auth url copied to clipboard. Open a browser and authorize the app. Waiting..."));
+                },
+#endif
                 Success = () => WaitDialog.Instance.ThreadSuccess = true,
                 Failure = () => WaitDialog.Instance.ThreadSuccess = false,
                 Finally = () => WaitDialog.Instance.CloseWaitDialog()
@@ -164,18 +183,33 @@ namespace CardMaker.Events.Managers
 
                 using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(Resources.NotASecret)))
                 {
-                    var credentialTask = GoogleWebAuthorizationBroker.AuthorizeAsync(
+#if MONO_BUILD
+                    var authorizationTask = GoogleWebAuthorizationBroker.AuthorizeAsync(
+                        GoogleClientSecrets.FromStream(stream).Secrets,
+                        CardMakerConstants.GOOGLE_SCOPES,
+                        // Unique ID for storing token cache locally (appended to the file name)
+                        GOOGLE_LOCAL_ID,
+                        zParameters.CancellationToken,
+                        new FileDataStore(sDataStorePath, true),
+                        codeReceiver: new HeadlessGoogleCodeReceiver(zParameters)
+                    );
+                    authorizationTask.Wait(zParameters.CancellationToken);
+                    UserCredential = authorizationTask.Result;
+                    zParameters.Success?.Invoke();
+
+#else
+                    var authorizationTask = GoogleWebAuthorizationBroker.AuthorizeAsync(
                         GoogleClientSecrets.FromStream(stream).Secrets,
                         CardMakerConstants.GOOGLE_SCOPES,
                         // Unique ID for storing token cache locally (appended to the file name)
                         GOOGLE_LOCAL_ID, 
                         zParameters.CancellationToken,
-                        // makes a subfolder for credentials (usable across runs too!)
                         new FileDataStore(sDataStorePath, true)
                     );
-                    credentialTask.Wait(zParameters.CancellationToken);
-                    UserCredential = credentialTask.Result;
+                    authorizationTask.Wait(zParameters.CancellationToken);
+                    UserCredential = authorizationTask.Result;
                     zParameters.Success?.Invoke();
+#endif
                 }
             }
             catch (Exception ex)
@@ -191,7 +225,75 @@ namespace CardMaker.Events.Managers
             public Action Success { get; set; }
             public Action Failure { get; set; }
             public Action Finally { get; set; }
+#if MONO_BUILD
+            public Action<string> AuthUrlGenerated { get; set; }
+#endif
             public CancellationToken CancellationToken { get; set; }
         }
+
+#if MONO_BUILD
+        private class HeadlessGoogleCodeReceiver : ICodeReceiver
+        {
+            // Local server listening URI
+            public string RedirectUri => "http://localhost:51234/authorize/";
+
+            private const string AUTH_COMPLETE_RESPONSE =
+                "<html><body>Authentication complete. You may close this window.</body></html>";
+
+            private readonly CredentialFlowParameters m_zCredentialFlowParameters;
+
+            public HeadlessGoogleCodeReceiver(CredentialFlowParameters credentialFlowParameters)
+            {
+                m_zCredentialFlowParameters = credentialFlowParameters;
+            }
+
+            public async Task<AuthorizationCodeResponseUrl> ReceiveCodeAsync(
+                AuthorizationCodeRequestUrl url,
+                CancellationToken taskCancellationToken)
+            {
+                m_zCredentialFlowParameters.AuthUrlGenerated(url.Build().ToString());
+
+                try
+                {
+                    // HttpListener for redirect
+                    using (var zHttpRedirectListener = new HttpListener())
+                    {
+                        zHttpRedirectListener.Prefixes.Add(RedirectUri);
+                        zHttpRedirectListener.Start();
+
+                        var zContextTask = zHttpRedirectListener.GetContextAsync();
+                        // the async version doesn't support a CancellationToken
+                        zContextTask.Wait(m_zCredentialFlowParameters.CancellationToken);
+                        var context = zContextTask.Result;
+                        var request = context.Request;
+
+                        // write browser response (user can close)
+                        var zResponse = context.Response;
+                        var arrayBuffer = Encoding.UTF8.GetBytes(AUTH_COMPLETE_RESPONSE);
+                        zResponse.ContentLength64 = arrayBuffer.Length;
+                        await zResponse.OutputStream.WriteAsync(arrayBuffer, 0, arrayBuffer.Length, taskCancellationToken);
+                        zResponse.OutputStream.Close();
+
+                        return new AuthorizationCodeResponseUrl
+                        {
+                            Code = request.QueryString["code"],
+                            Error = request.QueryString["error"]
+                        };
+                    }
+                }
+                catch (Exception e)
+                {
+                    Logger.AddLogLine($"[HeadlessGoogleCodeReceiver] failed -- {e}");
+                    throw;
+                }
+#if DEBUG
+                finally
+                {
+                    Logger.AddLogLine($"[HeadlessGoogleCodeReceiver] http listener stopped");
+                }
+#endif
+            }
+        }
+#endif 
     }
 }
