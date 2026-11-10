@@ -34,7 +34,10 @@ namespace CardMaker.Card.CommandLine
         {
             var sExportPath = GetExportPath(false);
             Description = "PDF Export - {0}".FormatString(sExportPath);
-            return new PdfSharpExporter(GetLayoutIndices(), sExportPath, GetPageOrientation());
+            return new PdfSharpExporter(GetLayoutIndices(), sExportPath, GetPageOrientation())
+            {
+                ExportCardIndices = GetCardIndices()
+            };
         }
     }
 }
