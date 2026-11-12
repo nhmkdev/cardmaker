@@ -25,34 +25,12 @@
 namespace CardMaker.Card.Export.Pdf
 {
     /// <summary>
-    /// Draws the row with layouts centered
+    /// Identifies center-aligned PDF exports, whose complete rows are centered by the PDF exporter.
     /// </summary>
     public class CenterAlignPdfRowExporter : LeftAlignPdfRowExporter
     {
         public CenterAlignPdfRowExporter(PdfSharpExportData zExportData) : base(zExportData)
         {
-        }
-
-        public override bool IsLayoutForcedToNewRow()
-        {
-            return true;
-        }
-
-        /// <summary>
-        /// Centers the draw point based on the number of items that will be drawn to the row from the
-        /// current layout
-        /// </summary>
-        /// <param name="nNextExportIndex">The next index of the item to be exported (0-X counter)</param>
-        public override void SetupNewRowXPosition(int nNextExportIndex)
-        {
-            var dWidth = m_zExportData.PageMarginEndX - m_zExportData.PageMarginX;
-            var nItemsThisRow = (double)m_zExportData.GetItemsPerRow(nNextExportIndex);
-            // the last horizontal buffer is not counted
-            m_zExportData.DrawX = m_zExportData.PageMarginX + (dWidth -
-                                                               ((nItemsThisRow * m_zExportData.LayoutPointWidth) +
-                                                                ((nItemsThisRow - 1) * m_zExportData.BufferX)))
-                / 2;
-
         }
     }
 }

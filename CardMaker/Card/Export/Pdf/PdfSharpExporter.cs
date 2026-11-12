@@ -43,6 +43,25 @@ namespace CardMaker.Card.Export.Pdf
     /// </summary>
     public class PdfSharpExporter : CardExportBase
     {
+        // temporary class for row image storage (for center alignment)
+        private sealed class PdfRowImage
+        {
+            public Bitmap Bitmap { get; private set; }
+            public double PointWidth { get; private set; }
+            public double PointHeight { get; private set; }
+            public double BufferX { get; private set; }
+            public double BufferY { get; private set; }
+
+            public PdfRowImage(Bitmap zBitmap, double dPointWidth, double dPointHeight, double dBufferX, double dBufferY)
+            {
+                Bitmap = zBitmap;
+                PointWidth = dPointWidth;
+                PointHeight = dPointHeight;
+                BufferX = dBufferX;
+                BufferY = dBufferY;
+            }
+        }
+
         private readonly PdfSharpExportData m_zExportData = new PdfSharpExportData();
         private readonly PdfDocument m_zDocument;
         private PdfPage m_zCurrentPage;
@@ -110,6 +129,8 @@ namespace CardMaker.Card.Export.Pdf
             ProgressReporter.ProgressReset(progressLayoutIdx, 0, ExportLayoutIndices.Length, 0);
 
             Type zLastExporterType = null;
+            var listCenterRowImages = new List<PdfRowImage>();
+            var dCenterRowWidth = 0d;
 
             for(var nExportCounter = 0; nExportCounter < ExportLayoutIndices.Length; nExportCounter++)
             {
@@ -145,6 +166,7 @@ namespace CardMaker.Card.Export.Pdf
                 {
                     DisplayError("Unable to setup page size. See log.");
                     ProgressReporter.ThreadSuccess = false;
+                    DisposeCenterAlignedRow(listCenterRowImages);
 
                     ProgressReporter.Shutdown();
                     return;
@@ -153,7 +175,10 @@ namespace CardMaker.Card.Export.Pdf
                 if (nExportCounter == 0)
                 {
                     // only the page has been setup at this point, not the x-position
-                    zRowExporter.SetupNewRowXPosition(nNextExportIndex);
+                    if (!(zRowExporter is CenterAlignPdfRowExporter))
+                    {
+                        zRowExporter.SetupNewRowXPosition(nNextExportIndex);
+                    }
                 }
                 else
                 {
@@ -161,9 +186,11 @@ namespace CardMaker.Card.Export.Pdf
                     // if the exporter type changes start a new page
                     if (CardMakerSettings.PrintLayoutsOnNewPage || zLastExporterType != zRowExporter.GetType())
                     {
+                        FlushCenterAlignedRow(listCenterRowImages, dCenterRowWidth);
+                        dCenterRowWidth = 0;
                         AddSubsequentPage(zRowExporter, nNextExportIndex);
                     }
-                    else if (zRowExporter.IsLayoutForcedToNewRow() || zRowExporter.IsRowFull())
+                    else if (!(zRowExporter is CenterAlignPdfRowExporter) && zRowExporter.IsRowFull())
                     {
                         MoveToNextRow(zRowExporter, nNextExportIndex);
                     }
@@ -218,15 +245,42 @@ namespace CardMaker.Card.Export.Pdf
                         // before rendering to the PDF bump the DPI to the desired value
                         zBuffer.SetResolution(CurrentDeck.CardLayout.dpi, CurrentDeck.CardLayout.dpi);
 
-                        var xImage = XImage.FromGdiPlusImage(zBuffer);
+                        if (zRowExporter is CenterAlignPdfRowExporter)
+                        {
+                            if (listCenterRowImages.Count > 0 &&
+                                dCenterRowWidth +
+                                listCenterRowImages[listCenterRowImages.Count - 1].BufferX +
+                                m_zExportData.LayoutPointWidth >
+                                m_zExportData.PageMarginEndX - m_zExportData.PageMarginX)
+                            {
+                                FlushCenterAlignedRow(listCenterRowImages, dCenterRowWidth);
+                                dCenterRowWidth = 0;
+                            }
 
-                        // before drawing make sure there is space (will move to next row/page)
-                        EvaluateDrawLocation(nNextExportIndex, zRowExporter);
+                            if (listCenterRowImages.Count > 0)
+                            {
+                                dCenterRowWidth += listCenterRowImages[listCenterRowImages.Count - 1].BufferX;
+                            }
+                            listCenterRowImages.Add(new PdfRowImage(
+                                (Bitmap)zBuffer.Clone(),
+                                m_zExportData.LayoutPointWidth,
+                                m_zExportData.LayoutPointHeight,
+                                m_zExportData.BufferX,
+                                m_zExportData.BufferY));
+                            dCenterRowWidth += m_zExportData.LayoutPointWidth;
+                        }
+                        else
+                        {
+                            var xImage = XImage.FromGdiPlusImage(zBuffer);
 
-                        m_zPageGfx.DrawImage(xImage, m_zExportData.DrawX, m_zExportData.DrawY);
+                            // before drawing make sure there is space (will move to next row/page)
+                            EvaluateDrawLocation(nNextExportIndex, zRowExporter);
 
-                        // any next row movement is dealt with independent of this call
-                        zRowExporter.MoveXToNextColumnPosition();
+                            m_zPageGfx.DrawImage(xImage, m_zExportData.DrawX, m_zExportData.DrawY);
+
+                            // any next row movement is dealt with independent of this call
+                            zRowExporter.MoveXToNextColumnPosition();
+                        }
 
                         // undo any export rotation
                         ProcessRotateExport(zBuffer, CurrentDeck.CardLayout, true);
@@ -238,6 +292,8 @@ namespace CardMaker.Card.Export.Pdf
                 }
                 ProgressReporter.ProgressStep(progressLayoutIdx);
             }
+
+            FlushCenterAlignedRow(listCenterRowImages, dCenterRowWidth);
 
 #if !MONO_BUILD
             zBuffer?.Dispose();
@@ -255,6 +311,57 @@ namespace CardMaker.Card.Export.Pdf
             }
 
             ProgressReporter.Shutdown();
+        }
+
+        private void FlushCenterAlignedRow(IList<PdfRowImage> listRowImages, double dRowWidth)
+        {
+            if (listRowImages.Count == 0)
+            {
+                return;
+            }
+
+            var dRowHeight = listRowImages.Max(zImage => zImage.PointHeight);
+            var dRowStep = listRowImages.Max(zImage => zImage.PointHeight + zImage.BufferY);
+            if (m_zExportData.DrawY + dRowHeight > m_zExportData.PageMarginEndY)
+            {
+                SetupNewPage(false);
+            }
+
+            var dDrawX = m_zExportData.PageMarginX +
+                         ((m_zExportData.PageMarginEndX - m_zExportData.PageMarginX -
+                           dRowWidth) / 2);
+            try
+            {
+                for (var nImageIdx = 0; nImageIdx < listRowImages.Count; nImageIdx++)
+                {
+                    var zRowImage = listRowImages[nImageIdx];
+                    using (var xImage = XImage.FromGdiPlusImage(zRowImage.Bitmap))
+                    {
+                        m_zPageGfx.DrawImage(xImage, dDrawX, m_zExportData.DrawY);
+                    }
+
+                    dDrawX += zRowImage.PointWidth;
+                    if (nImageIdx < listRowImages.Count - 1)
+                    {
+                        dDrawX += zRowImage.BufferX;
+                    }
+                }
+            }
+            finally
+            {
+                DisposeCenterAlignedRow(listRowImages);
+            }
+
+            m_zExportData.DrawY += dRowStep;
+        }
+
+        private static void DisposeCenterAlignedRow(IList<PdfRowImage> listRowImages)
+        {
+            foreach (var zRowImage in listRowImages)
+            {
+                zRowImage.Bitmap.Dispose();
+            }
+            listRowImages.Clear();
         }
 
         /// <summary>
@@ -406,7 +513,10 @@ namespace CardMaker.Card.Export.Pdf
         {
             SetupNewPage(false);
 
-            zRowExporter.SetupNewRowXPosition(nNextExportIndex);
+            if (!(zRowExporter is CenterAlignPdfRowExporter))
+            {
+                zRowExporter.SetupNewRowXPosition(nNextExportIndex);
+            }
             m_zExportData.NextRowYAdjust = m_zExportData.LayoutPointHeight + m_zExportData.BufferY;
         }
 
