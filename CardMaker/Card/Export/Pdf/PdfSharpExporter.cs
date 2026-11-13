@@ -77,6 +77,7 @@ namespace CardMaker.Card.Export.Pdf
             m_sExportFile = sExportFile;
             m_ePageOrientation = ePageOrientation;
             m_zDocument = new PdfDocument();
+            CurrentDeck.ExportContext = new ExportContext();
         }
 
         public override void ExportThreadImpl()
