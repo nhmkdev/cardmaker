@@ -179,7 +179,7 @@ namespace CardMaker.Events.Managers
         {
             try
             {
-                var sDataStorePath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), GOOGLE_FILE_STORE);
+                var sDataStorePath = Path.Combine(CardMakerConstants.ExecutableDirectory, GOOGLE_FILE_STORE);
 
                 using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(Resources.NotASecret)))
                 {

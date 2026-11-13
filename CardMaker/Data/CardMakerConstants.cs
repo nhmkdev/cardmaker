@@ -24,7 +24,9 @@
 
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.IO;
 using System.Text;
+using System.Windows.Forms;
 using Google.Apis.Sheets.v4;
 
 namespace CardMaker.Data
@@ -49,6 +51,8 @@ namespace CardMaker.Data
 
         public static readonly Bitmap GridBackground;
         public static readonly TextureBrush GridBackgroundBrush;
+
+        public static readonly string ExecutableDirectory = Path.GetDirectoryName(Application.ExecutablePath);
 
         static CardMakerConstants()
         {
