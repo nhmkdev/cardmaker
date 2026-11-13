@@ -38,6 +38,8 @@ namespace CardMaker.Card.CommandLine
     {
         public CommandLineParser CommandLineParser { get; set; }
         public CommandLineUtil CommandLineUtil { get; set; }
+
+        public string ExportFormat { get; set; }
         protected string Description { get; set; }
 
         public abstract CardExportBase CreateExporter();
@@ -196,17 +198,5 @@ namespace CardMaker.Card.CommandLine
                 : PageOrientation.Portrait;
         }
 
-        /// <summary>
-        /// Gets the image format from the command line
-        /// </summary>
-        /// <returns>The image format (default: png)</returns>
-        protected FileCardExporterFactory.CardMakerExportImageFormat GetImageFormat()
-        {
-            var sExportFormat = CommandLineParser.GetStringArg(CommandLineArg.ExportFormat);
-            FileCardExporterFactory.CardMakerExportImageFormat eImageFormat;
-            return FileCardExporterFactory.StringToCardMakerImageExportFormatDictionary.TryGetValue(sExportFormat.ToUpper(), out eImageFormat)
-                ? eImageFormat
-                : FileCardExporterFactory.CardMakerExportImageFormat.Png;
-        }
     }
 }

@@ -1,11 +1,10 @@
-﻿using System;
-using System.IO;
-using CardMaker;
-using CardMaker.XML;
-using Moq;
+﻿using CardMaker;
+using CardMaker.Card.Export;
 using NUnit.Framework;
 using Support.Progress;
-using UnitTest.DeckObject;
+using System.Collections;
+using System.IO;
+using System.Linq;
 
 namespace UnitTest.CommandLine
 {
@@ -72,21 +71,21 @@ namespace UnitTest.CommandLine
             AssertFileRangeExistence(m_sTestTemp, "Default_", ".png", 1, 18);
         }
 
-        [Test]
-        public void ExecuteRangePNGExport()
+        [TestCaseSource(typeof(ImageFormatNames), nameof(ImageFormatNames.TestCases))]
+        public void ExecuteRangeImageFormatExport(string sExtension)
         {
             var sProjectFile = Path.Combine(m_sProjectRoot, ProjectFile);
             var args = new string[]
             {
                 "-projectPath", sProjectFile,
-                "-exportFormat", "png",
+                "-exportFormat", sExtension,
                 "-exportPath", m_sTestTemp,
                 "-layoutNames", "Default",
                 "-cardIndices", "3-10"
             };
             Program.MainEntry(new ConsoleProgressReporterFactory(false), args);
             // just verifying the first layout
-            AssertFileRangeExistence(m_sTestTemp, "Default_", ".png", 3, 10);
+            AssertFileRangeExistence(m_sTestTemp, "Default_", $".{sExtension}", 3, 10);
         }
 
         private void AssertFileRangeExistence(string sPath, string sPrefix, string sSuffix, int nStart, int nEnd)
@@ -95,7 +94,21 @@ namespace UnitTest.CommandLine
             for (var nIdx = nStart; nIdx <= nEnd; nIdx++)
             {
                 var path = Path.Combine(sPath, sPrefix + nIdx.ToString().PadLeft(nPad, '0') + sSuffix);
-                Assert.IsTrue(File.Exists(path));
+                Assert.IsTrue(File.Exists(path), $"Extension: {sSuffix} - missing file {path}");
+            }
+        }
+        public class ImageFormatNames
+        {
+            public static IEnumerable TestCases
+            {
+                get
+                {
+                    // names as-is + names lower case
+                    return FileCardExporterFactory
+                        .AllowedImageFormatNames.Select(x => new TestCaseData(x))
+                        .Concat(
+                            FileCardExporterFactory.AllowedImageFormatNames.Select(x => new TestCaseData(x.ToLower())));
+                }
             }
         }
     }

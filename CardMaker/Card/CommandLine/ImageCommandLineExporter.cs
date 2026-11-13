@@ -39,5 +39,18 @@ namespace CardMaker.Card.CommandLine
                 ExportCardIndices = GetCardIndices()
             };
         }
+
+        /// <summary>
+        /// Gets the image format from the command line
+        /// </summary>
+        /// <returns>The image format (default: png)</returns>
+        protected FileCardExporterFactory.CardMakerExportImageFormat GetImageFormat()
+        {
+            var sExportFormat = CommandLineParser.GetStringArg(CommandLineArg.ExportFormat);
+            FileCardExporterFactory.CardMakerExportImageFormat eImageFormat;
+            return FileCardExporterFactory.StringToCardMakerImageExportFormatDictionary.TryGetValue(sExportFormat.ToLower(), out eImageFormat)
+                ? eImageFormat
+                : FileCardExporterFactory.CardMakerExportImageFormat.Png;
+        }
     }
 }

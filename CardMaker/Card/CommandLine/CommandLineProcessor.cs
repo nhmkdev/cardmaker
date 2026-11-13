@@ -109,6 +109,7 @@ namespace CardMaker.Card.CommandLine
                 var zExporter = (CommandLineExporterBase) Activator.CreateInstance(typeExporter);
                 zExporter.CommandLineParser = m_zCommandLineParser;
                 zExporter.CommandLineUtil = CommandLineUtil;
+                zExporter.ExportFormat = sExportFormat;
                 zExporter.ConfigureGoogleCredential();
                 return zExporter.Export();
             }
