@@ -122,9 +122,11 @@ namespace CardMaker.Data.Serialization
                 return null;
             }
 
+            PointF pointSource = PointF.Empty;
+            PointF pointDestination = PointF.Empty;
             if(false == (
-                ParsePoint((int)GradientStyleIndexesPoints.StartX, arrayParameters, out var pointSource) 
-                && ParsePoint((int)GradientStyleIndexesPoints.DestinationX, arrayParameters, out var pointDestination)))
+                ParsePoint((int)GradientStyleIndexesPoints.StartX, arrayParameters, out pointSource)
+                && ParsePoint((int)GradientStyleIndexesPoints.DestinationX, arrayParameters, out pointDestination)))
             {
                 return null;
             }
