@@ -385,8 +385,14 @@ namespace CardMaker.Card.Export.Pdf
             }
 
             m_zPageGfx = XGraphics.FromPdfPage(m_zCurrentPage);
-            var zBackgroundBrush = new XSolidBrush(XColor.FromArgb(CurrentDeck.CardLayout.GetExportBackgroundColor()));
-            m_zPageGfx.DrawRectangle(zBackgroundBrush, new XRect(0, 0, m_zCurrentPage.Width, m_zCurrentPage.Height));
+            if (CardMakerSettings.PrintPageBackground)
+            {
+                var zBackgroundBrush =
+                    new XSolidBrush(XColor.FromArgb(CurrentDeck.CardLayout.GetExportBackgroundColor()));
+                m_zPageGfx.DrawRectangle(zBackgroundBrush,
+                    new XRect(0, 0, m_zCurrentPage.Width, m_zCurrentPage.Height));
+            }
+
             m_zExportData.DrawY = m_zExportData.PageMarginY;
         }
 

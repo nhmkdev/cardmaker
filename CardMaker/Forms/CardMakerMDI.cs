@@ -414,6 +414,7 @@ namespace CardMaker.Forms
             zQuery.AddNumericBox("Page Vertical Margin", CardMakerSettings.PrintPageVerticalMargin, 0, 1024, 0.01m, 2, IniSettings.PrintPageVerticalMargin);
             zQuery.AddCheckBox("Auto-Center Layouts on Page", CardMakerSettings.PrintAutoHorizontalCenter, IniSettings.PrintAutoCenterLayout);
             zQuery.AddCheckBox("Print Layouts On New Page", CardMakerSettings.PrintLayoutsOnNewPage, IniSettings.PrintLayoutsOnNewPage);
+            zQuery.AddCheckBox("Print Page Background", CardMakerSettings.PrintPageBackground, IniSettings.PrintPageBackground);
 
             zQuery.AddTab("AutoSave");
             zQuery.AddCheckBox("Enable AutoSave", CardMakerSettings.AutoSaveEnabled, IniSettings.AutoSaveEnabled);
@@ -436,6 +437,7 @@ namespace CardMaker.Forms
                 CardMakerSettings.PrintPageVerticalMargin = zQuery.GetDecimal(IniSettings.PrintPageVerticalMargin);
                 CardMakerSettings.PrintAutoHorizontalCenter = zQuery.GetBool(IniSettings.PrintAutoCenterLayout);
                 CardMakerSettings.PrintLayoutsOnNewPage = zQuery.GetBool(IniSettings.PrintLayoutsOnNewPage);
+                CardMakerSettings.PrintPageBackground = zQuery.GetBool(IniSettings.PrintPageBackground);
 #if !MONO_BUILD
                 CardMakerSettings.ExportWebPLossless = zQuery.GetBool(IniSettings.ExportWebPLossless);
                 CardMakerSettings.ExportWebPQuality = (int)zQuery.GetDecimal(IniSettings.ExportWebPQuality);

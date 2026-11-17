@@ -139,6 +139,12 @@ namespace CardMaker.Data
             set { s_zIniManager.SetValue(IniSettings.PrintLayoutsOnNewPage, value.ToString()); }
         }
 
+        public static bool PrintPageBackground
+        {
+            get { return s_zIniManager.GetValue(IniSettings.PrintPageBackground, bool.TrueString).Equals(bool.TrueString); }
+            set { s_zIniManager.SetValue(IniSettings.PrintPageBackground, value.ToString()); }
+        }
+
         public static bool EnableGoogleCache
         {
             get { return s_zIniManager.GetValue(IniSettings.EnableGoogleCache, bool.FalseString).Equals(bool.TrueString); }

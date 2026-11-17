@@ -109,6 +109,7 @@ namespace CardMaker.Data
         CompositingQualityGammaCorrected,
         PixelOffsetModeHighQuality,
         PrintLayoutsOnNewPage,
+        PrintPageBackground,
         EnableGoogleCache,
         DefaultTranslator,
         ExportSkipStitchIndex,
