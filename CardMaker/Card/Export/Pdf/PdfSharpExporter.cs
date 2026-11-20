@@ -1,4 +1,4 @@
-﻿////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
 // Copyright (c) 2026 Tim Stair
@@ -279,7 +279,7 @@ namespace CardMaker.Card.Export.Pdf
                     {
                         if (nSubIdx < arrayCardIndicies.Count)
                         {
-                            listExportIndices.Add(nSubIdx);
+                            listExportIndices.Add(arrayCardIndicies[nSubIdx]);
                         }
                     }
                 }
