@@ -1,4 +1,4 @@
-﻿////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
 // Copyright (c) 2026 Tim Stair
@@ -117,18 +117,19 @@ namespace CardMaker.Card.Export.Pdf
                 var nIdx = ExportLayoutIndices[nExportCounter];
                 ChangeExportLayoutIndex(nIdx);
 
-                if (nExportCounter == 0)
-                {
-                    // always add a new page initially (necessary for ConfigurePointSizes)
-                    AddInitialPage();
-                }
-
                 m_zExportData.Deck = CurrentDeck;
-                if (CurrentDeck.EmptyReference)
+                if (CurrentDeck.EmptyReference || 0 == CurrentDeck.CardCount)
                 {
                     // empty reference layouts are not exported
                     ProgressReporter.ProgressStep(progressLayoutIdx);
                     continue;
+                }
+
+                var bInitialPage = null == m_zCurrentPage;
+                if (bInitialPage)
+                {
+                    // always add a new page initially (necessary for ConfigurePointSizes)
+                    AddInitialPage();
                 }
 
                 ProgressReporter.ProgressReset(progressCardIdx, 0, CurrentDeck.CardCount, 0);
@@ -151,7 +152,7 @@ namespace CardMaker.Card.Export.Pdf
                     return;
                 }
                 
-                if (nExportCounter == 0)
+                if (bInitialPage)
                 {
                     // only the page has been setup at this point, not the x-position
                     zRowExporter.SetupNewRowXPosition(nNextExportIndex);
@@ -243,6 +244,11 @@ namespace CardMaker.Card.Export.Pdf
 #if !MONO_BUILD
             zBuffer?.Dispose();
 #endif
+
+            if (null == m_zCurrentPage)
+            {
+                AddInitialPage();
+            }
 
             try
             {
